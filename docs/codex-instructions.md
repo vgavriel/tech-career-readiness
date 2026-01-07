@@ -1,0 +1,2 @@
+Implement the plan in docs/implementation-plan.md in order. Do not skip steps. After each step, update a checklist. Commit after each phase.
+Walk me through the changes you made so I can keep track of all technical decisions.
