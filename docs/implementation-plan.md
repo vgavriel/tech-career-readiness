@@ -169,9 +169,9 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [x] Add Prisma and configure Neon Postgres connection
 
 ### Phase 1 — Database modeling + curriculum seed
-- [ ] Implement Prisma schema with User, Cohort, Module, Lesson, LessonSlugAlias, LessonProgress
-- [ ] Run initial migration
-- [ ] Add seed script (modules + lessons + placeholder URLs)
+- [x] Implement Prisma schema with User, Cohort, Module, Lesson, LessonSlugAlias, LessonProgress
+- [x] Run initial migration
+- [x] Add seed script (modules + lessons + placeholder URLs)
 
 ### Phase 2 — Auth (Google OAuth)
 - [ ] Configure Auth.js (NextAuth) with Google provider
