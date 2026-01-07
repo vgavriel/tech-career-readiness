@@ -165,8 +165,8 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 
 ### Phase 0 — Project foundation
 - [x] Create Next.js App Router project with TypeScript
-- [ ] Add TailwindCSS
-- [ ] Add Prisma and configure Neon Postgres connection
+- [x] Add TailwindCSS
+- [x] Add Prisma and configure Neon Postgres connection
 
 ### Phase 1 — Database modeling + curriculum seed
 - [ ] Implement Prisma schema with User, Cohort, Module, Lesson, LessonSlugAlias, LessonProgress
