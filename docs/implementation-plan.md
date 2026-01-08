@@ -192,9 +192,9 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [x] Add seed script (modules + lessons + placeholder URLs)
 
 ### Phase 2 — Auth (Google OAuth)
-- [ ] Configure Auth.js (NextAuth) with Google provider
-- [ ] Add auth routes for App Router
-- [ ] Add basic auth UI in global header
+- [x] Configure Auth.js (NextAuth) with Google provider
+- [x] Add auth routes for App Router
+- [x] Add basic auth UI in global header
 
 ### Phase 3 — Content fetching + sanitization
 - [ ] Add `/api/lesson-content` route
