@@ -48,6 +48,9 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - Prisma schema lives in `prisma/schema.prisma`.
 - Seeding uses the Postgres adapter (`@prisma/adapter-pg`) and `pg`.
 
+## Testing
+See `docs/testing-strategy.md` for the unit, integration, and end-to-end test plan.
+
 ## References
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Prisma Documentation](https://www.prisma.io/docs)
