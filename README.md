@@ -15,6 +15,21 @@ cp .env.example .env
 
 `DATABASE_URL` is required for Prisma CLI and seeding. Prisma 7 reads datasource config from `prisma.config.ts`.
 
+For Auth.js (NextAuth):
+- Generate `NEXTAUTH_SECRET` with `openssl rand -base64 32`.
+- Create a Google OAuth client in Google Cloud Console and set
+  `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET`. Use
+  `http://localhost:3000/api/auth/callback/google` as the redirect URI for
+  local development.
+
+### Environment variables and secrets
+- Dev: Next.js loads `.env`, `.env.local`, `.env.development`, and
+  `.env.development.local` (later files override earlier ones).
+- Prod: set variables in your hosting provider or secret manager; do not ship
+  `.env` files.
+- Keep secrets out of client code and never commit real values. Only commit
+  `.env.example`.
+
 ### 3) Apply migrations and seed data
 ```bash
 npx prisma migrate deploy
