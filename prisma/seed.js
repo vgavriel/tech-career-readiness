@@ -14,6 +14,8 @@ const prisma = new PrismaClient({ adapter });
 
 const modules = [
   {
+    key: "foundations-mindset",
+    slug: "foundations-mindset",
     title: "Foundations & Mindset",
     order: 1,
     description: "Clarify your target and build a sustainable job-search routine.",
@@ -31,6 +33,8 @@ const modules = [
     ],
   },
   {
+    key: "research-targeting",
+    slug: "research-targeting",
     title: "Research & Targeting",
     order: 2,
     description: "Pick roles and companies with focus instead of applying everywhere.",
@@ -48,6 +52,8 @@ const modules = [
     ],
   },
   {
+    key: "resume-portfolio",
+    slug: "resume-portfolio",
     title: "Resume & Portfolio",
     order: 3,
     description: "Craft assets that get past screens and start conversations.",
@@ -65,6 +71,8 @@ const modules = [
     ],
   },
   {
+    key: "networking-outreach",
+    slug: "networking-outreach",
     title: "Networking & Outreach",
     order: 4,
     description: "Build relationships that turn into referrals and interviews.",
@@ -82,6 +90,8 @@ const modules = [
     ],
   },
   {
+    key: "interview-prep",
+    slug: "interview-prep",
     title: "Interview Prep",
     order: 5,
     description: "Practice technical and behavioral interviews with structure.",
@@ -99,6 +109,8 @@ const modules = [
     ],
   },
   {
+    key: "applications-tracking",
+    slug: "applications-tracking",
     title: "Applications & Tracking",
     order: 6,
     description: "Apply intentionally and measure your pipeline.",
@@ -116,6 +128,8 @@ const modules = [
     ],
   },
   {
+    key: "offer-negotiation",
+    slug: "offer-negotiation",
     title: "Offer & Negotiation",
     order: 7,
     description: "Evaluate offers and negotiate with confidence.",
@@ -142,17 +156,18 @@ async function main() {
   });
 
   for (const moduleData of modules) {
-    const existingModule = await prisma.module.findFirst({
-      where: {
-        title: moduleData.title,
-        cohortId: defaultCohort.id,
-      },
+    const existingModule = await prisma.module.findUnique({
+      where: { key: moduleData.key },
     });
+
+    const previousSlug = existingModule?.slug ?? null;
 
     const moduleRecord = existingModule
       ? await prisma.module.update({
           where: { id: existingModule.id },
           data: {
+            key: moduleData.key,
+            slug: moduleData.slug,
             title: moduleData.title,
             order: moduleData.order,
             description: moduleData.description,
@@ -161,12 +176,36 @@ async function main() {
         })
       : await prisma.module.create({
           data: {
+            key: moduleData.key,
+            slug: moduleData.slug,
             title: moduleData.title,
             order: moduleData.order,
             description: moduleData.description,
             cohortId: defaultCohort.id,
           },
         });
+
+    if (previousSlug && previousSlug !== moduleData.slug) {
+      await prisma.moduleSlugAlias.upsert({
+        where: { slug: previousSlug },
+        update: { moduleId: moduleRecord.id },
+        create: { slug: previousSlug, moduleId: moduleRecord.id },
+      });
+    }
+
+    const aliases = moduleData.aliases ?? [];
+
+    for (const alias of aliases) {
+      if (alias === moduleData.slug) {
+        continue;
+      }
+
+      await prisma.moduleSlugAlias.upsert({
+        where: { slug: alias },
+        update: { moduleId: moduleRecord.id },
+        create: { slug: alias, moduleId: moduleRecord.id },
+      });
+    }
 
     for (const lessonData of moduleData.lessons) {
       const publishedUrl = `https://example.com/lessons/${lessonData.slug}`;

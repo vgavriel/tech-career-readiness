@@ -29,6 +29,8 @@ model Cohort {
 
 model Module {
   id          String   @id @default(cuid())
+  key         String   @unique
+  slug        String   @unique
   title       String
   order       Int
   description String?
@@ -37,6 +39,9 @@ model Module {
   updatedAt   DateTime @updatedAt
   cohort      Cohort?  @relation(fields: [cohortId], references: [id])
   lessons     Lesson[]
+  slugAliases ModuleSlugAlias[]
+
+  @@unique([cohortId, order])
 }
 
 model Lesson {
@@ -55,6 +60,8 @@ model Lesson {
   cohort             Cohort?           @relation(fields: [cohortId], references: [id])
   slugAliases        LessonSlugAlias[]
   progress           LessonProgress[]
+
+  @@unique([moduleId, order])
 }
 
 model LessonSlugAlias {
@@ -63,6 +70,14 @@ model LessonSlugAlias {
   slug      String   @unique
   createdAt DateTime @default(now())
   lesson    Lesson   @relation(fields: [lessonId], references: [id])
+}
+
+model ModuleSlugAlias {
+  id        String   @id @default(cuid())
+  moduleId  String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  module    Module   @relation(fields: [moduleId], references: [id])
 }
 
 model LessonProgress {
