@@ -67,13 +67,22 @@ describe("GET /api/lesson-content", () => {
     });
   });
 
-  it("sanitizes and caches lesson content", async () => {
+  it("sanitizes, preserves formatting, and caches lesson content", async () => {
     prismaMock.lesson.findUnique.mockResolvedValue({
       id: "lesson-1",
       publishedUrl: "https://example.com/lesson-1",
     });
     fetchMock.mockResolvedValueOnce(
-      new Response("<h1>Lesson</h1><script>alert(1)</script>", { status: 200 })
+      new Response(
+        [
+          '<h1 class="doc-title" style="color:red">Lesson</h1>',
+          '<table class="doc-table" style="width:100%">',
+          '<tr><th colspan="2" style="text-align:left">Header</th></tr>',
+          "</table>",
+          "<script>alert(1)</script>",
+        ].join(""),
+        { status: 200 }
+      )
     );
 
     const GET = await getRoute();
@@ -82,7 +91,12 @@ describe("GET /api/lesson-content", () => {
 
     expect(response.status).toBe(200);
     expect(body.cached).toBe(false);
-    expect(body.html).toContain("<h1>Lesson</h1>");
+    expect(body.html).toContain("<h1");
+    expect(body.html).toContain("Lesson</h1>");
+    expect(body.html).toContain('class="doc-title"');
+    expect(body.html).toContain('style="color:red"');
+    expect(body.html).toContain("<table");
+    expect(body.html).toContain('colspan="2"');
     expect(body.html).not.toContain("<script");
 
     const cachedResponse = await GET(makeRequest("?slug=lesson-1"));

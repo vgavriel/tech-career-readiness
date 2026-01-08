@@ -12,6 +12,24 @@ export const runtime = "nodejs";
 
 const isTruthy = (value: string | null) => value === "1" || value === "true";
 
+const sanitizeOptions: sanitizeHtml.IOptions = {
+  allowedTags: sanitizeHtml.defaults.allowedTags,
+  allowedAttributes: {
+    ...sanitizeHtml.defaults.allowedAttributes,
+    "*": ["class", "style"],
+    a: ["href", "name", "target", "rel"],
+    table: ["class", "style", "border", "cellpadding", "cellspacing", "width"],
+    thead: ["class", "style"],
+    tbody: ["class", "style"],
+    tfoot: ["class", "style"],
+    tr: ["class", "style"],
+    th: ["class", "style", "colspan", "rowspan", "scope", "width", "height"],
+    td: ["class", "style", "colspan", "rowspan", "width", "height"],
+    colgroup: ["class", "style", "span", "width"],
+    col: ["class", "style", "span", "width"],
+  },
+};
+
 const shouldBypassCache = (searchParams: URLSearchParams) => {
   if (process.env.NODE_ENV !== "development") {
     return false;
@@ -73,7 +91,7 @@ export async function GET(request: Request) {
   }
 
   const rawHtml = await response.text();
-  const sanitizedHtml = sanitizeHtml(rawHtml);
+  const sanitizedHtml = sanitizeHtml(rawHtml, sanitizeOptions);
   setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
 
   return NextResponse.json({
