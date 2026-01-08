@@ -6,10 +6,15 @@ import Home from "@/app/page";
 
 vi.mock("next/image", () => ({
   default: (props: ImgHTMLAttributes<HTMLImageElement>) => {
-    const { priority, ...rest } = props as ImgHTMLAttributes<HTMLImageElement> & {
+    const {
+      priority: _priority,
+      alt,
+      ...rest
+    } = props as ImgHTMLAttributes<HTMLImageElement> & {
       priority?: boolean;
     };
-    return <img {...rest} />;
+    void _priority;
+    return <img alt={alt ?? ""} {...rest} />;
   },
 }));
 
