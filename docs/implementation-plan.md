@@ -202,10 +202,10 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [x] Add basic auth UI in global header
 
 ### Phase 3 — Content fetching + sanitization
-- [ ] Add `/api/lesson-content` route
-- [ ] Fetch publishedUrl server-side
-- [ ] Sanitize HTML
-- [ ] Add in-memory cache with TTL
+- [x] Add `/api/lesson-content` route
+- [x] Fetch publishedUrl server-side
+- [x] Sanitize HTML
+- [x] Add in-memory cache with TTL
 
 ### Phase 4 — Core pages (public browsing)
 - [ ] Landing page (`/`)
