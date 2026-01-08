@@ -104,6 +104,8 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 
 - Module
   - id
+  - key (unique, stable internal identifier)
+  - slug (unique, user-facing)
   - title
   - order (int)
   - description (string, optional)
@@ -130,6 +132,12 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
   - slug (unique)
   - createdAt
 
+- ModuleSlugAlias
+  - id
+  - moduleId (FK)
+  - slug (unique)
+  - createdAt
+
 - LessonProgress
   - id
   - userId (FK)
@@ -141,6 +149,7 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 
 ### Notes
 - Store curriculum structure in DB for ordering, navigation, and progress calculations.
+- Use stable module keys; store legacy module slugs in ModuleSlugAlias to support redirects.
 - Use stable lesson slugs; store legacy slugs in LessonSlugAlias to support redirects.
 - Cohort readiness allows future per-cohort curricula without major refactor.
 
@@ -150,6 +159,7 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
   - Lessons per module (at least 2 lessons per module for MVP)
   - Placeholder `publishedUrl` values (e.g., `https://example.com`)
 - Seed should be idempotent (use upsert where possible).
+- Seed should use stable module keys as identity and insert module slug aliases on slug changes.
 
 ## Auth + progress
 - Configure Google OAuth with Auth.js (NextAuth).
@@ -169,7 +179,7 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [x] Add Prisma and configure Neon Postgres connection
 
 ### Phase 1 — Database modeling + curriculum seed
-- [x] Implement Prisma schema with User, Cohort, Module, Lesson, LessonSlugAlias, LessonProgress
+- [x] Implement Prisma schema with User, Cohort, Module (key + slug), ModuleSlugAlias, Lesson, LessonSlugAlias, LessonProgress
 - [x] Run initial migration
 - [x] Add seed script (modules + lessons + placeholder URLs)
 
@@ -215,6 +225,9 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - NEXTAUTH_SECRET
 - GOOGLE_CLIENT_ID
 - GOOGLE_CLIENT_SECRET
+
+## Prisma configuration
+- Prisma 7 uses `prisma.config.ts` for datasource and seed configuration.
 
 ## Acceptance criteria
 - Any visitor can browse `/roadmap` and open lessons.
