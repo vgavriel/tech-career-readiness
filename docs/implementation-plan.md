@@ -7,6 +7,7 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 ### In scope
 - Public browsing of course curriculum and lessons without authentication
 - Google Sign-In for saving progress state
+- Guest progress stored in localStorage with merge into account on sign-in
 - Curriculum structure: Modules ➜ Lessons
 - Lesson reading view with in-app rendering of Google Doc content from published URLs (no iframes)
 - Progress tracking per lesson per user (complete/incomplete)
@@ -52,9 +53,15 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 ### Progress tracking flow (authenticated)
 1) User clicks “Sign in with Google.”
 2) User returns to roadmap page.
+3) If guest progress exists, prompt to merge and apply it to the user account.
 3) User marks lessons complete or incomplete.
 4) Progress persists across sessions.
 5) User clicks “Continue” to jump to the next incomplete lesson.
+
+### Progress tracking flow (guest)
+1) User browses roadmap and toggles lessons.
+2) Progress is stored in localStorage.
+3) User sees UI guidance that sign-in saves progress across devices.
 
 ## App pages (MVP)
 1) `/` (Landing)
@@ -69,7 +76,7 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - Show completion checkmarks for logged-in users
 - Show overall progress percent for logged-in users
 - Button: “Continue where you left off” (logged in)
-- If logged out: show “Sign in to save progress” and no checkmarks
+- If logged out: show “Sign in to save progress,” show guest checkmarks, and note they are stored locally
 
 3) `/lesson/[lessonSlugOrId]` (Lesson detail)
 - Title
@@ -165,6 +172,7 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - Configure Google OAuth with Auth.js (NextAuth).
 - When logged out: show “Sign in to save progress.”
 - When logged in: show checkmarks, completion toggles, and “Continue” UI.
+- When logging in with guest progress: prompt to merge local progress into the account.
 
 ## Caching + sanitization
 - Cache sanitized HTML by lessonId with a TTL (30–120 minutes).
@@ -204,6 +212,7 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [ ] Lesson completion toggle UI
 - [ ] Roadmap progress UI + percent complete
 - [ ] Global progress summary + Continue link
+- [ ] Store guest progress in localStorage and merge on sign-in
 
 ### Phase 6 — Slug alias redirects
 - [ ] Implement alias lookup in lesson route
@@ -231,6 +240,7 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 
 ## Acceptance criteria
 - Any visitor can browse `/roadmap` and open lessons.
+- Guests can track lesson completion locally and optionally merge on sign-in.
 - Lesson content loads from publishedUrl and renders in-app without iframe.
 - A user can sign in with Google and save lesson completion state.
 - Completion state persists across sessions.
