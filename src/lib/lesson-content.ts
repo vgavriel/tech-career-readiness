@@ -48,6 +48,13 @@ export async function fetchLessonContent(
     }
   }
 
+  const mockHtml = process.env.LESSON_CONTENT_MOCK_HTML;
+  if (mockHtml) {
+    const sanitizedHtml = sanitizeHtml(mockHtml, sanitizeOptions);
+    setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
+    return { lessonId: lesson.id, html: sanitizedHtml, cached: false };
+  }
+
   let response: Response;
   try {
     response = await fetch(lesson.publishedUrl, { cache: "no-store" });

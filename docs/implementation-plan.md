@@ -188,8 +188,8 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 
 ### Phase 0.5 — Continuous integration
 - [x] Add CI pipeline to run lint + unit tests on every PR
-- [ ] Add integration tests job once APIs exist (Phase 3+)
-- [ ] Add E2E tests job once core pages exist (Phase 4+)
+- [x] Add integration tests job once APIs exist (Phase 3+)
+- [x] Add E2E tests job once core pages exist (Phase 4+)
 
 ### Phase 1 — Database modeling + curriculum seed
 - [x] Implement Prisma schema with User, Cohort, Module (key + slug), ModuleSlugAlias, Lesson, LessonSlugAlias, LessonProgress

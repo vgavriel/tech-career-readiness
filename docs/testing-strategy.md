@@ -60,6 +60,7 @@ Run against the built app with a seeded test DB.
 ## Flake prevention checklist
 - Do not hit real OAuth or external content URLs in tests.
 - Mock all network calls with MSW or Playwright routing.
+- Use `LESSON_CONTENT_MOCK_HTML` to bypass publishedUrl fetches in test runs.
 - Fix time with `TZ=UTC` and fake timers when needed.
 - Use role- and label-based queries instead of fragile selectors.
 - Avoid arbitrary sleeps; rely on Playwright/Vitest auto-waits.
