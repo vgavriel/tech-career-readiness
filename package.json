@@ -12,8 +12,8 @@
     "test:unit": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:e2e": "playwright test",
-    "test:integration:local": "bash scripts/with-test-db.sh npm run test:integration",
-    "test:e2e:local": "bash scripts/with-test-db.sh npm run test:e2e"
+    "test:integration:local": "bash scripts/with-integration-db.sh npm run test:integration",
+    "test:e2e:local": "bash scripts/with-e2e-db.sh npm run test:e2e"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",
