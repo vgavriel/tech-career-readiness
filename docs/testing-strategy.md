@@ -66,6 +66,19 @@ Run against the built app with a seeded test DB.
 - Avoid arbitrary sleeps; rely on Playwright/Vitest auto-waits.
 - Keep seed data deterministic and stable across runs.
 
+## Local integration + E2E quickstart
+Requires Docker for the ephemeral Postgres test database.
+
+```bash
+npm run test:integration:local
+```
+
+```bash
+npm run test:e2e:local
+```
+
+Use `KEEP_TEST_DB=1` to keep the container running after the command finishes.
+
 ## CI execution
 - `test:unit` on every PR.
 - `test:integration` on every PR.

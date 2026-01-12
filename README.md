@@ -51,6 +51,12 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ## Testing
 See `docs/testing-strategy.md` for the unit, integration, and end-to-end test plan.
 
+Local integration + E2E quickstart (requires Docker):
+```bash
+npm run test:integration:local
+npm run test:e2e:local
+```
+
 ## References
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Prisma Documentation](https://www.prisma.io/docs)
