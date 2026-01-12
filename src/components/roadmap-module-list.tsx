@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+
+import { useProgress } from "@/components/progress-provider";
 
 export type RoadmapLesson = {
   id: string;
@@ -21,6 +25,8 @@ type RoadmapModuleListProps = {
 };
 
 export default function RoadmapModuleList({ modules }: RoadmapModuleListProps) {
+  const { isLessonCompleted, isReady } = useProgress();
+
   if (modules.length === 0) {
     return (
       <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-6 text-sm text-[color:var(--ink-700)] shadow-[var(--shadow-soft)]">
@@ -56,29 +62,62 @@ export default function RoadmapModuleList({ modules }: RoadmapModuleListProps) {
           </div>
 
           <ol className="mt-6 grid gap-3">
-            {module.lessons.map((lesson) => (
-              <li
-                key={lesson.id}
-                className="group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-transparent bg-[color:var(--wash-100)] px-4 py-3 transition hover:border-[color:var(--line-soft)] hover:bg-[color:var(--wash-0)]"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-semibold text-[color:var(--ink-500)]">
-                    {module.order}.{lesson.order}
-                  </span>
-                  <Link
-                    href={`/lesson/${lesson.slug}`}
-                    className="text-sm font-semibold text-[color:var(--ink-900)] transition group-hover:text-[color:var(--accent-700)] md:text-base"
-                  >
-                    {lesson.title}
-                  </Link>
-                </div>
-                {lesson.estimatedMinutes ? (
-                  <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
-                    {lesson.estimatedMinutes} min
-                  </span>
-                ) : null}
-              </li>
-            ))}
+            {module.lessons.map((lesson) => {
+              const isCompleted = isReady && isLessonCompleted(lesson.id);
+
+              return (
+                <li
+                  key={lesson.id}
+                  className="group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-transparent bg-[color:var(--wash-100)] px-4 py-3 transition hover:border-[color:var(--line-soft)] hover:bg-[color:var(--wash-0)]"
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`flex h-6 w-6 items-center justify-center rounded-full border text-[color:var(--ink-500)] ${
+                        isCompleted
+                          ? "border-[color:var(--accent-500)] bg-[color:var(--accent-500)] text-[color:var(--wash-0)]"
+                          : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)]"
+                      }`}
+                    >
+                    {isCompleted ? (
+                      <>
+                        <span className="sr-only">Completed lesson</span>
+                        <svg
+                          aria-hidden="true"
+                          className="h-3.5 w-3.5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={3}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </>
+                    ) : (
+                      <span className="sr-only">Incomplete lesson</span>
+                    )}
+                    </span>
+                    <span className="text-xs font-semibold text-[color:var(--ink-500)]">
+                      {module.order}.{lesson.order}
+                    </span>
+                    <Link
+                      href={`/lesson/${lesson.slug}`}
+                      className="text-sm font-semibold text-[color:var(--ink-900)] transition group-hover:text-[color:var(--accent-700)] md:text-base"
+                    >
+                      {lesson.title}
+                    </Link>
+                  </div>
+                  {lesson.estimatedMinutes ? (
+                    <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
+                      {lesson.estimatedMinutes} min
+                    </span>
+                  ) : null}
+                </li>
+              );
+            })}
           </ol>
         </section>
       ))}

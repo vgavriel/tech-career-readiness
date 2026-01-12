@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import LessonContent from "@/components/lesson-content";
+import LessonProgressCard from "@/components/lesson-progress-card";
 import { fetchLessonContent } from "@/lib/lesson-content";
 import { prisma } from "@/lib/prisma";
 
@@ -134,6 +135,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
           </section>
 
           <aside className="flex flex-col gap-4">
+            <LessonProgressCard lessonId={lesson.id} lessonTitle={lesson.title} />
             <div className="rounded-3xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-soft)]">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                 Resources

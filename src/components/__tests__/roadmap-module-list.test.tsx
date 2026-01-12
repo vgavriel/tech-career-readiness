@@ -6,6 +6,13 @@ import RoadmapModuleList, {
   type RoadmapModule,
 } from "@/components/roadmap-module-list";
 
+vi.mock("@/components/progress-provider", () => ({
+  useProgress: () => ({
+    isLessonCompleted: () => false,
+    isReady: true,
+  }),
+}));
+
 vi.mock("next/link", () => ({
   default: ({
     href,

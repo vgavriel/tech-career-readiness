@@ -1,0 +1,77 @@
+"use client";
+
+import Link from "next/link";
+
+import { useProgress } from "@/components/progress-provider";
+
+type LessonProgressCardProps = {
+  lessonId: string;
+  lessonTitle: string;
+};
+
+export default function LessonProgressCard({
+  lessonId,
+  lessonTitle,
+}: LessonProgressCardProps) {
+  const {
+    isLessonCompleted,
+    isAuthenticated,
+    isMerging,
+    isReady,
+    setLessonCompletion,
+  } = useProgress();
+  const completed = isReady && isLessonCompleted(lessonId);
+  const disabled = !isReady || isMerging;
+  const statusLabel = !isReady
+    ? "Loading progress..."
+    : completed
+      ? "Marked complete"
+      : "Not completed yet";
+
+  const helperText = isAuthenticated
+    ? "Saved to your account."
+    : "Stored in this browser. Sign in to sync.";
+
+  return (
+    <div className="rounded-3xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-soft)]">
+      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+        Progress
+      </p>
+      <p className="mt-3 text-sm font-semibold text-[color:var(--ink-900)]">
+        {lessonTitle}
+      </p>
+      <p className="mt-1 text-xs text-[color:var(--ink-500)]">{statusLabel}</p>
+
+      <button
+        className={`mt-4 w-full rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition disabled:cursor-not-allowed disabled:opacity-60 ${
+          completed
+            ? "border border-[color:var(--line-soft)] text-[color:var(--ink-900)] hover:border-[color:var(--ink-900)]"
+            : "bg-[color:var(--ink-900)] text-[color:var(--wash-0)] hover:-translate-y-0.5"
+        }`}
+        disabled={disabled}
+        onClick={() => setLessonCompletion(lessonId, !completed)}
+        type="button"
+        aria-pressed={completed}
+      >
+        {completed ? "Mark incomplete" : "Mark complete"}
+      </button>
+
+      <p className="mt-3 text-xs text-[color:var(--ink-500)]">{helperText}</p>
+
+      {isMerging ? (
+        <p className="mt-2 text-xs text-[color:var(--ink-500)]">
+          Syncing guest progress...
+        </p>
+      ) : null}
+
+      {!isAuthenticated ? (
+        <Link
+          href="/api/auth/signin/google"
+          className="mt-3 inline-flex text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-700)]"
+        >
+          Sign in to save progress
+        </Link>
+      ) : null}
+    </div>
+  );
+}
