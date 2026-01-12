@@ -13,7 +13,14 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     // Override default ignores of eslint-config-next.
-    ignores: [".next/**", "out/**", "build/**", "next-env.d.ts"],
+    ignores: [
+      ".next/**",
+      "out/**",
+      "build/**",
+      "next-env.d.ts",
+      "**/*.yml",
+      "**/*.yaml",
+    ],
   },
   {
     files: ["prisma/seed.js"],

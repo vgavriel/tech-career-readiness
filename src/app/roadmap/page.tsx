@@ -63,12 +63,12 @@ export default async function RoadmapPage() {
                 Start with lesson 1
               </Link>
             ) : null}
-            <a
+            <Link
               href="/api/auth/signin/google"
               className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-700)]"
             >
               Sign in to save progress
-            </a>
+            </Link>
           </div>
         </section>
 

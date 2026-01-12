@@ -26,12 +26,12 @@ export default function Home() {
               >
                 View the roadmap
               </Link>
-              <a
+              <Link
                 href="/api/auth/signin/google"
                 className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-900)]"
               >
                 Sign in to save progress
-              </a>
+              </Link>
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
               {[
