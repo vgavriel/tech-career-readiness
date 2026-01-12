@@ -288,6 +288,7 @@ if [[ "$db_ready" -ne 1 ]]; then
 fi
 
 npx prisma migrate deploy
+npx prisma generate
 npx prisma db seed
 
 if [[ "$#" -eq 0 ]]; then

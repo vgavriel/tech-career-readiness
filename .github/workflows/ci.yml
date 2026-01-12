@@ -61,6 +61,8 @@ jobs:
         run: npm ci
       - name: Migrate database
         run: npx prisma migrate deploy
+      - name: Generate Prisma client
+        run: npx prisma generate
       - name: Seed database
         run: npx prisma db seed
       - name: Integration tests
@@ -103,6 +105,8 @@ jobs:
         run: npx playwright install --with-deps
       - name: Migrate database
         run: npx prisma migrate deploy
+      - name: Generate Prisma client
+        run: npx prisma generate
       - name: Seed database
         run: npx prisma db seed
       - name: E2E tests
