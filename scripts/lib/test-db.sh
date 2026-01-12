@@ -12,7 +12,7 @@ init_test_db_env() {
   lib_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
   TEST_DB_ROOT_DIR="$(cd "${lib_dir}/../.." && pwd)"
-  COMPOSE_FILE="${COMPOSE_FILE:-${TEST_DB_ROOT_DIR}/docker-compose.test.yml}"
+  COMPOSE_FILE="${COMPOSE_FILE:-${TEST_DB_ROOT_DIR}/docker/docker-compose.test.yml}"
   DB_PORT="${TEST_DB_PORT:-5434}"
   DB_NAME="${TEST_DB_NAME:-tech_career_readiness_test}"
   DB_USER="${TEST_DB_USER:-postgres}"

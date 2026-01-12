@@ -23,7 +23,7 @@ This file provides meta-context for coding agents working in this repo.
 - Server/lib logic: `src/lib`
 - Prisma schema: `prisma/schema.prisma`
 - Tests: `src/**/__tests__`
-- Vitest config/setup: `vitest.config.ts`, `vitest.setup.ts`
+- Vitest config/setup: `tooling/vitest.config.ts`, `tooling/vitest.setup.ts`
 
 ## Setup (local)
 ```bash
@@ -44,4 +44,3 @@ npm run test:run
 ## Environment variables
 - `DATABASE_URL` (required for Prisma)
 - `NEXTAUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` (Auth.js)
-

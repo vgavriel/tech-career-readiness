@@ -9,7 +9,7 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
-    setupFiles: ["./vitest.setup.ts"],
+    setupFiles: [path.resolve(__dirname, "./vitest.setup.ts")],
     exclude: [
       ...configDefaults.exclude,
       "**/*.integration.test.*",
@@ -18,7 +18,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(__dirname, "../src"),
     },
   },
 });
