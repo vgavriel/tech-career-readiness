@@ -57,6 +57,10 @@ npm run test:integration:local
 npm run test:e2e:local
 ```
 
+If Docker is missing or not running, the script will prompt to open Docker
+Desktop or fall back to an existing `DATABASE_URL`. To skip Docker entirely,
+set `USE_EXISTING_DB=1` and provide `DATABASE_URL`.
+
 ## References
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Prisma Documentation](https://www.prisma.io/docs)
