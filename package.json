@@ -6,14 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "test": "vitest",
-    "test:run": "vitest run",
-    "test:unit": "vitest run",
-    "test:integration": "vitest run --config vitest.integration.config.ts",
-    "test:e2e": "playwright test",
+    "lint": "eslint --config tooling/eslint.config.mjs",
+    "test": "vitest --config tooling/vitest.config.ts",
+    "test:run": "vitest run --config tooling/vitest.config.ts",
+    "test:unit": "vitest run --config tooling/vitest.config.ts",
+    "test:integration": "vitest run --config tooling/vitest.integration.config.ts",
+    "test:e2e": "playwright test --config tooling/playwright.config.ts",
     "test:integration:local": "bash scripts/with-integration-db.sh npm run test:integration",
-    "test:e2e:local": "bash scripts/with-e2e-db.sh npm run test:e2e"
+    "test:e2e:local": "bash scripts/with-e2e-db.sh npm run test:e2e",
+    "clean": "rm -rf .next test-results"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",

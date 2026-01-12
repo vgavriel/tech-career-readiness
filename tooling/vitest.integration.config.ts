@@ -10,11 +10,11 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["src/**/*.integration.test.ts", "src/**/*.integration.test.tsx"],
-    setupFiles: ["./vitest.integration.setup.ts"],
+    setupFiles: [path.resolve(__dirname, "./vitest.integration.setup.ts")],
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(__dirname, "../src"),
     },
   },
 });
