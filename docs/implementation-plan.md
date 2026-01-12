@@ -228,6 +228,13 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [ ] Confirm public access to curriculum and lessons
 - [ ] UI polish for readability and CTAs
 
+### Phase 7.5 — Observability (lightweight)
+- [ ] Add request ID generation (middleware) and return `x-request-id` headers for server routes
+- [ ] Create a minimal structured logger wrapper with env-based log levels and default redaction for secrets/PII
+- [ ] Instrument key server paths (lesson-content fetch, progress updates, auth callbacks) with duration + cache hit/miss fields
+- [ ] Add client-side pageview telemetry via a minimal provider (e.g., Vercel Analytics) with a config flag to disable
+- [ ] Document log fields and sampling/retention guidance in `docs/observability.md`
+
 ### Phase 8 — Deployment
 - [ ] Deploy to Vercel
 - [ ] Configure env vars
