@@ -56,10 +56,12 @@ Local integration + E2E quickstart (requires Docker):
 npm run test:integration:local
 npm run test:e2e:local
 ```
+Ensure your Docker daemon is running (Docker Desktop, Colima, OrbStack, or
+Rancher Desktop) before running these commands.
+If port `5434` is already in use, set `TEST_DB_PORT` to a free port.
 
-If Docker is missing or not running, the script will prompt to open Docker
-Desktop or fall back to an existing `DATABASE_URL`. To skip Docker entirely,
-set `USE_EXISTING_DB=1` and provide `DATABASE_URL`.
+For CI or a custom test database, set `DATABASE_URL` and run
+`npm run test:integration`.
 
 ## References
 - [Next.js Documentation](https://nextjs.org/docs)

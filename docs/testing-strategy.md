@@ -78,7 +78,8 @@ npm run test:e2e:local
 ```
 
 Use `KEEP_TEST_DB=1` to keep the container running after the command finishes.
-Use `USE_EXISTING_DB=1` with `DATABASE_URL` to skip Docker entirely.
+`npm run test:integration` expects `DATABASE_URL` to be set (CI uses this).
+If port `5434` is already in use, set `TEST_DB_PORT` to a free port.
 
 ## CI execution
 - `test:unit` on every PR.
