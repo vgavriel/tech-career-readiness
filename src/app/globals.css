@@ -1,15 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --wash-0: #ffffff;
+  --wash-100: #f7f1e8;
+  --wash-200: #efe2d1;
+  --surface: #fffdf8;
+  --ink-900: #1f2328;
+  --ink-700: #4b4f56;
+  --ink-500: #6c7076;
+  --accent-700: #c2410c;
+  --accent-500: #ea580c;
+  --line-soft: #e4d8c8;
+  --shadow-soft: 0 35px 70px -55px rgba(32, 29, 24, 0.55);
 }
 
 html,
@@ -19,11 +21,12 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--ink-900);
+  background: var(--wash-100);
+  font-family: var(--font-geist-sans), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color-scheme: light;
 }
 
 * {
@@ -37,8 +40,121 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+.font-display {
+  font-family: var(--font-display), var(--font-geist-sans), serif;
+}
+
+.lesson-content {
+  color: var(--ink-700);
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+.lesson-content > * + * {
+  margin-top: 1.2rem;
+}
+
+.lesson-content h1,
+.lesson-content h2,
+.lesson-content h3,
+.lesson-content h4 {
+  color: var(--ink-900);
+  font-family: var(--font-display), var(--font-geist-sans), serif;
+  letter-spacing: -0.02em;
+}
+
+.lesson-content h1 {
+  font-size: 2.2rem;
+}
+
+.lesson-content h2 {
+  font-size: 1.6rem;
+}
+
+.lesson-content h3 {
+  font-size: 1.3rem;
+}
+
+.lesson-content ul,
+.lesson-content ol {
+  padding-left: 1.6rem;
+}
+
+.lesson-content ul {
+  list-style: disc;
+}
+
+.lesson-content ol {
+  list-style: decimal;
+}
+
+.lesson-content a {
+  color: var(--accent-700);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.lesson-content blockquote {
+  border-left: 3px solid var(--line-soft);
+  padding-left: 1rem;
+  color: var(--ink-700);
+  font-style: italic;
+}
+
+.lesson-content table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--wash-0);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.lesson-content th,
+.lesson-content td {
+  border: 1px solid var(--line-soft);
+  padding: 0.75rem 0.9rem;
+  text-align: left;
+}
+
+.lesson-content code {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.95em;
+  background: var(--wash-200);
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.35rem;
+}
+
+.animate-rise {
+  animation: rise-in 0.7s ease-out both;
+}
+
+.animate-rise-delayed {
+  animation: rise-in 0.8s ease-out both;
+  animation-delay: 0.1s;
+}
+
+.animate-float-slow {
+  animation: float-slow 12s ease-in-out infinite;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
   }
 }

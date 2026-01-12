@@ -208,9 +208,9 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [x] Add in-memory cache with TTL
 
 ### Phase 4 — Core pages (public browsing)
-- [ ] Landing page (`/`)
-- [ ] Roadmap page (`/roadmap`) with ordered modules/lessons
-- [ ] Lesson page (`/lesson/[slug]`) with content rendering
+- [x] Landing page (`/`)
+- [x] Roadmap page (`/roadmap`) with ordered modules/lessons
+- [x] Lesson page (`/lesson/[slug]`) with content rendering
 
 ### Phase 5 — Progress tracking
 - [ ] Add progress API routes (complete/incomplete)
