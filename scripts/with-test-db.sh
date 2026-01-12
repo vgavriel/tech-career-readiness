@@ -10,6 +10,7 @@ DB_PASSWORD="${TEST_DB_PASSWORD:-postgres}"
 DEFAULT_DATABASE_URL="postgresql://${DB_USER}:${DB_PASSWORD}@127.0.0.1:${DB_PORT}/${DB_NAME}"
 OS_NAME="$(uname -s 2>/dev/null || echo "")"
 COMMAND_STR="$*"
+IS_E2E_COMMAND=0
 
 export NEXTAUTH_SECRET="${NEXTAUTH_SECRET:-test-nextauth-secret}"
 export GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID:-test-google-client-id}"
@@ -17,6 +18,7 @@ export GOOGLE_CLIENT_SECRET="${GOOGLE_CLIENT_SECRET:-test-google-client-secret}"
 export LESSON_CONTENT_MOCK_HTML="${LESSON_CONTENT_MOCK_HTML:-<h2>Lesson content</h2><p>Sample lesson content for tests.</p>}"
 
 if [[ "$COMMAND_STR" == *"test:e2e"* ]] || [[ "$COMMAND_STR" == *"playwright"* ]]; then
+  IS_E2E_COMMAND=1
   export PLAYWRIGHT_PORT="${PLAYWRIGHT_PORT:-3001}"
   export PLAYWRIGHT_BASE_URL="${PLAYWRIGHT_BASE_URL:-http://127.0.0.1:${PLAYWRIGHT_PORT}}"
   export NEXTAUTH_URL="${NEXTAUTH_URL:-$PLAYWRIGHT_BASE_URL}"
@@ -125,6 +127,19 @@ port_in_use() {
   fi
 
   return 1
+}
+
+ensure_playwright_browsers() {
+  if [[ "$IS_E2E_COMMAND" -ne 1 ]]; then
+    return 0
+  fi
+
+  if node -e 'const { chromium } = require("@playwright/test"); const fs = require("fs"); const path = chromium.executablePath(); process.exit(fs.existsSync(path) ? 0 : 1);' >/dev/null 2>&1; then
+    return 0
+  fi
+
+  echo "Playwright browsers not found. Installing..."
+  npx playwright install
 }
 
 wait_for_docker_ready() {
@@ -295,5 +310,7 @@ if [[ "$#" -eq 0 ]]; then
   echo "Provide a command to run, for example: npm run test:integration" >&2
   exit 1
 fi
+
+ensure_playwright_browsers
 
 "$@"

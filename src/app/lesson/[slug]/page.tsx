@@ -9,7 +9,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 type LessonPageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 const parseObjectives = (objectivesMarkdown: string | null) =>
@@ -19,8 +19,9 @@ const parseObjectives = (objectivesMarkdown: string | null) =>
     .filter(Boolean);
 
 export default async function LessonPage({ params }: LessonPageProps) {
+  const { slug } = await params;
   const lesson = await prisma.lesson.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     select: {
       id: true,
       title: true,
