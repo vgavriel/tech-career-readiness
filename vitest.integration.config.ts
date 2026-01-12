@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { configDefaults, defineConfig } from "vitest/config";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   esbuild: {
@@ -8,13 +8,9 @@ export default defineConfig({
     jsxImportSource: "react",
   },
   test: {
-    environment: "jsdom",
-    setupFiles: ["./vitest.setup.ts"],
-    exclude: [
-      ...configDefaults.exclude,
-      "**/*.integration.test.*",
-      "e2e/**",
-    ],
+    environment: "node",
+    include: ["src/**/*.integration.test.ts", "src/**/*.integration.test.tsx"],
+    setupFiles: ["./vitest.integration.setup.ts"],
   },
   resolve: {
     alias: {

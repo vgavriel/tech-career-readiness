@@ -7,24 +7,24 @@ export default function SiteHeader() {
   const { data: session } = useSession();
 
   return (
-    <header className="border-b border-black/10 bg-white/80 backdrop-blur">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+    <header className="sticky top-0 z-50 border-b border-[color:var(--line-soft)] bg-[rgba(255,255,255,0.9)] backdrop-blur">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-4">
         <div className="flex items-baseline gap-4">
-          <Link href="/" className="text-lg font-semibold text-black">
+          <Link href="/" className="text-lg font-semibold text-[color:var(--ink-900)]">
             Tech Career Readiness
           </Link>
-          <span className="text-xs text-black/60">
-            Explore freely. Sign in to save progress across devices.
+          <span className="text-xs text-[color:var(--ink-500)]">
+            Explore freely. Sign in to sync progress.
           </span>
         </div>
         <div className="flex items-center gap-3 text-sm">
           {session?.user ? (
             <>
-              <span className="text-black/70">
+              <span className="text-[color:var(--ink-700)]">
                 {session.user.name ?? session.user.email}
               </span>
               <button
-                className="rounded border border-black/20 px-3 py-1 text-black"
+                className="rounded-full border border-[color:var(--line-soft)] px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)] transition hover:border-[color:var(--ink-900)]"
                 onClick={() => signOut()}
                 type="button"
               >
@@ -33,7 +33,7 @@ export default function SiteHeader() {
             </>
           ) : (
             <button
-              className="rounded bg-black px-3 py-1 text-white"
+              className="rounded-full bg-[color:var(--ink-900)] px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--wash-0)] transition hover:-translate-y-0.5"
               onClick={() => signIn("google")}
               type="button"
             >

@@ -8,7 +8,12 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "test:unit": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:e2e": "playwright test",
+    "test:integration:local": "bash scripts/with-test-db.sh npm run test:integration",
+    "test:e2e:local": "bash scripts/with-test-db.sh npm run test:e2e"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",
@@ -21,6 +26,7 @@
     "sanitize-html": "^2.17.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.2",
     "@tailwindcss/postcss": "^4.1.18",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
