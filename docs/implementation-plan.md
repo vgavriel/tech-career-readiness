@@ -239,6 +239,7 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [ ] Error handling for missing lessons/content fetch failures
 - [ ] Confirm public access to curriculum and lessons
 - [ ] UI polish for readability and CTAs
+- [x] Add TSDoc for functions/types and component intent comments
 
 ### Phase 7.5 — Observability (lightweight)
 - [ ] Add request ID generation (middleware) and return `x-request-id` headers for server routes

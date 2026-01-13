@@ -26,17 +26,26 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
   },
 };
 
+/**
+ * Minimal lesson data required to fetch content.
+ */
 type LessonSource = {
   id: string;
   publishedUrl: string;
 };
 
+/**
+ * Result of fetching lesson content with cache metadata.
+ */
 export type LessonContentResult = {
   lessonId: string;
   html: string;
   cached: boolean;
 };
 
+/**
+ * Validate and return the lesson URL, enforcing the allowlist.
+ */
 const assertAllowedLessonUrl = (publishedUrl: string) => {
   let url: URL;
 
@@ -53,6 +62,9 @@ const assertAllowedLessonUrl = (publishedUrl: string) => {
   return url;
 };
 
+/**
+ * Fetch published lesson HTML, following safe redirects up to the limit.
+ */
 const fetchLessonHtml = async (url: URL, maxRedirects = 3) => {
   let currentUrl = url;
 
@@ -89,6 +101,9 @@ const fetchLessonHtml = async (url: URL, maxRedirects = 3) => {
   throw new Error("Too many redirects while fetching lesson content.");
 };
 
+/**
+ * Fetch, sanitize, and cache lesson HTML for the given lesson source.
+ */
 export async function fetchLessonContent(
   lesson: LessonSource,
   options: { bypassCache?: boolean } = {}

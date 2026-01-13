@@ -3,6 +3,13 @@
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 
+/**
+ * Render the persistent site header with auth actions.
+ *
+ * @remarks
+ * Surfaces navigation branding and triggers auth flows based on session state;
+ * no local state.
+ */
 export default function SiteHeader() {
   const { data: session } = useSession();
 

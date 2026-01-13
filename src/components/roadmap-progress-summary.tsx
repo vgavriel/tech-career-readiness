@@ -6,6 +6,9 @@ import { useMemo } from "react";
 import { useProgress } from "@/components/progress-provider";
 import type { RoadmapModule } from "@/components/roadmap-module-list";
 
+/**
+ * Flattened lesson metadata used for progress ordering.
+ */
 type OrderedLesson = {
   id: string;
   slug: string;
@@ -14,10 +17,16 @@ type OrderedLesson = {
   moduleOrder: number;
 };
 
+/**
+ * Props for the roadmap progress summary card.
+ */
 type RoadmapProgressSummaryProps = {
   modules: RoadmapModule[];
 };
 
+/**
+ * Build ordered lessons from module data for progress calculations.
+ */
 const buildOrderedLessons = (modules: RoadmapModule[]): OrderedLesson[] =>
   modules.flatMap((module) =>
     module.lessons.map((lesson) => ({
@@ -29,6 +38,13 @@ const buildOrderedLessons = (modules: RoadmapModule[]): OrderedLesson[] =>
     }))
   );
 
+/**
+ * Render progress summary, CTA, and sign-in prompt for the roadmap page.
+ *
+ * @remarks
+ * Translates progress context + module ordering into a single progress card;
+ * no side effects beyond memoized calculations.
+ */
 export default function RoadmapProgressSummary({
   modules,
 }: RoadmapProgressSummaryProps) {

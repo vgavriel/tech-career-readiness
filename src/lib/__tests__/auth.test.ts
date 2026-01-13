@@ -9,6 +9,9 @@ vi.mock("next-auth/providers/google", () => ({
   }),
 }));
 
+/**
+ * Restore process.env to its original snapshot.
+ */
 const resetEnv = () => {
   for (const key of Object.keys(process.env)) {
     if (!(key in ORIGINAL_ENV)) {
@@ -18,6 +21,9 @@ const resetEnv = () => {
   Object.assign(process.env, ORIGINAL_ENV);
 };
 
+/**
+ * Re-import the auth module after resetting mocked modules.
+ */
 const importAuth = async () => {
   vi.resetModules();
   return import("@/lib/auth");

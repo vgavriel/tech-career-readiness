@@ -7,8 +7,14 @@ import { enforceRateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
+/**
+ * Interpret truthy query flags from string values.
+ */
 const isTruthy = (value: string | null) => value === "1" || value === "true";
 
+/**
+ * Determine whether to bypass cache in development requests.
+ */
 const shouldBypassCache = (searchParams: URLSearchParams) => {
   if (process.env.NODE_ENV !== "development") {
     return false;
@@ -26,6 +32,9 @@ const lessonQuerySchema = z
     message: "Provide lessonId or slug.",
   });
 
+/**
+ * GET /api/lesson-content: fetch sanitized lesson HTML by lesson id or slug.
+ */
 export async function GET(request: Request) {
   const rateLimitResponse = await enforceRateLimit(
     request,

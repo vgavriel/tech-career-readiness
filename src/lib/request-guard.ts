@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 
 const STATE_CHANGING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
+/**
+ * Normalize a URL string to its origin, returning null for invalid input.
+ */
 const normalizeOrigin = (value: string) => {
   try {
     return new URL(value).origin;
@@ -10,6 +13,9 @@ const normalizeOrigin = (value: string) => {
   }
 };
 
+/**
+ * Build the set of allowed origins for state-changing requests.
+ */
 const buildAllowedOrigins = (request: Request) => {
   const origins = new Set<string>();
 
@@ -37,6 +43,9 @@ const buildAllowedOrigins = (request: Request) => {
   return origins;
 };
 
+/**
+ * Guard state-changing requests with JSON content type and origin checks.
+ */
 export const enforceStateChangeSecurity = (request: Request) => {
   if (!STATE_CHANGING_METHODS.has(request.method.toUpperCase())) {
     return null;

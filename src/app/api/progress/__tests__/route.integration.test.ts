@@ -10,9 +10,18 @@ vi.mock("next-auth", () => ({
   getServerSession: (...args: unknown[]) => authMocks.getServerSession(...args),
 }));
 
+/**
+ * Import the progress route handlers for integration tests.
+ */
 const getProgressRoute = async () => await import("@/app/api/progress/route");
+/**
+ * Import the progress merge route handler for integration tests.
+ */
 const getMergeRoute = async () => await import("@/app/api/progress/merge/route");
 
+/**
+ * Build a JSON POST request with an optional Origin header.
+ */
 const makeJsonRequest = (
   url: string,
   body: unknown,

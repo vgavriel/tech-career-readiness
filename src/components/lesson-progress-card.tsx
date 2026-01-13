@@ -4,11 +4,21 @@ import Link from "next/link";
 
 import { useProgress } from "@/components/progress-provider";
 
+/**
+ * Props for the lesson progress control card.
+ */
 type LessonProgressCardProps = {
   lessonId: string;
   lessonTitle: string;
 };
 
+/**
+ * Render lesson completion controls and status messaging.
+ *
+ * @remarks
+ * Provides a focused CTA to mark completion while reflecting merge/loading
+ * state from progress context.
+ */
 export default function LessonProgressCard({
   lessonId,
   lessonTitle,

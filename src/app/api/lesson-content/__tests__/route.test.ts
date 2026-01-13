@@ -12,17 +12,26 @@ vi.mock("@/lib/prisma", () => ({
   prisma: prismaMock,
 }));
 
+/**
+ * Import the lesson content route handler for testing.
+ */
 const getRoute = async () => {
   const route = await import("@/app/api/lesson-content/route");
   return route.GET;
 };
 
+/**
+ * Create a Request for the lesson content route with query parameters.
+ */
 const makeRequest = (query = "") =>
   new Request(`http://localhost/api/lesson-content${query}`);
 
 describe("GET /api/lesson-content", () => {
   const fetchMock = vi.fn();
   const originalNodeEnv = process.env.NODE_ENV;
+  /**
+   * Restore NODE_ENV to its original value for test isolation.
+   */
   const restoreNodeEnv = () => {
     if (originalNodeEnv === undefined) {
       delete process.env.NODE_ENV;

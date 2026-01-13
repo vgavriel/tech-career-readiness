@@ -7,6 +7,9 @@ const redis =
     ? Redis.fromEnv()
     : null;
 
+/**
+ * Named rate-limit buckets used across API routes.
+ */
 type RateLimitBucket =
   | "progress-read"
   | "progress-write"
@@ -37,6 +40,9 @@ const limiterConfigs: Record<
 
 const limiterCache = new Map<RateLimitBucket, Ratelimit>();
 
+/**
+ * Lazily create and cache a rate limiter per bucket.
+ */
 const getLimiter = (bucket: RateLimitBucket) => {
   if (!redis) {
     return null;
@@ -59,6 +65,9 @@ const getLimiter = (bucket: RateLimitBucket) => {
   return limiter;
 };
 
+/**
+ * Resolve the client IP address from common proxy headers.
+ */
 const getClientIp = (request: Request) => {
   const forwardedFor = request.headers.get("x-forwarded-for");
   if (forwardedFor) {
@@ -73,6 +82,9 @@ const getClientIp = (request: Request) => {
   );
 };
 
+/**
+ * Enforce rate limiting for a request and return a response on violation.
+ */
 export const enforceRateLimit = async (
   request: Request,
   bucket: RateLimitBucket,

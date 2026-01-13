@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 
+/**
+ * Build the Content Security Policy header value from configured directives.
+ */
 const buildContentSecurityPolicy = () => {
   const directives = [
     "default-src 'self'",
@@ -57,6 +60,9 @@ if (process.env.NODE_ENV === "production") {
 }
 
 const nextConfig: NextConfig = {
+  /**
+   * Attach security headers to all routes.
+   */
   async headers() {
     return [
       {

@@ -1,5 +1,11 @@
 import Link from "next/link";
 
+/**
+ * Renders the marketing landing page with the primary CTAs and highlights.
+ *
+ * @remarks
+ * Provides a concise entry point for new visitors; no state or side effects.
+ */
 export default function Home() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_#fff7ed,_#f7f1e8_55%,_#f2e7d6_100%)]">

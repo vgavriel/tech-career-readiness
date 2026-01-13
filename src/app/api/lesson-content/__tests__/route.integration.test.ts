@@ -3,11 +3,17 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { clearLessonContentCache } from "@/lib/lesson-content-cache";
 import { prisma } from "@/lib/prisma";
 
+/**
+ * Import the lesson content route handler for integration tests.
+ */
 const getRoute = async () => {
   const route = await import("@/app/api/lesson-content/route");
   return route.GET;
 };
 
+/**
+ * Create a Request for the lesson content route with query parameters.
+ */
 const makeRequest = (query = "") =>
   new Request(`http://localhost/api/lesson-content${query}`);
 

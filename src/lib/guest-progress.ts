@@ -1,3 +1,6 @@
+/**
+ * Shape of the persisted guest progress stored in memory/localStorage.
+ */
 export type GuestProgressState = {
   version: 1;
   completed: Record<string, string>;
@@ -7,6 +10,9 @@ export const GUEST_PROGRESS_STORAGE_KEY = "tcr-guest-progress";
 
 const COMPLETED_VALUE = "completed";
 
+/**
+ * Create a blank guest progress state with the current schema version.
+ */
 const createEmptyState = (): GuestProgressState => ({
   version: 1,
   completed: {},
@@ -14,14 +20,23 @@ const createEmptyState = (): GuestProgressState => ({
 
 let inMemoryProgress = createEmptyState();
 
+/**
+ * Clone guest progress to avoid accidental shared mutations.
+ */
 const cloneState = (state: GuestProgressState): GuestProgressState => ({
   version: 1,
   completed: { ...state.completed },
 });
 
+/**
+ * Narrow unknown values to a non-null object record.
+ */
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
 
+/**
+ * Normalize completed entries into the canonical lessonId -> "completed" map.
+ */
 const normalizeCompleted = (value: unknown) => {
   if (!isRecord(value)) {
     return {};
@@ -43,6 +58,9 @@ const normalizeCompleted = (value: unknown) => {
   );
 };
 
+/**
+ * Safely access localStorage in the browser, returning null when unavailable.
+ */
 const getLocalStorage = () => {
   if (typeof window === "undefined") {
     return null;
@@ -55,6 +73,9 @@ const getLocalStorage = () => {
   }
 };
 
+/**
+ * Read guest progress from storage, falling back to in-memory state on errors.
+ */
 export const readGuestProgress = (): GuestProgressState => {
   const storage = getLocalStorage();
 
@@ -89,6 +110,9 @@ export const readGuestProgress = (): GuestProgressState => {
   }
 };
 
+/**
+ * Persist guest progress to storage and update the in-memory fallback.
+ */
 export const writeGuestProgress = (state: GuestProgressState) => {
   const normalized = {
     version: 1,
@@ -109,6 +133,9 @@ export const writeGuestProgress = (state: GuestProgressState) => {
   }
 };
 
+/**
+ * Clear stored guest progress and reset the in-memory fallback.
+ */
 export const clearGuestProgress = () => {
   const cleared = createEmptyState();
   inMemoryProgress = cloneState(cleared);
@@ -125,6 +152,9 @@ export const clearGuestProgress = () => {
   }
 };
 
+/**
+ * Update a single lesson completion state and persist the result.
+ */
 export const updateGuestProgress = (lessonId: string, completed: boolean) => {
   const trimmedLessonId = lessonId.trim();
   if (!trimmedLessonId) {
@@ -147,5 +177,8 @@ export const updateGuestProgress = (lessonId: string, completed: boolean) => {
   return updated;
 };
 
+/**
+ * Check whether guest progress has any completed lessons.
+ */
 export const hasGuestProgress = (state: GuestProgressState) =>
   Object.keys(state.completed).length > 0;

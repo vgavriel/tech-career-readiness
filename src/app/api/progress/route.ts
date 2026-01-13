@@ -18,6 +18,9 @@ const progressUpdateSchema = z
   })
   .strict();
 
+/**
+ * GET /api/progress: return completed lesson ids for the current user.
+ */
 export async function GET(request: Request) {
   const user = await getAuthenticatedUser();
 
@@ -49,6 +52,9 @@ export async function GET(request: Request) {
   });
 }
 
+/**
+ * POST /api/progress: update completion state and record audit events.
+ */
 export async function POST(request: Request) {
   const guardResponse = enforceStateChangeSecurity(request);
   if (guardResponse) {
