@@ -21,9 +21,11 @@ export default async function RoadmapPage() {
       description: true,
       order: true,
       lessons: {
+        where: { isArchived: false },
         orderBy: { order: "asc" },
         select: {
           id: true,
+          key: true,
           slug: true,
           title: true,
           order: true,

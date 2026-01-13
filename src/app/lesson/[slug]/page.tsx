@@ -46,6 +46,16 @@ export default async function LessonPage({
     notFound();
   }
 
+  if (lesson.isArchived) {
+    if (lesson.supersededBy && !lesson.supersededBy.isArchived) {
+      permanentRedirect(
+        buildLessonRedirectPath(lesson.supersededBy.slug, rawSearchParams)
+      );
+    }
+
+    notFound();
+  }
+
   if (isAlias) {
     permanentRedirect(buildLessonRedirectPath(lesson.slug, rawSearchParams));
   }
@@ -54,6 +64,7 @@ export default async function LessonPage({
     prisma.lesson.findFirst({
       where: {
         moduleId: lesson.moduleId,
+        isArchived: false,
         order: { lt: lesson.order },
       },
       orderBy: { order: "desc" },
@@ -62,6 +73,7 @@ export default async function LessonPage({
     prisma.lesson.findFirst({
       where: {
         moduleId: lesson.moduleId,
+        isArchived: false,
         order: { gt: lesson.order },
       },
       orderBy: { order: "asc" },
@@ -140,7 +152,11 @@ export default async function LessonPage({
           </section>
 
           <aside className="flex flex-col gap-4">
-            <LessonProgressCard lessonId={lesson.id} lessonTitle={lesson.title} />
+            <LessonProgressCard
+              lessonKey={lesson.key}
+              legacyLessonId={lesson.id}
+              lessonTitle={lesson.title}
+            />
             <div className="rounded-3xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-soft)]">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                 Resources

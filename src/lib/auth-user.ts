@@ -42,6 +42,7 @@ export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> 
     : [];
   const shouldBeAdmin = allowAdminBootstrap && adminEmails.includes(normalizedEmail);
 
+  // TODO: need an upsert every time?
   const user = await prisma.user.upsert({
     where: { email },
     create: {

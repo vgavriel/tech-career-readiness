@@ -47,7 +47,7 @@ describe("integration: /api/progress", () => {
     const { POST } = await getProgressRoute();
     const response = await POST(
       makeJsonRequest("http://localhost/api/progress", {
-        lessonId: "lesson-id",
+        lessonKey: "lesson-key",
         completed: true,
       })
     );
@@ -69,7 +69,7 @@ describe("integration: /api/progress", () => {
       makeJsonRequest(
         "http://localhost/api/progress",
         {
-          lessonId: "lesson-id",
+          lessonKey: "lesson-key",
           completed: true,
         },
         { origin: "http://evil.example.com" }
@@ -79,7 +79,7 @@ describe("integration: /api/progress", () => {
     expect(response.status).toBe(403);
   });
 
-  it("rejects non-string lessonId payloads", async () => {
+  it("rejects non-string lessonKey payloads", async () => {
     authMocks.getServerSession.mockResolvedValue({
       user: {
         email: "progress-invalid@example.com",
@@ -91,7 +91,7 @@ describe("integration: /api/progress", () => {
     const { POST } = await getProgressRoute();
     const response = await POST(
       makeJsonRequest("http://localhost/api/progress", {
-        lessonId: 123,
+        lessonKey: 123,
         completed: true,
       })
     );
@@ -109,7 +109,7 @@ describe("integration: /api/progress", () => {
     });
 
     const lesson = await prisma.lesson.findFirst({
-      select: { id: true },
+      select: { id: true, key: true },
     });
 
     expect(lesson).not.toBeNull();
@@ -121,7 +121,7 @@ describe("integration: /api/progress", () => {
 
     const completeResponse = await POST(
       makeJsonRequest("http://localhost/api/progress", {
-        lessonId: lesson.id,
+        lessonKey: lesson.key,
         completed: true,
       })
     );
@@ -160,7 +160,7 @@ describe("integration: /api/progress", () => {
 
     const incompleteResponse = await POST(
       makeJsonRequest("http://localhost/api/progress", {
-        lessonId: lesson.id,
+        lessonKey: lesson.key,
         completed: false,
       })
     );
@@ -189,7 +189,7 @@ describe("integration: /api/progress", () => {
     expect(incompleteEvent).not.toBeNull();
   });
 
-  it("returns completed lesson ids for the authenticated user", async () => {
+  it("returns completed lesson keys for the authenticated user", async () => {
     authMocks.getServerSession.mockResolvedValue({
       user: {
         email: "progress-get@example.com",
@@ -199,7 +199,7 @@ describe("integration: /api/progress", () => {
     });
 
     const lesson = await prisma.lesson.findFirst({
-      select: { id: true },
+      select: { id: true, key: true },
     });
 
     expect(lesson).not.toBeNull();
@@ -211,7 +211,7 @@ describe("integration: /api/progress", () => {
 
     await POST(
       makeJsonRequest("http://localhost/api/progress", {
-        lessonId: lesson.id,
+        lessonKey: lesson.key,
         completed: true,
       })
     );
@@ -220,7 +220,7 @@ describe("integration: /api/progress", () => {
     const body = await response.json();
 
     expect(response.status).toBe(200);
-    expect(body.completedLessonIds).toContain(lesson.id);
+    expect(body.completedLessonKeys).toContain(lesson.key);
   });
 });
 
@@ -235,7 +235,7 @@ describe("integration: /api/progress/merge", () => {
     });
 
     const lesson = await prisma.lesson.findFirst({
-      select: { id: true },
+      select: { id: true, key: true },
     });
 
     expect(lesson).not.toBeNull();
@@ -248,9 +248,9 @@ describe("integration: /api/progress/merge", () => {
     const response = await POST(
       makeJsonRequest("http://localhost/api/progress/merge", {
         entries: [
-          { lessonId: lesson.id },
-          { lessonId: "missing-lesson" },
-          { lessonId: 123 },
+          { lessonKey: lesson.key },
+          { lessonKey: "missing-lesson" },
+          { lessonKey: 123 },
         ],
       })
     );
@@ -258,7 +258,7 @@ describe("integration: /api/progress/merge", () => {
     expect(response.status).toBe(200);
 
     const body = await response.json();
-    expect(body.mergedLessonIds).toEqual([lesson.id]);
+    expect(body.mergedLessonKeys).toEqual([lesson.key]);
 
     const user = await prisma.user.findUnique({
       where: { email: "progress-merge@example.com" },

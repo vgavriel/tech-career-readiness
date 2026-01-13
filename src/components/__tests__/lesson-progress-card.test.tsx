@@ -28,7 +28,7 @@ describe("LessonProgressCard", () => {
       setLessonCompletion,
     });
 
-    render(<LessonProgressCard lessonId="lesson-1" lessonTitle="Resume basics" />);
+    render(<LessonProgressCard lessonKey="lesson-1" lessonTitle="Resume basics" />);
 
     expect(
       screen.getByRole("button", { name: /mark complete/i })
@@ -52,7 +52,7 @@ describe("LessonProgressCard", () => {
       setLessonCompletion,
     });
 
-    render(<LessonProgressCard lessonId="lesson-2" lessonTitle="Interview prep" />);
+    render(<LessonProgressCard lessonKey="lesson-2" lessonTitle="Interview prep" />);
 
     expect(
       screen.getByRole("button", { name: /mark incomplete/i })

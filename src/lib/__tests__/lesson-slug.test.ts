@@ -20,6 +20,7 @@ const getModule = async () => import("@/lib/lesson-slug");
 
 const baseLesson = {
   id: "lesson-1",
+  key: "lesson-1",
   title: "Lesson 1",
   slug: "lesson-1",
   order: 1,
@@ -27,6 +28,8 @@ const baseLesson = {
   publishedUrl: "https://docs.google.com/document/d/e/lesson-1/pub",
   estimatedMinutes: 20,
   objectivesMarkdown: "- Build a roadmap",
+  isArchived: false,
+  supersededBy: null,
   module: {
     title: "Module 1",
     order: 1,

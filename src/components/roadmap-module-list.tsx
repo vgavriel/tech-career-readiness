@@ -9,6 +9,7 @@ import { useProgress } from "@/components/progress-provider";
  */
 export type RoadmapLesson = {
   id: string;
+  key: string;
   slug: string;
   title: string;
   order: number;
@@ -79,7 +80,8 @@ export default function RoadmapModuleList({ modules }: RoadmapModuleListProps) {
 
           <ol className="mt-6 grid gap-3">
             {module.lessons.map((lesson) => {
-              const isCompleted = isReady && isLessonCompleted(lesson.id);
+              const isCompleted =
+                isReady && isLessonCompleted(lesson.key, lesson.id);
 
               return (
                 <li

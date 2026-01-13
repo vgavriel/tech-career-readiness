@@ -208,26 +208,60 @@ async function main() {
     }
 
     for (const lessonData of moduleData.lessons) {
+      const lessonKey = lessonData.key ?? lessonData.slug;
       const publishedUrl = `https://docs.google.com/document/d/e/${lessonData.slug}/pub`;
 
-      await prisma.lesson.upsert({
-        where: { slug: lessonData.slug },
-        update: {
-          title: lessonData.title,
-          order: lessonData.order,
-          moduleId: moduleRecord.id,
-          publishedUrl,
-          cohortId: defaultCohort.id,
-        },
-        create: {
-          title: lessonData.title,
-          slug: lessonData.slug,
-          order: lessonData.order,
-          moduleId: moduleRecord.id,
-          publishedUrl,
-          cohortId: defaultCohort.id,
-        },
+      const existingLesson = await prisma.lesson.findUnique({
+        where: { key: lessonKey },
       });
+
+      const previousSlug = existingLesson?.slug ?? null;
+
+      const lessonRecord = existingLesson
+        ? await prisma.lesson.update({
+            where: { id: existingLesson.id },
+            data: {
+              key: lessonKey,
+              title: lessonData.title,
+              slug: lessonData.slug,
+              order: lessonData.order,
+              moduleId: moduleRecord.id,
+              publishedUrl,
+              cohortId: defaultCohort.id,
+            },
+          })
+        : await prisma.lesson.create({
+            data: {
+              key: lessonKey,
+              title: lessonData.title,
+              slug: lessonData.slug,
+              order: lessonData.order,
+              moduleId: moduleRecord.id,
+              publishedUrl,
+              cohortId: defaultCohort.id,
+            },
+          });
+
+      if (previousSlug && previousSlug !== lessonData.slug) {
+        await prisma.lessonSlugAlias.upsert({
+          where: { slug: previousSlug },
+          update: { lessonId: lessonRecord.id },
+          create: { slug: previousSlug, lessonId: lessonRecord.id },
+        });
+      }
+
+      const aliases = lessonData.aliases ?? [];
+      for (const alias of aliases) {
+        if (alias === lessonData.slug) {
+          continue;
+        }
+
+        await prisma.lessonSlugAlias.upsert({
+          where: { slug: alias },
+          update: { lessonId: lessonRecord.id },
+          create: { slug: alias, lessonId: lessonRecord.id },
+        });
+      }
     }
   }
 }

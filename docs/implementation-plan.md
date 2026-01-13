@@ -122,6 +122,7 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 
 - Lesson
   - id
+  - key (unique, stable internal identifier)
   - moduleId (FK)
   - title
   - slug (unique, stable)
@@ -130,6 +131,8 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
   - estimatedMinutes (int, optional)
   - objectivesMarkdown (string, optional)
   - cohortId (optional)
+  - isArchived (boolean, default false)
+  - supersededByLessonId (optional FK to Lesson)
   - createdAt
   - updatedAt
 

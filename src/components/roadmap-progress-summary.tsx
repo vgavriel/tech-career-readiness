@@ -12,6 +12,7 @@ import SignInCta from "@/components/sign-in-cta";
  */
 type OrderedLesson = {
   id: string;
+  key: string;
   slug: string;
   title: string;
   order: number;
@@ -32,6 +33,7 @@ const buildOrderedLessons = (modules: RoadmapModule[]): OrderedLesson[] =>
   modules.flatMap((module) =>
     module.lessons.map((lesson) => ({
       id: lesson.id,
+      key: lesson.key,
       slug: lesson.slug,
       title: lesson.title,
       order: lesson.order,
@@ -49,25 +51,31 @@ const buildOrderedLessons = (modules: RoadmapModule[]): OrderedLesson[] =>
 export default function RoadmapProgressSummary({
   modules,
 }: RoadmapProgressSummaryProps) {
-  const { completedLessonIds, isAuthenticated, isMerging, isReady } = useProgress();
+  const { completedLessonKeys, isAuthenticated, isMerging, isReady } = useProgress();
 
   const orderedLessons = useMemo(() => buildOrderedLessons(modules), [modules]);
   const completedSet = useMemo(
-    () => new Set(completedLessonIds),
-    [completedLessonIds]
+    () => new Set(completedLessonKeys),
+    [completedLessonKeys]
   );
   const totalLessons = orderedLessons.length;
   const completedCount = useMemo(
     () =>
       orderedLessons.reduce(
-        (count, lesson) => count + (completedSet.has(lesson.id) ? 1 : 0),
+        (count, lesson) =>
+          count +
+          (completedSet.has(lesson.key) || completedSet.has(lesson.id) ? 1 : 0),
         0
       ),
     [completedSet, orderedLessons]
   );
 
   const continueLesson = useMemo(
-    () => orderedLessons.find((lesson) => !completedSet.has(lesson.id)),
+    () =>
+      orderedLessons.find(
+        (lesson) =>
+          !completedSet.has(lesson.key) && !completedSet.has(lesson.id)
+      ),
     [completedSet, orderedLessons]
   );
 

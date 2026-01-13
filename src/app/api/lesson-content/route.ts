@@ -59,8 +59,10 @@ export async function GET(request: Request) {
 
   const { lessonId, slug } = parsedQuery.data;
 
-  let lesson = await prisma.lesson.findUnique({
-    where: lessonId ? { id: lessonId } : { slug: slug ?? "" },
+  let lesson = await prisma.lesson.findFirst({
+    where: lessonId
+      ? { id: lessonId, isArchived: false }
+      : { slug: slug ?? "", isArchived: false },
     select: {
       id: true,
       publishedUrl: true,
@@ -75,11 +77,17 @@ export async function GET(request: Request) {
           select: {
             id: true,
             publishedUrl: true,
+            isArchived: true,
           },
         },
       },
     });
-    lesson = alias?.lesson ?? null;
+    if (alias?.lesson && !alias.lesson.isArchived) {
+      lesson = {
+        id: alias.lesson.id,
+        publishedUrl: alias.lesson.publishedUrl,
+      };
+    }
   }
 
   if (!lesson) {
