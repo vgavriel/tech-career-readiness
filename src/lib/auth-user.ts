@@ -8,7 +8,14 @@ export type AuthenticatedUser = {
   email: string;
   name: string | null;
   image: string | null;
+  isAdmin: boolean;
 };
+
+const normalizeEmailList = (value?: string) =>
+  (value ?? "")
+    .split(",")
+    .map((entry) => entry.trim().toLowerCase())
+    .filter(Boolean);
 
 export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> {
   const session = await getServerSession(authOptions);
@@ -18,16 +25,22 @@ export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> 
     return null;
   }
 
+  const normalizedEmail = email.toLowerCase();
+  const adminEmails = normalizeEmailList(process.env.ADMIN_EMAILS);
+  const shouldBeAdmin = adminEmails.includes(normalizedEmail);
+
   const user = await prisma.user.upsert({
     where: { email },
     create: {
       email,
       name: session.user?.name ?? null,
       image: session.user?.image ?? null,
+      isAdmin: shouldBeAdmin,
     },
     update: {
       name: session.user?.name ?? undefined,
       image: session.user?.image ?? undefined,
+      ...(shouldBeAdmin ? { isAdmin: true } : {}),
     },
   });
 
@@ -36,5 +49,6 @@ export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> 
     email: user.email,
     name: user.name,
     image: user.image,
+    isAdmin: user.isAdmin,
   };
 }

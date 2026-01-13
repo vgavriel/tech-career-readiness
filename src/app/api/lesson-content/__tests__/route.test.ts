@@ -70,7 +70,7 @@ describe("GET /api/lesson-content", () => {
   it("sanitizes, preserves formatting, and caches lesson content", async () => {
     prismaMock.lesson.findUnique.mockResolvedValue({
       id: "lesson-1",
-      publishedUrl: "https://example.com/lesson-1",
+      publishedUrl: "https://docs.google.com/document/d/e/lesson-1/pub",
     });
     fetchMock.mockResolvedValueOnce(
       new Response(
@@ -110,7 +110,7 @@ describe("GET /api/lesson-content", () => {
     process.env.NODE_ENV = "development";
     prismaMock.lesson.findUnique.mockResolvedValue({
       id: "lesson-2",
-      publishedUrl: "https://example.com/lesson-2",
+      publishedUrl: "https://docs.google.com/document/d/e/lesson-2/pub",
     });
 
     fetchMock.mockResolvedValueOnce(new Response("<p>First</p>", { status: 200 }));
@@ -121,5 +121,20 @@ describe("GET /api/lesson-content", () => {
     await GET(makeRequest("?slug=lesson-2&bypassCache=1"));
 
     expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("rejects lesson URLs outside the allowlist", async () => {
+    prismaMock.lesson.findUnique.mockResolvedValue({
+      id: "lesson-3",
+      publishedUrl: "https://example.com/lesson-3",
+    });
+
+    const GET = await getRoute();
+    const response = await GET(makeRequest("?slug=lesson-3"));
+
+    expect(response.status).toBe(502);
+    await expect(response.json()).resolves.toEqual({
+      error: "Failed to fetch lesson content.",
+    });
   });
 });

@@ -32,6 +32,7 @@ beforeEach(async () => {
     throw new Error("Prisma client was not initialized for integration tests.");
   }
 
+  await prismaClient.lessonProgressEvent.deleteMany();
   await prismaClient.lessonProgress.deleteMany();
   await prismaClient.user.deleteMany();
 });

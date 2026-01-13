@@ -6,6 +6,8 @@ import {
   setLessonContentCache,
 } from "@/lib/lesson-content-cache";
 
+const allowedLessonHosts = new Set(["docs.google.com", "drive.google.com"]);
+
 const sanitizeOptions: sanitizeHtml.IOptions = {
   allowedTags: sanitizeHtml.defaults.allowedTags,
   allowedAttributes: {
@@ -35,6 +37,58 @@ export type LessonContentResult = {
   cached: boolean;
 };
 
+const assertAllowedLessonUrl = (publishedUrl: string) => {
+  let url: URL;
+
+  try {
+    url = new URL(publishedUrl);
+  } catch {
+    throw new Error("Lesson URL is invalid.");
+  }
+
+  if (url.protocol !== "https:" || !allowedLessonHosts.has(url.hostname)) {
+    throw new Error("Lesson URL is not allowed.");
+  }
+
+  return url;
+};
+
+const fetchLessonHtml = async (url: URL, maxRedirects = 3) => {
+  let currentUrl = url;
+
+  for (let attempt = 0; attempt <= maxRedirects; attempt += 1) {
+    const response = await fetch(currentUrl.toString(), {
+      cache: "no-store",
+      redirect: "manual",
+    });
+
+    if (
+      response.status >= 300 &&
+      response.status < 400 &&
+      response.headers.get("location")
+    ) {
+      const redirectUrl = new URL(response.headers.get("location") ?? "", currentUrl);
+      if (
+        redirectUrl.protocol !== "https:" ||
+        !allowedLessonHosts.has(redirectUrl.hostname)
+      ) {
+        throw new Error("Lesson URL is not allowed.");
+      }
+
+      currentUrl = redirectUrl;
+      continue;
+    }
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch lesson content.");
+    }
+
+    return response.text();
+  }
+
+  throw new Error("Too many redirects while fetching lesson content.");
+};
+
 export async function fetchLessonContent(
   lesson: LessonSource,
   options: { bypassCache?: boolean } = {}
@@ -55,18 +109,8 @@ export async function fetchLessonContent(
     return { lessonId: lesson.id, html: sanitizedHtml, cached: false };
   }
 
-  let response: Response;
-  try {
-    response = await fetch(lesson.publishedUrl, { cache: "no-store" });
-  } catch {
-    throw new Error("Failed to fetch lesson content.");
-  }
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch lesson content.");
-  }
-
-  const rawHtml = await response.text();
+  const validatedUrl = assertAllowedLessonUrl(lesson.publishedUrl);
+  const rawHtml = await fetchLessonHtml(validatedUrl);
   const sanitizedHtml = sanitizeHtml(rawHtml, sanitizeOptions);
   setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
 

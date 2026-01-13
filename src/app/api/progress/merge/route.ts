@@ -1,27 +1,21 @@
+import { LessonProgressAction } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 import { getAuthenticatedUser } from "@/lib/auth-user";
+import { parseJsonBody } from "@/lib/api-helpers";
 import { withDbRetry } from "@/lib/db-retry";
 import { prisma } from "@/lib/prisma";
+import { enforceRateLimit } from "@/lib/rate-limit";
 import { enforceStateChangeSecurity } from "@/lib/request-guard";
 
 export const runtime = "nodejs";
 
-type ProgressMergeEntry = {
-  lessonId?: unknown;
-};
-
-type ProgressMergePayload = {
-  entries?: ProgressMergeEntry[];
-};
-
-const parsePayload = async (request: Request) => {
-  try {
-    return (await request.json()) as ProgressMergePayload;
-  } catch {
-    return null;
-  }
-};
+const progressMergeSchema = z
+  .object({
+    entries: z.array(z.unknown()).min(1).max(200),
+  })
+  .strict();
 
 export async function POST(request: Request) {
   const guardResponse = enforceStateChangeSecurity(request);
@@ -35,20 +29,45 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
 
-  const payload = await parsePayload(request);
-  const entries = Array.isArray(payload?.entries) ? payload?.entries : [];
-
-  const normalizedLessonIds = entries
-    .map((entry) =>
-      typeof entry?.lessonId === "string" ? entry.lessonId.trim() : ""
-    )
-    .filter((lessonId) => lessonId.length > 0);
-
-  if (normalizedLessonIds.length === 0) {
-    return NextResponse.json({ error: "No progress entries provided." }, { status: 400 });
+  const rateLimitResponse = await enforceRateLimit(
+    request,
+    "progress-merge",
+    user.id
+  );
+  if (rateLimitResponse) {
+    return rateLimitResponse;
   }
 
-  const uniqueLessonIds = Array.from(new Set(normalizedLessonIds));
+  const parsedBody = await parseJsonBody(request, progressMergeSchema, {
+    maxBytes: 32_768,
+  });
+  if ("error" in parsedBody) {
+    return parsedBody.error;
+  }
+
+  const uniqueLessonIds = Array.from(
+    new Set(
+      parsedBody.data.entries
+        .map((entry) => {
+          if (!entry || typeof entry !== "object" || !("lessonId" in entry)) {
+            return null;
+          }
+
+          const lessonId = (entry as { lessonId?: unknown }).lessonId;
+          if (typeof lessonId !== "string") {
+            return null;
+          }
+
+          const trimmed = lessonId.trim();
+          return trimmed.length > 0 ? trimmed : null;
+        })
+        .filter((lessonId): lessonId is string => Boolean(lessonId))
+    )
+  );
+
+  if (uniqueLessonIds.length === 0) {
+    return NextResponse.json({ error: "No valid lessons to merge." }, { status: 400 });
+  }
 
   const lessons = await prisma.lesson.findMany({
     where: { id: { in: uniqueLessonIds } },
@@ -63,17 +82,22 @@ export async function POST(request: Request) {
   }
 
   const now = new Date();
-
-  const data = validLessonIds.map((lessonId) => ({
+  const progressData = validLessonIds.map((lessonId) => ({
     userId: user.id,
     lessonId,
     completedAt: now,
+  }));
+  const eventData = validLessonIds.map((lessonId) => ({
+    userId: user.id,
+    lessonId,
+    action: LessonProgressAction.completed,
+    createdAt: now,
   }));
 
   await withDbRetry(() =>
     prisma.$transaction([
       prisma.lessonProgress.createMany({
-        data,
+        data: progressData,
         skipDuplicates: true,
       }),
       prisma.lessonProgress.updateMany({
@@ -82,6 +106,9 @@ export async function POST(request: Request) {
           lessonId: { in: validLessonIds },
         },
         data: { completedAt: now },
+      }),
+      prisma.lessonProgressEvent.createMany({
+        data: eventData,
       }),
     ])
   );

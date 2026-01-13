@@ -1,30 +1,37 @@
+import { LessonProgressAction } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 import { getAuthenticatedUser } from "@/lib/auth-user";
+import { parseJsonBody } from "@/lib/api-helpers";
 import { withDbRetry } from "@/lib/db-retry";
 import { prisma } from "@/lib/prisma";
+import { enforceRateLimit } from "@/lib/rate-limit";
 import { enforceStateChangeSecurity } from "@/lib/request-guard";
 
 export const runtime = "nodejs";
 
-type ProgressUpdatePayload = {
-  lessonId?: unknown;
-  isCompleted?: unknown;
-};
+const progressUpdateSchema = z
+  .object({
+    lessonId: z.string().trim().min(1),
+    completed: z.boolean(),
+  })
+  .strict();
 
-const parsePayload = async (request: Request) => {
-  try {
-    return (await request.json()) as ProgressUpdatePayload;
-  } catch {
-    return null;
-  }
-};
-
-export async function GET() {
+export async function GET(request: Request) {
   const user = await getAuthenticatedUser();
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  }
+
+  const rateLimitResponse = await enforceRateLimit(
+    request,
+    "progress-read",
+    user.id
+  );
+  if (rateLimitResponse) {
+    return rateLimitResponse;
   }
 
   const progress = await prisma.lessonProgress.findMany({
@@ -54,13 +61,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
 
-  const payload = await parsePayload(request);
-  const lessonId =
-    typeof payload?.lessonId === "string" ? payload.lessonId.trim() : "";
-
-  if (!lessonId || typeof payload?.isCompleted !== "boolean") {
-    return NextResponse.json({ error: "Invalid payload." }, { status: 400 });
+  const rateLimitResponse = await enforceRateLimit(
+    request,
+    "progress-write",
+    user.id
+  );
+  if (rateLimitResponse) {
+    return rateLimitResponse;
   }
+
+  const parsedBody = await parseJsonBody(request, progressUpdateSchema);
+  if ("error" in parsedBody) {
+    return parsedBody.error;
+  }
+
+  const { lessonId, completed } = parsedBody.data;
 
   const lesson = await prisma.lesson.findUnique({
     where: { id: lessonId },
@@ -71,35 +86,46 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Lesson not found." }, { status: 404 });
   }
 
-  if (payload.isCompleted) {
-    await withDbRetry(() =>
-      prisma.lessonProgress.upsert({
-        where: {
-          userId_lessonId: {
-            userId: user.id,
-            lessonId,
-          },
-        },
-        create: {
-          userId: user.id,
-          lessonId,
-          completedAt: new Date(),
-        },
-        update: {
-          completedAt: new Date(),
-        },
-      })
-    );
-  } else {
-    await withDbRetry(() =>
-      prisma.lessonProgress.deleteMany({
-        where: {
-          userId: user.id,
-          lessonId,
-        },
-      })
-    );
-  }
+  const now = new Date();
+  const action = completed
+    ? LessonProgressAction.completed
+    : LessonProgressAction.incomplete;
 
-  return NextResponse.json({ lessonId, completed: payload.isCompleted });
+  await withDbRetry(() =>
+    prisma.$transaction([
+      completed
+        ? prisma.lessonProgress.upsert({
+            where: {
+              userId_lessonId: {
+                userId: user.id,
+                lessonId,
+              },
+            },
+            create: {
+              userId: user.id,
+              lessonId,
+              completedAt: now,
+            },
+            update: {
+              completedAt: now,
+            },
+          })
+        : prisma.lessonProgress.deleteMany({
+            where: {
+              userId: user.id,
+              lessonId,
+            },
+          }),
+      prisma.lessonProgressEvent.create({
+        data: {
+          userId: user.id,
+          lessonId,
+          action,
+          createdAt: now,
+        },
+      }),
+    ])
+  );
+
+  return NextResponse.json({ lessonId, completed });
 }

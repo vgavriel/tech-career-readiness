@@ -219,6 +219,18 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [x] Global progress summary + Continue link
 - [x] Store guest progress in localStorage and merge on sign-in
 
+### Phase 5.5 — Security hardening + admin analytics
+- [x] Add security headers + static CSP (allow inline styles for now)
+- [x] Add Upstash rate limiting for API routes
+- [x] Enforce request size limits and Zod validation for API inputs
+- [x] Restrict lesson content fetch to Google Docs domains only (SSRF allowlist)
+- [x] Add `User.isAdmin` flag + admin analytics page
+- [x] Record `LessonProgressEvent` entries for every toggle
+- [x] Document admin bootstrap via `ADMIN_EMAILS`
+
+### Phase 5.6 — CSP nonces/hashes (deferred)
+- [ ] Replace `unsafe-inline` styles/scripts with CSP nonces/hashes once lesson HTML is finalized
+
 ### Phase 6 — Slug alias redirects
 - [ ] Implement alias lookup in lesson route
 - [ ] Redirect old slugs to canonical slug
