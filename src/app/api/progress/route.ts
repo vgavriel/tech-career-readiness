@@ -48,7 +48,8 @@ export async function POST(request: Request) {
   }
 
   const payload = await parsePayload(request);
-  const lessonId = payload?.lessonId?.trim();
+  const lessonId =
+    typeof payload?.lessonId === "string" ? payload.lessonId.trim() : "";
 
   if (!lessonId || typeof payload?.completed !== "boolean") {
     return NextResponse.json({ error: "Invalid payload." }, { status: 400 });

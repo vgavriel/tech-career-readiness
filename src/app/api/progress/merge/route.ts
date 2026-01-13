@@ -39,13 +39,22 @@ export async function POST(request: Request) {
   }
 
   const payload = await parsePayload(request);
-  const entries = payload?.entries ?? [];
+  const entries = Array.isArray(payload?.entries) ? payload?.entries : [];
 
   const normalizedEntries = entries
-    .map((entry) => ({
-      lessonId: entry.lessonId?.trim() ?? "",
-      completedAt: parseCompletedAt(entry.completedAt),
-    }))
+    .map((entry) => {
+      const rawLessonId =
+        typeof entry?.lessonId === "string" ? entry.lessonId.trim() : "";
+      const completedAt =
+        typeof entry?.completedAt === "string"
+          ? parseCompletedAt(entry.completedAt)
+          : null;
+
+      return {
+        lessonId: rawLessonId,
+        completedAt,
+      };
+    })
     .filter((entry) => entry.lessonId.length > 0);
 
   if (normalizedEntries.length === 0) {

@@ -39,6 +39,26 @@ describe("integration: /api/progress", () => {
     expect(response.status).toBe(401);
   });
 
+  it("rejects non-string lessonId payloads", async () => {
+    authMocks.getServerSession.mockResolvedValue({
+      user: {
+        email: "progress-invalid@example.com",
+        name: "Invalid Progress",
+        image: null,
+      },
+    });
+
+    const { POST } = await getProgressRoute();
+    const response = await POST(
+      makeJsonRequest("http://localhost/api/progress", {
+        lessonId: 123,
+        completed: true,
+      })
+    );
+
+    expect(response.status).toBe(400);
+  });
+
   it("marks a lesson complete and incomplete", async () => {
     authMocks.getServerSession.mockResolvedValue({
       user: {
@@ -170,6 +190,7 @@ describe("integration: /api/progress/merge", () => {
         entries: [
           { lessonId: lesson.id, completedAt: new Date().toISOString() },
           { lessonId: "missing-lesson", completedAt: new Date().toISOString() },
+          { lessonId: 123, completedAt: new Date().toISOString() },
         ],
       })
     );
