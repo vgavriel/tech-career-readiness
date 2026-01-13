@@ -17,6 +17,9 @@ const progressMergeSchema = z
   })
   .strict();
 
+/**
+ * POST /api/progress/merge: merge guest progress into the user account.
+ */
 export async function POST(request: Request) {
   const guardResponse = enforceStateChangeSecurity(request);
   if (guardResponse) {

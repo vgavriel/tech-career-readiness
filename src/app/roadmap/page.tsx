@@ -5,6 +5,13 @@ import { prisma } from "@/lib/prisma";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+/**
+ * Render the curriculum roadmap with modules, lessons, and progress summary.
+ *
+ * @remarks
+ * Loads ordered modules server-side and passes them to the client-side progress
+ * UI; no local state.
+ */
 export default async function RoadmapPage() {
   const modules = await prisma.module.findMany({
     orderBy: { order: "asc" },

@@ -6,12 +6,22 @@ import { prisma } from "@/lib/prisma";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+/**
+ * Format timestamps for the admin analytics UI.
+ */
 const formatTimestamp = (value: Date) =>
   new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(value);
 
+/**
+ * Render the admin analytics dashboard for usage and progress.
+ *
+ * @remarks
+ * Gates access by auth/admin checks and surfaces server-fetched aggregates;
+ * triggers redirects/notFound when unauthorized.
+ */
 export default async function AdminAnalyticsPage() {
   const user = await getAuthenticatedUser();
 

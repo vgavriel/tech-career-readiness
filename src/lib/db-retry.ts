@@ -9,17 +9,26 @@ const RETRYABLE_ERROR_CODES = new Set([
   "P2034",
 ]);
 
+/**
+ * Sleep for the specified duration in milliseconds.
+ */
 const sleep = (delayMs: number) =>
   new Promise((resolve) => {
     setTimeout(resolve, delayMs);
   });
 
+/**
+ * Configuration for retrying Prisma operations.
+ */
 export type DbRetryOptions = {
   maxRetries?: number;
   baseDelayMs?: number;
   maxDelayMs?: number;
 };
 
+/**
+ * Determine whether a Prisma error is safe to retry.
+ */
 const isRetryableError = (error: unknown) => {
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
     return RETRYABLE_ERROR_CODES.has(error.code);
@@ -36,6 +45,9 @@ const isRetryableError = (error: unknown) => {
   return false;
 };
 
+/**
+ * Execute a Prisma operation with retry/backoff for transient errors.
+ */
 export const withDbRetry = async <T>(
   operation: () => Promise<T>,
   options: DbRetryOptions = {}

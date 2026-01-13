@@ -9,16 +9,29 @@ import { prisma } from "@/lib/prisma";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+/**
+ * Route params supplied by the App Router.
+ */
 type LessonPageProps = {
   params: Promise<{ slug: string }>;
 };
 
+/**
+ * Parse the objectives markdown list into clean bullet strings.
+ */
 const parseObjectives = (objectivesMarkdown: string | null) =>
   (objectivesMarkdown ?? "")
     .split("\n")
     .map((line) => line.replace(/^[-*]\s*/, "").trim())
     .filter(Boolean);
 
+/**
+ * Render the lesson page with content, objectives, and progress actions.
+ *
+ * @remarks
+ * Fetches lesson data/content on the server and handles content errors while
+ * composing navigation and progress UI.
+ */
 export default async function LessonPage({ params }: LessonPageProps) {
   const { slug } = await params;
   const lesson = await prisma.lesson.findUnique({

@@ -18,6 +18,9 @@ import {
   updateGuestProgress,
 } from "@/lib/guest-progress";
 
+/**
+ * Public API exposed by the progress context.
+ */
 type ProgressContextValue = {
   completedLessonIds: string[];
   isLessonCompleted: (lessonId: string) => boolean;
@@ -28,16 +31,32 @@ type ProgressContextValue = {
   refreshProgress: () => Promise<void>;
 };
 
+/**
+ * Internal map of lessonId -> completion marker.
+ */
 type ProgressMap = Record<string, string>;
+
+/**
+ * Props for the progress provider component.
+ */
+type ProgressProviderProps = {
+  children: React.ReactNode;
+};
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
 
+/**
+ * Convert a list of completed lesson ids into the map shape.
+ */
 const buildProgressMap = (lessonIds: string[]): ProgressMap =>
   lessonIds.reduce<ProgressMap>((accumulator, lessonId) => {
     accumulator[lessonId] = "completed";
     return accumulator;
   }, {});
 
+/**
+ * Fetch the authenticated user's progress map from the API.
+ */
 const fetchUserProgress = async () => {
   const response = await fetch("/api/progress", {
     method: "GET",
@@ -56,6 +75,9 @@ const fetchUserProgress = async () => {
   return buildProgressMap(completedLessonIds);
 };
 
+/**
+ * Merge guest progress into the authenticated account.
+ */
 const mergeGuestProgress = async (guestProgress: ProgressMap) => {
   const entries = Object.keys(guestProgress).map((lessonId) => ({ lessonId }));
 
@@ -70,7 +92,14 @@ const mergeGuestProgress = async (guestProgress: ProgressMap) => {
   }
 };
 
-export function ProgressProvider({ children }: { children: React.ReactNode }) {
+/**
+ * Provide progress state and actions to the client-side tree.
+ *
+ * @remarks
+ * Owns progress state, merges guest data on sign-in, and triggers API
+ * reads/writes with readiness and merging flags.
+ */
+export function ProgressProvider({ children }: ProgressProviderProps) {
   const { data: session, status } = useSession();
   const [progressMap, setProgressMap] = useState<ProgressMap>({});
   const [isReady, setIsReady] = useState(false);
@@ -229,6 +258,9 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>;
 }
 
+/**
+ * Read the progress context, throwing if used outside the provider.
+ */
 export const useProgress = () => {
   const context = useContext(ProgressContext);
   if (!context) {

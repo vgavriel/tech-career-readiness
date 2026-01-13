@@ -1,10 +1,16 @@
 import { type ZodSchema } from "zod";
 import { NextResponse } from "next/server";
 
+/**
+ * Result of parsing a JSON body with validation.
+ */
 type ParsedBodyResult<T> = { data: T } | { error: NextResponse };
 
 const DEFAULT_MAX_BODY_BYTES = 16_384;
 
+/**
+ * Parse and validate a JSON request body with size enforcement.
+ */
 export const parseJsonBody = async <T>(
   request: Request,
   schema: ZodSchema<T>,

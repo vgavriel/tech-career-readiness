@@ -4,6 +4,9 @@ import Link from "next/link";
 
 import { useProgress } from "@/components/progress-provider";
 
+/**
+ * Lesson metadata required for the roadmap listing.
+ */
 export type RoadmapLesson = {
   id: string;
   slug: string;
@@ -12,6 +15,9 @@ export type RoadmapLesson = {
   estimatedMinutes: number | null;
 };
 
+/**
+ * Module metadata required for the roadmap listing.
+ */
 export type RoadmapModule = {
   id: string;
   title: string;
@@ -20,10 +26,20 @@ export type RoadmapModule = {
   lessons: RoadmapLesson[];
 };
 
+/**
+ * Props for the module list component.
+ */
 type RoadmapModuleListProps = {
   modules: RoadmapModule[];
 };
 
+/**
+ * Render the roadmap module list with progress status indicators.
+ *
+ * @remarks
+ * Presents ordered modules/lessons and reflects completion from progress
+ * context; no side effects.
+ */
 export default function RoadmapModuleList({ modules }: RoadmapModuleListProps) {
   const { isLessonCompleted, isReady } = useProgress();
 
