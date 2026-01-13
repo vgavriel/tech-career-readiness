@@ -33,7 +33,8 @@ export const parseJsonBody = async <T>(
     };
   }
 
-  if (rawBody.length > maxBytes) {
+  const bodyByteLength = Buffer.byteLength(rawBody, "utf8");
+  if (bodyByteLength > maxBytes) {
     return {
       error: NextResponse.json({ error: "Payload too large." }, { status: 413 }),
     };
