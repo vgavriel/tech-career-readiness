@@ -9,6 +9,17 @@ const sessionTracker = vi.hoisted(() => ({
   received: null as Session | null,
 }));
 
+const progressTracker = vi.hoisted(() => ({
+  rendered: false,
+}));
+
+vi.mock("@/components/progress-provider", () => ({
+  ProgressProvider: ({ children }: { children: ReactNode }) => {
+    progressTracker.rendered = true;
+    return <div data-testid="progress-provider">{children}</div>;
+  },
+}));
+
 vi.mock("next-auth/react", () => ({
   SessionProvider: ({
     session,
@@ -36,7 +47,9 @@ describe("Providers", () => {
     );
 
     expect(screen.getByTestId("session-provider")).toBeInTheDocument();
+    expect(screen.getByTestId("progress-provider")).toBeInTheDocument();
     expect(screen.getByText("Child content")).toBeInTheDocument();
     expect(sessionTracker.received).toEqual(session);
+    expect(progressTracker.rendered).toBe(true);
   });
 });

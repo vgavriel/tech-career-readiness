@@ -1,6 +1,5 @@
-import Link from "next/link";
-
 import RoadmapModuleList from "@/components/roadmap-module-list";
+import RoadmapProgressSummary from "@/components/roadmap-progress-summary";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -27,12 +26,6 @@ export default async function RoadmapPage() {
     },
   });
 
-  const totalLessons = modules.reduce(
-    (count, module) => count + module.lessons.length,
-    0
-  );
-  const firstLessonSlug = modules[0]?.lessons[0]?.slug;
-
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_#fff,_#f7f1e8_55%,_#f0e1cf_100%)]">
       <div className="pointer-events-none absolute -top-24 left-[-6rem] h-64 w-64 rounded-full bg-[color:var(--wash-200)] opacity-70 blur-3xl animate-float-slow" />
@@ -51,25 +44,7 @@ export default async function RoadmapPage() {
               habits that convert into interviews and offers.
             </p>
           </div>
-          <div className="flex flex-col gap-3 rounded-3xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-6 shadow-[var(--shadow-soft)]">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-              {modules.length} modules · {totalLessons} lessons
-            </p>
-            {firstLessonSlug ? (
-              <Link
-                href={`/lesson/${firstLessonSlug}`}
-                className="rounded-full bg-[color:var(--ink-900)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--wash-0)] transition hover:-translate-y-0.5"
-              >
-                Start with lesson 1
-              </Link>
-            ) : null}
-            <Link
-              href="/api/auth/signin/google"
-              className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-700)]"
-            >
-              Sign in to save progress
-            </Link>
-          </div>
+          <RoadmapProgressSummary modules={modules} />
         </section>
 
         <RoadmapModuleList modules={modules} />

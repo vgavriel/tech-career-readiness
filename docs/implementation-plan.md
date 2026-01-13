@@ -213,11 +213,11 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [x] Lesson page (`/lesson/[slug]`) with content rendering
 
 ### Phase 5 — Progress tracking
-- [ ] Add progress API routes (complete/incomplete)
-- [ ] Lesson completion toggle UI
-- [ ] Roadmap progress UI + percent complete
-- [ ] Global progress summary + Continue link
-- [ ] Store guest progress in localStorage and merge on sign-in
+- [x] Add progress API routes (complete/incomplete)
+- [x] Lesson completion toggle UI
+- [x] Roadmap progress UI + percent complete
+- [x] Global progress summary + Continue link
+- [x] Store guest progress in localStorage and merge on sign-in
 
 ### Phase 6 — Slug alias redirects
 - [ ] Implement alias lookup in lesson route
