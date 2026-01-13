@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 
 import LessonContent from "@/components/lesson-content";
 import LessonProgressCard from "@/components/lesson-progress-card";
 import { fetchLessonContent } from "@/lib/lesson-content";
+import { findLessonBySlug } from "@/lib/lesson-slug";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -34,28 +35,14 @@ const parseObjectives = (objectivesMarkdown: string | null) =>
  */
 export default async function LessonPage({ params }: LessonPageProps) {
   const { slug } = await params;
-  const lesson = await prisma.lesson.findUnique({
-    where: { slug },
-    select: {
-      id: true,
-      title: true,
-      slug: true,
-      order: true,
-      moduleId: true,
-      publishedUrl: true,
-      estimatedMinutes: true,
-      objectivesMarkdown: true,
-      module: {
-        select: {
-          title: true,
-          order: true,
-        },
-      },
-    },
-  });
+  const { lesson, isAlias } = await findLessonBySlug(slug);
 
   if (!lesson) {
     notFound();
+  }
+
+  if (isAlias) {
+    permanentRedirect(`/lesson/${lesson.slug}`);
   }
 
   const [previousLesson, nextLesson] = await Promise.all([

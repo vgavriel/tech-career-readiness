@@ -232,8 +232,8 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [ ] Replace `unsafe-inline` styles/scripts with CSP nonces/hashes once lesson HTML is finalized
 
 ### Phase 6 — Slug alias redirects
-- [ ] Implement alias lookup in lesson route
-- [ ] Redirect old slugs to canonical slug
+- [x] Implement alias lookup in lesson route
+- [x] Redirect old slugs to canonical slug
 
 ### Phase 7 — Quality pass + polish
 - [ ] Error handling for missing lessons/content fetch failures
