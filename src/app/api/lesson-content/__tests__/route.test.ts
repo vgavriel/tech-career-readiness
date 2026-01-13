@@ -6,6 +6,9 @@ const prismaMock = {
   lesson: {
     findUnique: vi.fn(),
   },
+  lessonSlugAlias: {
+    findUnique: vi.fn(),
+  },
 };
 
 vi.mock("@/lib/prisma", () => ({
@@ -42,6 +45,7 @@ describe("GET /api/lesson-content", () => {
 
   beforeEach(() => {
     prismaMock.lesson.findUnique.mockReset();
+    prismaMock.lessonSlugAlias.findUnique.mockReset();
     fetchMock.mockReset();
     vi.stubGlobal("fetch", fetchMock);
     clearLessonContentCache();
@@ -74,6 +78,25 @@ describe("GET /api/lesson-content", () => {
     await expect(response.json()).resolves.toEqual({
       error: "Lesson not found.",
     });
+  });
+
+  it("falls back to slug aliases when the canonical slug is missing", async () => {
+    prismaMock.lesson.findUnique.mockResolvedValue(null);
+    prismaMock.lessonSlugAlias.findUnique.mockResolvedValue({
+      lesson: {
+        id: "lesson-4",
+        publishedUrl: "https://docs.google.com/document/d/e/lesson-4/pub",
+      },
+    });
+    fetchMock.mockResolvedValueOnce(new Response("<p>Alias</p>", { status: 200 }));
+
+    const GET = await getRoute();
+    const response = await GET(makeRequest("?slug=old-lesson-slug"));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.lessonId).toBe("lesson-4");
+    expect(body.html).toContain("Alias");
   });
 
   it("sanitizes, preserves formatting, and caches lesson content", async () => {

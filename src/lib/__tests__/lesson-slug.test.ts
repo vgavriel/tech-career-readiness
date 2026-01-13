@@ -14,12 +14,9 @@ vi.mock("@/lib/prisma", () => ({
 }));
 
 /**
- * Import the lesson slug helper for testing.
+ * Import the lesson slug module for testing.
  */
-const getHelper = async () => {
-  const module = await import("@/lib/lesson-slug");
-  return module.findLessonBySlug;
-};
+const getModule = async () => import("@/lib/lesson-slug");
 
 const baseLesson = {
   id: "lesson-1",
@@ -51,7 +48,7 @@ describe("findLessonBySlug", () => {
     const lesson = makeLesson({ slug: "canonical-slug" });
     prismaMock.lesson.findUnique.mockResolvedValue(lesson);
 
-    const findLessonBySlug = await getHelper();
+    const { findLessonBySlug } = await getModule();
     const result = await findLessonBySlug("canonical-slug");
 
     expect(result).toEqual({ lesson, isAlias: false });
@@ -66,7 +63,7 @@ describe("findLessonBySlug", () => {
     prismaMock.lesson.findUnique.mockResolvedValue(null);
     prismaMock.lessonSlugAlias.findUnique.mockResolvedValue({ lesson });
 
-    const findLessonBySlug = await getHelper();
+    const { findLessonBySlug } = await getModule();
     const result = await findLessonBySlug("old-slug");
 
     expect(result).toEqual({ lesson, isAlias: true });
@@ -79,9 +76,32 @@ describe("findLessonBySlug", () => {
     prismaMock.lesson.findUnique.mockResolvedValue(null);
     prismaMock.lessonSlugAlias.findUnique.mockResolvedValue(null);
 
-    const findLessonBySlug = await getHelper();
+    const { findLessonBySlug } = await getModule();
     const result = await findLessonBySlug("missing-slug");
 
     expect(result).toEqual({ lesson: null, isAlias: false });
+  });
+});
+
+describe("buildLessonRedirectPath", () => {
+  it("returns the canonical path without search params", async () => {
+    const { buildLessonRedirectPath } = await getModule();
+
+    expect(buildLessonRedirectPath("lesson-1")).toBe("/lesson/lesson-1");
+  });
+
+  it("preserves query parameters and repeated keys", async () => {
+    const { buildLessonRedirectPath } = await getModule();
+
+    const path = buildLessonRedirectPath("lesson-2", {
+      ref: "email",
+      tags: ["prep", "interview"],
+      empty: "",
+      skip: undefined,
+    });
+
+    expect(path).toBe(
+      "/lesson/lesson-2?ref=email&tags=prep&tags=interview&empty="
+    );
   });
 });

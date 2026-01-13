@@ -4,7 +4,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 import LessonContent from "@/components/lesson-content";
 import LessonProgressCard from "@/components/lesson-progress-card";
 import { fetchLessonContent } from "@/lib/lesson-content";
-import { findLessonBySlug } from "@/lib/lesson-slug";
+import { buildLessonRedirectPath, findLessonBySlug } from "@/lib/lesson-slug";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -15,6 +15,7 @@ export const dynamic = "force-dynamic";
  */
 type LessonPageProps = {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 /**
@@ -33,8 +34,12 @@ const parseObjectives = (objectivesMarkdown: string | null) =>
  * Fetches lesson data/content on the server and handles content errors while
  * composing navigation and progress UI.
  */
-export default async function LessonPage({ params }: LessonPageProps) {
+export default async function LessonPage({
+  params,
+  searchParams,
+}: LessonPageProps) {
   const { slug } = await params;
+  const rawSearchParams = searchParams ? await searchParams : undefined;
   const { lesson, isAlias } = await findLessonBySlug(slug);
 
   if (!lesson) {
@@ -42,7 +47,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
   }
 
   if (isAlias) {
-    permanentRedirect(`/lesson/${lesson.slug}`);
+    permanentRedirect(buildLessonRedirectPath(lesson.slug, rawSearchParams));
   }
 
   const [previousLesson, nextLesson] = await Promise.all([

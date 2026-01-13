@@ -29,6 +29,43 @@ type LessonSlugLookupResult = {
   isAlias: boolean;
 };
 
+type LessonSearchParams = Record<string, string | string[] | undefined>;
+
+/**
+ * Build a query string from search params while preserving repeated keys.
+ */
+const buildQueryString = (searchParams?: LessonSearchParams) => {
+  if (!searchParams) {
+    return "";
+  }
+
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(searchParams)) {
+    if (value === undefined) {
+      continue;
+    }
+
+    if (Array.isArray(value)) {
+      value.forEach((entry) => {
+        query.append(key, entry);
+      });
+    } else {
+      query.append(key, value);
+    }
+  }
+
+  const queryString = query.toString();
+  return queryString ? `?${queryString}` : "";
+};
+
+/**
+ * Build the canonical lesson redirect path with preserved query params.
+ */
+export const buildLessonRedirectPath = (
+  slug: string,
+  searchParams?: LessonSearchParams
+) => `/lesson/${slug}${buildQueryString(searchParams)}`;
+
 /**
  * Find a lesson by canonical slug, falling back to slug aliases when needed.
  */
