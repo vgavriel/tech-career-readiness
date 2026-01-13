@@ -208,7 +208,7 @@ async function main() {
     }
 
     for (const lessonData of moduleData.lessons) {
-      const publishedUrl = `https://example.com/lessons/${lessonData.slug}`;
+      const publishedUrl = `https://docs.google.com/document/d/e/${lessonData.slug}/pub`;
 
       await prisma.lesson.upsert({
         where: { slug: lessonData.slug },

@@ -39,7 +39,7 @@ describe("integration: /api/progress", () => {
     const response = await POST(
       makeJsonRequest("http://localhost/api/progress", {
         lessonId: "lesson-id",
-        isCompleted: true,
+        completed: true,
       })
     );
 
@@ -61,7 +61,7 @@ describe("integration: /api/progress", () => {
         "http://localhost/api/progress",
         {
           lessonId: "lesson-id",
-          isCompleted: true,
+          completed: true,
         },
         { origin: "http://evil.example.com" }
       )
@@ -83,7 +83,7 @@ describe("integration: /api/progress", () => {
     const response = await POST(
       makeJsonRequest("http://localhost/api/progress", {
         lessonId: 123,
-        isCompleted: true,
+        completed: true,
       })
     );
 
@@ -113,7 +113,7 @@ describe("integration: /api/progress", () => {
     const completeResponse = await POST(
       makeJsonRequest("http://localhost/api/progress", {
         lessonId: lesson.id,
-        isCompleted: true,
+        completed: true,
       })
     );
 
@@ -139,10 +139,20 @@ describe("integration: /api/progress", () => {
 
     expect(progress?.completedAt).not.toBeNull();
 
+    const completionEvent = await prisma.lessonProgressEvent.findFirst({
+      where: {
+        userId: user.id,
+        lessonId: lesson.id,
+        action: "completed",
+      },
+    });
+
+    expect(completionEvent).not.toBeNull();
+
     const incompleteResponse = await POST(
       makeJsonRequest("http://localhost/api/progress", {
         lessonId: lesson.id,
-        isCompleted: false,
+        completed: false,
       })
     );
 
@@ -158,6 +168,16 @@ describe("integration: /api/progress", () => {
     });
 
     expect(progressAfter).toBeNull();
+
+    const incompleteEvent = await prisma.lessonProgressEvent.findFirst({
+      where: {
+        userId: user.id,
+        lessonId: lesson.id,
+        action: "incomplete",
+      },
+    });
+
+    expect(incompleteEvent).not.toBeNull();
   });
 
   it("returns completed lesson ids for the authenticated user", async () => {
@@ -183,11 +203,11 @@ describe("integration: /api/progress", () => {
     await POST(
       makeJsonRequest("http://localhost/api/progress", {
         lessonId: lesson.id,
-        isCompleted: true,
+        completed: true,
       })
     );
 
-    const response = await GET();
+    const response = await GET(new Request("http://localhost/api/progress"));
     const body = await response.json();
 
     expect(response.status).toBe(200);
@@ -250,5 +270,15 @@ describe("integration: /api/progress/merge", () => {
     });
 
     expect(progress?.completedAt).not.toBeNull();
+
+    const mergeEvent = await prisma.lessonProgressEvent.findFirst({
+      where: {
+        userId: user.id,
+        lessonId: lesson.id,
+        action: "completed",
+      },
+    });
+
+    expect(mergeEvent).not.toBeNull();
   });
 });

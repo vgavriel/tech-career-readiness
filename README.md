@@ -30,6 +30,12 @@ For Auth.js (NextAuth):
 - Keep secrets out of client code and never commit real values. Only commit
   `.env.example`.
 
+Additional app configuration:
+- `ADMIN_EMAILS` (comma-separated) to bootstrap admin access in dev/test only. In
+  production, set `User.isAdmin` directly in the database.
+- `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` for rate limiting.
+- `MAX_JSON_BODY_BYTES` (optional) to adjust JSON payload size limits.
+
 ### 3) Apply migrations and seed data
 ```bash
 npx prisma migrate deploy

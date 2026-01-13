@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
+
 import { fetchLessonContent } from "@/lib/lesson-content";
 import { prisma } from "@/lib/prisma";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -14,17 +17,38 @@ const shouldBypassCache = (searchParams: URLSearchParams) => {
   return isTruthy(searchParams.get("bypassCache"));
 };
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const lessonId = searchParams.get("lessonId")?.trim();
-  const slug = searchParams.get("slug")?.trim();
+const lessonQuerySchema = z
+  .object({
+    lessonId: z.string().trim().min(1).optional(),
+    slug: z.string().trim().min(1).optional(),
+  })
+  .refine((data) => Boolean(data.lessonId || data.slug), {
+    message: "Provide lessonId or slug.",
+  });
 
-  if (!lessonId && !slug) {
+export async function GET(request: Request) {
+  const rateLimitResponse = await enforceRateLimit(
+    request,
+    "lesson-content",
+    null
+  );
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
+
+  const { searchParams } = new URL(request.url);
+  const parsedQuery = lessonQuerySchema.safeParse({
+    lessonId: searchParams.get("lessonId") ?? undefined,
+    slug: searchParams.get("slug") ?? undefined,
+  });
+  if (!parsedQuery.success) {
     return NextResponse.json(
       { error: "Provide lessonId or slug." },
       { status: 400 }
     );
   }
+
+  const { lessonId, slug } = parsedQuery.data;
 
   const lesson = await prisma.lesson.findUnique({
     where: lessonId ? { id: lessonId } : { slug: slug ?? "" },
