@@ -5,6 +5,7 @@ import { useMemo } from "react";
 
 import { useProgress } from "@/components/progress-provider";
 import type { RoadmapModule } from "@/components/roadmap-module-list";
+import SignInCta from "@/components/sign-in-cta";
 
 /**
  * Flattened lesson metadata used for progress ordering.
@@ -136,12 +137,11 @@ export default function RoadmapProgressSummary({
       ) : null}
 
       {!isAuthenticated ? (
-        <Link
-          href="/api/auth/signin/google"
+        <SignInCta
           className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-700)]"
         >
           Sign in to save progress
-        </Link>
+        </SignInCta>
       ) : null}
     </div>
   );

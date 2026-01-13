@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import LessonProgressCard from "@/components/lesson-progress-card";
@@ -11,21 +10,6 @@ const progressMocks = vi.hoisted(() => ({
 
 vi.mock("@/components/progress-provider", () => ({
   useProgress: () => progressMocks.useProgress(),
-}));
-
-vi.mock("next/link", () => ({
-  default: ({
-    href,
-    children,
-    ...props
-  }: {
-    href: string;
-    children: ReactNode;
-  }) => (
-    <a href={href} {...props}>
-      {children}
-    </a>
-  ),
 }));
 
 describe("LessonProgressCard", () => {
@@ -50,7 +34,7 @@ describe("LessonProgressCard", () => {
       screen.getByRole("button", { name: /mark complete/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /sign in to save progress/i })
+      screen.getByRole("button", { name: /sign in to save progress/i })
     ).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole("button", { name: /mark complete/i }));
@@ -74,7 +58,7 @@ describe("LessonProgressCard", () => {
       screen.getByRole("button", { name: /mark incomplete/i })
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("link", { name: /sign in to save progress/i })
+      screen.queryByRole("button", { name: /sign in to save progress/i })
     ).not.toBeInTheDocument();
 
     await userEvent.click(

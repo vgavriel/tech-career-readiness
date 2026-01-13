@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
-
 import { useProgress } from "@/components/progress-provider";
+import SignInCta from "@/components/sign-in-cta";
 
 /**
  * Props for the lesson progress control card.
@@ -75,12 +74,11 @@ export default function LessonProgressCard({
       ) : null}
 
       {!isAuthenticated ? (
-        <Link
-          href="/api/auth/signin/google"
+        <SignInCta
           className="mt-3 inline-flex text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-700)]"
         >
           Sign in to save progress
-        </Link>
+        </SignInCta>
       ) : null}
     </div>
   );
