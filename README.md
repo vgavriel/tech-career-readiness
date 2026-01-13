@@ -31,7 +31,8 @@ For Auth.js (NextAuth):
   `.env.example`.
 
 Additional app configuration:
-- `ADMIN_EMAILS` (comma-separated) to bootstrap admin access in production.
+- `ADMIN_EMAILS` (comma-separated) to bootstrap admin access in dev/test only. In
+  production, set `User.isAdmin` directly in the database.
 - `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` for rate limiting.
 - `MAX_JSON_BODY_BYTES` (optional) to adjust JSON payload size limits.
 

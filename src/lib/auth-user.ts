@@ -26,8 +26,12 @@ export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> 
   }
 
   const normalizedEmail = email.toLowerCase();
-  const adminEmails = normalizeEmailList(process.env.ADMIN_EMAILS);
-  const shouldBeAdmin = adminEmails.includes(normalizedEmail);
+  const allowAdminBootstrap =
+    process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test";
+  const adminEmails = allowAdminBootstrap
+    ? normalizeEmailList(process.env.ADMIN_EMAILS)
+    : [];
+  const shouldBeAdmin = allowAdminBootstrap && adminEmails.includes(normalizedEmail);
 
   const user = await prisma.user.upsert({
     where: { email },

@@ -226,7 +226,7 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [x] Restrict lesson content fetch to Google Docs domains only (SSRF allowlist)
 - [x] Add `User.isAdmin` flag + admin analytics page
 - [x] Record `LessonProgressEvent` entries for every toggle
-- [x] Document admin bootstrap via `ADMIN_EMAILS`
+- [x] Document admin bootstrap via `ADMIN_EMAILS` (dev/test only; prod via DB flag)
 
 ### Phase 5.6 — CSP nonces/hashes (deferred)
 - [ ] Replace `unsafe-inline` styles/scripts with CSP nonces/hashes once lesson HTML is finalized
