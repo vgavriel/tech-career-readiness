@@ -57,12 +57,7 @@ const fetchUserProgress = async () => {
 };
 
 const mergeGuestProgress = async (guestProgress: ProgressMap) => {
-  const entries = Object.entries(guestProgress).map(
-    ([lessonId, completedAt]) => ({
-      lessonId,
-      completedAt,
-    })
-  );
+  const entries = Object.keys(guestProgress).map((lessonId) => ({ lessonId }));
 
   const response = await fetch("/api/progress/merge", {
     method: "POST",

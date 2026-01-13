@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 
 import { getAuthenticatedUser } from "@/lib/auth-user";
+import { withDbRetry } from "@/lib/db-retry";
 import { prisma } from "@/lib/prisma";
+import { enforceStateChangeSecurity } from "@/lib/request-guard";
 
 export const runtime = "nodejs";
 
 type ProgressMergeEntry = {
-  lessonId?: string;
-  completedAt?: string;
+  lessonId?: unknown;
 };
 
 type ProgressMergePayload = {
@@ -22,16 +23,12 @@ const parsePayload = async (request: Request) => {
   }
 };
 
-const parseCompletedAt = (value?: string) => {
-  if (!value) {
-    return null;
+export async function POST(request: Request) {
+  const guardResponse = enforceStateChangeSecurity(request);
+  if (guardResponse) {
+    return guardResponse;
   }
 
-  const parsed = new Date(value);
-  return Number.isNaN(parsed.getTime()) ? null : parsed;
-};
-
-export async function POST(request: Request) {
   const user = await getAuthenticatedUser();
 
   if (!user) {
@@ -41,73 +38,60 @@ export async function POST(request: Request) {
   const payload = await parsePayload(request);
   const entries = Array.isArray(payload?.entries) ? payload?.entries : [];
 
-  const normalizedEntries = entries
-    .map((entry) => {
-      const rawLessonId =
-        typeof entry?.lessonId === "string" ? entry.lessonId.trim() : "";
-      const completedAt =
-        typeof entry?.completedAt === "string"
-          ? parseCompletedAt(entry.completedAt)
-          : null;
+  const normalizedLessonIds = entries
+    .map((entry) =>
+      typeof entry?.lessonId === "string" ? entry.lessonId.trim() : ""
+    )
+    .filter((lessonId) => lessonId.length > 0);
 
-      return {
-        lessonId: rawLessonId,
-        completedAt,
-      };
-    })
-    .filter((entry) => entry.lessonId.length > 0);
-
-  if (normalizedEntries.length === 0) {
+  if (normalizedLessonIds.length === 0) {
     return NextResponse.json({ error: "No progress entries provided." }, { status: 400 });
   }
 
-  const uniqueLessonIds = Array.from(
-    new Set(normalizedEntries.map((entry) => entry.lessonId))
-  );
+  const uniqueLessonIds = Array.from(new Set(normalizedLessonIds));
 
   const lessons = await prisma.lesson.findMany({
     where: { id: { in: uniqueLessonIds } },
     select: { id: true },
   });
 
-  const validLessonIds = new Set(lessons.map((lesson) => lesson.id));
-  const entriesToMerge = normalizedEntries.filter((entry) =>
-    validLessonIds.has(entry.lessonId)
-  );
+  const validLessonIds = lessons.map((lesson) => lesson.id);
+  const validLessonIdSet = new Set(validLessonIds);
 
-  if (entriesToMerge.length === 0) {
+  if (validLessonIds.length === 0) {
     return NextResponse.json({ error: "No valid lessons to merge." }, { status: 400 });
   }
 
   const now = new Date();
 
-  await prisma.$transaction(
-    entriesToMerge.map((entry) =>
-      prisma.lessonProgress.upsert({
+  const data = validLessonIds.map((lessonId) => ({
+    userId: user.id,
+    lessonId,
+    completedAt: now,
+  }));
+
+  await withDbRetry(() =>
+    prisma.$transaction([
+      prisma.lessonProgress.createMany({
+        data,
+        skipDuplicates: true,
+      }),
+      prisma.lessonProgress.updateMany({
         where: {
-          userId_lessonId: {
-            userId: user.id,
-            lessonId: entry.lessonId,
-          },
-        },
-        create: {
           userId: user.id,
-          lessonId: entry.lessonId,
-          completedAt: entry.completedAt ?? now,
+          lessonId: { in: validLessonIds },
         },
-        update: {
-          completedAt: entry.completedAt ?? now,
-        },
-      })
-    )
+        data: { completedAt: now },
+      }),
+    ])
   );
 
   const skippedLessonIds = uniqueLessonIds.filter(
-    (lessonId) => !validLessonIds.has(lessonId)
+    (lessonId) => !validLessonIdSet.has(lessonId)
   );
 
   return NextResponse.json({
-    mergedLessonIds: entriesToMerge.map((entry) => entry.lessonId),
+    mergedLessonIds: validLessonIds,
     skippedLessonIds,
   });
 }

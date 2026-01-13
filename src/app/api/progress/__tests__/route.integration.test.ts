@@ -13,12 +13,19 @@ vi.mock("next-auth", () => ({
 const getProgressRoute = async () => await import("@/app/api/progress/route");
 const getMergeRoute = async () => await import("@/app/api/progress/merge/route");
 
-const makeJsonRequest = (url: string, body: unknown) =>
-  new Request(url, {
+const makeJsonRequest = (
+  url: string,
+  body: unknown,
+  options: { origin?: string } = {}
+) => {
+  const { origin = new URL(url).origin } = options;
+
+  return new Request(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Origin: origin },
     body: JSON.stringify(body),
   });
+};
 
 beforeEach(() => {
   authMocks.getServerSession.mockReset();
@@ -32,11 +39,35 @@ describe("integration: /api/progress", () => {
     const response = await POST(
       makeJsonRequest("http://localhost/api/progress", {
         lessonId: "lesson-id",
-        completed: true,
+        isCompleted: true,
       })
     );
 
     expect(response.status).toBe(401);
+  });
+
+  it("rejects requests with invalid origin", async () => {
+    authMocks.getServerSession.mockResolvedValue({
+      user: {
+        email: "progress-origin@example.com",
+        name: "Origin Test",
+        image: null,
+      },
+    });
+
+    const { POST } = await getProgressRoute();
+    const response = await POST(
+      makeJsonRequest(
+        "http://localhost/api/progress",
+        {
+          lessonId: "lesson-id",
+          isCompleted: true,
+        },
+        { origin: "http://evil.example.com" }
+      )
+    );
+
+    expect(response.status).toBe(403);
   });
 
   it("rejects non-string lessonId payloads", async () => {
@@ -52,7 +83,7 @@ describe("integration: /api/progress", () => {
     const response = await POST(
       makeJsonRequest("http://localhost/api/progress", {
         lessonId: 123,
-        completed: true,
+        isCompleted: true,
       })
     );
 
@@ -82,7 +113,7 @@ describe("integration: /api/progress", () => {
     const completeResponse = await POST(
       makeJsonRequest("http://localhost/api/progress", {
         lessonId: lesson.id,
-        completed: true,
+        isCompleted: true,
       })
     );
 
@@ -111,7 +142,7 @@ describe("integration: /api/progress", () => {
     const incompleteResponse = await POST(
       makeJsonRequest("http://localhost/api/progress", {
         lessonId: lesson.id,
-        completed: false,
+        isCompleted: false,
       })
     );
 
@@ -152,7 +183,7 @@ describe("integration: /api/progress", () => {
     await POST(
       makeJsonRequest("http://localhost/api/progress", {
         lessonId: lesson.id,
-        completed: true,
+        isCompleted: true,
       })
     );
 
@@ -188,9 +219,9 @@ describe("integration: /api/progress/merge", () => {
     const response = await POST(
       makeJsonRequest("http://localhost/api/progress/merge", {
         entries: [
-          { lessonId: lesson.id, completedAt: new Date().toISOString() },
-          { lessonId: "missing-lesson", completedAt: new Date().toISOString() },
-          { lessonId: 123, completedAt: new Date().toISOString() },
+          { lessonId: lesson.id },
+          { lessonId: "missing-lesson" },
+          { lessonId: 123 },
         ],
       })
     );

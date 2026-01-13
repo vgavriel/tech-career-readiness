@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 
 import { getAuthenticatedUser } from "@/lib/auth-user";
+import { withDbRetry } from "@/lib/db-retry";
 import { prisma } from "@/lib/prisma";
+import { enforceStateChangeSecurity } from "@/lib/request-guard";
 
 export const runtime = "nodejs";
 
 type ProgressUpdatePayload = {
-  lessonId?: string;
-  completed?: boolean;
+  lessonId?: unknown;
+  isCompleted?: unknown;
 };
 
 const parsePayload = async (request: Request) => {
@@ -41,6 +43,11 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const guardResponse = enforceStateChangeSecurity(request);
+  if (guardResponse) {
+    return guardResponse;
+  }
+
   const user = await getAuthenticatedUser();
 
   if (!user) {
@@ -51,7 +58,7 @@ export async function POST(request: Request) {
   const lessonId =
     typeof payload?.lessonId === "string" ? payload.lessonId.trim() : "";
 
-  if (!lessonId || typeof payload?.completed !== "boolean") {
+  if (!lessonId || typeof payload?.isCompleted !== "boolean") {
     return NextResponse.json({ error: "Invalid payload." }, { status: 400 });
   }
 
@@ -64,31 +71,35 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Lesson not found." }, { status: 404 });
   }
 
-  if (payload.completed) {
-    await prisma.lessonProgress.upsert({
-      where: {
-        userId_lessonId: {
+  if (payload.isCompleted) {
+    await withDbRetry(() =>
+      prisma.lessonProgress.upsert({
+        where: {
+          userId_lessonId: {
+            userId: user.id,
+            lessonId,
+          },
+        },
+        create: {
+          userId: user.id,
+          lessonId,
+          completedAt: new Date(),
+        },
+        update: {
+          completedAt: new Date(),
+        },
+      })
+    );
+  } else {
+    await withDbRetry(() =>
+      prisma.lessonProgress.deleteMany({
+        where: {
           userId: user.id,
           lessonId,
         },
-      },
-      create: {
-        userId: user.id,
-        lessonId,
-        completedAt: new Date(),
-      },
-      update: {
-        completedAt: new Date(),
-      },
-    });
-  } else {
-    await prisma.lessonProgress.deleteMany({
-      where: {
-        userId: user.id,
-        lessonId,
-      },
-    });
+      })
+    );
   }
 
-  return NextResponse.json({ lessonId, completed: payload.completed });
+  return NextResponse.json({ lessonId, completed: payload.isCompleted });
 }

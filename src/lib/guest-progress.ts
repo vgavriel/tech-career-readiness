@@ -5,10 +5,19 @@ export type GuestProgressState = {
 
 export const GUEST_PROGRESS_STORAGE_KEY = "tcr-guest-progress";
 
-const emptyGuestProgress: GuestProgressState = {
+const COMPLETED_VALUE = "completed";
+
+const createEmptyState = (): GuestProgressState => ({
   version: 1,
   completed: {},
-};
+});
+
+let inMemoryProgress = createEmptyState();
+
+const cloneState = (state: GuestProgressState): GuestProgressState => ({
+  version: 1,
+  completed: { ...state.completed },
+});
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
@@ -24,8 +33,8 @@ const normalizeCompleted = (value: unknown) => {
         return accumulator;
       }
 
-      if (typeof entry === "string") {
-        accumulator[key] = entry;
+      if (entry === true || typeof entry === "string") {
+        accumulator[key] = COMPLETED_VALUE;
       }
 
       return accumulator;
@@ -34,51 +43,92 @@ const normalizeCompleted = (value: unknown) => {
   );
 };
 
-export const readGuestProgress = (): GuestProgressState => {
+const getLocalStorage = () => {
   if (typeof window === "undefined") {
-    return emptyGuestProgress;
-  }
-
-  const raw = window.localStorage.getItem(GUEST_PROGRESS_STORAGE_KEY);
-  if (!raw) {
-    return emptyGuestProgress;
+    return null;
   }
 
   try {
-    const parsed = JSON.parse(raw) as Partial<GuestProgressState>;
-    if (parsed?.version !== 1) {
-      return emptyGuestProgress;
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+};
+
+export const readGuestProgress = (): GuestProgressState => {
+  const storage = getLocalStorage();
+
+  if (!storage) {
+    return cloneState(inMemoryProgress);
+  }
+
+  try {
+    const raw = storage.getItem(GUEST_PROGRESS_STORAGE_KEY);
+    if (!raw) {
+      const emptyState = createEmptyState();
+      inMemoryProgress = cloneState(emptyState);
+      return cloneState(emptyState);
     }
 
-    return {
+    const parsed = JSON.parse(raw) as Partial<GuestProgressState>;
+    if (parsed?.version !== 1) {
+      const emptyState = createEmptyState();
+      inMemoryProgress = cloneState(emptyState);
+      return cloneState(emptyState);
+    }
+
+    const normalized = {
       version: 1,
       completed: normalizeCompleted(parsed.completed),
     };
+
+    inMemoryProgress = cloneState(normalized);
+    return cloneState(normalized);
   } catch {
-    return emptyGuestProgress;
+    return cloneState(inMemoryProgress);
   }
 };
 
 export const writeGuestProgress = (state: GuestProgressState) => {
-  if (typeof window === "undefined") {
+  const normalized = {
+    version: 1,
+    completed: normalizeCompleted(state.completed),
+  };
+
+  inMemoryProgress = cloneState(normalized);
+
+  const storage = getLocalStorage();
+  if (!storage) {
     return;
   }
 
-  window.localStorage.setItem(GUEST_PROGRESS_STORAGE_KEY, JSON.stringify(state));
+  try {
+    storage.setItem(GUEST_PROGRESS_STORAGE_KEY, JSON.stringify(normalized));
+  } catch {
+    // Keep in-memory progress as the fallback.
+  }
 };
 
 export const clearGuestProgress = () => {
-  if (typeof window === "undefined") {
+  const cleared = createEmptyState();
+  inMemoryProgress = cloneState(cleared);
+
+  const storage = getLocalStorage();
+  if (!storage) {
     return;
   }
 
-  window.localStorage.removeItem(GUEST_PROGRESS_STORAGE_KEY);
+  try {
+    storage.removeItem(GUEST_PROGRESS_STORAGE_KEY);
+  } catch {
+    // Keep in-memory progress cleared even if storage fails.
+  }
 };
 
 export const updateGuestProgress = (lessonId: string, completed: boolean) => {
   const trimmedLessonId = lessonId.trim();
   if (!trimmedLessonId) {
-    return emptyGuestProgress;
+    return cloneState(inMemoryProgress);
   }
 
   const state = readGuestProgress();
@@ -88,7 +138,7 @@ export const updateGuestProgress = (lessonId: string, completed: boolean) => {
   };
 
   if (completed) {
-    updated.completed[trimmedLessonId] = new Date().toISOString();
+    updated.completed[trimmedLessonId] = COMPLETED_VALUE;
   } else {
     delete updated.completed[trimmedLessonId];
   }
