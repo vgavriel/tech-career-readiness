@@ -3,6 +3,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 
 import LessonContent from "@/components/lesson-content";
 import LessonProgressCard from "@/components/lesson-progress-card";
+import { getLessonExample } from "@/lib/lesson-examples";
 import { fetchLessonContent } from "@/lib/lesson-content";
 import { buildLessonRedirectPath, findLessonBySlug } from "@/lib/lesson-slug";
 import { prisma } from "@/lib/prisma";
@@ -81,7 +82,19 @@ export default async function LessonPage({
     }),
   ]);
 
-  const objectives = parseObjectives(lesson.objectivesMarkdown);
+  const lessonExample = getLessonExample(lesson.slug);
+  const objectives = lessonExample?.outcomes.length
+    ? lessonExample.outcomes
+    : parseObjectives(lesson.objectivesMarkdown);
+  const checklist = lessonExample?.checklist ?? [];
+  const estimatedMinutes =
+    lesson.estimatedMinutes ?? lessonExample?.estimatedMinutes;
+  const lessonSummary =
+    lessonExample?.summary ??
+    (lesson.module?.title
+      ? `Part of ${lesson.module.title}, focused on the next step in your recruiting system.`
+      : "A focused lesson designed to keep your recruiting system moving.");
+
   let lessonContent: Awaited<ReturnType<typeof fetchLessonContent>> | null = null;
   let contentError = false;
 
@@ -94,13 +107,19 @@ export default async function LessonPage({
     contentError = true;
   }
 
+  const fallbackHtml = contentError ? lessonExample?.contentHtml ?? null : null;
+  const contentHtml = lessonContent?.html ?? fallbackHtml;
+  const showFallbackNotice = Boolean(contentError && fallbackHtml);
+  const showErrorState = Boolean(contentError && !fallbackHtml);
+
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_#fff7ed,_#f7f1e8_55%,_#f0e1cf_100%)]">
-      <div className="pointer-events-none absolute -top-24 right-[-6rem] h-72 w-72 rounded-full bg-[color:var(--wash-200)] opacity-70 blur-3xl animate-float-slow" />
-      <div className="pointer-events-none absolute bottom-[-6rem] left-[-6rem] h-72 w-72 rounded-full bg-[color:var(--accent-500)] opacity-10 blur-[120px]" />
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-24 pt-14 md:pt-20">
+    <div className="page-shell min-h-screen overflow-hidden">
+      <main className="page-content mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-24 pt-14 md:pt-20">
         <nav className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-          <Link href="/roadmap" className="transition hover:text-[color:var(--ink-900)]">
+          <Link
+            href="/roadmap"
+            className="transition hover:text-[color:var(--ink-900)]"
+          >
             Roadmap
           </Link>
           <span>/</span>
@@ -111,26 +130,67 @@ export default async function LessonPage({
           </span>
         </nav>
 
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_280px]">
-          <section className="rounded-3xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-6 shadow-[var(--shadow-soft)] md:p-8">
-            <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-              <span>Lesson {lesson.order}</span>
-              {lesson.estimatedMinutes ? (
-                <span>{lesson.estimatedMinutes} min read</span>
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <section className="space-y-6">
+            <header className="rounded-[32px] border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-6 shadow-[var(--shadow-card)] md:p-8">
+              <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+                <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1">
+                  Module {lesson.module?.order ?? "?"}
+                </span>
+                <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1">
+                  Lesson {lesson.order}
+                </span>
+                {estimatedMinutes ? (
+                  <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1">
+                    {estimatedMinutes} min read
+                  </span>
+                ) : null}
+              </div>
+              <h1 className="font-display mt-4 text-3xl text-[color:var(--ink-900)] md:text-4xl">
+                {lesson.title}
+              </h1>
+              <p className="mt-3 text-sm text-[color:var(--ink-700)] md:text-base">
+                {lessonSummary}
+              </p>
+
+              {lessonExample ? (
+                <div className="mt-6 grid gap-4 md:grid-cols-3">
+                  <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+                      Focus
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
+                      {lessonExample.focus}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+                      Deliverable
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
+                      {lessonExample.deliverable}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+                      Momentum
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
+                      1 focused session, then log progress.
+                    </p>
+                  </div>
+                </div>
               ) : null}
-            </div>
-            <h1 className="font-display mt-4 text-3xl text-[color:var(--ink-900)] md:text-4xl">
-              {lesson.title}
-            </h1>
+            </header>
 
             {objectives.length ? (
-              <div className="mt-6 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-100)] p-4">
+              <div className="rounded-[28px] border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-6 shadow-[var(--shadow-card)]">
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-                  Lesson objectives
+                  What you will walk away with
                 </p>
-                <ul className="mt-3 grid gap-2 text-sm text-[color:var(--ink-700)]">
+                <ul className="mt-4 grid gap-3 text-sm text-[color:var(--ink-700)]">
                   {objectives.map((objective) => (
-                    <li key={objective} className="flex items-start gap-2">
+                    <li key={objective} className="flex items-start gap-3">
                       <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[color:var(--accent-500)]" />
                       <span>{objective}</span>
                     </li>
@@ -139,16 +199,66 @@ export default async function LessonPage({
               </div>
             ) : null}
 
-            <div className="mt-8 border-t border-[color:var(--line-soft)] pt-8">
-              {contentError ? (
-                <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-100)] p-4 text-sm text-[color:var(--ink-700)]">
-                  Lesson content is unavailable right now. Please check back in a
-                  moment.
+            {checklist.length ? (
+              <div className="rounded-[28px] border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-6 shadow-[var(--shadow-card)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                  Lesson checklist
+                </p>
+                <ul className="mt-4 grid gap-2 text-sm text-[color:var(--ink-700)]">
+                  {checklist.map((item) => (
+                    <li key={item} className="flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--accent-500)]" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            <section className="rounded-[32px] border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-6 shadow-[var(--shadow-card)] md:p-8">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                  Lesson content
+                </p>
+                {contentError ? (
+                  <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                    Syncing docs
+                  </span>
+                ) : null}
+              </div>
+              {showFallbackNotice ? (
+                <div className="mt-4 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4 text-sm text-[color:var(--ink-700)]">
+                  The live document is still syncing. Showing a full sample lesson
+                  below in the meantime.
                 </div>
-              ) : lessonContent ? (
-                <LessonContent html={lessonContent.html} />
               ) : null}
-            </div>
+              {showErrorState ? (
+                <div className="mt-4 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4 text-sm text-[color:var(--ink-700)]">
+                  Lesson content is unavailable right now.{" "}
+                  <Link
+                    href={`/lesson/${lesson.slug}`}
+                    className="font-semibold text-[color:var(--accent-700)] underline"
+                  >
+                    Try again
+                  </Link>{" "}
+                  or{" "}
+                  <a
+                    href={lesson.publishedUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-semibold text-[color:var(--accent-700)] underline"
+                  >
+                    open the source doc
+                  </a>
+                  .
+                </div>
+              ) : null}
+              {contentHtml ? (
+                <div className="mt-6">
+                  <LessonContent html={contentHtml} />
+                </div>
+              ) : null}
+            </section>
           </section>
 
           <aside className="flex flex-col gap-4">
@@ -157,7 +267,26 @@ export default async function LessonPage({
               legacyLessonId={lesson.id}
               lessonTitle={lesson.title}
             />
-            <div className="rounded-3xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-soft)]">
+
+            {lessonExample?.plan.length ? (
+              <div className="rounded-[28px] border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-card)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                  Action plan
+                </p>
+                <div className="mt-4 grid gap-3 text-sm text-[color:var(--ink-700)]">
+                  {lessonExample.plan.map((step) => (
+                    <div key={step.title} className="space-y-1">
+                      <p className="font-semibold text-[color:var(--ink-900)]">
+                        {step.title}
+                      </p>
+                      <p>{step.detail}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            <div className="rounded-[28px] border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-card)]">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                 Resources
               </p>
@@ -171,7 +300,7 @@ export default async function LessonPage({
               </a>
             </div>
 
-            <div className="rounded-3xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-soft)]">
+            <div className="rounded-[28px] border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-card)]">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                 Navigate
               </p>
@@ -179,7 +308,7 @@ export default async function LessonPage({
                 {previousLesson ? (
                   <Link
                     href={`/lesson/${previousLesson.slug}`}
-                    className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-100)] px-4 py-3 text-[color:var(--ink-900)] transition hover:border-[color:var(--ink-900)]"
+                    className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 text-[color:var(--ink-900)] transition hover:border-[color:var(--ink-900)]"
                   >
                     ← Lesson {previousLesson.order}: {previousLesson.title}
                   </Link>
@@ -191,7 +320,7 @@ export default async function LessonPage({
                 {nextLesson ? (
                   <Link
                     href={`/lesson/${nextLesson.slug}`}
-                    className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-100)] px-4 py-3 text-[color:var(--ink-900)] transition hover:border-[color:var(--ink-900)]"
+                    className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 text-[color:var(--ink-900)] transition hover:border-[color:var(--ink-900)]"
                   >
                     Lesson {nextLesson.order}: {nextLesson.title} →
                   </Link>
@@ -201,6 +330,10 @@ export default async function LessonPage({
                   </div>
                 )}
               </div>
+            </div>
+
+            <div className="rounded-[24px] border border-dashed border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4 text-xs text-[color:var(--ink-500)]">
+              All lessons are open. Sign in only if you want to sync progress.
             </div>
           </aside>
         </div>

@@ -239,9 +239,9 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [x] Redirect old slugs to canonical slug
 
 ### Phase 7 — Quality pass + polish
-- [ ] Error handling for missing lessons/content fetch failures
-- [ ] Confirm public access to curriculum and lessons
-- [ ] UI polish for readability and CTAs
+- [x] Error handling for missing lessons/content fetch failures
+- [x] Confirm public access to curriculum and lessons
+- [x] UI polish for readability and CTAs
 - [x] Add TSDoc for functions/types and component intent comments
 
 ### Phase 7.5 — Observability (lightweight)

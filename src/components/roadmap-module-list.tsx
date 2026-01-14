@@ -53,17 +53,24 @@ export default function RoadmapModuleList({ modules }: RoadmapModuleListProps) {
   }
 
   return (
-    <div className="space-y-8">
-      {modules.map((module) => (
+    <div className="space-y-10">
+      {modules.map((module, moduleIndex) => (
         <section
           key={module.id}
-          className="rounded-3xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-6 shadow-[var(--shadow-soft)] md:p-8"
+          className="relative overflow-hidden rounded-[32px] border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-6 shadow-[var(--shadow-card)] md:p-8 animate-fade"
+          style={{ animationDelay: `${moduleIndex * 90}ms` }}
         >
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-                Module {module.order}
-              </p>
+          <div className="absolute -right-12 top-6 h-24 w-24 rounded-full bg-[color:var(--sage-200)] opacity-50 blur-3xl" />
+          <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                  Module {module.order}
+                </p>
+                <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                  {module.lessons.length} lessons
+                </span>
+              </div>
               <h2 className="font-display text-2xl text-[color:var(--ink-900)] md:text-3xl">
                 {module.title}
               </h2>
@@ -73,70 +80,68 @@ export default function RoadmapModuleList({ modules }: RoadmapModuleListProps) {
                 </p>
               ) : null}
             </div>
-            <div className="rounded-full bg-[color:var(--wash-200)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-700)]">
-              {module.lessons.length} lessons
-            </div>
+
+            <ol className="grid gap-3">
+              {module.lessons.map((lesson, lessonIndex) => {
+                const isCompleted =
+                  isReady && isLessonCompleted(lesson.key, lesson.id);
+
+                return (
+                  <li
+                    key={lesson.id}
+                    className="group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-3 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] animate-fade"
+                    style={{ animationDelay: `${lessonIndex * 70}ms` }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`flex h-6 w-6 items-center justify-center rounded-full border text-[color:var(--ink-500)] ${
+                          isCompleted
+                            ? "border-[color:var(--accent-500)] bg-[color:var(--accent-500)] text-[color:var(--wash-0)]"
+                            : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)]"
+                        }`}
+                      >
+                        {isCompleted ? (
+                          <>
+                            <span className="sr-only">Completed lesson</span>
+                            <svg
+                              aria-hidden="true"
+                              className="h-3.5 w-3.5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              strokeWidth={3}
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          </>
+                        ) : (
+                          <span className="sr-only">Incomplete lesson</span>
+                        )}
+                      </span>
+                      <span className="text-xs font-semibold text-[color:var(--ink-500)]">
+                        {module.order}.{lesson.order}
+                      </span>
+                      <Link
+                        href={`/lesson/${lesson.slug}`}
+                        className="text-sm font-semibold text-[color:var(--ink-900)] transition group-hover:text-[color:var(--accent-700)] md:text-base"
+                      >
+                        {lesson.title}
+                      </Link>
+                    </div>
+                    {lesson.estimatedMinutes ? (
+                      <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
+                        {lesson.estimatedMinutes} min
+                      </span>
+                    ) : null}
+                  </li>
+                );
+              })}
+            </ol>
           </div>
-
-          <ol className="mt-6 grid gap-3">
-            {module.lessons.map((lesson) => {
-              const isCompleted =
-                isReady && isLessonCompleted(lesson.key, lesson.id);
-
-              return (
-                <li
-                  key={lesson.id}
-                  className="group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-transparent bg-[color:var(--wash-100)] px-4 py-3 transition hover:border-[color:var(--line-soft)] hover:bg-[color:var(--wash-0)]"
-                >
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`flex h-6 w-6 items-center justify-center rounded-full border text-[color:var(--ink-500)] ${
-                        isCompleted
-                          ? "border-[color:var(--accent-500)] bg-[color:var(--accent-500)] text-[color:var(--wash-0)]"
-                          : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)]"
-                      }`}
-                    >
-                    {isCompleted ? (
-                      <>
-                        <span className="sr-only">Completed lesson</span>
-                        <svg
-                          aria-hidden="true"
-                          className="h-3.5 w-3.5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={3}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                      </>
-                    ) : (
-                      <span className="sr-only">Incomplete lesson</span>
-                    )}
-                    </span>
-                    <span className="text-xs font-semibold text-[color:var(--ink-500)]">
-                      {module.order}.{lesson.order}
-                    </span>
-                    <Link
-                      href={`/lesson/${lesson.slug}`}
-                      className="text-sm font-semibold text-[color:var(--ink-900)] transition group-hover:text-[color:var(--accent-700)] md:text-base"
-                    >
-                      {lesson.title}
-                    </Link>
-                  </div>
-                  {lesson.estimatedMinutes ? (
-                    <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
-                      {lesson.estimatedMinutes} min
-                    </span>
-                  ) : null}
-                </li>
-              );
-            })}
-          </ol>
         </section>
       ))}
     </div>

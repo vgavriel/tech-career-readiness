@@ -21,8 +21,8 @@ vi.mock("@/components/site-header", () => ({
 }));
 
 vi.mock("next/font/google", () => ({
-  Geist: () => ({ variable: "--font-geist-sans" }),
-  Geist_Mono: () => ({ variable: "--font-geist-mono" }),
+  Space_Grotesk: () => ({ variable: "--font-body" }),
+  Geist_Mono: () => ({ variable: "--font-mono" }),
   Fraunces: () => ({ variable: "--font-display" }),
 }));
 

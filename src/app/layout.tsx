@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Geist, Geist_Mono } from "next/font/google";
+import { Fraunces, Geist_Mono, Space_Grotesk } from "next/font/google";
 import { getServerSession } from "next-auth";
 
 import Providers from "@/components/providers";
@@ -7,13 +7,13 @@ import SiteHeader from "@/components/site-header";
 import { authOptions } from "@/lib/auth";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-body",
   subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+  variable: "--font-mono",
   subsets: ["latin"],
 });
 
@@ -51,7 +51,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} antialiased`}
+        className={`${spaceGrotesk.variable} ${geistMono.variable} ${fraunces.variable} antialiased`}
       >
         <Providers session={session}>
           <SiteHeader />
