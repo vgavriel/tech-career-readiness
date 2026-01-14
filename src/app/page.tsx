@@ -47,12 +47,12 @@ export default async function Home() {
             <div className="flex flex-wrap gap-4">
               <Link
                 href="/roadmap"
-                className="rounded-full bg-[color:var(--accent-700)] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
+                className="inline-flex w-full items-center justify-center rounded-full bg-[color:var(--accent-700)] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)] sm:w-auto"
               >
                 View the roadmap
               </Link>
               {!isAuthenticated ? (
-                <SignInCta className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--ink-900)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-800)] hover:bg-[color:var(--accent-500)]">
+                <SignInCta className="inline-flex w-full items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--ink-900)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-800)] hover:bg-[color:var(--accent-500)] sm:w-auto">
                   Sign in to save progress
                 </SignInCta>
               ) : null}
@@ -207,7 +207,7 @@ export default async function Home() {
           </div>
           <Link
             href="/roadmap"
-            className="rounded-full bg-[color:var(--accent-700)] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
+            className="inline-flex w-full items-center justify-center rounded-full bg-[color:var(--accent-700)] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)] sm:w-auto"
           >
             Explore the roadmap
           </Link>

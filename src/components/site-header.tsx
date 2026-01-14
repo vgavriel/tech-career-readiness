@@ -15,7 +15,7 @@ export default function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-[color:var(--line-soft)] border-t-4 border-t-[color:var(--accent-500)] bg-[rgba(255,250,244,0.92)] backdrop-blur">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-3">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-6 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-4">
           <Link
             href="/"
@@ -24,7 +24,7 @@ export default function SiteHeader() {
             Tech Career Readiness
           </Link>
         </div>
-        <div className="flex items-center gap-4 text-sm">
+        <div className="flex w-full items-center justify-between gap-3 text-sm sm:w-auto sm:justify-end sm:gap-4">
           <Link
             href="/roadmap"
             className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)] transition hover:text-[color:var(--ink-900)]"

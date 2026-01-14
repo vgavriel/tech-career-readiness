@@ -107,6 +107,8 @@ body {
   color: var(--ink-700);
   font-size: 1.05rem;
   line-height: 1.85;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .lesson-content > * + * {
@@ -154,6 +156,17 @@ body {
   text-underline-offset: 3px;
 }
 
+.lesson-content img,
+.lesson-content video,
+.lesson-content iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+.lesson-content iframe {
+  width: 100%;
+}
+
 .lesson-content blockquote {
   border-left: 4px solid var(--accent-500);
   padding: 1rem 1.2rem;
@@ -183,6 +196,31 @@ body {
   background: var(--wash-200);
   padding: 0.1rem 0.35rem;
   border-radius: 0.35rem;
+}
+
+@media (max-width: 640px) {
+  .lesson-content {
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  .lesson-content h1 {
+    font-size: 1.8rem;
+  }
+
+  .lesson-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .lesson-content h3 {
+    font-size: 1.2rem;
+  }
+
+  .lesson-content table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 .animate-rise {
