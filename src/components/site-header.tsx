@@ -23,14 +23,11 @@ export default function SiteHeader() {
           >
             Tech Career Readiness
           </Link>
-          <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-900)]">
-            Open access
-          </span>
         </div>
         <div className="flex items-center gap-4 text-sm">
           <Link
             href="/roadmap"
-            className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)] transition hover:text-[color:var(--ink-900)]"
+            className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)] transition hover:text-[color:var(--ink-900)]"
           >
             Roadmap
           </Link>
@@ -40,7 +37,7 @@ export default function SiteHeader() {
                 {session.user.name ?? session.user.email}
               </span>
               <button
-                className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)] transition hover:border-[color:var(--ink-900)]"
+                className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)] transition hover:border-[color:var(--ink-900)]"
                 onClick={() => signOut()}
                 type="button"
               >
@@ -49,7 +46,7 @@ export default function SiteHeader() {
             </>
           ) : (
             <button
-              className="rounded-full bg-[color:var(--accent-700)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
+              className="rounded-full bg-[color:var(--accent-700)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
               onClick={() => signIn("google")}
               type="button"
             >

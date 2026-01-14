@@ -118,13 +118,13 @@ export default function RoadmapProgressSummary({
           </div>
         </div>
         <div className="space-y-1">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
             Progress
           </p>
           <p className="text-sm font-semibold text-[color:var(--ink-900)]">
             {progressLabel}
           </p>
-          <p className="text-[11px] text-[color:var(--ink-500)]">
+          <p className="text-xs text-[color:var(--ink-500)]">
             {modules.length} modules - {totalLessons} lessons
           </p>
         </div>
@@ -133,32 +133,32 @@ export default function RoadmapProgressSummary({
       {primaryLesson ? (
         <Link
           href={`/lesson/${primaryLesson.slug}`}
-          className="rounded-full bg-[color:var(--accent-700)] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
+          className="rounded-full bg-[color:var(--accent-700)] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
         >
           {ctaLabel}
         </Link>
       ) : null}
 
       {primaryLesson && continueLesson ? (
-        <p className="text-[11px] text-[color:var(--ink-500)]">
+        <p className="text-xs text-[color:var(--ink-500)]">
           Up next: Lesson {continueLesson.moduleOrder}.{continueLesson.order} -{" "}
           {continueLesson.title}
         </p>
       ) : null}
 
       {isMerging ? (
-        <p className="text-[11px] text-[color:var(--ink-500)]">
+        <p className="text-xs text-[color:var(--ink-500)]">
           Syncing guest progress...
         </p>
       ) : null}
 
-      <p className="text-[11px] text-[color:var(--ink-500)]">
+      <p className="text-xs text-[color:var(--ink-500)]">
         All lessons are open. Sign in only to save progress.
       </p>
 
       {!isAuthenticated ? (
         <SignInCta
-          className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-700)]"
+          className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-700)]"
         >
           Sign in to save progress
         </SignInCta>

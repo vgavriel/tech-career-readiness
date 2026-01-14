@@ -40,7 +40,7 @@ export default async function RoadmapPage() {
       <main className="page-content mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 pb-24 pt-16 md:pt-22">
         <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
           <div className="space-y-5">
-            <div className="inline-flex items-center gap-3 rounded-full border border-[color:var(--accent-500)] bg-[color:var(--wash-0)] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-800)]">
+            <div className="inline-flex items-center gap-3 rounded-full border border-[color:var(--accent-500)] bg-[color:var(--wash-0)] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-800)]">
               <span className="h-2 w-2 rounded-full bg-[color:var(--accent-700)]" />
               Curriculum roadmap
             </div>
@@ -51,14 +51,6 @@ export default async function RoadmapPage() {
               Browse modules in order, pick a lesson, and start building the
               habits that convert into interviews and offers.
             </p>
-            <div className="flex flex-wrap gap-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-800)]">
-              <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3.5 py-1.5 text-[color:var(--ink-900)]">
-                Open access
-              </span>
-              <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3.5 py-1.5 text-[color:var(--ink-700)]">
-                Sign in to sync progress
-              </span>
-            </div>
           </div>
           <RoadmapProgressSummary modules={modules} />
         </section>

@@ -61,7 +61,8 @@ export default async function LessonPage({
     permanentRedirect(buildLessonRedirectPath(lesson.slug, rawSearchParams));
   }
 
-  const [previousLesson, nextLesson] = await Promise.all([
+  const moduleOrder = lesson.module?.order ?? null;
+  const [previousLesson, nextLesson, nextModule] = await Promise.all([
     prisma.lesson.findFirst({
       where: {
         moduleId: lesson.moduleId,
@@ -80,7 +81,25 @@ export default async function LessonPage({
       orderBy: { order: "asc" },
       select: { slug: true, title: true, order: true },
     }),
+    moduleOrder
+      ? prisma.module.findFirst({
+          where: { order: { gt: moduleOrder } },
+          orderBy: { order: "asc" },
+          select: {
+            order: true,
+            title: true,
+            lessons: {
+              where: { isArchived: false },
+              orderBy: { order: "asc" },
+              take: 1,
+              select: { slug: true, title: true, order: true },
+            },
+          },
+        })
+      : Promise.resolve(null),
   ]);
+
+  const nextModuleLesson = nextModule?.lessons[0] ?? null;
 
   const lessonExample = getLessonExample(lesson.slug);
   const objectives = lessonExample?.outcomes.length
@@ -115,7 +134,7 @@ export default async function LessonPage({
   return (
     <div className="page-shell min-h-screen overflow-hidden">
       <main className="page-content mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 pb-24 pt-16 md:pt-22">
-        <nav className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-500)]">
+        <nav className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-500)]">
           <Link
             href="/roadmap"
             className="transition hover:text-[color:var(--ink-900)]"
@@ -133,7 +152,7 @@ export default async function LessonPage({
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
           <section className="space-y-6">
             <header className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)] md:p-9">
-              <div className="flex flex-wrap items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-700)]">
+              <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-700)]">
                 <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1.5 text-[color:var(--ink-900)]">
                   Module {lesson.module?.order ?? "?"}
                 </span>
@@ -156,7 +175,7 @@ export default async function LessonPage({
               {lessonExample ? (
                 <div className="mt-6 grid gap-4 md:grid-cols-3">
                   <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
                       Focus
                     </p>
                     <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
@@ -164,7 +183,7 @@ export default async function LessonPage({
                     </p>
                   </div>
                   <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
                       Deliverable
                     </p>
                     <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
@@ -172,7 +191,7 @@ export default async function LessonPage({
                     </p>
                   </div>
                   <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
                       Momentum
                     </p>
                     <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
@@ -185,7 +204,7 @@ export default async function LessonPage({
 
             {objectives.length ? (
               <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)]">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                   What you will walk away with
                 </p>
                 <ul className="mt-4 grid gap-3 text-sm text-[color:var(--ink-700)]">
@@ -201,7 +220,7 @@ export default async function LessonPage({
 
             {checklist.length ? (
               <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)]">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                   Lesson checklist
                 </p>
                 <ul className="mt-4 grid gap-2 text-sm text-[color:var(--ink-700)]">
@@ -217,7 +236,7 @@ export default async function LessonPage({
 
             <section className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)] md:p-9">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                   Lesson content
                 </p>
                 {contentError ? (
@@ -270,7 +289,7 @@ export default async function LessonPage({
 
             {lessonExample?.plan.length ? (
               <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                   Action plan
                 </p>
                 <div className="mt-4 grid gap-3 text-sm text-[color:var(--ink-700)]">
@@ -287,7 +306,7 @@ export default async function LessonPage({
             ) : null}
 
             <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                 Resources
               </p>
               <a
@@ -301,7 +320,7 @@ export default async function LessonPage({
             </div>
 
             <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                 Navigate
               </p>
               <div className="mt-4 flex flex-col gap-3 text-sm font-semibold">
@@ -324,15 +343,23 @@ export default async function LessonPage({
                   >
                     Lesson {nextLesson.order}: {nextLesson.title} →
                   </Link>
+                ) : nextModuleLesson && nextModule ? (
+                  <Link
+                    href={`/lesson/${nextModuleLesson.slug}`}
+                    className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 text-[color:var(--ink-900)] transition hover:border-[color:var(--accent-700)]"
+                  >
+                    Next module {nextModule.order}: {nextModule.title} — Lesson{" "}
+                    {nextModuleLesson.order}: {nextModuleLesson.title} →
+                  </Link>
                 ) : (
                   <div className="rounded-2xl border border-dashed border-[color:var(--line-soft)] px-4 py-3 text-xs uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-                    End of module
+                    You are at the final lesson
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="rounded-[24px] border border-dashed border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5 text-[11px] text-[color:var(--ink-500)]">
+            <div className="rounded-[24px] border border-dashed border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5 text-xs text-[color:var(--ink-500)]">
               All lessons are open. Sign in only if you want to sync progress.
             </div>
           </aside>

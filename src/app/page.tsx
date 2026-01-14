@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { getServerSession } from "next-auth";
 
 import SignInCta from "@/components/sign-in-cta";
+import { authOptions } from "@/lib/auth";
 import { getLessonExample } from "@/lib/lesson-examples";
 
 /**
@@ -9,7 +11,9 @@ import { getLessonExample } from "@/lib/lesson-examples";
  * @remarks
  * Provides a concise entry point for new visitors; no state or side effects.
  */
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+  const isAuthenticated = Boolean(session?.user);
   const lessonExample = getLessonExample("define-your-goal");
   const checklist = lessonExample?.checklist.slice(0, 3) ?? [
     "Define your target role",
@@ -22,7 +26,7 @@ export default function Home() {
       <main className="page-content mx-auto flex w-full max-w-6xl flex-col gap-14 px-6 pb-24 pt-16 md:pt-24 lg:gap-20">
         <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
           <div className="space-y-7 animate-rise">
-            <div className="inline-flex items-center gap-3 rounded-full border border-[color:var(--accent-500)] bg-[color:var(--wash-0)] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-800)]">
+            <div className="inline-flex items-center gap-3 rounded-full border border-[color:var(--accent-500)] bg-[color:var(--wash-0)] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-800)]">
               <span className="h-2 w-2 rounded-full bg-[color:var(--accent-700)]" />
               Self-paced tech recruiting roadmap
             </div>
@@ -34,6 +38,12 @@ export default function Home() {
               interview readiness, and negotiation. Each lesson is focused,
               short, and mapped to real recruiting milestones.
             </p>
+            <p className="max-w-2xl text-sm text-[color:var(--ink-500)]">
+              All lessons are open.{" "}
+              {isAuthenticated
+                ? "Progress syncs to your account."
+                : "Sign in only to save progress."}
+            </p>
             <div className="flex flex-wrap gap-4">
               <Link
                 href="/roadmap"
@@ -41,11 +51,11 @@ export default function Home() {
               >
                 View the roadmap
               </Link>
-              <SignInCta
-                className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--ink-900)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-800)] hover:bg-[color:var(--accent-500)]"
-              >
-                Sign in to save progress
-              </SignInCta>
+              {!isAuthenticated ? (
+                <SignInCta className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--ink-900)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-800)] hover:bg-[color:var(--accent-500)]">
+                  Sign in to save progress
+                </SignInCta>
+              ) : null}
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
               {[
@@ -73,7 +83,7 @@ export default function Home() {
             <div className="absolute -top-12 right-8 h-28 w-28 rounded-full bg-[color:var(--accent-500)] opacity-30 blur-2xl" />
             <div className="rounded-[30px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-lift)] md:p-8">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-500)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-500)]">
                   Lesson spotlight
                 </p>
                 <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
@@ -89,7 +99,7 @@ export default function Home() {
               </p>
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
                     Focus
                   </p>
                   <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
@@ -98,7 +108,7 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
                     Deliverable
                   </p>
                   <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
@@ -108,7 +118,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="mt-6 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
                   Checklist
                 </p>
                 <ul className="mt-3 grid gap-2.5 text-sm text-[color:var(--ink-700)]">
@@ -120,7 +130,7 @@ export default function Home() {
                   ))}
                 </ul>
               </div>
-              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
                 <span>{lessonExample?.estimatedMinutes ?? 25} min read</span>
                 <span>Actionable task</span>
               </div>
@@ -136,7 +146,7 @@ export default function Home() {
                   className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 text-sm shadow-[var(--shadow-soft)] animate-fade"
                   style={{ animationDelay: `${120 + index * 90}ms` }}
                 >
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-500)]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-500)]">
                     {item.label}
                   </p>
                   <p className="mt-2 text-base font-semibold text-[color:var(--ink-900)]">
@@ -188,14 +198,11 @@ export default function Home() {
 
         <section className="flex flex-col gap-8 rounded-[30px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-8 shadow-[var(--shadow-card)] md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-              Open access
-            </p>
             <h2 className="font-display text-2xl text-[color:var(--ink-900)]">
               Read everything without signing in.
             </h2>
             <p className="text-sm text-[color:var(--ink-700)]">
-              Sign in only if you want to sync progress across devices.
+              Save progress anytime by signing in.
             </p>
           </div>
           <Link

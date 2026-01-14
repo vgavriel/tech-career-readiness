@@ -64,7 +64,7 @@ export default function RoadmapModuleList({ modules }: RoadmapModuleListProps) {
           <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
             <div className="space-y-3">
               <div className="flex flex-wrap items-center gap-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                   Module {module.order}
                 </p>
                 <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
@@ -133,7 +133,7 @@ export default function RoadmapModuleList({ modules }: RoadmapModuleListProps) {
                       </Link>
                     </div>
                     {lesson.estimatedMinutes ? (
-                      <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
+                      <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
                         {lesson.estimatedMinutes} min
                       </span>
                     ) : null}
