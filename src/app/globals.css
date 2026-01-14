@@ -49,13 +49,13 @@ body {
   color-scheme: light;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
 @layer base {
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
   a {
     color: inherit;
     text-decoration: none;
@@ -70,10 +70,10 @@ body {
   position: relative;
   isolation: isolate;
   background:
-    radial-gradient(circle at 12% 10%, rgba(255, 199, 44, 0.18), transparent 52%),
-    radial-gradient(circle at 82% -5%, rgba(192, 4, 4, 0.12), transparent 50%),
-    radial-gradient(circle at 18% 70%, rgba(0, 60, 113, 0.12), transparent 50%),
-    linear-gradient(180deg, #fffaf4 0%, #f4ede4 55%, #efe3d7 100%);
+    radial-gradient(circle at 14% 12%, rgba(255, 199, 44, 0.16), transparent 54%),
+    radial-gradient(circle at 88% -6%, rgba(192, 4, 4, 0.12), transparent 52%),
+    radial-gradient(circle at 18% 70%, rgba(0, 60, 113, 0.1), transparent 55%),
+    linear-gradient(180deg, #fffaf4 0%, #f7efe4 52%, #efe3d7 100%);
 }
 
 .page-shell::before {
@@ -81,12 +81,13 @@ body {
   position: absolute;
   inset: 0;
   background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360' viewBox='0 0 360 360'%3E%3Cg fill='none' stroke='rgb(78,54,41)' stroke-width='6' opacity='0.12'%3E%3Ccircle cx='180' cy='180' r='120'/%3E%3Cpath d='M50 180a130 130 0 0 1 230 -80'/%3E%3Cpath d='M90 300a140 140 0 0 0 200 -140'/%3E%3C/g%3E%3Cg fill='rgb(78,54,41)' opacity='0.18'%3E%3Ccircle cx='260' cy='260' r='6'/%3E%3Ccircle cx='240' cy='274' r='6'/%3E%3Ccircle cx='220' cy='288' r='6'/%3E%3Ccircle cx='200' cy='300' r='6'/%3E%3Ccircle cx='180' cy='308' r='6'/%3E%3Ccircle cx='160' cy='312' r='6'/%3E%3C/g%3E%3C/svg%3E"),
-    linear-gradient(rgba(78, 54, 41, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(78, 54, 41, 0.08) 1px, transparent 1px);
-  background-size: 480px 480px, 44px 44px, 44px 44px;
-  background-position: -140px -60px, 0 0, 0 0;
-  opacity: 0.25;
+    url("/brand-cycle.png"),
+    linear-gradient(rgba(78, 54, 41, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(78, 54, 41, 0.03) 1px, transparent 1px);
+  background-size: 640px 640px, 56px 56px, 56px 56px;
+  background-position: calc(100% + 220px) -180px, 0 0, 0 0;
+  background-repeat: no-repeat, repeat, repeat;
+  opacity: 0.12;
   pointer-events: none;
 }
 
@@ -95,14 +96,21 @@ body {
   z-index: 1;
 }
 
+@media (max-width: 768px) {
+  .page-shell::before {
+    background-size: 420px 420px, 44px 44px, 44px 44px;
+    background-position: calc(100% + 180px) -140px, 0 0, 0 0;
+  }
+}
+
 .lesson-content {
   color: var(--ink-700);
   font-size: 1.05rem;
-  line-height: 1.8;
+  line-height: 1.85;
 }
 
 .lesson-content > * + * {
-  margin-top: 1.2rem;
+  margin-top: 1.35rem;
 }
 
 .lesson-content h1,

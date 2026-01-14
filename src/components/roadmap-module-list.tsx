@@ -53,18 +53,18 @@ export default function RoadmapModuleList({ modules }: RoadmapModuleListProps) {
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-12">
       {modules.map((module, moduleIndex) => (
         <section
           key={module.id}
-          className="relative overflow-hidden rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)] md:p-8 animate-fade"
+          className="relative overflow-hidden rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)] md:p-9 animate-fade"
           style={{ animationDelay: `${moduleIndex * 90}ms` }}
         >
-          <div className="absolute -right-12 top-6 h-24 w-24 rounded-full bg-[color:var(--accent-500)] opacity-20 blur-3xl" />
-          <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="absolute -right-12 top-6 h-28 w-28 rounded-full bg-[color:var(--accent-500)] opacity-20 blur-3xl" />
+          <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
             <div className="space-y-3">
               <div className="flex flex-wrap items-center gap-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                   Module {module.order}
                 </p>
                 <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
@@ -81,7 +81,7 @@ export default function RoadmapModuleList({ modules }: RoadmapModuleListProps) {
               ) : null}
             </div>
 
-            <ol className="grid gap-3">
+            <ol className="grid gap-4">
               {module.lessons.map((lesson, lessonIndex) => {
                 const isCompleted =
                   isReady && isLessonCompleted(lesson.key, lesson.id);
@@ -89,7 +89,7 @@ export default function RoadmapModuleList({ modules }: RoadmapModuleListProps) {
                 return (
                   <li
                     key={lesson.id}
-                    className="group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] animate-fade"
+                    className="group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-5 py-4 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] animate-fade"
                     style={{ animationDelay: `${lessonIndex * 70}ms` }}
                   >
                     <div className="flex items-center gap-3">
@@ -133,7 +133,7 @@ export default function RoadmapModuleList({ modules }: RoadmapModuleListProps) {
                       </Link>
                     </div>
                     {lesson.estimatedMinutes ? (
-                      <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
                         {lesson.estimatedMinutes} min
                       </span>
                     ) : null}
