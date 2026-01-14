@@ -7,7 +7,7 @@ export default function LessonNotFound() {
   return (
     <div className="page-shell min-h-screen overflow-hidden">
       <main className="page-content mx-auto flex w-full max-w-4xl flex-col px-6 pb-24 pt-16 md:pt-24">
-        <section className="rounded-[32px] border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-8 shadow-[var(--shadow-card)]">
+        <section className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-8 shadow-[var(--shadow-card)]">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
             Lesson not found
           </p>
@@ -21,13 +21,13 @@ export default function LessonNotFound() {
           <div className="mt-6 flex flex-wrap gap-4">
             <Link
               href="/roadmap"
-              className="rounded-full bg-[color:var(--ink-900)] px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5"
+              className="rounded-full bg-[color:var(--accent-700)] px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
             >
               Back to roadmap
             </Link>
             <Link
               href="/"
-              className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-900)]"
+              className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-800)] hover:bg-[color:var(--accent-500)]"
             >
               Go to landing
             </Link>

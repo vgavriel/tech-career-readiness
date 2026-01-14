@@ -132,16 +132,16 @@ export default async function LessonPage({
 
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
           <section className="space-y-6">
-            <header className="rounded-[32px] border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-6 shadow-[var(--shadow-card)] md:p-8">
-              <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
-                <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1">
+            <header className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)] md:p-8">
+              <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-700)]">
+                <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[color:var(--ink-900)]">
                   Module {lesson.module?.order ?? "?"}
                 </span>
-                <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1">
+                <span className="rounded-full border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] px-3 py-1 text-[color:var(--ink-900)]">
                   Lesson {lesson.order}
                 </span>
                 {estimatedMinutes ? (
-                  <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1">
+                  <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-[color:var(--ink-700)]">
                     {estimatedMinutes} min read
                   </span>
                 ) : null}
@@ -184,14 +184,14 @@ export default async function LessonPage({
             </header>
 
             {objectives.length ? (
-              <div className="rounded-[28px] border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-6 shadow-[var(--shadow-card)]">
+              <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                   What you will walk away with
                 </p>
                 <ul className="mt-4 grid gap-3 text-sm text-[color:var(--ink-700)]">
                   {objectives.map((objective) => (
                     <li key={objective} className="flex items-start gap-3">
-                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[color:var(--accent-500)]" />
+                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[color:var(--accent-700)]" />
                       <span>{objective}</span>
                     </li>
                   ))}
@@ -200,14 +200,14 @@ export default async function LessonPage({
             ) : null}
 
             {checklist.length ? (
-              <div className="rounded-[28px] border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-6 shadow-[var(--shadow-card)]">
+              <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                   Lesson checklist
                 </p>
                 <ul className="mt-4 grid gap-2 text-sm text-[color:var(--ink-700)]">
                   {checklist.map((item) => (
                     <li key={item} className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--accent-500)]" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--accent-700)]" />
                       {item}
                     </li>
                   ))}
@@ -215,13 +215,13 @@ export default async function LessonPage({
               </div>
             ) : null}
 
-            <section className="rounded-[32px] border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-6 shadow-[var(--shadow-card)] md:p-8">
+            <section className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)] md:p-8">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                   Lesson content
                 </p>
                 {contentError ? (
-                  <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                  <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
                     Syncing docs
                   </span>
                 ) : null}
@@ -269,7 +269,7 @@ export default async function LessonPage({
             />
 
             {lessonExample?.plan.length ? (
-              <div className="rounded-[28px] border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-card)]">
+              <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)]">
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                   Action plan
                 </p>
@@ -286,7 +286,7 @@ export default async function LessonPage({
               </div>
             ) : null}
 
-            <div className="rounded-[28px] border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-card)]">
+            <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)]">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                 Resources
               </p>
@@ -300,7 +300,7 @@ export default async function LessonPage({
               </a>
             </div>
 
-            <div className="rounded-[28px] border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-card)]">
+            <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)]">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                 Navigate
               </p>
@@ -308,7 +308,7 @@ export default async function LessonPage({
                 {previousLesson ? (
                   <Link
                     href={`/lesson/${previousLesson.slug}`}
-                    className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 text-[color:var(--ink-900)] transition hover:border-[color:var(--ink-900)]"
+                    className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 text-[color:var(--ink-900)] transition hover:border-[color:var(--accent-700)]"
                   >
                     ← Lesson {previousLesson.order}: {previousLesson.title}
                   </Link>
@@ -320,7 +320,7 @@ export default async function LessonPage({
                 {nextLesson ? (
                   <Link
                     href={`/lesson/${nextLesson.slug}`}
-                    className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 text-[color:var(--ink-900)] transition hover:border-[color:var(--ink-900)]"
+                    className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 text-[color:var(--ink-900)] transition hover:border-[color:var(--accent-700)]"
                   >
                     Lesson {nextLesson.order}: {nextLesson.title} →
                   </Link>

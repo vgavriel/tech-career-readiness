@@ -101,7 +101,7 @@ export default function RoadmapProgressSummary({
   }
 
   return (
-    <div className="flex flex-col gap-5 rounded-[32px] border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-6 shadow-[var(--shadow-card)]">
+    <div className="flex flex-col gap-5 rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
       <div className="flex flex-wrap items-center gap-4">
         <div
           className="relative h-20 w-20 rounded-full p-1"
@@ -113,7 +113,7 @@ export default function RoadmapProgressSummary({
           aria-valuemax={100}
           aria-valuenow={progressPercent}
         >
-          <div className="flex h-full w-full items-center justify-center rounded-full bg-[color:var(--surface)] text-sm font-semibold text-[color:var(--ink-900)]">
+          <div className="flex h-full w-full items-center justify-center rounded-full bg-[color:var(--wash-0)] text-sm font-semibold text-[color:var(--ink-900)]">
             {progressPercent}%
           </div>
         </div>
@@ -133,7 +133,7 @@ export default function RoadmapProgressSummary({
       {primaryLesson ? (
         <Link
           href={`/lesson/${primaryLesson.slug}`}
-          className="rounded-full bg-[color:var(--ink-900)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5"
+          className="rounded-full bg-[color:var(--accent-700)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
         >
           {ctaLabel}
         </Link>

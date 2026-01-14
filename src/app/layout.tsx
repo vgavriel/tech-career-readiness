@@ -1,27 +1,10 @@
 import type { Metadata } from "next";
-import { Fraunces, Geist_Mono, Space_Grotesk } from "next/font/google";
 import { getServerSession } from "next-auth";
 
 import Providers from "@/components/providers";
 import SiteHeader from "@/components/site-header";
 import { authOptions } from "@/lib/auth";
 import "./globals.css";
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-body",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-});
-
-const fraunces = Fraunces({
-  variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-});
 
 export const metadata: Metadata = {
   title: "Tech Career Readiness",
@@ -50,9 +33,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body
-        className={`${spaceGrotesk.variable} ${geistMono.variable} ${fraunces.variable} antialiased`}
-      >
+      <body className="antialiased">
         <Providers session={session}>
           <SiteHeader />
           {children}

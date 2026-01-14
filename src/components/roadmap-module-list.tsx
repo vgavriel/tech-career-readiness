@@ -57,17 +57,17 @@ export default function RoadmapModuleList({ modules }: RoadmapModuleListProps) {
       {modules.map((module, moduleIndex) => (
         <section
           key={module.id}
-          className="relative overflow-hidden rounded-[32px] border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-6 shadow-[var(--shadow-card)] md:p-8 animate-fade"
+          className="relative overflow-hidden rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)] md:p-8 animate-fade"
           style={{ animationDelay: `${moduleIndex * 90}ms` }}
         >
-          <div className="absolute -right-12 top-6 h-24 w-24 rounded-full bg-[color:var(--sage-200)] opacity-50 blur-3xl" />
+          <div className="absolute -right-12 top-6 h-24 w-24 rounded-full bg-[color:var(--accent-500)] opacity-20 blur-3xl" />
           <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
             <div className="space-y-3">
               <div className="flex flex-wrap items-center gap-3">
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                   Module {module.order}
                 </p>
-                <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
                   {module.lessons.length} lessons
                 </span>
               </div>
@@ -89,14 +89,14 @@ export default function RoadmapModuleList({ modules }: RoadmapModuleListProps) {
                 return (
                   <li
                     key={lesson.id}
-                    className="group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-3 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] animate-fade"
+                    className="group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] animate-fade"
                     style={{ animationDelay: `${lessonIndex * 70}ms` }}
                   >
                     <div className="flex items-center gap-3">
                       <span
                         className={`flex h-6 w-6 items-center justify-center rounded-full border text-[color:var(--ink-500)] ${
                           isCompleted
-                            ? "border-[color:var(--accent-500)] bg-[color:var(--accent-500)] text-[color:var(--wash-0)]"
+                            ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
                             : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)]"
                         }`}
                       >

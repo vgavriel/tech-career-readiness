@@ -14,16 +14,16 @@ export default function SiteHeader() {
   const { data: session } = useSession();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[color:var(--line-soft)] bg-[rgba(253,248,242,0.92)] backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-[color:var(--line-soft)] border-t-4 border-t-[color:var(--accent-500)] bg-[rgba(255,250,244,0.94)] backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-4">
         <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/"
-            className="font-display text-lg font-semibold text-[color:var(--ink-900)]"
+            className="font-display text-lg font-semibold tracking-[0.02em] text-[color:var(--ink-800)]"
           >
             Tech Career Readiness
           </Link>
-          <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+          <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
             Open access
           </span>
         </div>
@@ -49,7 +49,7 @@ export default function SiteHeader() {
             </>
           ) : (
             <button
-              className="rounded-full bg-[color:var(--ink-900)] px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5"
+              className="rounded-full bg-[color:var(--accent-700)] px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
               onClick={() => signIn("google")}
               type="button"
             >
