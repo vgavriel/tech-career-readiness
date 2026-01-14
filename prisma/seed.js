@@ -24,6 +24,8 @@ const modules = [
         title: "Define Your Goal",
         slug: "define-your-goal",
         order: 1,
+        publishedUrl:
+          "https://docs.google.com/document/d/e/2PACX-1vRWVi28NTFDO-AAERit3UOTaYX7YfBnpCv-tsJVOEOp5fzhrliW1GzLuMz8FDCm1qrn6YkRHVy4uGLX/pub",
       },
       {
         title: "Set a Weekly System",
@@ -209,7 +211,9 @@ async function main() {
 
     for (const lessonData of moduleData.lessons) {
       const lessonKey = lessonData.key ?? lessonData.slug;
-      const publishedUrl = `https://docs.google.com/document/d/e/${lessonData.slug}/pub`;
+      const publishedUrl =
+        lessonData.publishedUrl ??
+        `https://docs.google.com/document/d/e/${lessonData.slug}/pub`;
 
       const existingLesson = await prisma.lesson.findUnique({
         where: { key: lessonKey },
