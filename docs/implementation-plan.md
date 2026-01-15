@@ -237,6 +237,7 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 ### Phase 6 — Slug alias redirects
 - [x] Implement alias lookup in lesson route
 - [x] Redirect old slugs to canonical slug
+- [ ] remove double id and key logic for lessons
 
 ### Phase 7 — Quality pass + polish
 - [x] Error handling for missing lessons/content fetch failures

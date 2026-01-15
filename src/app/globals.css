@@ -81,12 +81,11 @@ body {
   position: absolute;
   inset: 0;
   background-image:
-    url("/brand-cycle.png"),
     linear-gradient(rgba(78, 54, 41, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(78, 54, 41, 0.03) 1px, transparent 1px);
-  background-size: 640px 640px, 56px 56px, 56px 56px;
-  background-position: calc(100% + 220px) -180px, 0 0, 0 0;
-  background-repeat: no-repeat, repeat, repeat;
+  background-size: 56px 56px, 56px 56px;
+  background-position: 0 0, 0 0;
+  background-repeat: repeat, repeat;
   opacity: 0.12;
   pointer-events: none;
 }
@@ -98,8 +97,8 @@ body {
 
 @media (max-width: 768px) {
   .page-shell::before {
-    background-size: 420px 420px, 44px 44px, 44px 44px;
-    background-position: calc(100% + 180px) -140px, 0 0, 0 0;
+    background-size: 44px 44px, 44px 44px;
+    background-position: 0 0, 0 0;
   }
 }
 
