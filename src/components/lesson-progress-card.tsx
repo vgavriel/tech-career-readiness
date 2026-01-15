@@ -44,7 +44,7 @@ export default function LessonProgressCard({
     : "Stored in this browser. Sign in to sync.";
 
   return (
-    <div className="rounded-3xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-soft)]">
+    <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
       <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
         Progress
       </p>
@@ -54,10 +54,10 @@ export default function LessonProgressCard({
       <p className="mt-1 text-xs text-[color:var(--ink-500)]">{statusLabel}</p>
 
       <button
-        className={`mt-4 w-full rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition disabled:cursor-not-allowed disabled:opacity-60 ${
+        className={`mt-4 w-full rounded-full px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.2em] shadow-[var(--shadow-soft)] transition disabled:cursor-not-allowed disabled:opacity-60 ${
           completed
-            ? "border border-[color:var(--line-soft)] text-[color:var(--ink-900)] hover:border-[color:var(--ink-900)]"
-            : "bg-[color:var(--ink-900)] text-[color:var(--wash-0)] hover:-translate-y-0.5"
+            ? "border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-900)] hover:border-[color:var(--ink-900)]"
+            : "bg-[color:var(--accent-700)] text-[color:var(--wash-0)] hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
         }`}
         disabled={disabled}
         onClick={() => setLessonCompletion(lessonKey, !completed)}
@@ -67,7 +67,9 @@ export default function LessonProgressCard({
         {completed ? "Mark incomplete" : "Mark complete"}
       </button>
 
-      <p className="mt-3 text-xs text-[color:var(--ink-500)]">{helperText}</p>
+      <p className="mt-3 text-xs text-[color:var(--ink-500)]">
+        {helperText}
+      </p>
 
       {isMerging ? (
         <p className="mt-2 text-xs text-[color:var(--ink-500)]">

@@ -82,6 +82,7 @@ export default function RoadmapProgressSummary({
   const firstLesson = orderedLessons[0];
   const allComplete = isReady && totalLessons > 0 && completedCount >= totalLessons;
   const progressPercent = totalLessons === 0 ? 0 : Math.round((completedCount / totalLessons) * 100);
+  const progressDegrees = Math.min(100, Math.max(0, progressPercent)) * 3.6;
 
   const primaryLesson = continueLesson ?? firstLesson;
   const progressLabel = isReady
@@ -100,34 +101,39 @@ export default function RoadmapProgressSummary({
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded-3xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-6 shadow-[var(--shadow-soft)]">
-      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-        {modules.length} modules - {totalLessons} lessons
-      </p>
-      <div className="space-y-2">
-        <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
-          <span>Progress</span>
-          <span>{progressPercent}%</span>
-        </div>
+    <div className="flex flex-col gap-6 rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)]">
+      <div className="flex flex-wrap items-center gap-4">
         <div
-          className="h-2 w-full rounded-full bg-[color:var(--wash-200)]"
+          className="relative h-24 w-24 rounded-full p-1.5"
+          style={{
+            background: `conic-gradient(var(--accent-500) ${progressDegrees}deg, var(--wash-200) 0deg)`,
+          }}
           role="progressbar"
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={progressPercent}
         >
-          <div
-            className="h-2 rounded-full bg-[color:var(--accent-500)] transition-[width] duration-300"
-            style={{ width: `${progressPercent}%` }}
-          />
+          <div className="flex h-full w-full items-center justify-center rounded-full bg-[color:var(--wash-0)] text-sm font-semibold text-[color:var(--ink-900)]">
+            {progressPercent}%
+          </div>
         </div>
-        <p className="text-xs text-[color:var(--ink-500)]">{progressLabel}</p>
+        <div className="space-y-1">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+            Progress
+          </p>
+          <p className="text-sm font-semibold text-[color:var(--ink-900)]">
+            {progressLabel}
+          </p>
+          <p className="text-xs text-[color:var(--ink-500)]">
+            {modules.length} modules - {totalLessons} lessons
+          </p>
+        </div>
       </div>
 
       {primaryLesson ? (
         <Link
           href={`/lesson/${primaryLesson.slug}`}
-          className="rounded-full bg-[color:var(--ink-900)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--wash-0)] transition hover:-translate-y-0.5"
+          className="inline-flex w-full items-center justify-center rounded-full bg-[color:var(--accent-700)] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)] sm:w-auto"
         >
           {ctaLabel}
         </Link>
@@ -141,8 +147,14 @@ export default function RoadmapProgressSummary({
       ) : null}
 
       {isMerging ? (
-        <p className="text-xs text-[color:var(--ink-500)]">Syncing guest progress...</p>
+        <p className="text-xs text-[color:var(--ink-500)]">
+          Syncing guest progress...
+        </p>
       ) : null}
+
+      <p className="text-xs text-[color:var(--ink-500)]">
+        All lessons are open. Sign in only to save progress.
+      </p>
 
       {!isAuthenticated ? (
         <SignInCta

@@ -5,7 +5,7 @@ test("public browsing from landing to lesson content", async ({ page }) => {
 
   await expect(
     page.getByRole("heading", {
-      name: /structured path from student to hired engineer/i,
+      name: /land your first tech role/i,
     })
   ).toBeVisible();
 

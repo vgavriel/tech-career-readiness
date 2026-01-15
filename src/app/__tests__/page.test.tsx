@@ -1,15 +1,25 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-import Home from "@/app/page";
+const authMocks = vi.hoisted(() => ({
+  getServerSession: vi.fn(),
+}));
+
+vi.mock("next-auth", () => ({
+  getServerSession: authMocks.getServerSession,
+}));
 
 describe("Home page", () => {
-  it("renders the hero and primary CTAs", () => {
-    render(<Home />);
+  it("renders the hero and primary CTAs for signed-out visitors", async () => {
+    authMocks.getServerSession.mockResolvedValue(null);
+
+    const Home = (await import("@/app/page")).default;
+    const ui = await Home();
+    render(ui);
 
     expect(
       screen.getByRole("heading", {
-        name: /structured path from student to hired engineer/i,
+        name: /land your first tech role with a calm, structured plan/i,
       })
     ).toBeInTheDocument();
 
@@ -21,5 +31,20 @@ describe("Home page", () => {
     expect(
       screen.getByRole("button", { name: /sign in to save progress/i })
     ).toBeInTheDocument();
+  });
+
+  it("hides the sign-in CTA for signed-in visitors", async () => {
+    authMocks.getServerSession.mockResolvedValue({
+      user: { name: "Ada Lovelace", email: "ada@example.com" },
+      expires: "2099-01-01T00:00:00.000Z",
+    });
+
+    const Home = (await import("@/app/page")).default;
+    const ui = await Home();
+    render(ui);
+
+    expect(
+      screen.queryByRole("button", { name: /sign in to save progress/i })
+    ).not.toBeInTheDocument();
   });
 });

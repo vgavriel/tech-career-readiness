@@ -20,12 +20,6 @@ vi.mock("@/components/site-header", () => ({
   default: () => <div data-testid="site-header" />,
 }));
 
-vi.mock("next/font/google", () => ({
-  Geist: () => ({ variable: "--font-geist-sans" }),
-  Geist_Mono: () => ({ variable: "--font-geist-mono" }),
-  Fraunces: () => ({ variable: "--font-display" }),
-}));
-
 describe("RootLayout", () => {
   it("wraps the app with providers and renders children", async () => {
     authMocks.getServerSession.mockResolvedValue(null);
