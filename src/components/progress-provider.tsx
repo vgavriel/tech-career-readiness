@@ -22,17 +22,17 @@ import {
  * Public API exposed by the progress context.
  */
 type ProgressContextValue = {
-  completedLessonIds: string[];
-  isLessonCompleted: (lessonId: string) => boolean;
+  completedLessonKeys: string[];
+  isLessonCompleted: (lessonKey: string, legacyLessonId?: string) => boolean;
   isReady: boolean;
   isAuthenticated: boolean;
   isMerging: boolean;
-  setLessonCompletion: (lessonId: string, completed: boolean) => Promise<void>;
+  setLessonCompletion: (lessonKey: string, completed: boolean) => Promise<void>;
   refreshProgress: () => Promise<void>;
 };
 
 /**
- * Internal map of lessonId -> completion marker.
+ * Internal map of lessonKey -> completion marker.
  */
 type ProgressMap = Record<string, string>;
 
@@ -46,11 +46,11 @@ type ProgressProviderProps = {
 const ProgressContext = createContext<ProgressContextValue | null>(null);
 
 /**
- * Convert a list of completed lesson ids into the map shape.
+ * Convert a list of completed lesson keys into the map shape.
  */
-const buildProgressMap = (lessonIds: string[]): ProgressMap =>
-  lessonIds.reduce<ProgressMap>((accumulator, lessonId) => {
-    accumulator[lessonId] = "completed";
+const buildProgressMap = (lessonKeys: string[]): ProgressMap =>
+  lessonKeys.reduce<ProgressMap>((accumulator, lessonKey) => {
+    accumulator[lessonKey] = "completed";
     return accumulator;
   }, {});
 
@@ -67,19 +67,23 @@ const fetchUserProgress = async () => {
     throw new Error("Failed to fetch progress.");
   }
 
-  const body = (await response.json()) as { completedLessonIds?: string[] };
-  const completedLessonIds = Array.isArray(body.completedLessonIds)
-    ? body.completedLessonIds
+  const body = (await response.json()) as { completedLessonKeys?: string[] };
+  const completedLessonKeys = Array.isArray(body.completedLessonKeys)
+    ? body.completedLessonKeys
     : [];
 
-  return buildProgressMap(completedLessonIds);
+  return buildProgressMap(completedLessonKeys);
 };
 
 /**
  * Merge guest progress into the authenticated account.
  */
 const mergeGuestProgress = async (guestProgress: ProgressMap) => {
-  const entries = Object.keys(guestProgress).map((lessonId) => ({ lessonId }));
+  // Include legacy IDs to merge older guest progress entries.
+  const entries = Object.keys(guestProgress).map((lessonKey) => ({
+    lessonKey,
+    lessonId: lessonKey,
+  }));
 
   const response = await fetch("/api/progress/merge", {
     method: "POST",
@@ -109,7 +113,11 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
   const isAuthenticated = status === "authenticated";
 
   const isLessonCompleted = useCallback(
-    (lessonId: string) => Boolean(progressMap[lessonId]),
+    (lessonKey: string, legacyLessonId?: string) =>
+      Boolean(
+        progressMap[lessonKey] ||
+          (legacyLessonId ? progressMap[legacyLessonId] : false)
+      ),
     [progressMap]
   );
 
@@ -163,9 +171,9 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
   }, [loadUserProgress]);
 
   const setLessonCompletion = useCallback(
-    async (lessonId: string, completed: boolean) => {
-      const trimmedLessonId = lessonId.trim();
-      if (!trimmedLessonId) {
+    async (lessonKey: string, completed: boolean) => {
+      const trimmedLessonKey = lessonKey.trim();
+      if (!trimmedLessonKey) {
         return;
       }
 
@@ -175,7 +183,7 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              lessonId: trimmedLessonId,
+              lessonKey: trimmedLessonKey,
               completed,
             }),
           });
@@ -187,9 +195,10 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
           setProgressMap((previous) => {
             const updated = { ...previous };
             if (completed) {
-              updated[trimmedLessonId] = updated[trimmedLessonId] ?? "completed";
+              updated[trimmedLessonKey] =
+                updated[trimmedLessonKey] ?? "completed";
             } else {
-              delete updated[trimmedLessonId];
+              delete updated[trimmedLessonKey];
             }
             return updated;
           });
@@ -197,7 +206,7 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
           console.error(error);
         }
       } else {
-        const updated = updateGuestProgress(trimmedLessonId, completed);
+        const updated = updateGuestProgress(trimmedLessonKey, completed);
         setProgressMap(updated.completed);
       }
     },
@@ -229,14 +238,14 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
     void handleMerge();
   }, [handleMerge, isAuthenticated, loadGuestProgress, session?.user?.email, status]);
 
-  const completedLessonIds = useMemo(
+  const completedLessonKeys = useMemo(
     () => Object.keys(progressMap),
     [progressMap]
   );
 
   const value = useMemo<ProgressContextValue>(
     () => ({
-      completedLessonIds,
+      completedLessonKeys,
       isLessonCompleted,
       isReady,
       isAuthenticated,
@@ -245,7 +254,7 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
       refreshProgress,
     }),
     [
-      completedLessonIds,
+      completedLessonKeys,
       isLessonCompleted,
       isReady,
       isAuthenticated,

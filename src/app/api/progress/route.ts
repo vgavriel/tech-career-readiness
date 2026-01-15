@@ -13,10 +13,14 @@ export const runtime = "nodejs";
 
 const progressUpdateSchema = z
   .object({
-    lessonId: z.string().trim().min(1),
+    lessonKey: z.string().trim().min(1).optional(),
+    lessonId: z.string().trim().min(1).optional(),
     completed: z.boolean(),
   })
-  .strict();
+  .strict()
+  .refine((data) => Boolean(data.lessonKey || data.lessonId), {
+    message: "Provide lessonKey.",
+  });
 
 /**
  * GET /api/progress: return completed lesson ids for the current user.
@@ -41,14 +45,19 @@ export async function GET(request: Request) {
     where: {
       userId: user.id,
       completedAt: { not: null },
+      lesson: { isArchived: false },
     },
     select: {
-      lessonId: true,
+      lesson: {
+        select: {
+          key: true,
+        },
+      },
     },
   });
 
   return NextResponse.json({
-    completedLessonIds: progress.map((entry) => entry.lessonId),
+    completedLessonKeys: progress.map((entry) => entry.lesson.key),
   });
 }
 
@@ -81,11 +90,13 @@ export async function POST(request: Request) {
     return parsedBody.error;
   }
 
-  const { lessonId, completed } = parsedBody.data;
+  const { lessonKey, lessonId, completed } = parsedBody.data;
 
-  const lesson = await prisma.lesson.findUnique({
-    where: { id: lessonId },
-    select: { id: true },
+  const lesson = await prisma.lesson.findFirst({
+    where: lessonKey
+      ? { key: lessonKey, isArchived: false }
+      : { id: lessonId ?? "", isArchived: false },
+    select: { id: true, key: true },
   });
 
   if (!lesson) {
@@ -104,12 +115,12 @@ export async function POST(request: Request) {
             where: {
               userId_lessonId: {
                 userId: user.id,
-                lessonId,
+                lessonId: lesson.id,
               },
             },
             create: {
               userId: user.id,
-              lessonId,
+              lessonId: lesson.id,
               completedAt: now,
             },
             update: {
@@ -119,13 +130,13 @@ export async function POST(request: Request) {
         : prisma.lessonProgress.deleteMany({
             where: {
               userId: user.id,
-              lessonId,
+              lessonId: lesson.id,
             },
           }),
       prisma.lessonProgressEvent.create({
         data: {
           userId: user.id,
-          lessonId,
+          lessonId: lesson.id,
           action,
           createdAt: now,
         },
@@ -133,5 +144,5 @@ export async function POST(request: Request) {
     ])
   );
 
-  return NextResponse.json({ lessonId, completed });
+  return NextResponse.json({ lessonKey: lesson.key, completed });
 }

@@ -37,6 +37,7 @@ const modules: RoadmapModule[] = [
     lessons: [
       {
         id: "lesson-1",
+        key: "lesson-1",
         slug: "intro",
         title: "Intro",
         order: 1,
@@ -44,6 +45,7 @@ const modules: RoadmapModule[] = [
       },
       {
         id: "lesson-2",
+        key: "lesson-2",
         slug: "next",
         title: "Next steps",
         order: 2,
@@ -60,7 +62,7 @@ describe("RoadmapProgressSummary", () => {
 
   it("shows progress and a continue link", () => {
     progressMocks.useProgress.mockReturnValue({
-      completedLessonIds: ["lesson-1"],
+      completedLessonKeys: ["lesson-1"],
       isAuthenticated: false,
       isMerging: false,
       isReady: true,
@@ -73,13 +75,13 @@ describe("RoadmapProgressSummary", () => {
       screen.getByRole("link", { name: /continue where you left off/i })
     ).toHaveAttribute("href", "/lesson/next");
     expect(
-      screen.getByRole("link", { name: /sign in to save progress/i })
+      screen.getByRole("button", { name: /sign in to save progress/i })
     ).toBeInTheDocument();
   });
 
   it("shows a review action when all lessons are complete", () => {
     progressMocks.useProgress.mockReturnValue({
-      completedLessonIds: ["lesson-1", "lesson-2"],
+      completedLessonKeys: ["lesson-1", "lesson-2"],
       isAuthenticated: true,
       isMerging: false,
       isReady: true,
@@ -91,7 +93,7 @@ describe("RoadmapProgressSummary", () => {
       screen.getByRole("link", { name: /review from the start/i })
     ).toHaveAttribute("href", "/lesson/intro");
     expect(
-      screen.queryByRole("link", { name: /sign in to save progress/i })
+      screen.queryByRole("button", { name: /sign in to save progress/i })
     ).not.toBeInTheDocument();
   });
 });

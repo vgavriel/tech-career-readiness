@@ -35,7 +35,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
 
 /**
- * Normalize completed entries into the canonical lessonId -> "completed" map.
+ * Normalize completed entries into the canonical lessonKey -> "completed" map.
  */
 const normalizeCompleted = (value: unknown) => {
   if (!isRecord(value)) {
@@ -155,9 +155,9 @@ export const clearGuestProgress = () => {
 /**
  * Update a single lesson completion state and persist the result.
  */
-export const updateGuestProgress = (lessonId: string, completed: boolean) => {
-  const trimmedLessonId = lessonId.trim();
-  if (!trimmedLessonId) {
+export const updateGuestProgress = (lessonKey: string, completed: boolean) => {
+  const trimmedLessonKey = lessonKey.trim();
+  if (!trimmedLessonKey) {
     return cloneState(inMemoryProgress);
   }
 
@@ -168,9 +168,9 @@ export const updateGuestProgress = (lessonId: string, completed: boolean) => {
   };
 
   if (completed) {
-    updated.completed[trimmedLessonId] = COMPLETED_VALUE;
+    updated.completed[trimmedLessonKey] = COMPLETED_VALUE;
   } else {
-    delete updated.completed[trimmedLessonId];
+    delete updated.completed[trimmedLessonKey];
   }
 
   writeGuestProgress(updated);

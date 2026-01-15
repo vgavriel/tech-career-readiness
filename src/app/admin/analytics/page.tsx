@@ -34,7 +34,7 @@ export default async function AdminAnalyticsPage() {
   }
 
   const [totalLessons, users] = await Promise.all([
-    prisma.lesson.count(),
+    prisma.lesson.count({ where: { isArchived: false } }),
     prisma.user.findMany({
       orderBy: { createdAt: "desc" },
       select: {
@@ -43,7 +43,7 @@ export default async function AdminAnalyticsPage() {
         name: true,
         createdAt: true,
         progress: {
-          where: { completedAt: { not: null } },
+          where: { completedAt: { not: null }, lesson: { isArchived: false } },
           select: { lessonId: true },
         },
         events: {
@@ -57,6 +57,20 @@ export default async function AdminAnalyticsPage() {
                 title: true,
                 slug: true,
                 order: true,
+                isArchived: true,
+                supersededBy: {
+                  select: {
+                    title: true,
+                    slug: true,
+                    order: true,
+                    module: {
+                      select: {
+                        title: true,
+                        order: true,
+                      },
+                    },
+                  },
+                },
                 module: {
                   select: {
                     title: true,
@@ -176,22 +190,40 @@ export default async function AdminAnalyticsPage() {
                             No activity yet.
                           </p>
                         ) : (
-                          learner.events.map((event) => (
-                            <div
-                              key={event.id}
-                              className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] px-4 py-3 text-sm text-[color:var(--ink-700)]"
-                            >
-                              <p className="font-semibold text-[color:var(--ink-900)]">
-                                {event.action === "completed"
-                                  ? "Completed"
-                                  : "Marked incomplete"} - Module {event.lesson.module.order}.
-                                {event.lesson.order} - {event.lesson.title}
-                              </p>
-                              <p className="mt-1 text-xs text-[color:var(--ink-500)]">
-                                {formatTimestamp(event.createdAt)}
-                              </p>
-                            </div>
-                          ))
+                          learner.events.map((event) => {
+                            const supersededBy = event.lesson.supersededBy;
+                            const supersededLabel = supersededBy
+                              ? `Superseded by Module ${supersededBy.module.order}.${supersededBy.order} - ${supersededBy.title}`
+                              : null;
+                            const statusLabel = event.lesson.isArchived
+                              ? ["Archived", supersededLabel]
+                                  .filter(Boolean)
+                                  .join(" • ")
+                              : supersededLabel;
+
+                            return (
+                              <div
+                                key={event.id}
+                                className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] px-4 py-3 text-sm text-[color:var(--ink-700)]"
+                              >
+                                <p className="font-semibold text-[color:var(--ink-900)]">
+                                  {event.action === "completed"
+                                    ? "Completed"
+                                    : "Marked incomplete"}{" "}
+                                  - Module {event.lesson.module.order}.
+                                  {event.lesson.order} - {event.lesson.title}
+                                </p>
+                                {statusLabel ? (
+                                  <p className="mt-1 text-xs text-[color:var(--ink-500)]">
+                                    {statusLabel}
+                                  </p>
+                                ) : null}
+                                <p className="mt-1 text-xs text-[color:var(--ink-500)]">
+                                  {formatTimestamp(event.createdAt)}
+                                </p>
+                              </div>
+                            );
+                          })
                         )}
                       </div>
                     </details>

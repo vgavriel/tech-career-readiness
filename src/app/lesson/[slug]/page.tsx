@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 
 import LessonContent from "@/components/lesson-content";
 import LessonProgressCard from "@/components/lesson-progress-card";
 import { fetchLessonContent } from "@/lib/lesson-content";
+import { buildLessonRedirectPath, findLessonBySlug } from "@/lib/lesson-slug";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -14,6 +15,7 @@ export const dynamic = "force-dynamic";
  */
 type LessonPageProps = {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 /**
@@ -32,36 +34,37 @@ const parseObjectives = (objectivesMarkdown: string | null) =>
  * Fetches lesson data/content on the server and handles content errors while
  * composing navigation and progress UI.
  */
-export default async function LessonPage({ params }: LessonPageProps) {
+export default async function LessonPage({
+  params,
+  searchParams,
+}: LessonPageProps) {
   const { slug } = await params;
-  const lesson = await prisma.lesson.findUnique({
-    where: { slug },
-    select: {
-      id: true,
-      title: true,
-      slug: true,
-      order: true,
-      moduleId: true,
-      publishedUrl: true,
-      estimatedMinutes: true,
-      objectivesMarkdown: true,
-      module: {
-        select: {
-          title: true,
-          order: true,
-        },
-      },
-    },
-  });
+  const rawSearchParams = searchParams ? await searchParams : undefined;
+  const { lesson, isAlias } = await findLessonBySlug(slug);
 
   if (!lesson) {
     notFound();
+  }
+
+  if (lesson.isArchived) {
+    if (lesson.supersededBy && !lesson.supersededBy.isArchived) {
+      permanentRedirect(
+        buildLessonRedirectPath(lesson.supersededBy.slug, rawSearchParams)
+      );
+    }
+
+    notFound();
+  }
+
+  if (isAlias) {
+    permanentRedirect(buildLessonRedirectPath(lesson.slug, rawSearchParams));
   }
 
   const [previousLesson, nextLesson] = await Promise.all([
     prisma.lesson.findFirst({
       where: {
         moduleId: lesson.moduleId,
+        isArchived: false,
         order: { lt: lesson.order },
       },
       orderBy: { order: "desc" },
@@ -70,6 +73,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
     prisma.lesson.findFirst({
       where: {
         moduleId: lesson.moduleId,
+        isArchived: false,
         order: { gt: lesson.order },
       },
       orderBy: { order: "asc" },
@@ -148,7 +152,11 @@ export default async function LessonPage({ params }: LessonPageProps) {
           </section>
 
           <aside className="flex flex-col gap-4">
-            <LessonProgressCard lessonId={lesson.id} lessonTitle={lesson.title} />
+            <LessonProgressCard
+              lessonKey={lesson.key}
+              legacyLessonId={lesson.id}
+              lessonTitle={lesson.title}
+            />
             <div className="rounded-3xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-soft)]">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                 Resources

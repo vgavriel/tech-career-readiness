@@ -122,6 +122,7 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 
 - Lesson
   - id
+  - key (unique, stable internal identifier)
   - moduleId (FK)
   - title
   - slug (unique, stable)
@@ -130,6 +131,8 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
   - estimatedMinutes (int, optional)
   - objectivesMarkdown (string, optional)
   - cohortId (optional)
+  - isArchived (boolean, default false)
+  - supersededByLessonId (optional FK to Lesson)
   - createdAt
   - updatedAt
 
@@ -232,8 +235,8 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [ ] Replace `unsafe-inline` styles/scripts with CSP nonces/hashes once lesson HTML is finalized
 
 ### Phase 6 — Slug alias redirects
-- [ ] Implement alias lookup in lesson route
-- [ ] Redirect old slugs to canonical slug
+- [x] Implement alias lookup in lesson route
+- [x] Redirect old slugs to canonical slug
 
 ### Phase 7 — Quality pass + polish
 - [ ] Error handling for missing lessons/content fetch failures

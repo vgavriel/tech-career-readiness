@@ -39,6 +39,7 @@ describe("RoadmapModuleList", () => {
         lessons: [
           {
             id: "lesson-1",
+            key: "lesson-1",
             slug: "intro",
             title: "Intro to the roadmap",
             order: 1,

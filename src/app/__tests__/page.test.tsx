@@ -19,7 +19,7 @@ describe("Home page", () => {
     );
 
     expect(
-      screen.getByRole("link", { name: /sign in to save progress/i })
-    ).toHaveAttribute("href", "/api/auth/signin/google");
+      screen.getByRole("button", { name: /sign in to save progress/i })
+    ).toBeInTheDocument();
   });
 });

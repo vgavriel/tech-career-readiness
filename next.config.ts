@@ -1,9 +1,19 @@
 import type { NextConfig } from "next";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 /**
  * Build the Content Security Policy header value from configured directives.
  */
 const buildContentSecurityPolicy = () => {
+  const scriptSrc = ["'self'", "'unsafe-inline'"];
+  const connectSrc = ["'self'"];
+
+  if (!isProduction) {
+    scriptSrc.push("'unsafe-eval'");
+    connectSrc.push("ws:", "wss:");
+  }
+
   const directives = [
     "default-src 'self'",
     "base-uri 'self'",
@@ -13,8 +23,8 @@ const buildContentSecurityPolicy = () => {
     "img-src 'self' data: https:",
     "style-src 'self' 'unsafe-inline'",
     "font-src 'self' data: https: blob:",
-    "script-src 'self' 'unsafe-inline'",
-    "connect-src 'self'",
+    `script-src ${scriptSrc.join(" ")}`,
+    `connect-src ${connectSrc.join(" ")}`,
     "upgrade-insecure-requests",
   ];
 
@@ -52,7 +62,7 @@ const securityHeaders = [
   },
 ];
 
-if (process.env.NODE_ENV === "production") {
+if (isProduction) {
   securityHeaders.push({
     key: "Strict-Transport-Security",
     value: "max-age=63072000; includeSubDomains; preload",

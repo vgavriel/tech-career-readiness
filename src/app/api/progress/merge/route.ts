@@ -1,4 +1,4 @@
-import { LessonProgressAction } from "@prisma/client";
+import { LessonProgressAction, Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -48,37 +48,55 @@ export async function POST(request: Request) {
     return parsedBody.error;
   }
 
-  const uniqueLessonIds = Array.from(
-    new Set(
-      parsedBody.data.entries
-        .map((entry) => {
-          if (!entry || typeof entry !== "object" || !("lessonId" in entry)) {
-            return null;
-          }
+  const lessonKeySet = new Set<string>();
+  const lessonIdSet = new Set<string>();
 
-          const lessonId = (entry as { lessonId?: unknown }).lessonId;
-          if (typeof lessonId !== "string") {
-            return null;
-          }
+  parsedBody.data.entries.forEach((entry) => {
+    if (!entry || typeof entry !== "object") {
+      return;
+    }
 
-          const trimmed = lessonId.trim();
-          return trimmed.length > 0 ? trimmed : null;
-        })
-        .filter((lessonId): lessonId is string => Boolean(lessonId))
-    )
-  );
+    const payload = entry as { lessonKey?: unknown; lessonId?: unknown };
+    const lessonKey =
+      typeof payload.lessonKey === "string" ? payload.lessonKey.trim() : "";
+    if (lessonKey) {
+      lessonKeySet.add(lessonKey);
+    }
 
-  if (uniqueLessonIds.length === 0) {
+    const lessonId =
+      typeof payload.lessonId === "string" ? payload.lessonId.trim() : "";
+    if (lessonId) {
+      lessonIdSet.add(lessonId);
+    }
+  });
+
+  const lessonKeys = Array.from(lessonKeySet);
+  const lessonIds = Array.from(lessonIdSet);
+
+  if (lessonKeys.length === 0 && lessonIds.length === 0) {
     return NextResponse.json({ error: "No valid lessons to merge." }, { status: 400 });
   }
 
+  const lessonFilters: Prisma.LessonWhereInput[] = [];
+  if (lessonKeys.length > 0) {
+    lessonFilters.push({ key: { in: lessonKeys } });
+  }
+  if (lessonIds.length > 0) {
+    lessonFilters.push({ id: { in: lessonIds } });
+  }
+
   const lessons = await prisma.lesson.findMany({
-    where: { id: { in: uniqueLessonIds } },
-    select: { id: true },
+    where: {
+      isArchived: false,
+      OR: lessonFilters,
+    },
+    select: { id: true, key: true },
   });
 
   const validLessonIds = lessons.map((lesson) => lesson.id);
+  const validLessonKeys = lessons.map((lesson) => lesson.key);
   const validLessonIdSet = new Set(validLessonIds);
+  const validLessonKeySet = new Set(validLessonKeys);
 
   if (validLessonIds.length === 0) {
     return NextResponse.json({ error: "No valid lessons to merge." }, { status: 400 });
@@ -116,12 +134,16 @@ export async function POST(request: Request) {
     ])
   );
 
-  const skippedLessonIds = uniqueLessonIds.filter(
+  const skippedLessonKeys = lessonKeys.filter(
+    (lessonKey) => !validLessonKeySet.has(lessonKey)
+  );
+  const skippedLessonIds = lessonIds.filter(
     (lessonId) => !validLessonIdSet.has(lessonId)
   );
 
   return NextResponse.json({
-    mergedLessonIds: validLessonIds,
+    mergedLessonKeys: validLessonKeys,
+    skippedLessonKeys,
     skippedLessonIds,
   });
 }

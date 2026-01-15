@@ -59,13 +59,36 @@ export async function GET(request: Request) {
 
   const { lessonId, slug } = parsedQuery.data;
 
-  const lesson = await prisma.lesson.findUnique({
-    where: lessonId ? { id: lessonId } : { slug: slug ?? "" },
+  let lesson = await prisma.lesson.findFirst({
+    where: lessonId
+      ? { id: lessonId, isArchived: false }
+      : { slug: slug ?? "", isArchived: false },
     select: {
       id: true,
       publishedUrl: true,
     },
   });
+
+  if (!lesson && slug) {
+    const alias = await prisma.lessonSlugAlias.findUnique({
+      where: { slug },
+      select: {
+        lesson: {
+          select: {
+            id: true,
+            publishedUrl: true,
+            isArchived: true,
+          },
+        },
+      },
+    });
+    if (alias?.lesson && !alias.lesson.isArchived) {
+      lesson = {
+        id: alias.lesson.id,
+        publishedUrl: alias.lesson.publishedUrl,
+      };
+    }
+  }
 
   if (!lesson) {
     return NextResponse.json({ error: "Lesson not found." }, { status: 404 });

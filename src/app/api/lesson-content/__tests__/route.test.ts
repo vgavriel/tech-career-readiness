@@ -4,6 +4,9 @@ import { clearLessonContentCache } from "@/lib/lesson-content-cache";
 
 const prismaMock = {
   lesson: {
+    findFirst: vi.fn(),
+  },
+  lessonSlugAlias: {
     findUnique: vi.fn(),
   },
 };
@@ -41,7 +44,8 @@ describe("GET /api/lesson-content", () => {
   };
 
   beforeEach(() => {
-    prismaMock.lesson.findUnique.mockReset();
+    prismaMock.lesson.findFirst.mockReset();
+    prismaMock.lessonSlugAlias.findUnique.mockReset();
     fetchMock.mockReset();
     vi.stubGlobal("fetch", fetchMock);
     clearLessonContentCache();
@@ -65,7 +69,7 @@ describe("GET /api/lesson-content", () => {
   });
 
   it("returns 404 when the lesson is missing", async () => {
-    prismaMock.lesson.findUnique.mockResolvedValue(null);
+    prismaMock.lesson.findFirst.mockResolvedValue(null);
 
     const GET = await getRoute();
     const response = await GET(makeRequest("?slug=missing-lesson"));
@@ -76,8 +80,28 @@ describe("GET /api/lesson-content", () => {
     });
   });
 
+  it("falls back to slug aliases when the canonical slug is missing", async () => {
+    prismaMock.lesson.findFirst.mockResolvedValue(null);
+    prismaMock.lessonSlugAlias.findUnique.mockResolvedValue({
+      lesson: {
+        id: "lesson-4",
+        publishedUrl: "https://docs.google.com/document/d/e/lesson-4/pub",
+        isArchived: false,
+      },
+    });
+    fetchMock.mockResolvedValueOnce(new Response("<p>Alias</p>", { status: 200 }));
+
+    const GET = await getRoute();
+    const response = await GET(makeRequest("?slug=old-lesson-slug"));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.lessonId).toBe("lesson-4");
+    expect(body.html).toContain("Alias");
+  });
+
   it("sanitizes, preserves formatting, and caches lesson content", async () => {
-    prismaMock.lesson.findUnique.mockResolvedValue({
+    prismaMock.lesson.findFirst.mockResolvedValue({
       id: "lesson-1",
       publishedUrl: "https://docs.google.com/document/d/e/lesson-1/pub",
     });
@@ -117,7 +141,7 @@ describe("GET /api/lesson-content", () => {
 
   it("allows cache bypass in development mode", async () => {
     process.env.NODE_ENV = "development";
-    prismaMock.lesson.findUnique.mockResolvedValue({
+    prismaMock.lesson.findFirst.mockResolvedValue({
       id: "lesson-2",
       publishedUrl: "https://docs.google.com/document/d/e/lesson-2/pub",
     });
@@ -133,7 +157,7 @@ describe("GET /api/lesson-content", () => {
   });
 
   it("rejects lesson URLs outside the allowlist", async () => {
-    prismaMock.lesson.findUnique.mockResolvedValue({
+    prismaMock.lesson.findFirst.mockResolvedValue({
       id: "lesson-3",
       publishedUrl: "https://example.com/lesson-3",
     });

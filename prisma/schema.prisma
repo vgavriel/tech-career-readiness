@@ -48,6 +48,7 @@ model Module {
 
 model Lesson {
   id                 String            @id @default(cuid())
+  key                String            @unique
   moduleId           String
   title              String
   slug               String            @unique
@@ -56,15 +57,20 @@ model Lesson {
   estimatedMinutes   Int?
   objectivesMarkdown String?
   cohortId           String?
+  isArchived         Boolean           @default(false)
+  supersededByLessonId String?
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
   module             Module            @relation(fields: [moduleId], references: [id])
   cohort             Cohort?           @relation(fields: [cohortId], references: [id])
+  supersededBy       Lesson?           @relation("LessonSupersession", fields: [supersededByLessonId], references: [id])
+  supersedes         Lesson[]          @relation("LessonSupersession")
   slugAliases        LessonSlugAlias[]
   progress           LessonProgress[]
   events             LessonProgressEvent[]
 
   @@unique([moduleId, order])
+  @@index([supersededByLessonId])
 }
 
 model LessonSlugAlias {
