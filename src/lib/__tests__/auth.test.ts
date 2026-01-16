@@ -9,6 +9,13 @@ vi.mock("next-auth/providers/google", () => ({
   }),
 }));
 
+vi.mock("next-auth/providers/credentials", () => ({
+  default: (config: { name: string }) => ({
+    id: "credentials",
+    ...config,
+  }),
+}));
+
 /**
  * Restore process.env to its original snapshot.
  */
@@ -53,20 +60,34 @@ describe("authOptions", () => {
     expect(provider.clientSecret).toBe("client-secret");
   });
 
-  it("throws when GOOGLE_CLIENT_ID is missing", async () => {
+  it("falls back to credentials provider in development", async () => {
+    delete process.env.GOOGLE_CLIENT_ID;
+    delete process.env.GOOGLE_CLIENT_SECRET;
+    process.env.NEXTAUTH_SECRET = "auth-secret";
+    process.env.NODE_ENV = "development";
+
+    const { authOptions } = await importAuth();
+    const provider = authOptions.providers?.[0] as { id: string };
+
+    expect(provider.id).toBe("credentials");
+  });
+
+  it("throws when GOOGLE_CLIENT_ID is missing in production", async () => {
     delete process.env.GOOGLE_CLIENT_ID;
     process.env.GOOGLE_CLIENT_SECRET = "client-secret";
     process.env.NEXTAUTH_SECRET = "auth-secret";
+    process.env.NODE_ENV = "production";
 
     await expect(importAuth()).rejects.toThrow(
       "Missing GOOGLE_CLIENT_ID environment variable."
     );
   });
 
-  it("throws when GOOGLE_CLIENT_SECRET is missing", async () => {
+  it("throws when GOOGLE_CLIENT_SECRET is missing in production", async () => {
     process.env.GOOGLE_CLIENT_ID = "client-id";
     delete process.env.GOOGLE_CLIENT_SECRET;
     process.env.NEXTAUTH_SECRET = "auth-secret";
+    process.env.NODE_ENV = "production";
 
     await expect(importAuth()).rejects.toThrow(
       "Missing GOOGLE_CLIENT_SECRET environment variable."

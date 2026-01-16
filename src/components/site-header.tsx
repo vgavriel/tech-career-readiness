@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 
+import { buildSignInOptions, useAuthProvider } from "@/hooks/use-auth-provider";
+
 /**
  * Render the persistent site header with auth actions.
  *
@@ -12,6 +14,8 @@ import { signIn, signOut, useSession } from "next-auth/react";
  */
 export default function SiteHeader() {
   const { data: session } = useSession();
+  const authProvider = useAuthProvider();
+  const signInOptions = buildSignInOptions(authProvider.id);
 
   return (
     <header className="sticky top-0 z-50 border-b border-[color:var(--line-soft)] border-t-4 border-t-[color:var(--accent-500)] bg-[rgba(255,250,244,0.92)] backdrop-blur">
@@ -47,10 +51,10 @@ export default function SiteHeader() {
           ) : (
             <button
               className="rounded-full bg-[color:var(--accent-700)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
-              onClick={() => signIn("google")}
+              onClick={() => signIn(authProvider.id, signInOptions)}
               type="button"
             >
-              Sign in with Google
+              {authProvider.label}
             </button>
           )}
         </div>

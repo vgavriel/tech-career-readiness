@@ -21,6 +21,8 @@ For Auth.js (NextAuth):
   `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET`. Use
   `http://localhost:3000/api/auth/callback/google` as the redirect URI for
   local development.
+- In development, if Google credentials are unset, the app falls back to a
+  dev-only credentials provider.
 
 ### Environment variables and secrets
 - Dev: Next.js loads `.env`, `.env.local`, `.env.development`, and
@@ -36,7 +38,16 @@ Additional app configuration:
 - `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` for rate limiting.
 - `MAX_JSON_BODY_BYTES` (optional) to adjust JSON payload size limits.
 
-### 3) Apply migrations and seed data
+### 3) Initialize local dev database (Docker, tmpfs)
+```bash
+npm run dev:setup
+```
+
+This creates `.env` (if missing), generates `NEXTAUTH_SECRET`, starts a local
+tmpfs-backed Postgres container, and runs migrations + seed data.
+
+If you want to use a shared Neon database instead, set `DATABASE_URL` in `.env`
+and run the Prisma commands directly:
 ```bash
 npx prisma migrate deploy
 npx prisma db seed
