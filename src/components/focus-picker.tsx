@@ -26,7 +26,7 @@ export default function FocusPicker({ className }: FocusPickerProps) {
           </h2>
         </div>
         <Link
-          href="/roadmap"
+          href="/roles"
           className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-600)] transition hover:text-[color:var(--accent-700)]"
         >
           Explore roles

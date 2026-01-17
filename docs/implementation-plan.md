@@ -266,7 +266,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Define “Continue” behavior when a focus is selected (focus order vs global order)
 - [x] Show core vs extra credit progress breakdown
 - [x] Add lesson classification mapping for core/extra credit + role deep dives (badge source of truth)
-- [ ] Add Role Library view showing all role deep dives
+- [x] Add Role Library view showing all role deep dives
 - [ ] Add lightweight badge awards (no streaks) based on lesson completion
 
 ### Phase 7.5 — Observability (lightweight)
