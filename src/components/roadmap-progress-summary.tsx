@@ -7,36 +7,7 @@ import { useProgress } from "@/components/progress-provider";
 import type { RoadmapModule } from "@/components/roadmap-module-list";
 import SignInCta from "@/components/sign-in-cta";
 import { FOCUS_OPTIONS, type FocusKey } from "@/lib/focus-options";
-
-const EXTRA_CREDIT_LESSON_SLUGS = new Set<string>([
-  "tech-career-stories",
-  "tech-career-exploration-journey",
-  "learn-about-ai-engineering",
-  "learn-about-ar-vr-engineering",
-  "learn-about-backend-engineering",
-  "learn-about-blockchain-engineering",
-  "learn-about-computer-vision-engineering",
-  "learn-about-cybersecurity-analysts-specialists",
-  "learn-about-cybersecurity-engineering",
-  "learn-about-data-engineering",
-  "learn-about-data-science",
-  "learn-about-devops-engineering",
-  "learn-about-embedded-engineering",
-  "learn-about-forward-deployed-engineering",
-  "learn-about-frontend-engineering",
-  "learn-about-full-stack-engineering",
-  "learn-about-game-development",
-  "learn-about-machine-learning-engineering",
-  "learn-about-mobile-app-engineering",
-  "learn-about-product-management",
-  "learn-about-quant-developers",
-  "learn-about-quant-traders",
-  "learn-about-site-reliability-engineering",
-  "learn-about-ui-ux-design",
-  "learn-about-web-development",
-  "internship-success-handbook",
-  "internship-success-checklist",
-]);
+import { isExtraCreditLesson } from "@/lib/lesson-classification";
 
 /**
  * Flattened lesson metadata used for progress ordering.
@@ -122,10 +93,6 @@ const buildProgressSummaryFromLessons = (
     progressLabel,
   };
 };
-
-const isExtraCreditLesson = (lesson: OrderedLesson) =>
-  EXTRA_CREDIT_LESSON_SLUGS.has(lesson.slug) ||
-  EXTRA_CREDIT_LESSON_SLUGS.has(lesson.key);
 
 const splitLessonsByCredit = (lessons: OrderedLesson[]) => {
   const coreLessons: OrderedLesson[] = [];
