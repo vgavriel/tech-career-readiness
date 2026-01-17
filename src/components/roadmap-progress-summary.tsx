@@ -6,6 +6,7 @@ import { useMemo } from "react";
 import { useProgress } from "@/components/progress-provider";
 import type { RoadmapModule } from "@/components/roadmap-module-list";
 import SignInCta from "@/components/sign-in-cta";
+import { FOCUS_OPTIONS, type FocusKey } from "@/lib/focus-options";
 
 /**
  * Flattened lesson metadata used for progress ordering.
@@ -24,6 +25,20 @@ type OrderedLesson = {
  */
 type RoadmapProgressSummaryProps = {
   modules: RoadmapModule[];
+  focusModules?: RoadmapModule[] | null;
+  focusKey?: FocusKey | null;
+};
+
+type ProgressSummary = {
+  orderedLessons: OrderedLesson[];
+  totalLessons: number;
+  completedCount: number;
+  progressPercent: number;
+  progressDegrees: number;
+  continueLesson?: OrderedLesson;
+  firstLesson?: OrderedLesson;
+  allComplete: boolean;
+  progressLabel: string;
 };
 
 /**
@@ -41,6 +56,44 @@ const buildOrderedLessons = (modules: RoadmapModule[]): OrderedLesson[] =>
     }))
   );
 
+const buildProgressSummary = (
+  modules: RoadmapModule[],
+  completedSet: Set<string>,
+  isReady: boolean
+): ProgressSummary => {
+  const orderedLessons = buildOrderedLessons(modules);
+  const totalLessons = orderedLessons.length;
+  const completedCount = orderedLessons.reduce(
+    (count, lesson) =>
+      count +
+      (completedSet.has(lesson.key) || completedSet.has(lesson.id) ? 1 : 0),
+    0
+  );
+  const continueLesson = orderedLessons.find(
+    (lesson) => !completedSet.has(lesson.key) && !completedSet.has(lesson.id)
+  );
+  const firstLesson = orderedLessons[0];
+  const allComplete = isReady && totalLessons > 0 && completedCount >= totalLessons;
+  const progressPercent =
+    totalLessons === 0 ? 0 : Math.round((completedCount / totalLessons) * 100);
+  const progressDegrees = Math.min(100, Math.max(0, progressPercent)) * 3.6;
+  const progressLabel = isReady
+    ? `${completedCount} of ${totalLessons} complete`
+    : "Loading progress...";
+
+  return {
+    orderedLessons,
+    totalLessons,
+    completedCount,
+    progressPercent,
+    progressDegrees,
+    continueLesson,
+    firstLesson,
+    allComplete,
+    progressLabel,
+  };
+};
+
 /**
  * Render progress summary, CTA, and sign-in prompt for the roadmap page.
  *
@@ -50,50 +103,43 @@ const buildOrderedLessons = (modules: RoadmapModule[]): OrderedLesson[] =>
  */
 export default function RoadmapProgressSummary({
   modules,
+  focusModules,
+  focusKey,
 }: RoadmapProgressSummaryProps) {
   const { completedLessonKeys, isAuthenticated, isMerging, isReady } = useProgress();
-
-  const orderedLessons = useMemo(() => buildOrderedLessons(modules), [modules]);
   const completedSet = useMemo(
     () => new Set(completedLessonKeys),
     [completedLessonKeys]
   );
-  const totalLessons = orderedLessons.length;
-  const completedCount = useMemo(
-    () =>
-      orderedLessons.reduce(
-        (count, lesson) =>
-          count +
-          (completedSet.has(lesson.key) || completedSet.has(lesson.id) ? 1 : 0),
-        0
-      ),
-    [completedSet, orderedLessons]
+  const overallSummary = useMemo(
+    () => buildProgressSummary(modules, completedSet, isReady),
+    [modules, completedSet, isReady]
   );
+  const focusSummary = useMemo(() => {
+    if (!focusKey || !focusModules || focusModules.length === 0) {
+      return null;
+    }
 
-  const continueLesson = useMemo(
-    () =>
-      orderedLessons.find(
-        (lesson) =>
-          !completedSet.has(lesson.key) && !completedSet.has(lesson.id)
-      ),
-    [completedSet, orderedLessons]
-  );
+    const summary = buildProgressSummary(focusModules, completedSet, isReady);
+    if (summary.totalLessons === 0) {
+      return null;
+    }
 
-  const firstLesson = orderedLessons[0];
-  const allComplete = isReady && totalLessons > 0 && completedCount >= totalLessons;
-  const progressPercent = totalLessons === 0 ? 0 : Math.round((completedCount / totalLessons) * 100);
-  const progressDegrees = Math.min(100, Math.max(0, progressPercent)) * 3.6;
+    return summary;
+  }, [completedSet, focusKey, focusModules, isReady]);
+  const focusOption = focusKey
+    ? FOCUS_OPTIONS.find((option) => option.key === focusKey) ?? null
+    : null;
+  const activeSummary = focusSummary ?? overallSummary;
 
-  const primaryLesson = continueLesson ?? firstLesson;
-  const progressLabel = isReady
-    ? `${completedCount} of ${totalLessons} complete`
-    : "Loading progress...";
+  const primaryLesson =
+    activeSummary.continueLesson ?? activeSummary.firstLesson;
 
   let ctaLabel = "Check back soon";
   if (primaryLesson) {
-    if (allComplete) {
+    if (activeSummary.allComplete) {
       ctaLabel = "Review from the start";
-    } else if (continueLesson) {
+    } else if (activeSummary.continueLesson) {
       ctaLabel = "Continue where you left off";
     } else {
       ctaLabel = "Start with lesson 1";
@@ -106,15 +152,15 @@ export default function RoadmapProgressSummary({
         <div
           className="relative h-24 w-24 rounded-full p-1.5"
           style={{
-            background: `conic-gradient(var(--accent-500) ${progressDegrees}deg, var(--wash-200) 0deg)`,
+            background: `conic-gradient(var(--accent-500) ${overallSummary.progressDegrees}deg, var(--wash-200) 0deg)`,
           }}
           role="progressbar"
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-valuenow={progressPercent}
+          aria-valuenow={overallSummary.progressPercent}
         >
           <div className="flex h-full w-full items-center justify-center rounded-full bg-[color:var(--wash-0)] text-sm font-semibold text-[color:var(--ink-900)]">
-            {progressPercent}%
+            {overallSummary.progressPercent}%
           </div>
         </div>
         <div className="space-y-1">
@@ -122,13 +168,25 @@ export default function RoadmapProgressSummary({
             Progress
           </p>
           <p className="text-sm font-semibold text-[color:var(--ink-900)]">
-            {progressLabel}
+            {overallSummary.progressLabel}
           </p>
           <p className="text-xs text-[color:var(--ink-500)]">
-            {modules.length} modules - {totalLessons} lessons
+            {modules.length} modules - {overallSummary.totalLessons} lessons
           </p>
         </div>
       </div>
+
+      {focusSummary && focusOption ? (
+        <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+            Focus: {focusOption.label}
+          </p>
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-[color:var(--ink-900)]">
+            <span>{focusSummary.progressLabel}</span>
+            <span>{focusSummary.progressPercent}%</span>
+          </div>
+        </div>
+      ) : null}
 
       {primaryLesson ? (
         <Link
@@ -139,10 +197,10 @@ export default function RoadmapProgressSummary({
         </Link>
       ) : null}
 
-      {primaryLesson && continueLesson ? (
+      {primaryLesson && activeSummary.continueLesson ? (
         <p className="text-xs text-[color:var(--ink-500)]">
-          Up next: Lesson {continueLesson.moduleOrder}.{continueLesson.order} -{" "}
-          {continueLesson.title}
+          Up next: Lesson {activeSummary.continueLesson.moduleOrder}.
+          {activeSummary.continueLesson.order} - {activeSummary.continueLesson.title}
         </p>
       ) : null}
 

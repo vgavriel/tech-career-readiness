@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -96,5 +96,32 @@ describe("RoadmapProgressSummary", () => {
     expect(
       screen.queryByRole("button", { name: /sign in to save progress/i })
     ).not.toBeInTheDocument();
+  });
+
+  it("shows focus progress when a focus is selected", () => {
+    progressMocks.useProgress.mockReturnValue({
+      completedLessonKeys: ["lesson-1"],
+      isAuthenticated: true,
+      isMerging: false,
+      isReady: true,
+    });
+
+    render(
+      <RoadmapProgressSummary
+        modules={modules}
+        focusModules={modules}
+        focusKey="applying-soon"
+      />
+    );
+
+    const focusSection = screen.getByText(/focus: applying soon/i).parentElement;
+    expect(focusSection).not.toBeNull();
+    if (!focusSection) {
+      return;
+    }
+
+    expect(
+      within(focusSection).getByText(/1 of 2 complete/i)
+    ).toBeInTheDocument();
   });
 });

@@ -49,6 +49,8 @@ export default async function RoadmapPage({ searchParams }: RoadmapPageProps) {
   });
   const orderedModules = orderModulesForFocus(modules, focusKey);
 
+  const focusModules = focusKey ? orderedModules : null;
+
   return (
     <div className="page-shell min-h-screen overflow-hidden">
       <main className="page-content mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 pb-24 pt-16 md:pt-22">
@@ -66,7 +68,11 @@ export default async function RoadmapPage({ searchParams }: RoadmapPageProps) {
               habits that convert into interviews and offers.
             </p>
           </div>
-          <RoadmapProgressSummary modules={orderedModules} />
+          <RoadmapProgressSummary
+            modules={modules}
+            focusModules={focusModules}
+            focusKey={focusKey}
+          />
         </section>
 
         <RoadmapModuleList modules={orderedModules} />

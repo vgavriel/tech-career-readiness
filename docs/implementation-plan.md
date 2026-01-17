@@ -262,7 +262,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 ### Phase 7.2 — Curriculum UX + focuses
 - [x] Add landing quick picker that routes to curated focuses (and store selection)
 - [x] Support focus filtering/ordering on the roadmap (core lessons in focus order)
-- [ ] Show focus progress alongside overall core progress
+- [x] Show focus progress alongside overall core progress
 - [ ] Define “Continue” behavior when a focus is selected (focus order vs global order)
 - [ ] Show core vs extra credit progress breakdown
 - [ ] Add lesson classification mapping for core/extra credit + role deep dives (badge source of truth)
