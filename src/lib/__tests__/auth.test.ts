@@ -41,8 +41,8 @@ describe("authOptions", () => {
     resetEnv();
   });
 
-  it("builds Google auth options in staging", async () => {
-    process.env.APP_ENV = "staging";
+  it("builds Google auth options in preview", async () => {
+    process.env.APP_ENV = "preview";
     process.env.GOOGLE_CLIENT_ID = "client-id";
     process.env.GOOGLE_CLIENT_SECRET = "client-secret";
     process.env.NEXTAUTH_SECRET = "auth-secret";
@@ -73,8 +73,8 @@ describe("authOptions", () => {
     expect(provider.id).toBe("credentials");
   });
 
-  it("throws when GOOGLE_CLIENT_ID is missing in staging", async () => {
-    process.env.APP_ENV = "staging";
+  it("throws when GOOGLE_CLIENT_ID is missing in preview", async () => {
+    process.env.APP_ENV = "preview";
     delete process.env.GOOGLE_CLIENT_ID;
     process.env.GOOGLE_CLIENT_SECRET = "client-secret";
     process.env.NEXTAUTH_SECRET = "auth-secret";
@@ -84,8 +84,8 @@ describe("authOptions", () => {
     );
   });
 
-  it("throws when GOOGLE_CLIENT_SECRET is missing in staging", async () => {
-    process.env.APP_ENV = "staging";
+  it("throws when GOOGLE_CLIENT_SECRET is missing in preview", async () => {
+    process.env.APP_ENV = "preview";
     process.env.GOOGLE_CLIENT_ID = "client-id";
     delete process.env.GOOGLE_CLIENT_SECRET;
     process.env.NEXTAUTH_SECRET = "auth-secret";

@@ -37,7 +37,7 @@ export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> 
   }
 
   const normalizedEmail = email.toLowerCase();
-  const allowAdminBootstrap = env.isLocal || env.isTest;
+  const allowAdminBootstrap = env.isPreview || env.isTest;
   const adminEmails = allowAdminBootstrap
     ? normalizeEmailList(process.env.ADMIN_EMAILS)
     : [];

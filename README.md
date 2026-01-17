@@ -11,28 +11,30 @@ npm run dev:local
 This uses a tmpfs-backed Postgres container, dev credentials auth, and no-op
 rate limiting. It will create `.env.local` from `.env.example` if needed.
 
-### Staging-like (real services)
+### Preview-like (real services)
 ```bash
 npm install
-npm run env:staging
-# fill in .env.staging.local
-npm run dev:staging
+npm run env:preview
+# fill in .env.preview
+npm run dev:preview
 ```
 
 See `docs/environments.md` for the full workflow.
 
 ### Environment variables and secrets
-- `APP_ENV` controls behavior (`local`, `staging`, `production`, `test`).
-- Dev: Next.js loads `.env`, `.env.local`, `.env.development`, and
-  `.env.development.local` (later files override earlier ones).
+- `APP_ENV` controls behavior (`local`, `preview`, `production`, `test`).
+- Local dev uses `.env.local` (auto-loaded by Next.js).
+- Preview dev uses `.env.preview` (loaded by `npm run dev:preview`).
+- We do not use `.env` in this repo; avoid adding one to keep resolution
+  unambiguous.
 - Prod: set variables in your hosting provider or secret manager; do not ship
-  `.env` files.
+  env files.
 - Keep secrets out of client code and never commit real values. Only commit
-  `.env.example` and `.env.staging.example`.
+  `.env.example` (local template) and `.env.preview.example` (preview template).
 
 Additional app configuration:
-- `ADMIN_EMAILS` (comma-separated) to bootstrap admin access in dev/test only. In
-  production, set `User.isAdmin` directly in the database.
+- `ADMIN_EMAILS` (comma-separated) to bootstrap admin access in preview/test
+  only. In production, set `User.isAdmin` directly in the database.
 - `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` for rate limiting.
 - `MAX_JSON_BODY_BYTES` (optional) to adjust JSON payload size limits.
 

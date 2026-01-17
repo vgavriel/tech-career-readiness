@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const appEnvSchema = z.enum(["local", "staging", "production", "test"]);
+const appEnvSchema = z.enum(["local", "preview", "production", "test"]);
 
 const fallbackAppEnv = () => {
   if (process.env.NODE_ENV === "production") {
@@ -35,7 +35,7 @@ export type AppEnv = z.infer<typeof appEnvSchema>;
 export type Env = z.infer<typeof envSchema> & {
   appEnv: AppEnv;
   isLocal: boolean;
-  isStaging: boolean;
+  isPreview: boolean;
   isProduction: boolean;
   isTest: boolean;
 };
@@ -53,7 +53,7 @@ const buildEnv = (): Env => {
     ...parsed,
     appEnv,
     isLocal: appEnv === "local",
-    isStaging: appEnv === "staging",
+    isPreview: appEnv === "preview",
     isProduction: appEnv === "production",
     isTest: appEnv === "test",
   };

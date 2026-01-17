@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import { getEnv, requireEnv } from "@/lib/env";
 
 const env = getEnv();
-const shouldRateLimit = env.isStaging || env.isProduction;
+const shouldRateLimit = env.isPreview || env.isProduction;
 
 if (shouldRateLimit) {
   requireEnv(env.UPSTASH_REDIS_REST_URL, "UPSTASH_REDIS_REST_URL");

@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=ports.sh
+source "${LIB_DIR}/ports.sh"
+# shellcheck source=prisma.sh
+source "${LIB_DIR}/prisma.sh"
+
 require_command() {
   if [[ "$#" -eq 0 ]]; then
     echo "Provide a command to run, for example: npm run test:integration" >&2
@@ -8,10 +14,7 @@ require_command() {
 }
 
 init_test_db_env() {
-  local lib_dir
-  lib_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-  TEST_DB_ROOT_DIR="$(cd "${lib_dir}/../.." && pwd)"
+  TEST_DB_ROOT_DIR="$(cd "${LIB_DIR}/../.." && pwd)"
   COMPOSE_FILE="${COMPOSE_FILE:-${TEST_DB_ROOT_DIR}/docker/docker-compose.test.yml}"
   DB_PORT="${TEST_DB_PORT:-5434}"
   DB_NAME="${TEST_DB_NAME:-tech_career_readiness_test}"
@@ -121,22 +124,6 @@ open_url() {
   else
     echo "Open this URL in your browser: $url"
   fi
-}
-
-port_in_use() {
-  local port="$1"
-
-  if command -v lsof >/dev/null 2>&1; then
-    lsof -n -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1
-    return $?
-  fi
-
-  if command -v nc >/dev/null 2>&1; then
-    nc -z 127.0.0.1 "$port" >/dev/null 2>&1
-    return $?
-  fi
-
-  return 1
 }
 
 ensure_playwright_browsers() {
@@ -295,9 +282,7 @@ start_test_db() {
 }
 
 migrate_and_seed() {
-  npx prisma migrate deploy
-  npx prisma generate
-  npx prisma db seed
+  prisma_migrate_and_seed
 }
 
 cleanup() {

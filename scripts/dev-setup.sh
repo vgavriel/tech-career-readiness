@@ -7,108 +7,91 @@ ENV_FILE="${ROOT_DIR}/.env.local"
 ENV_EXAMPLE="${ROOT_DIR}/.env.example"
 COMPOSE_FILE="${ROOT_DIR}/docker/docker-compose.dev.yml"
 
+# shellcheck source=lib/env-file.sh
+source "${SCRIPT_DIR}/lib/env-file.sh"
+# shellcheck source=lib/ports.sh
+source "${SCRIPT_DIR}/lib/ports.sh"
+# shellcheck source=lib/prisma.sh
+source "${SCRIPT_DIR}/lib/prisma.sh"
+
 ENV_ONLY=0
 if [[ "${1:-}" == "--env-only" ]]; then
   ENV_ONLY=1
   shift
 fi
 
-if [[ ! -f "$ENV_FILE" ]]; then
-  cp "$ENV_EXAMPLE" "$ENV_FILE"
-  echo "Created .env.local from .env.example"
-fi
-
-read_env_value() {
-  local key="$1"
-  node - "$ENV_FILE" "$key" <<'NODE'
-const fs = require("fs");
-const [,, envPath, key] = process.argv;
-if (!fs.existsSync(envPath)) {
-  process.exit(1);
-}
-const contents = fs.readFileSync(envPath, "utf8");
-const match = contents.match(new RegExp(`^${key}=(.*)$`, "m"));
-if (!match) {
-  process.exit(1);
-}
-let value = match[1].trim();
-if (
-  (value.startsWith('"') && value.endsWith('"')) ||
-  (value.startsWith("'") && value.endsWith("'"))
-) {
-  value = value.slice(1, -1);
-}
-process.stdout.write(value);
-NODE
-}
-
-write_env_value() {
-  local key="$1"
-  local value="$2"
-  node - "$ENV_FILE" "$key" "$value" <<'NODE'
-const fs = require("fs");
-const [,, envPath, key, value] = process.argv;
-const escapedValue = value.replace(/"/g, '\\"');
-const line = `${key}="${escapedValue}"`;
-let contents = "";
-if (fs.existsSync(envPath)) {
-  contents = fs.readFileSync(envPath, "utf8");
-}
-const regex = new RegExp(`^${key}=.*$`, "m");
-if (regex.test(contents)) {
-  contents = contents.replace(regex, line);
-} else {
-  if (contents.length && !contents.endsWith("\n")) {
-    contents += "\n";
-  }
-  contents += `${line}\n`;
-}
-fs.writeFileSync(envPath, contents);
-NODE
-}
+ensure_env_file "$ENV_FILE" "$ENV_EXAMPLE"
 
 is_placeholder() {
   local value="${1:-}"
   [[ -z "$value" || "$value" == replace-with-* ]]
 }
 
-port_in_use() {
-  local port="$1"
-
-  if command -v lsof >/dev/null 2>&1; then
-    lsof -n -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1
-    return $?
+resolve_running_dev_db_port() {
+  if ! command -v docker >/dev/null 2>&1; then
+    return 1
   fi
 
-  if command -v nc >/dev/null 2>&1; then
-    nc -z 127.0.0.1 "$port" >/dev/null 2>&1
-    return $?
+  if ! docker info >/dev/null 2>&1; then
+    return 1
   fi
 
-  return 1
+  local compose_cmd=""
+  if docker compose version >/dev/null 2>&1; then
+    compose_cmd="docker compose"
+  elif command -v docker-compose >/dev/null 2>&1; then
+    compose_cmd="docker-compose"
+  else
+    return 1
+  fi
+
+  local container_id=""
+  container_id="$($compose_cmd -f "$COMPOSE_FILE" ps -q postgres 2>/dev/null || true)"
+  if [[ -z "$container_id" ]]; then
+    return 1
+  fi
+
+  local mapping=""
+  mapping="$(docker port "$container_id" 5432/tcp 2>/dev/null | head -n 1 || true)"
+  if [[ -z "$mapping" ]]; then
+    return 1
+  fi
+
+  local host_port="${mapping##*:}"
+  if [[ -z "$host_port" ]]; then
+    return 1
+  fi
+
+  printf "%s" "$host_port"
 }
 
 DEV_DB_PORT="${DEV_DB_PORT:-}"
 if [[ -z "$DEV_DB_PORT" ]]; then
-  DEV_DB_PORT="$(read_env_value DEV_DB_PORT || true)"
+  DEV_DB_PORT="$(read_env_value "$ENV_FILE" "DEV_DB_PORT" || true)"
 fi
 if [[ -z "$DEV_DB_PORT" ]]; then
   DEV_DB_PORT="5435"
 fi
 
-if port_in_use "$DEV_DB_PORT"; then
-  for candidate in 5436 5437 5438 5439 5440 5441 5442 5443 5444 5445; do
-    if ! port_in_use "$candidate"; then
-      echo "Port ${DEV_DB_PORT} is in use; using ${candidate} instead."
-      DEV_DB_PORT="$candidate"
-      break
-    fi
-  done
-fi
+running_db_port="$(resolve_running_dev_db_port || true)"
+if [[ -n "$running_db_port" ]]; then
+  echo "Reusing existing dev database on port ${running_db_port}."
+  DEV_DB_PORT="$running_db_port"
+else
+  if port_in_use "$DEV_DB_PORT"; then
+    for candidate in 5436 5437 5438 5439 5440 5441 5442 5443 5444 5445; do
+      if ! port_in_use "$candidate"; then
+        echo "Port ${DEV_DB_PORT} is in use; using ${candidate} instead."
+        DEV_DB_PORT="$candidate"
+        break
+      fi
+    done
+  fi
 
-if port_in_use "$DEV_DB_PORT"; then
-  echo "Unable to find a free port for the dev database." >&2
-  exit 1
+  if port_in_use "$DEV_DB_PORT"; then
+    echo "Unable to find a free port for the dev database." >&2
+    exit 1
+  fi
 fi
 
 DEV_DB_NAME="tech_career_readiness_dev"
@@ -116,18 +99,18 @@ DEV_DB_USER="postgres"
 DEV_DB_PASSWORD="postgres"
 DATABASE_URL="postgresql://${DEV_DB_USER}:${DEV_DB_PASSWORD}@127.0.0.1:${DEV_DB_PORT}/${DEV_DB_NAME}"
 
-write_env_value "APP_ENV" "local"
-write_env_value "DEV_DB_PORT" "$DEV_DB_PORT"
-write_env_value "DATABASE_URL" "$DATABASE_URL"
+write_env_value "$ENV_FILE" "APP_ENV" "local"
+write_env_value "$ENV_FILE" "DEV_DB_PORT" "$DEV_DB_PORT"
+write_env_value "$ENV_FILE" "DATABASE_URL" "$DATABASE_URL"
 
-NEXTAUTH_SECRET="$(read_env_value NEXTAUTH_SECRET || true)"
+NEXTAUTH_SECRET="$(read_env_value "$ENV_FILE" "NEXTAUTH_SECRET" || true)"
 if is_placeholder "$NEXTAUTH_SECRET"; then
   if command -v openssl >/dev/null 2>&1; then
     NEXTAUTH_SECRET="$(openssl rand -base64 32)"
   else
     NEXTAUTH_SECRET="$(node -e "console.log(require('crypto').randomBytes(32).toString('base64'))")"
   fi
-  write_env_value "NEXTAUTH_SECRET" "$NEXTAUTH_SECRET"
+  write_env_value "$ENV_FILE" "NEXTAUTH_SECRET" "$NEXTAUTH_SECRET"
   echo "Generated NEXTAUTH_SECRET"
 fi
 
@@ -182,8 +165,6 @@ if ! docker exec "$container_id" pg_isready -U "$DEV_DB_USER" -d "$DEV_DB_NAME" 
   exit 1
 fi
 
-npx prisma migrate deploy
-npx prisma generate
-npx prisma db seed
+prisma_migrate_and_seed
 
 echo "Dev setup complete. Run: npm run dev"

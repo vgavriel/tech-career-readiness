@@ -35,7 +35,7 @@ npm run dev:local
 ```bash
 npm run lint
 npm run test
-npm run test:run
+npm run test:unit
 ```
 
 ## Environment variables
