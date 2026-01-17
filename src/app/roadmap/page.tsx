@@ -8,7 +8,9 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 type RoadmapPageProps = {
-  searchParams?: Record<string, string | string[] | undefined>;
+  searchParams?:
+    | Record<string, string | string[] | undefined>
+    | Promise<Record<string, string | string[] | undefined>>;
 };
 
 /**
@@ -19,7 +21,10 @@ type RoadmapPageProps = {
  * UI; no local state.
  */
 export default async function RoadmapPage({ searchParams }: RoadmapPageProps) {
-  const focusKey = getFocusKeyFromParam(searchParams?.[FOCUS_QUERY_PARAM]);
+  const resolvedSearchParams = await searchParams;
+  const focusKey = getFocusKeyFromParam(
+    resolvedSearchParams?.[FOCUS_QUERY_PARAM]
+  );
   const modules = await prisma.module.findMany({
     orderBy: { order: "asc" },
     select: {
