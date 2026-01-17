@@ -173,9 +173,9 @@ Source of truth for modules, focuses, progress categories, and gamification:
 
 ## Seed data
 - Use a seed script to populate:
-  - 7 modules
-  - Lessons per module (at least 2 lessons per module for MVP)
-  - Placeholder `publishedUrl` values (e.g., `https://example.com`)
+  - 9 modules aligned to `docs/curriculum-plan.md`
+  - Lessons per module for core + extra credit content
+  - Placeholder `publishedUrl` values until real Google Doc URLs are ready
 - Seed should be idempotent (use upsert where possible).
 - Seed should use stable module keys as identity and insert module slug aliases on slug changes.
 
@@ -210,6 +210,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Implement Prisma schema with User, Cohort, Module (key + slug), ModuleSlugAlias, Lesson, LessonSlugAlias, LessonProgress
 - [x] Run initial migration
 - [x] Add seed script (modules + lessons + placeholder URLs)
+- [x] Update seed data to match `docs/curriculum-plan.md` modules and lessons
 
 ### Phase 2 — Auth (Google OAuth)
 - [x] Configure Auth.js (NextAuth) with Google provider

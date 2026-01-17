@@ -8,13 +8,15 @@ type TestModule = {
 };
 
 const modules: TestModule[] = [
-  { key: "foundations-mindset", label: "Foundations" },
-  { key: "research-targeting", label: "Research" },
-  { key: "resume-portfolio", label: "Resume" },
-  { key: "networking-outreach", label: "Networking" },
-  { key: "interview-prep", label: "Interview" },
-  { key: "applications-tracking", label: "Applications" },
-  { key: "offer-negotiation", label: "Offer" },
+  { key: "start-here", label: "Start" },
+  { key: "explore-roles", label: "Explore" },
+  { key: "build-experience", label: "Experience" },
+  { key: "opportunities-networking", label: "Networking" },
+  { key: "research-companies", label: "Research" },
+  { key: "applications", label: "Applications" },
+  { key: "interviews", label: "Interviews" },
+  { key: "offers", label: "Offers" },
+  { key: "internship-success", label: "Internship" },
 ];
 
 const moduleKeys = (items: TestModule[]) => items.map((item) => item.key);
@@ -31,10 +33,10 @@ describe("focus ordering", () => {
   it("filters and orders modules for a focus", () => {
     const ordered = orderModulesForFocus(modules, "interviewing-soon");
     expect(moduleKeys(ordered)).toEqual([
-      "foundations-mindset",
-      "interview-prep",
-      "research-targeting",
-      "resume-portfolio",
+      "start-here",
+      "interviews",
+      "research-companies",
+      "applications",
     ]);
   });
 

@@ -16,11 +16,11 @@ test("public browsing from landing to lesson content", async ({ page }) => {
     page.getByRole("heading", { name: /your path through tech recruiting/i })
   ).toBeVisible();
 
-  await page.getByRole("link", { name: /define your goal/i }).click();
-  await expect(page).toHaveURL(/\/lesson\/define-your-goal/);
+  await page.getByRole("link", { name: /start to finish/i }).click();
+  await expect(page).toHaveURL(/\/lesson\/start-to-finish-roadmap/);
 
   await expect(
-    page.getByRole("heading", { name: /define your goal/i })
+    page.getByRole("heading", { name: /start to finish/i })
   ).toBeVisible();
   await expect(
     page.getByText(/sample lesson content for tests/i)

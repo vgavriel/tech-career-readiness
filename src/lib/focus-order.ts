@@ -6,27 +6,27 @@ type FocusModule = {
 
 export const FOCUS_MODULE_ORDER: Record<FocusKey, string[]> = {
   "just-starting": [
-    "foundations-mindset",
-    "research-targeting",
-    "resume-portfolio",
-    "networking-outreach",
-    "applications-tracking",
+    "start-here",
+    "explore-roles",
+    "build-experience",
+    "opportunities-networking",
+    "research-companies",
+    "applications",
   ],
   "applying-soon": [
-    "foundations-mindset",
-    "networking-outreach",
-    "resume-portfolio",
-    "applications-tracking",
-    "research-targeting",
-    "interview-prep",
+    "start-here",
+    "opportunities-networking",
+    "applications",
+    "research-companies",
+    "interviews",
   ],
   "interviewing-soon": [
-    "foundations-mindset",
-    "interview-prep",
-    "research-targeting",
-    "resume-portfolio",
+    "start-here",
+    "interviews",
+    "research-companies",
+    "applications",
   ],
-  "offer-in-hand": ["offer-negotiation"],
+  "offer-in-hand": ["offers", "internship-success"],
 };
 
 export const getFocusKeyFromParam = (

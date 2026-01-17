@@ -15,10 +15,10 @@ import { getLessonExample } from "@/lib/lesson-examples";
 export default async function Home() {
   const session = await getServerSession(authOptions);
   const isAuthenticated = Boolean(session?.user);
-  const lessonExample = getLessonExample("define-your-goal");
+  const lessonExample = getLessonExample("start-to-finish-roadmap");
   const checklist = lessonExample?.checklist.slice(0, 3) ?? [
-    "Define your target role",
-    "List constraints",
+    "Pick your focus",
+    "Choose the next three lessons",
     "Set a weekly cadence",
   ];
 
@@ -61,7 +61,7 @@ export default async function Home() {
             <FocusPicker />
             <div className="grid gap-4 sm:grid-cols-3">
               {[
-                { label: "7 modules", value: "Built for clarity" },
+                { label: "9 modules", value: "Built for clarity" },
                 { label: "Short lessons", value: "15-30 min reads" },
                 { label: "Actionable", value: "Practice every week" },
               ].map((item, index) => (
@@ -93,11 +93,11 @@ export default async function Home() {
                 </span>
               </div>
               <h2 className="font-display mt-5 text-2xl text-[color:var(--ink-900)] md:text-3xl">
-                {lessonExample?.title ?? "Define Your Goal"}
+                {lessonExample?.title ?? "Start to Finish Roadmap"}
               </h2>
               <p className="mt-3 text-sm text-[color:var(--ink-700)] md:text-base">
                 {lessonExample?.summary ??
-                  "Turn a vague search into a focused target role and weekly plan."}
+                  "See the recruiting sequence end-to-end and pick a focus."}
               </p>
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
@@ -106,7 +106,7 @@ export default async function Home() {
                   </p>
                   <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
                     {lessonExample?.focus ??
-                      "Clarify a target role and constraints."}
+                      "Clarify your next steps and focus."}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
@@ -115,7 +115,7 @@ export default async function Home() {
                   </p>
                   <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
                     {lessonExample?.deliverable ??
-                      "Goal sheet and weekly cadence."}
+                      "Focus choice and next three lessons."}
                   </p>
                 </div>
               </div>
