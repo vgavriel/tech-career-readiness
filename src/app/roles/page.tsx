@@ -46,9 +46,8 @@ export default async function RolesPage() {
               Explore tech roles in depth.
             </h1>
             <p className="max-w-2xl text-base text-[color:var(--ink-700)] md:text-lg">
-              Browse Brown-specific role deep dives and save the ones that match
-              your interests. These lessons are extra credit and don&apos;t
-              affect core progress.
+              Brown-specific deep dives for when you want more context. These
+              are extra credit and do not affect core progress.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
@@ -61,12 +60,12 @@ export default async function RolesPage() {
           </div>
           <div className="rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)] md:p-7">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-              How to use it
+              Quick use
             </p>
             <ul className="mt-4 grid gap-3 text-sm text-[color:var(--ink-700)]">
               {[
-                "Pick 2-3 roles to explore deeply.",
-                "Skim for required skills and Brown-specific signals.",
+                "Pick 2-3 roles to explore.",
+                "Scan for skills and Brown-specific signals.",
                 "Use findings to refine your focus and applications.",
               ].map((item) => (
                 <li key={item} className="flex items-center gap-2">

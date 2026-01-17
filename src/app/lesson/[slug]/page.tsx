@@ -173,7 +173,7 @@ export default async function LessonPage({
               </p>
 
               {lessonExample ? (
-                <div className="mt-6 grid gap-4 md:grid-cols-3">
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
                   <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
                     <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
                       Focus
@@ -190,47 +190,47 @@ export default async function LessonPage({
                       {lessonExample.deliverable}
                     </p>
                   </div>
-                  <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
-                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
-                      Momentum
-                    </p>
-                    <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
-                      1 focused session, then log progress.
-                    </p>
-                  </div>
                 </div>
               ) : null}
             </header>
 
-            {objectives.length ? (
+            {objectives.length || checklist.length ? (
               <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)]">
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-                  What you will walk away with
+                  Lesson plan
                 </p>
-                <ul className="mt-4 grid gap-3 text-sm text-[color:var(--ink-700)]">
-                  {objectives.map((objective) => (
-                    <li key={objective} className="flex items-start gap-3">
-                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[color:var(--accent-700)]" />
-                      <span>{objective}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-
-            {checklist.length ? (
-              <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)]">
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-                  Lesson checklist
-                </p>
-                <ul className="mt-4 grid gap-2 text-sm text-[color:var(--ink-700)]">
-                  {checklist.map((item) => (
-                    <li key={item} className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--accent-700)]" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+                <div className="mt-4 grid gap-6 md:grid-cols-2">
+                  {objectives.length ? (
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+                        Outcomes
+                      </p>
+                      <ul className="mt-3 grid gap-3 text-sm text-[color:var(--ink-700)]">
+                        {objectives.map((objective) => (
+                          <li key={objective} className="flex items-start gap-3">
+                            <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[color:var(--accent-700)]" />
+                            <span>{objective}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                  {checklist.length ? (
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+                        Checklist
+                      </p>
+                      <ul className="mt-3 grid gap-2 text-sm text-[color:var(--ink-700)]">
+                        {checklist.map((item) => (
+                          <li key={item} className="flex items-center gap-2">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--accent-700)]" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                </div>
               </div>
             ) : null}
 
@@ -239,11 +239,23 @@ export default async function LessonPage({
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                   Lesson content
                 </p>
-                {contentError ? (
-                  <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
-                    Syncing docs
-                  </span>
-                ) : null}
+                <div className="flex flex-wrap items-center gap-3">
+                  {lesson.publishedUrl ? (
+                    <a
+                      href={lesson.publishedUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--accent-700)]"
+                    >
+                      Open source doc
+                    </a>
+                  ) : null}
+                  {contentError ? (
+                    <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
+                      Syncing docs
+                    </span>
+                  ) : null}
+                </div>
               </div>
               {showFallbackNotice ? (
                 <div className="mt-4 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5 text-sm text-[color:var(--ink-700)]">
@@ -307,20 +319,6 @@ export default async function LessonPage({
 
             <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-                Resources
-              </p>
-              <a
-                href={lesson.publishedUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-[color:var(--accent-700)]"
-              >
-                Open source doc
-              </a>
-            </div>
-
-            <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                 Navigate
               </p>
               <div className="mt-4 flex flex-col gap-3 text-sm font-semibold">
@@ -359,9 +357,6 @@ export default async function LessonPage({
               </div>
             </div>
 
-            <div className="rounded-[24px] border border-dashed border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5 text-xs text-[color:var(--ink-500)]">
-              All lessons are open. Sign in only if you want to sync progress.
-            </div>
           </aside>
         </div>
       </main>

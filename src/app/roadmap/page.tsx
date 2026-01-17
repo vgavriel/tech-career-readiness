@@ -1,6 +1,7 @@
 import RoadmapFocusModuleList from "@/components/roadmap-focus-module-list";
 import { RoadmapFocusProvider } from "@/components/roadmap-focus-provider";
 import RoadmapFocusSummary from "@/components/roadmap-focus-summary";
+import RoadmapBadgeAwards from "@/components/roadmap-badge-awards";
 import { FOCUS_QUERY_PARAM } from "@/lib/focus-options";
 import { getFocusKeyFromParam } from "@/lib/focus-order";
 import { prisma } from "@/lib/prisma";
@@ -50,7 +51,7 @@ export default async function RoadmapPage({ searchParams }: RoadmapPageProps) {
   });
   return (
     <div className="page-shell min-h-screen overflow-hidden">
-      <main className="page-content mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 pb-24 pt-16 md:pt-22">
+      <main className="page-content mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 pb-24 pt-16 md:pt-22">
         <RoadmapFocusProvider modules={modules} focusKey={focusKey}>
           <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
             <div className="space-y-5">
@@ -59,23 +60,36 @@ export default async function RoadmapPage({ searchParams }: RoadmapPageProps) {
                 Curriculum roadmap
               </div>
               <h1 className="font-display text-4xl text-[color:var(--ink-900)] md:text-5xl">
-                Your path through tech recruiting.
+                Your focused path through tech recruiting.
               </h1>
               <p className="max-w-2xl text-base text-[color:var(--ink-700)] md:text-lg">
-                Browse modules in order, pick a lesson, and start building the
-                habits that convert into interviews and offers.
+                Work core lessons in order, then dip into extra credit when you
+                want more depth or role context.
               </p>
             </div>
-          <div className="space-y-6">
-            <RoadmapFocusSummary modules={modules} />
-            <RoadmapBadgeAwards modules={modules} />
-          </div>
-        </section>
+            <div className="space-y-6">
+              <RoadmapFocusSummary modules={modules} />
+              <RoadmapBadgeAwards modules={modules} />
+            </div>
+          </section>
 
-          <RoadmapFocusModuleList modules={modules} />
+          <section className="space-y-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                Core roadmap
+              </p>
+              <h2 className="mt-2 font-display text-2xl text-[color:var(--ink-900)] md:text-3xl">
+                Complete the core lessons first.
+              </h2>
+              <p className="mt-2 text-sm text-[color:var(--ink-700)] md:text-base">
+                Extra credit stays available when you want to explore roles or
+                go deeper on a topic.
+              </p>
+            </div>
+            <RoadmapFocusModuleList modules={modules} />
+          </section>
         </RoadmapFocusProvider>
       </main>
     </div>
   );
 }
-import RoadmapBadgeAwards from "@/components/roadmap-badge-awards";

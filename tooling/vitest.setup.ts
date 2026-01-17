@@ -16,6 +16,11 @@ vi.mock("next-auth/react", async (importOriginal) => {
   };
 });
 
+vi.mock("next/font/google", () => ({
+  Sora: () => ({ variable: "--font-body" }),
+  Fraunces: () => ({ variable: "--font-display" }),
+}));
+
 process.env.GOOGLE_CLIENT_ID ??= "test-google-client-id";
 process.env.GOOGLE_CLIENT_SECRET ??= "test-google-client-secret";
 process.env.NEXTAUTH_SECRET ??= "test-nextauth-secret";

@@ -22,8 +22,11 @@ export default function FocusPicker({ className }: FocusPickerProps) {
             Quick focus
           </p>
           <h2 className="mt-2 font-display text-2xl text-[color:var(--ink-900)]">
-            Where are you right now?
+            Pick your focus.
           </h2>
+          <p className="mt-2 text-sm text-[color:var(--ink-700)]">
+            This trims the roadmap to what matters most today.
+          </p>
         </div>
         <Link
           href="/roles"
@@ -43,9 +46,11 @@ export default function FocusPicker({ className }: FocusPickerProps) {
             style={{ animationDelay: `${index * 70}ms` }}
           >
             <div>
-              <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
-                <span>{option.label}</span>
-                <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-2.5 py-1 text-[10px] tracking-[0.2em] text-[color:var(--ink-900)]">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="font-display text-lg text-[color:var(--ink-900)]">
+                  {option.label}
+                </p>
+                <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)]">
                   {option.timing}
                 </span>
               </div>
@@ -54,7 +59,7 @@ export default function FocusPicker({ className }: FocusPickerProps) {
               </p>
             </div>
             <span className="mt-4 text-xs font-semibold uppercase tracking-[0.24em] text-[color:var(--accent-700)]">
-              Start this focus
+              Apply this focus
             </span>
           </Link>
         ))}

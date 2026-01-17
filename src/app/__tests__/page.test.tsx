@@ -19,18 +19,16 @@ describe("Home page", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: /land your first tech role with a calm, structured plan/i,
+        name: /land your first tech role with a focused, brown-built plan/i,
       })
     ).toBeInTheDocument();
 
-    expect(screen.getByRole("link", { name: /view the roadmap/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /start the roadmap/i })).toHaveAttribute(
       "href",
       "/roadmap"
     );
 
-    expect(
-      screen.getByRole("button", { name: /sign in to save progress/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /save progress/i })).toBeInTheDocument();
   });
 
   it("hides the sign-in CTA for signed-in visitors", async () => {
@@ -44,7 +42,7 @@ describe("Home page", () => {
     render(ui);
 
     expect(
-      screen.queryByRole("button", { name: /sign in to save progress/i })
+      screen.queryByRole("button", { name: /save progress/i })
     ).not.toBeInTheDocument();
   });
 });

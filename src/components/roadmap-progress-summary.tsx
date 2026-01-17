@@ -253,10 +253,6 @@ export default function RoadmapProgressSummary({
         </p>
       ) : null}
 
-      <p className="text-xs text-[color:var(--ink-500)]">
-        All lessons are open. Sign in only to save progress.
-      </p>
-
       {!isAuthenticated ? (
         <SignInCta
           className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-700)]"
