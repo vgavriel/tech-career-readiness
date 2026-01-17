@@ -1,7 +1,8 @@
-import RoadmapModuleList from "@/components/roadmap-module-list";
-import RoadmapProgressSummary from "@/components/roadmap-progress-summary";
+import RoadmapFocusModuleList from "@/components/roadmap-focus-module-list";
+import { RoadmapFocusProvider } from "@/components/roadmap-focus-provider";
+import RoadmapFocusSummary from "@/components/roadmap-focus-summary";
 import { FOCUS_QUERY_PARAM } from "@/lib/focus-options";
-import { getFocusKeyFromParam, orderModulesForFocus } from "@/lib/focus-order";
+import { getFocusKeyFromParam } from "@/lib/focus-order";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -47,35 +48,29 @@ export default async function RoadmapPage({ searchParams }: RoadmapPageProps) {
       },
     },
   });
-  const orderedModules = orderModulesForFocus(modules, focusKey);
-
-  const focusModules = focusKey ? orderedModules : null;
-
   return (
     <div className="page-shell min-h-screen overflow-hidden">
       <main className="page-content mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 pb-24 pt-16 md:pt-22">
-        <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
-          <div className="space-y-5">
-            <div className="inline-flex items-center gap-3 rounded-full border border-[color:var(--accent-500)] bg-[color:var(--wash-0)] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-800)]">
-              <span className="h-2 w-2 rounded-full bg-[color:var(--accent-700)]" />
-              Curriculum roadmap
+        <RoadmapFocusProvider modules={modules} focusKey={focusKey}>
+          <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+            <div className="space-y-5">
+              <div className="inline-flex items-center gap-3 rounded-full border border-[color:var(--accent-500)] bg-[color:var(--wash-0)] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-800)]">
+                <span className="h-2 w-2 rounded-full bg-[color:var(--accent-700)]" />
+                Curriculum roadmap
+              </div>
+              <h1 className="font-display text-4xl text-[color:var(--ink-900)] md:text-5xl">
+                Your path through tech recruiting.
+              </h1>
+              <p className="max-w-2xl text-base text-[color:var(--ink-700)] md:text-lg">
+                Browse modules in order, pick a lesson, and start building the
+                habits that convert into interviews and offers.
+              </p>
             </div>
-            <h1 className="font-display text-4xl text-[color:var(--ink-900)] md:text-5xl">
-              Your path through tech recruiting.
-            </h1>
-            <p className="max-w-2xl text-base text-[color:var(--ink-700)] md:text-lg">
-              Browse modules in order, pick a lesson, and start building the
-              habits that convert into interviews and offers.
-            </p>
-          </div>
-          <RoadmapProgressSummary
-            modules={modules}
-            focusModules={focusModules}
-            focusKey={focusKey}
-          />
-        </section>
+            <RoadmapFocusSummary modules={modules} />
+          </section>
 
-        <RoadmapModuleList modules={orderedModules} />
+          <RoadmapFocusModuleList modules={modules} />
+        </RoadmapFocusProvider>
       </main>
     </div>
   );
