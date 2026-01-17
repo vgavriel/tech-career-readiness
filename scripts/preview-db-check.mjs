@@ -2,7 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
+import { Pool } from "pg";
 
 const warn = (message) => {
   console.warn(`Warning: ${message}`);
@@ -13,8 +15,6 @@ if (!databaseUrl) {
   warn("Preview DATABASE_URL is missing; unable to verify migrations or seed.");
   process.exit(0);
 }
-
-const prisma = new PrismaClient();
 
 const getMigrationDirs = () => {
   const migrationsDir = path.join(process.cwd(), "prisma", "migrations");
@@ -27,7 +27,7 @@ const getMigrationDirs = () => {
     .filter((entry) => fs.statSync(path.join(migrationsDir, entry)).isDirectory());
 };
 
-const checkMigrations = async () => {
+const checkMigrations = async (prisma) => {
   const migrationDirs = getMigrationDirs();
   if (migrationDirs.length === 0) {
     return;
@@ -53,7 +53,7 @@ const checkMigrations = async () => {
   }
 };
 
-const checkSeed = async () => {
+const checkSeed = async (prisma) => {
   try {
     const rows = await prisma.$queryRaw`
       SELECT EXISTS(
@@ -72,9 +72,23 @@ const checkSeed = async () => {
   }
 };
 
+let prisma;
+let pool;
+
 try {
-  await checkMigrations();
-  await checkSeed();
+  pool = new Pool({ connectionString: databaseUrl });
+  const adapter = new PrismaPg(pool);
+  prisma = new PrismaClient({ adapter });
+
+  await checkMigrations(prisma);
+  await checkSeed(prisma);
+} catch {
+  warn("Unable to verify preview DB status; run npm run dev:preview:setup.");
 } finally {
-  await prisma.$disconnect();
+  if (prisma) {
+    await prisma.$disconnect();
+  }
+  if (pool) {
+    await pool.end();
+  }
 }
