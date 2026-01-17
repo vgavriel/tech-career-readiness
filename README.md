@@ -2,63 +2,39 @@ Tech Career Readiness is a self-paced learning app for college students. It's bu
 
 ## Getting started
 
-### 1) Install dependencies
+### Local (recommended)
 ```bash
 npm install
+npm run dev:local
 ```
 
-### 2) Configure environment
-Copy the example env file and set your database connection string.
+This uses a tmpfs-backed Postgres container, dev credentials auth, and no-op
+rate limiting. It will create `.env.local` from `.env.example` if needed.
+
+### Staging-like (real services)
 ```bash
-cp .env.example .env
+npm install
+npm run env:staging
+# fill in .env.staging.local
+npm run dev:staging
 ```
 
-`DATABASE_URL` is required for Prisma CLI and seeding. Prisma 7 reads datasource config from `prisma.config.ts`.
-
-For Auth.js (NextAuth):
-- Generate `NEXTAUTH_SECRET` with `openssl rand -base64 32`.
-- Create a Google OAuth client in Google Cloud Console and set
-  `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET`. Use
-  `http://localhost:3000/api/auth/callback/google` as the redirect URI for
-  local development.
-- In development, if Google credentials are unset, the app falls back to a
-  dev-only credentials provider.
+See `docs/environments.md` for the full workflow.
 
 ### Environment variables and secrets
+- `APP_ENV` controls behavior (`local`, `staging`, `production`, `test`).
 - Dev: Next.js loads `.env`, `.env.local`, `.env.development`, and
   `.env.development.local` (later files override earlier ones).
 - Prod: set variables in your hosting provider or secret manager; do not ship
   `.env` files.
 - Keep secrets out of client code and never commit real values. Only commit
-  `.env.example`.
+  `.env.example` and `.env.staging.example`.
 
 Additional app configuration:
 - `ADMIN_EMAILS` (comma-separated) to bootstrap admin access in dev/test only. In
   production, set `User.isAdmin` directly in the database.
 - `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` for rate limiting.
 - `MAX_JSON_BODY_BYTES` (optional) to adjust JSON payload size limits.
-
-### 3) Initialize local dev database (Docker, tmpfs)
-```bash
-npm run dev:setup
-```
-
-This creates `.env` (if missing), generates `NEXTAUTH_SECRET`, starts a local
-tmpfs-backed Postgres container, and runs migrations + seed data.
-
-If you want to use a shared Neon database instead, set `DATABASE_URL` in `.env`
-and run the Prisma commands directly:
-```bash
-npx prisma migrate deploy
-npx prisma db seed
-```
-
-### 4) Run the dev server
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Notes
 - App code lives in `src/app`.

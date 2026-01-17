@@ -6,6 +6,7 @@ process.env.GOOGLE_CLIENT_SECRET ??= "test-google-client-secret";
 process.env.NEXTAUTH_SECRET ??= "test-nextauth-secret";
 process.env.LESSON_CONTENT_MOCK_HTML ??=
   "<h2>Lesson content</h2><p>Sample lesson content for tests.</p>";
+process.env.APP_ENV ??= "test";
 
 if (!process.env.DATABASE_URL) {
   throw new Error(

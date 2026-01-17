@@ -3,41 +3,18 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { devAuthDefaults } from "@/lib/dev-auth";
+import { getEnv, requireEnv } from "@/lib/env";
 
-const googleClientId = process.env.GOOGLE_CLIENT_ID;
-const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+const env = getEnv();
+const nextAuthSecret = requireEnv(env.NEXTAUTH_SECRET, "NEXTAUTH_SECRET");
 
-const nextAuthSecret = process.env.NEXTAUTH_SECRET;
-if (!nextAuthSecret) {
-  throw new Error("Missing NEXTAUTH_SECRET environment variable.");
-}
+const devAuthEmail = env.DEV_AUTH_EMAIL?.trim() || devAuthDefaults.email;
+const devAuthName = env.DEV_AUTH_NAME?.trim() || devAuthDefaults.name;
 
-const isPlaceholder = (value?: string) => !value || value.startsWith("replace-with-");
+const isLocalAuth = env.isLocal || env.isTest;
 
-const hasGoogleCredentials =
-  !isPlaceholder(googleClientId) && !isPlaceholder(googleClientSecret);
-
-const isProduction = process.env.NODE_ENV === "production";
-if (!hasGoogleCredentials && isProduction) {
-  if (isPlaceholder(googleClientId)) {
-    throw new Error("Missing GOOGLE_CLIENT_ID environment variable.");
-  }
-  if (isPlaceholder(googleClientSecret)) {
-    throw new Error("Missing GOOGLE_CLIENT_SECRET environment variable.");
-  }
-}
-
-const devAuthEmail = process.env.DEV_AUTH_EMAIL?.trim() || devAuthDefaults.email;
-const devAuthName = process.env.DEV_AUTH_NAME?.trim() || devAuthDefaults.name;
-
-const providers = hasGoogleCredentials
+const providers = isLocalAuth
   ? [
-      GoogleProvider({
-        clientId: googleClientId as string,
-        clientSecret: googleClientSecret as string,
-      }),
-    ]
-  : [
       CredentialsProvider({
         name: "Dev Login",
         credentials: {
@@ -49,6 +26,12 @@ const providers = hasGoogleCredentials
           email: (credentials?.email as string | undefined) ?? devAuthEmail,
           name: (credentials?.name as string | undefined) ?? devAuthName,
         }),
+      }),
+    ]
+  : [
+      GoogleProvider({
+        clientId: requireEnv(env.GOOGLE_CLIENT_ID, "GOOGLE_CLIENT_ID"),
+        clientSecret: requireEnv(env.GOOGLE_CLIENT_SECRET, "GOOGLE_CLIENT_SECRET"),
       }),
     ];
 

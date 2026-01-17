@@ -23,6 +23,7 @@ init_test_db_env() {
   export GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID:-test-google-client-id}"
   export GOOGLE_CLIENT_SECRET="${GOOGLE_CLIENT_SECRET:-test-google-client-secret}"
   export LESSON_CONTENT_MOCK_HTML="${LESSON_CONTENT_MOCK_HTML:-<h2>Lesson content</h2><p>Sample lesson content for tests.</p>}"
+  export APP_ENV="${APP_ENV:-test}"
 
   IS_INTERACTIVE=1
   if [[ ! -t 0 ]] || [[ "${CI:-}" == "true" ]] || [[ "${NONINTERACTIVE:-}" == "1" ]]; then

@@ -3,7 +3,13 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-ENV_FILE="${ROOT_DIR}/.env"
+ENV_FILE="${ROOT_DIR}/.env.local"
+if [[ ! -f "$ENV_FILE" ]]; then
+  ENV_FILE="${ROOT_DIR}/.env.staging.local"
+fi
+if [[ ! -f "$ENV_FILE" ]]; then
+  ENV_FILE="${ROOT_DIR}/.env"
+fi
 
 read_env_value() {
   local key="$1"

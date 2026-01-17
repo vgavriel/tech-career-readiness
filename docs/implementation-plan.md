@@ -244,6 +244,7 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [x] Confirm public access to curriculum and lessons
 - [x] UI polish for readability and CTAs
 - [x] Add TSDoc for functions/types and component intent comments
+- [x] Document local/staging workflows and gate auth/rate limiting by `APP_ENV`
 
 ### Phase 7.5 — Observability (lightweight)
 - [ ] Add request ID generation (middleware) and return `x-request-id` headers for server routes
@@ -258,6 +259,7 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [ ] Smoke-test public browsing, auth, progress, and continue flow
 
 ## Environment variables
+- APP_ENV (local, staging, production, test)
 - DATABASE_URL
 - NEXTAUTH_URL
 - NEXTAUTH_SECRET

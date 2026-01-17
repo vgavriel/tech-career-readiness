@@ -41,7 +41,8 @@ describe("authOptions", () => {
     resetEnv();
   });
 
-  it("builds auth options from env", async () => {
+  it("builds Google auth options in staging", async () => {
+    process.env.APP_ENV = "staging";
     process.env.GOOGLE_CLIENT_ID = "client-id";
     process.env.GOOGLE_CLIENT_SECRET = "client-secret";
     process.env.NEXTAUTH_SECRET = "auth-secret";
@@ -60,11 +61,11 @@ describe("authOptions", () => {
     expect(provider.clientSecret).toBe("client-secret");
   });
 
-  it("falls back to credentials provider in development", async () => {
-    delete process.env.GOOGLE_CLIENT_ID;
-    delete process.env.GOOGLE_CLIENT_SECRET;
+  it("uses credentials provider in local", async () => {
+    process.env.APP_ENV = "local";
+    process.env.GOOGLE_CLIENT_ID = "client-id";
+    process.env.GOOGLE_CLIENT_SECRET = "client-secret";
     process.env.NEXTAUTH_SECRET = "auth-secret";
-    process.env.NODE_ENV = "development";
 
     const { authOptions } = await importAuth();
     const provider = authOptions.providers?.[0] as { id: string };
@@ -72,22 +73,22 @@ describe("authOptions", () => {
     expect(provider.id).toBe("credentials");
   });
 
-  it("throws when GOOGLE_CLIENT_ID is missing in production", async () => {
+  it("throws when GOOGLE_CLIENT_ID is missing in staging", async () => {
+    process.env.APP_ENV = "staging";
     delete process.env.GOOGLE_CLIENT_ID;
     process.env.GOOGLE_CLIENT_SECRET = "client-secret";
     process.env.NEXTAUTH_SECRET = "auth-secret";
-    process.env.NODE_ENV = "production";
 
     await expect(importAuth()).rejects.toThrow(
       "Missing GOOGLE_CLIENT_ID environment variable."
     );
   });
 
-  it("throws when GOOGLE_CLIENT_SECRET is missing in production", async () => {
+  it("throws when GOOGLE_CLIENT_SECRET is missing in staging", async () => {
+    process.env.APP_ENV = "staging";
     process.env.GOOGLE_CLIENT_ID = "client-id";
     delete process.env.GOOGLE_CLIENT_SECRET;
     process.env.NEXTAUTH_SECRET = "auth-secret";
-    process.env.NODE_ENV = "production";
 
     await expect(importAuth()).rejects.toThrow(
       "Missing GOOGLE_CLIENT_SECRET environment variable."
@@ -95,6 +96,7 @@ describe("authOptions", () => {
   });
 
   it("throws when NEXTAUTH_SECRET is missing", async () => {
+    process.env.APP_ENV = "local";
     process.env.GOOGLE_CLIENT_ID = "client-id";
     process.env.GOOGLE_CLIENT_SECRET = "client-secret";
     delete process.env.NEXTAUTH_SECRET;

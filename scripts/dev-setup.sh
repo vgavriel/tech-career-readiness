@@ -3,13 +3,19 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-ENV_FILE="${ROOT_DIR}/.env"
+ENV_FILE="${ROOT_DIR}/.env.local"
 ENV_EXAMPLE="${ROOT_DIR}/.env.example"
 COMPOSE_FILE="${ROOT_DIR}/docker/docker-compose.dev.yml"
 
+ENV_ONLY=0
+if [[ "${1:-}" == "--env-only" ]]; then
+  ENV_ONLY=1
+  shift
+fi
+
 if [[ ! -f "$ENV_FILE" ]]; then
   cp "$ENV_EXAMPLE" "$ENV_FILE"
-  echo "Created .env from .env.example"
+  echo "Created .env.local from .env.example"
 fi
 
 read_env_value() {
@@ -110,6 +116,7 @@ DEV_DB_USER="postgres"
 DEV_DB_PASSWORD="postgres"
 DATABASE_URL="postgresql://${DEV_DB_USER}:${DEV_DB_PASSWORD}@127.0.0.1:${DEV_DB_PORT}/${DEV_DB_NAME}"
 
+write_env_value "APP_ENV" "local"
 write_env_value "DEV_DB_PORT" "$DEV_DB_PORT"
 write_env_value "DATABASE_URL" "$DATABASE_URL"
 
@@ -127,6 +134,12 @@ fi
 export DEV_DB_PORT
 export DATABASE_URL
 export NEXTAUTH_SECRET
+export APP_ENV="local"
+
+if [[ "$ENV_ONLY" -eq 1 ]]; then
+  echo "Local environment file updated. Run: npm run dev:setup (DB only) or npm run dev:local (DB + server)."
+  exit 0
+fi
 
 if ! command -v docker >/dev/null 2>&1; then
   echo "Docker is required to start the local dev database." >&2

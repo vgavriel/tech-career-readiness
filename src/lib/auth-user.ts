@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
+import { getEnv } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -27,6 +28,7 @@ const normalizeEmailList = (value?: string) =>
  * Fetch or create the signed-in user and return the normalized profile data.
  */
 export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> {
+  const env = getEnv();
   const session = await getServerSession(authOptions);
   const email = session?.user?.email;
 
@@ -35,8 +37,7 @@ export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> 
   }
 
   const normalizedEmail = email.toLowerCase();
-  const allowAdminBootstrap =
-    process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test";
+  const allowAdminBootstrap = env.isLocal || env.isTest;
   const adminEmails = allowAdminBootstrap
     ? normalizeEmailList(process.env.ADMIN_EMAILS)
     : [];

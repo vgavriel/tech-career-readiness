@@ -2,10 +2,17 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { NextResponse } from "next/server";
 
-const redis =
-  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
-    ? Redis.fromEnv()
-    : null;
+import { getEnv, requireEnv } from "@/lib/env";
+
+const env = getEnv();
+const shouldRateLimit = env.isStaging || env.isProduction;
+
+if (shouldRateLimit) {
+  requireEnv(env.UPSTASH_REDIS_REST_URL, "UPSTASH_REDIS_REST_URL");
+  requireEnv(env.UPSTASH_REDIS_REST_TOKEN, "UPSTASH_REDIS_REST_TOKEN");
+}
+
+const redis = shouldRateLimit ? Redis.fromEnv() : null;
 
 /**
  * Named rate-limit buckets used across API routes.
@@ -90,7 +97,7 @@ export const enforceRateLimit = async (
   bucket: RateLimitBucket,
   identifier?: string | null
 ) => {
-  if (process.env.NODE_ENV === "test") {
+  if (!shouldRateLimit) {
     return null;
   }
 
