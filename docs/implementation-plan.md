@@ -4,7 +4,7 @@
 Build a public self-paced online course web app that teaches an end-to-end roadmap to landing a tech internship or job. The app differentiates itself with a clear curriculum path, guided experience, quick navigation, and per-user progress tracking with “Continue where you left off.”
 
 ## Curriculum plan
-Source of truth for modules, pathways, progress categories, and gamification:
+Source of truth for modules, focuses, progress categories, and gamification:
 - `docs/curriculum-plan.md`
 
 ## MVP scope
@@ -13,7 +13,7 @@ Source of truth for modules, pathways, progress categories, and gamification:
 - Google Sign-In for saving progress state
 - Guest progress stored in localStorage with merge into account on sign-in
 - Curriculum structure: Modules ➜ Lessons
-- Landing quick picker to route to urgency pathways (plus an always-available “Explore roles” entry)
+- Landing quick picker to route to urgency focuses (plus an always-available “Explore roles” entry)
 - Core progress tracking plus a separate “extra credit” progress category
 - Role Library shows all roles with optional deep dives
 - Lesson reading view with in-app rendering of Google Doc content from published URLs (no iframes)
@@ -75,7 +75,7 @@ Source of truth for modules, pathways, progress categories, and gamification:
 - Title and short description
 - CTA: “View the roadmap”
 - CTA: “Sign in to save progress”
-- Quick picker for urgency pathways + “Explore roles” entry
+- Quick picker for urgency focuses + “Explore roles” entry
 - Optional: small “How this course works” block
 
 2) `/roadmap` (Curriculum overview)
@@ -203,7 +203,7 @@ Source of truth for modules, pathways, progress categories, and gamification:
 - [x] Add E2E tests job once core pages exist (Phase 4+)
 
 ### Phase 0.9 — Curriculum planning (Brown-specific)
-- [x] Create `docs/curriculum-plan.md` with modules, pathways, progress categories, and gamification
+- [x] Create `docs/curriculum-plan.md` with modules, focuses, progress categories, and gamification
 - [x] Link curriculum plan from this doc and update MVP scope for quick picker + extra credit progress
 
 ### Phase 1 — Database modeling + curriculum seed
@@ -258,10 +258,13 @@ Source of truth for modules, pathways, progress categories, and gamification:
 - [x] Add TSDoc for functions/types and component intent comments
 - [x] Document local/preview workflows and gate auth/rate limiting by `APP_ENV`
 
-### Phase 7.2 — Curriculum UX + pathways
-- [ ] Add landing quick picker that routes to curated pathways (and store selection)
-- [ ] Support pathway filtering/ordering on the roadmap (core lessons in path order)
+### Phase 7.2 — Curriculum UX + focuses
+- [ ] Add landing quick picker that routes to curated focuses (and store selection)
+- [ ] Support focus filtering/ordering on the roadmap (core lessons in focus order)
+- [ ] Show focus progress alongside overall core progress
+- [ ] Define “Continue” behavior when a focus is selected (focus order vs global order)
 - [ ] Show core vs extra credit progress breakdown
+- [ ] Add lesson classification mapping for core/extra credit + role deep dives (badge source of truth)
 - [ ] Add Role Library view showing all role deep dives
 - [ ] Add lightweight badge awards (no streaks) based on lesson completion
 

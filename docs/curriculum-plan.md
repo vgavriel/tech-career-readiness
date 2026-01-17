@@ -4,7 +4,7 @@
 - Keep Brown-specific resources and context as the primary USP.
 - Use existing Google Doc content as-is; do not edit source docs yet.
 - Support short attention spans with UI layering, not content edits.
-- Preserve autonomy by offering pathways and an open Role Library.
+- Preserve autonomy by offering focuses and an open Role Library.
 
 ## Constraints (current)
 - Lesson content comes from published Google Docs (docx copies are mirrors).
@@ -96,8 +96,8 @@ Note: Core lessons count toward progress. Extra credit lessons are optional and 
 - [Extra] Tech Internship Success Handbook
 - [Extra] Tech Internship Success Checklist
 
-## Pathways (quick picker output)
-Each pathway is a curated ordering of core lessons, not a separate curriculum.
+## Focuses (quick picker output)
+Each focus is a curated ordering of core lessons, not a separate curriculum.
 
 - Just starting / exploring
   - Modules 0, 1, 2 in full
@@ -124,6 +124,11 @@ Each pathway is a curated ordering of core lessons, not a separate curriculum.
 - Core progress: percent = completed core lessons / total core lessons.
 - Extra credit progress: percent = completed extra credit lessons / total extra credit lessons.
 - Roadmap completion is defined by core completion only; extra credit is motivational.
+
+## Focus UX rules (tracked)
+- Focus progress shows focus completion alongside overall core progress to avoid misleading percentages.
+- Continue behavior uses focus order when a focus is selected, otherwise uses global core order.
+- Core/extra credit and role-deep-dive flags are a source-of-truth mapping for progress and badges.
 
 ## Gamification (no streaks)
 Use lesson completion events to award lightweight badges:
@@ -152,3 +157,5 @@ Use lesson completion events to award lightweight badges:
 - Success-metric suggestions aligned to lesson content and assessments.
 - Action cards surfaced outside of doc content.
 - Word count and readability optimization pass (when doc edits are allowed).
+- Focus-aware progress messaging + continue behavior rules.
+- Lesson classification mapping for core/extra credit + role deep dives to support badges.
