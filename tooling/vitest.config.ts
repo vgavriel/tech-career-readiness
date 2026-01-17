@@ -15,6 +15,17 @@ export default defineConfig({
       "**/*.integration.test.*",
       "e2e/**",
     ],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html"],
+      reportsDirectory: "coverage",
+      thresholds: {
+        statements: 90,
+        branches: 75,
+        functions: 95,
+        lines: 90,
+      },
+    },
   },
   resolve: {
     alias: {

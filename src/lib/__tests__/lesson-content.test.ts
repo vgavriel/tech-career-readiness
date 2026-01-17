@@ -1,0 +1,84 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { clearLessonContentCache } from "@/lib/lesson-content-cache";
+import { fetchLessonContent } from "@/lib/lesson-content";
+
+const ORIGINAL_ENV = { ...process.env };
+
+const resetEnv = () => {
+  for (const key of Object.keys(process.env)) {
+    if (!(key in ORIGINAL_ENV)) {
+      delete process.env[key];
+    }
+  }
+  Object.assign(process.env, ORIGINAL_ENV);
+};
+
+const lesson = {
+  id: "lesson-1",
+  publishedUrl: "https://docs.google.com/document/d/e/lesson-1/pub",
+};
+
+describe("fetchLessonContent", () => {
+  const fetchMock = vi.fn();
+
+  beforeEach(() => {
+    fetchMock.mockReset();
+    vi.stubGlobal("fetch", fetchMock);
+    clearLessonContentCache();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    clearLessonContentCache();
+    resetEnv();
+  });
+
+  it("uses mock HTML in local mode and caches it", async () => {
+    process.env.APP_ENV = "local";
+    process.env.LESSON_CONTENT_MOCK_HTML =
+      '<h2>Mock</h2><script>alert("x")</script>';
+
+    const first = await fetchLessonContent(lesson);
+
+    expect(first.cached).toBe(false);
+    expect(first.html).toContain("<h2>Mock</h2>");
+    expect(first.html).not.toContain("<script");
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    const second = await fetchLessonContent(lesson);
+
+    expect(second.cached).toBe(true);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("throws when the upstream response is not ok", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(new Response("oops", { status: 500 }));
+
+    await expect(fetchLessonContent(lesson)).rejects.toThrow(
+      "Failed to fetch lesson content."
+    );
+  });
+
+  it("throws after too many redirects", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockImplementation(() =>
+      Promise.resolve(
+        new Response(null, {
+          status: 302,
+          headers: {
+            location:
+              "https://docs.google.com/document/d/e/redirected/pub",
+          },
+        })
+      )
+    );
+
+    await expect(fetchLessonContent(lesson)).rejects.toThrow(
+      "Too many redirects while fetching lesson content."
+    );
+
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+  });
+});
