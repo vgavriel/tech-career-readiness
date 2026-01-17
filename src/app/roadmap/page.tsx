@@ -66,8 +66,11 @@ export default async function RoadmapPage({ searchParams }: RoadmapPageProps) {
                 habits that convert into interviews and offers.
               </p>
             </div>
+          <div className="space-y-6">
             <RoadmapFocusSummary modules={modules} />
-          </section>
+            <RoadmapBadgeAwards modules={modules} />
+          </div>
+        </section>
 
           <RoadmapFocusModuleList modules={modules} />
         </RoadmapFocusProvider>
@@ -75,3 +78,4 @@ export default async function RoadmapPage({ searchParams }: RoadmapPageProps) {
     </div>
   );
 }
+import RoadmapBadgeAwards from "@/components/roadmap-badge-awards";
