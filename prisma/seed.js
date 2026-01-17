@@ -2,6 +2,12 @@ const { PrismaClient } = require("@prisma/client");
 const { PrismaPg } = require("@prisma/adapter-pg");
 const { Pool } = require("pg");
 
+const {
+  resolveExistingRecord,
+  getLessonKey,
+  collectLessonKeys,
+} = require("./seed-utils");
+
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
@@ -342,8 +348,15 @@ async function main() {
   });
 
   for (const moduleData of modules) {
-    const existingModule = await prisma.module.findUnique({
+    const moduleByKey = await prisma.module.findUnique({
       where: { key: moduleData.key },
+    });
+    const moduleByOrder = await prisma.module.findFirst({
+      where: { cohortId: defaultCohort.id, order: moduleData.order },
+    });
+    const { record: existingModule } = resolveExistingRecord({
+      recordByKey: moduleByKey,
+      recordByOrder: moduleByOrder,
     });
 
     const previousSlug = existingModule?.slug ?? null;
@@ -394,13 +407,20 @@ async function main() {
     }
 
     for (const lessonData of moduleData.lessons) {
-      const lessonKey = lessonData.key ?? lessonData.slug;
+      const lessonKey = getLessonKey(lessonData);
       const publishedUrl =
         lessonData.publishedUrl ??
         `https://docs.google.com/document/d/e/${lessonData.slug}/pub`;
 
-      const existingLesson = await prisma.lesson.findUnique({
+      const lessonByKey = await prisma.lesson.findUnique({
         where: { key: lessonKey },
+      });
+      const lessonByOrder = await prisma.lesson.findFirst({
+        where: { moduleId: moduleRecord.id, order: lessonData.order },
+      });
+      const { record: existingLesson } = resolveExistingRecord({
+        recordByKey: lessonByKey,
+        recordByOrder: lessonByOrder,
       });
 
       const previousSlug = existingLesson?.slug ?? null;
@@ -416,6 +436,7 @@ async function main() {
               moduleId: moduleRecord.id,
               publishedUrl,
               cohortId: defaultCohort.id,
+              isArchived: false,
             },
           })
         : await prisma.lesson.create({
@@ -427,6 +448,7 @@ async function main() {
               moduleId: moduleRecord.id,
               publishedUrl,
               cohortId: defaultCohort.id,
+              isArchived: false,
             },
           });
 
@@ -451,6 +473,16 @@ async function main() {
         });
       }
     }
+
+    const lessonKeys = collectLessonKeys(moduleData.lessons);
+
+    await prisma.lesson.updateMany({
+      where: {
+        moduleId: moduleRecord.id,
+        key: { notIn: lessonKeys },
+      },
+      data: { isArchived: true },
+    });
   }
 }
 
