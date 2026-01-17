@@ -21,6 +21,7 @@ export type RoadmapLesson = {
  */
 export type RoadmapModule = {
   id: string;
+  key: string;
   title: string;
   description: string | null;
   order: number;

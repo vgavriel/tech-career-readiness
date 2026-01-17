@@ -33,6 +33,7 @@ describe("RoadmapModuleList", () => {
     const modules: RoadmapModule[] = [
       {
         id: "module-1",
+        key: "foundations",
         title: "Foundations",
         description: "Start here.",
         order: 1,

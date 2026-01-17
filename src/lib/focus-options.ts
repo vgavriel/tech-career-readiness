@@ -40,5 +40,18 @@ export const FOCUS_OPTIONS: FocusOption[] = [
   },
 ];
 
+const focusKeySet = new Set(FOCUS_OPTIONS.map((option) => option.key));
+
+export const isFocusKey = (value: string): value is FocusKey =>
+  focusKeySet.has(value as FocusKey);
+
+export const normalizeFocusKey = (value: unknown): FocusKey | null => {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  return isFocusKey(value) ? value : null;
+};
+
 export const buildFocusHref = (focusKey: FocusKey) =>
   `/roadmap?${FOCUS_QUERY_PARAM}=${focusKey}`;

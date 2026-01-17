@@ -31,6 +31,7 @@ vi.mock("next/link", () => ({
 const modules: RoadmapModule[] = [
   {
     id: "module-1",
+    key: "foundations",
     title: "Foundations",
     description: null,
     order: 1,

@@ -1,9 +1,15 @@
 import RoadmapModuleList from "@/components/roadmap-module-list";
 import RoadmapProgressSummary from "@/components/roadmap-progress-summary";
+import { FOCUS_QUERY_PARAM } from "@/lib/focus-options";
+import { getFocusKeyFromParam, orderModulesForFocus } from "@/lib/focus-order";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+type RoadmapPageProps = {
+  searchParams?: Record<string, string | string[] | undefined>;
+};
 
 /**
  * Render the curriculum roadmap with modules, lessons, and progress summary.
@@ -12,11 +18,13 @@ export const dynamic = "force-dynamic";
  * Loads ordered modules server-side and passes them to the client-side progress
  * UI; no local state.
  */
-export default async function RoadmapPage() {
+export default async function RoadmapPage({ searchParams }: RoadmapPageProps) {
+  const focusKey = getFocusKeyFromParam(searchParams?.[FOCUS_QUERY_PARAM]);
   const modules = await prisma.module.findMany({
     orderBy: { order: "asc" },
     select: {
       id: true,
+      key: true,
       title: true,
       description: true,
       order: true,
@@ -34,6 +42,7 @@ export default async function RoadmapPage() {
       },
     },
   });
+  const orderedModules = orderModulesForFocus(modules, focusKey);
 
   return (
     <div className="page-shell min-h-screen overflow-hidden">
@@ -52,10 +61,10 @@ export default async function RoadmapPage() {
               habits that convert into interviews and offers.
             </p>
           </div>
-          <RoadmapProgressSummary modules={modules} />
+          <RoadmapProgressSummary modules={orderedModules} />
         </section>
 
-        <RoadmapModuleList modules={modules} />
+        <RoadmapModuleList modules={orderedModules} />
       </main>
     </div>
   );

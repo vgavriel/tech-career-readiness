@@ -1,4 +1,4 @@
-import { FOCUS_OPTIONS, type FocusKey } from "@/lib/focus-options";
+import { normalizeFocusKey, type FocusKey } from "@/lib/focus-options";
 
 export type FocusSelectionState = {
   version: 1;
@@ -18,18 +18,6 @@ const cloneState = (state: FocusSelectionState): FocusSelectionState => ({
   version: 1,
   focusKey: state.focusKey,
 });
-
-const focusKeySet = new Set(FOCUS_OPTIONS.map((option) => option.key));
-
-const isFocusKey = (value: string): value is FocusKey => focusKeySet.has(value as FocusKey);
-
-const normalizeFocusKey = (value: unknown): FocusKey | null => {
-  if (typeof value !== "string") {
-    return null;
-  }
-
-  return isFocusKey(value) ? value : null;
-};
 
 const getLocalStorage = () => {
   if (typeof window === "undefined") {
