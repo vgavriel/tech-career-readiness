@@ -1,28 +1,42 @@
 import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
 
-const googleClientId = process.env.GOOGLE_CLIENT_ID;
-if (!googleClientId) {
-  throw new Error("Missing GOOGLE_CLIENT_ID environment variable.");
-}
+import { devAuthDefaults } from "@/lib/dev-auth";
+import { getEnv, requireEnv } from "@/lib/env";
 
-const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
-if (!googleClientSecret) {
-  throw new Error("Missing GOOGLE_CLIENT_SECRET environment variable.");
-}
+const env = getEnv();
+const nextAuthSecret = requireEnv(env.NEXTAUTH_SECRET, "NEXTAUTH_SECRET");
 
-const nextAuthSecret = process.env.NEXTAUTH_SECRET;
-if (!nextAuthSecret) {
-  throw new Error("Missing NEXTAUTH_SECRET environment variable.");
-}
+const devAuthEmail = env.DEV_AUTH_EMAIL?.trim() || devAuthDefaults.email;
+const devAuthName = env.DEV_AUTH_NAME?.trim() || devAuthDefaults.name;
+
+const isLocalAuth = env.isLocal || env.isTest;
+
+const providers = isLocalAuth
+  ? [
+      CredentialsProvider({
+        name: "Dev Login",
+        credentials: {
+          email: { label: "Email", type: "email" },
+          name: { label: "Name", type: "text" },
+        },
+        authorize: async (credentials) => ({
+          id: devAuthDefaults.id,
+          email: (credentials?.email as string | undefined) ?? devAuthEmail,
+          name: (credentials?.name as string | undefined) ?? devAuthName,
+        }),
+      }),
+    ]
+  : [
+      GoogleProvider({
+        clientId: requireEnv(env.GOOGLE_CLIENT_ID, "GOOGLE_CLIENT_ID"),
+        clientSecret: requireEnv(env.GOOGLE_CLIENT_SECRET, "GOOGLE_CLIENT_SECRET"),
+      }),
+    ];
 
 export const authOptions: NextAuthOptions = {
-  providers: [
-    GoogleProvider({
-      clientId: googleClientId,
-      clientSecret: googleClientSecret,
-    }),
-  ],
+  providers,
   session: {
     strategy: "jwt",
   },

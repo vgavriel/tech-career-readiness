@@ -5,6 +5,7 @@ import {
   getLessonContentCache,
   setLessonContentCache,
 } from "@/lib/lesson-content-cache";
+import { getEnv } from "@/lib/env";
 
 const allowedLessonHosts = new Set(["docs.google.com", "drive.google.com"]);
 
@@ -109,6 +110,7 @@ export async function fetchLessonContent(
   options: { bypassCache?: boolean } = {}
 ): Promise<LessonContentResult> {
   const { bypassCache = false } = options;
+  const env = getEnv();
 
   if (!bypassCache) {
     const cachedHtml = getLessonContentCache(lesson.id);
@@ -117,8 +119,8 @@ export async function fetchLessonContent(
     }
   }
 
-  const mockHtml = process.env.LESSON_CONTENT_MOCK_HTML;
-  if (mockHtml) {
+  const mockHtml = env.LESSON_CONTENT_MOCK_HTML;
+  if (mockHtml && (env.isLocal || env.isTest)) {
     const sanitizedHtml = sanitizeHtml(mockHtml, sanitizeOptions);
     setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
     return { lessonId: lesson.id, html: sanitizedHtml, cached: false };

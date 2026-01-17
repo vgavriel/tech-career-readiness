@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { fetchLessonContent } from "@/lib/lesson-content";
+import { getEnv } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { enforceRateLimit } from "@/lib/rate-limit";
 
@@ -16,7 +17,8 @@ const isTruthy = (value: string | null) => value === "1" || value === "true";
  * Determine whether to bypass cache in development requests.
  */
 const shouldBypassCache = (searchParams: URLSearchParams) => {
-  if (process.env.NODE_ENV !== "development") {
+  const env = getEnv();
+  if (!env.isLocal) {
     return false;
   }
 

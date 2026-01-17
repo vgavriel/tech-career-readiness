@@ -229,7 +229,7 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [x] Restrict lesson content fetch to Google Docs domains only (SSRF allowlist)
 - [x] Add `User.isAdmin` flag + admin analytics page
 - [x] Record `LessonProgressEvent` entries for every toggle
-- [x] Document admin bootstrap via `ADMIN_EMAILS` (dev/test only; prod via DB flag)
+- [x] Document admin bootstrap via `ADMIN_EMAILS` (preview/test only; prod via DB flag)
 
 ### Phase 5.6 — CSP nonces/hashes (deferred)
 - [ ] Replace `unsafe-inline` styles/scripts with CSP nonces/hashes once lesson HTML is finalized
@@ -244,6 +244,7 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [x] Confirm public access to curriculum and lessons
 - [x] UI polish for readability and CTAs
 - [x] Add TSDoc for functions/types and component intent comments
+- [x] Document local/preview workflows and gate auth/rate limiting by `APP_ENV`
 
 ### Phase 7.5 — Observability (lightweight)
 - [ ] Add request ID generation (middleware) and return `x-request-id` headers for server routes
@@ -258,6 +259,7 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [ ] Smoke-test public browsing, auth, progress, and continue flow
 
 ## Environment variables
+- APP_ENV (local, preview, production, test)
 - DATABASE_URL
 - NEXTAUTH_URL
 - NEXTAUTH_SECRET

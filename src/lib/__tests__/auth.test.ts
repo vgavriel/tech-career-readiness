@@ -9,6 +9,13 @@ vi.mock("next-auth/providers/google", () => ({
   }),
 }));
 
+vi.mock("next-auth/providers/credentials", () => ({
+  default: (config: { name: string }) => ({
+    id: "credentials",
+    ...config,
+  }),
+}));
+
 /**
  * Restore process.env to its original snapshot.
  */
@@ -34,7 +41,8 @@ describe("authOptions", () => {
     resetEnv();
   });
 
-  it("builds auth options from env", async () => {
+  it("builds Google auth options in preview", async () => {
+    process.env.APP_ENV = "preview";
     process.env.GOOGLE_CLIENT_ID = "client-id";
     process.env.GOOGLE_CLIENT_SECRET = "client-secret";
     process.env.NEXTAUTH_SECRET = "auth-secret";
@@ -53,7 +61,20 @@ describe("authOptions", () => {
     expect(provider.clientSecret).toBe("client-secret");
   });
 
-  it("throws when GOOGLE_CLIENT_ID is missing", async () => {
+  it("uses credentials provider in local", async () => {
+    process.env.APP_ENV = "local";
+    process.env.GOOGLE_CLIENT_ID = "client-id";
+    process.env.GOOGLE_CLIENT_SECRET = "client-secret";
+    process.env.NEXTAUTH_SECRET = "auth-secret";
+
+    const { authOptions } = await importAuth();
+    const provider = authOptions.providers?.[0] as { id: string };
+
+    expect(provider.id).toBe("credentials");
+  });
+
+  it("throws when GOOGLE_CLIENT_ID is missing in preview", async () => {
+    process.env.APP_ENV = "preview";
     delete process.env.GOOGLE_CLIENT_ID;
     process.env.GOOGLE_CLIENT_SECRET = "client-secret";
     process.env.NEXTAUTH_SECRET = "auth-secret";
@@ -63,7 +84,8 @@ describe("authOptions", () => {
     );
   });
 
-  it("throws when GOOGLE_CLIENT_SECRET is missing", async () => {
+  it("throws when GOOGLE_CLIENT_SECRET is missing in preview", async () => {
+    process.env.APP_ENV = "preview";
     process.env.GOOGLE_CLIENT_ID = "client-id";
     delete process.env.GOOGLE_CLIENT_SECRET;
     process.env.NEXTAUTH_SECRET = "auth-secret";
@@ -74,6 +96,7 @@ describe("authOptions", () => {
   });
 
   it("throws when NEXTAUTH_SECRET is missing", async () => {
+    process.env.APP_ENV = "local";
     process.env.GOOGLE_CLIENT_ID = "client-id";
     process.env.GOOGLE_CLIENT_SECRET = "client-secret";
     delete process.env.NEXTAUTH_SECRET;

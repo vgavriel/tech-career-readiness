@@ -28,17 +28,14 @@ This file provides meta-context for coding agents working in this repo.
 ## Setup (local)
 ```bash
 npm install
-cp .env.example .env
-npx prisma migrate deploy
-npx prisma db seed
-npm run dev
+npm run dev:local
 ```
 
 ## Testing
 ```bash
 npm run lint
 npm run test
-npm run test:run
+npm run test:unit
 ```
 
 ## Environment variables

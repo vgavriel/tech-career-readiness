@@ -32,6 +32,7 @@ const makeRequest = (query = "") =>
 describe("GET /api/lesson-content", () => {
   const fetchMock = vi.fn();
   const originalNodeEnv = process.env.NODE_ENV;
+  const originalAppEnv = process.env.APP_ENV;
   /**
    * Restore NODE_ENV to its original value for test isolation.
    */
@@ -42,6 +43,13 @@ describe("GET /api/lesson-content", () => {
       process.env.NODE_ENV = originalNodeEnv;
     }
   };
+  const restoreAppEnv = () => {
+    if (originalAppEnv === undefined) {
+      delete process.env.APP_ENV;
+    } else {
+      process.env.APP_ENV = originalAppEnv;
+    }
+  };
 
   beforeEach(() => {
     prismaMock.lesson.findFirst.mockReset();
@@ -50,12 +58,14 @@ describe("GET /api/lesson-content", () => {
     vi.stubGlobal("fetch", fetchMock);
     clearLessonContentCache();
     restoreNodeEnv();
+    restoreAppEnv();
   });
 
   afterEach(() => {
     vi.unstubAllGlobals();
     clearLessonContentCache();
     restoreNodeEnv();
+    restoreAppEnv();
   });
 
   it("returns 400 when no lesson identifier is provided", async () => {
@@ -139,8 +149,8 @@ describe("GET /api/lesson-content", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it("allows cache bypass in development mode", async () => {
-    process.env.NODE_ENV = "development";
+  it("allows cache bypass in local mode", async () => {
+    process.env.APP_ENV = "local";
     prismaMock.lesson.findFirst.mockResolvedValue({
       id: "lesson-2",
       publishedUrl: "https://docs.google.com/document/d/e/lesson-2/pub",

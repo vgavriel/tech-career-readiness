@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -9,12 +9,14 @@ const authMocks = vi.hoisted(() => ({
   signIn: vi.fn(),
   signOut: vi.fn(),
   useSession: vi.fn(),
+  getProviders: vi.fn(),
 }));
 
 vi.mock("next-auth/react", () => ({
   signIn: (...args: unknown[]) => authMocks.signIn(...args),
   signOut: (...args: unknown[]) => authMocks.signOut(...args),
   useSession: (...args: unknown[]) => authMocks.useSession(...args),
+  getProviders: (...args: unknown[]) => authMocks.getProviders(...args),
 }));
 
 vi.mock("next/link", () => ({
@@ -37,6 +39,10 @@ describe("SiteHeader", () => {
     authMocks.signIn.mockReset();
     authMocks.signOut.mockReset();
     authMocks.useSession.mockReset();
+    authMocks.getProviders.mockReset();
+    authMocks.getProviders.mockResolvedValue({
+      google: { id: "google", name: "Google" },
+    });
   });
 
   it("renders sign-in when unauthenticated", async () => {
@@ -46,6 +52,7 @@ describe("SiteHeader", () => {
     });
 
     render(<SiteHeader />);
+    await waitFor(() => expect(authMocks.getProviders).toHaveBeenCalled());
 
     const signInButton = screen.getByRole("button", {
       name: /sign in with google/i,
@@ -55,7 +62,7 @@ describe("SiteHeader", () => {
     const user = userEvent.setup();
     await user.click(signInButton);
 
-    expect(authMocks.signIn).toHaveBeenCalledWith("google");
+    expect(authMocks.signIn).toHaveBeenCalledWith("google", undefined);
     expect(authMocks.signOut).not.toHaveBeenCalled();
   });
 
@@ -69,6 +76,7 @@ describe("SiteHeader", () => {
     });
 
     render(<SiteHeader />);
+    await waitFor(() => expect(authMocks.getProviders).toHaveBeenCalled());
 
     expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
 

@@ -12,7 +12,8 @@
 
 ## Test environments and data
 - Use a dedicated test database and never reuse dev/prod data.
-- Add `.env.test` with:
+- If you use `.env.test`, include:
+  - `APP_ENV=test`
   - `DATABASE_URL` pointing to the test database.
   - `NEXTAUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` as dummy values.
 - Migrate and seed once per test run; isolate tests with:
