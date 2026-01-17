@@ -7,7 +7,7 @@ import { PrismaClient } from "@prisma/client";
 import { Pool } from "pg";
 
 const warn = (message) => {
-  console.warn(`Warning: ${message}`);
+  console.warn(`\n\n\x1b[33mWarning:\x1b[0m ${message}\n\n`);
 };
 
 const databaseUrl = process.env.DATABASE_URL;
@@ -48,7 +48,7 @@ const checkMigrations = async (prisma) => {
         `Preview DB is missing migrations: ${missing.join(", ")}. Run npm run dev:preview:setup.`
       );
     }
-  } catch (error) {
+  } catch {
     warn("Unable to verify preview migrations; run npm run dev:preview:setup.");
   }
 };
@@ -67,7 +67,7 @@ const checkSeed = async (prisma) => {
     if (!seeded) {
       warn("Preview DB appears unseeded; run npm run dev:preview:setup.");
     }
-  } catch (error) {
+  } catch {
     warn("Unable to verify preview seed data; run npm run dev:preview:setup.");
   }
 };
