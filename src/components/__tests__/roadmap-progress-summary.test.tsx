@@ -56,6 +56,34 @@ const modules: RoadmapModule[] = [
   },
 ];
 
+const modulesWithExtraCredit: RoadmapModule[] = [
+  {
+    id: "module-0",
+    key: "start-here",
+    title: "Start here",
+    description: null,
+    order: 1,
+    lessons: [
+      {
+        id: "lesson-core",
+        key: "start-to-finish-roadmap",
+        slug: "start-to-finish-roadmap",
+        title: "Start to Finish",
+        order: 1,
+        estimatedMinutes: null,
+      },
+      {
+        id: "lesson-extra",
+        key: "tech-career-stories",
+        slug: "tech-career-stories",
+        title: "Tech Career Stories",
+        order: 2,
+        estimatedMinutes: null,
+      },
+    ],
+  },
+];
+
 describe("RoadmapProgressSummary", () => {
   beforeEach(() => {
     progressMocks.useProgress.mockReset();
@@ -123,5 +151,29 @@ describe("RoadmapProgressSummary", () => {
     expect(
       within(focusSection).getByText(/1 of 2 complete/i)
     ).toBeInTheDocument();
+  });
+
+  it("shows extra credit progress separately from core progress", () => {
+    progressMocks.useProgress.mockReturnValue({
+      completedLessonKeys: ["tech-career-stories"],
+      isAuthenticated: false,
+      isMerging: false,
+      isReady: true,
+    });
+
+    render(<RoadmapProgressSummary modules={modulesWithExtraCredit} />);
+
+    expect(screen.getByText(/0 of 1 complete/i)).toBeInTheDocument();
+
+    const extraCreditSection = screen.getByText(/extra credit/i).parentElement;
+    expect(extraCreditSection).not.toBeNull();
+    if (!extraCreditSection) {
+      return;
+    }
+
+    expect(
+      within(extraCreditSection).getByText(/1 of 1 complete/i)
+    ).toBeInTheDocument();
+    expect(within(extraCreditSection).getByText(/100%/i)).toBeInTheDocument();
   });
 });
