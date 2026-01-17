@@ -280,6 +280,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [ ] Deploy to Vercel
 - [ ] Configure env vars
 - [ ] Smoke-test public browsing, auth, progress, and continue flow
+- [ ] Pre-production cleanup: simplify seed logic, run fresh migration/seed against a reset preview DB
 
 ## Environment variables
 - APP_ENV (local, preview, production, test)
