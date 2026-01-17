@@ -19,7 +19,8 @@
     "env:preview": "bash scripts/env-preview.sh",
     "dev:setup": "bash scripts/dev-setup.sh",
     "dev:local": "npm run dev:setup && npm run dev",
-    "dev:preview": "npm run env:preview && bash scripts/with-env.sh .env.preview npx prisma generate && bash scripts/with-env.sh .env.preview npm run dev",
+    "dev:preview": "bash scripts/dev-preview.sh",
+    "dev:preview:setup": "bash scripts/dev-preview-setup.sh",
     "postinstall": "bash scripts/postinstall.sh",
     "clean": "rm -rf .next test-results"
   },
