@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 
+import FocusPicker from "@/components/focus-picker";
 import SignInCta from "@/components/sign-in-cta";
 import { authOptions } from "@/lib/auth";
 import { getLessonExample } from "@/lib/lesson-examples";
@@ -57,6 +58,7 @@ export default async function Home() {
                 </SignInCta>
               ) : null}
             </div>
+            <FocusPicker />
             <div className="grid gap-4 sm:grid-cols-3">
               {[
                 { label: "7 modules", value: "Built for clarity" },
