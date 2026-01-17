@@ -3,12 +3,19 @@
 ## Product goal
 Build a public self-paced online course web app that teaches an end-to-end roadmap to landing a tech internship or job. The app differentiates itself with a clear curriculum path, guided experience, quick navigation, and per-user progress tracking with “Continue where you left off.”
 
+## Curriculum plan
+Source of truth for modules, pathways, progress categories, and gamification:
+- `docs/curriculum-plan.md`
+
 ## MVP scope
 ### In scope
 - Public browsing of course curriculum and lessons without authentication
 - Google Sign-In for saving progress state
 - Guest progress stored in localStorage with merge into account on sign-in
 - Curriculum structure: Modules ➜ Lessons
+- Landing quick picker to route to urgency pathways (plus an always-available “Explore roles” entry)
+- Core progress tracking plus a separate “extra credit” progress category
+- Role Library shows all roles with optional deep dives
 - Lesson reading view with in-app rendering of Google Doc content from published URLs (no iframes)
 - Progress tracking per lesson per user (complete/incomplete)
 - Resume experience: continue where you left off, overall progress percent
@@ -46,8 +53,8 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 ## Core user flows (MVP)
 ### Public browsing flow
 1) User lands on homepage.
-2) User clicks “View the roadmap.”
-3) User browses modules and lessons.
+2) User uses the quick picker or clicks “View the roadmap.”
+3) User browses modules and lessons (core + extra credit).
 4) User opens a lesson and reads content.
 
 ### Progress tracking flow (authenticated)
@@ -68,13 +75,14 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - Title and short description
 - CTA: “View the roadmap”
 - CTA: “Sign in to save progress”
+- Quick picker for urgency pathways + “Explore roles” entry
 - Optional: small “How this course works” block
 
 2) `/roadmap` (Curriculum overview)
 - List modules in order
 - Under each module, list lessons
 - Show completion checkmarks for logged-in users
-- Show overall progress percent for logged-in users
+- Show core progress percent and extra credit progress
 - Button: “Continue where you left off” (logged in)
 - If logged out: show “Sign in to save progress,” show guest checkmarks, and note they are stored locally
 
@@ -194,6 +202,10 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [x] Add integration tests job once APIs exist (Phase 3+)
 - [x] Add E2E tests job once core pages exist (Phase 4+)
 
+### Phase 0.9 — Curriculum planning (Brown-specific)
+- [x] Create `docs/curriculum-plan.md` with modules, pathways, progress categories, and gamification
+- [x] Link curriculum plan from this doc and update MVP scope for quick picker + extra credit progress
+
 ### Phase 1 — Database modeling + curriculum seed
 - [x] Implement Prisma schema with User, Cohort, Module (key + slug), ModuleSlugAlias, Lesson, LessonSlugAlias, LessonProgress
 - [x] Run initial migration
@@ -246,6 +258,13 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 - [x] Add TSDoc for functions/types and component intent comments
 - [x] Document local/preview workflows and gate auth/rate limiting by `APP_ENV`
 
+### Phase 7.2 — Curriculum UX + pathways
+- [ ] Add landing quick picker that routes to curated pathways (and store selection)
+- [ ] Support pathway filtering/ordering on the roadmap (core lessons in path order)
+- [ ] Show core vs extra credit progress breakdown
+- [ ] Add Role Library view showing all role deep dives
+- [ ] Add lightweight badge awards (no streaks) based on lesson completion
+
 ### Phase 7.5 — Observability (lightweight)
 - [ ] Add request ID generation (middleware) and return `x-request-id` headers for server routes
 - [ ] Create a minimal structured logger wrapper with env-based log levels and default redaction for secrets/PII
@@ -280,7 +299,6 @@ Build a public self-paced online course web app that teaches an end-to-end roadm
 
 ## Optional enhancements (post-MVP)
 - Search lessons by keyword (title and optionally HTML text)
-- “Where are you in the process?” picker on landing
 - Lightweight feedback button per lesson
 - Better caching (Redis) and background refresh
 - Table of contents generation from doc headings
