@@ -10,6 +10,7 @@ import type { RoadmapModule } from "@/components/roadmap-module-list";
 const selectionMocks = vi.hoisted(() => ({
   readFocusSelection: vi.fn(),
   writeFocusSelection: vi.fn(),
+  subscribeToFocusSelection: vi.fn(),
 }));
 
 const progressMocks = vi.hoisted(() => ({
@@ -20,6 +21,8 @@ vi.mock("@/lib/focus-selection", () => ({
   readFocusSelection: () => selectionMocks.readFocusSelection(),
   writeFocusSelection: (focusKey: string | null) =>
     selectionMocks.writeFocusSelection(focusKey),
+  subscribeToFocusSelection: (listener: () => void) =>
+    selectionMocks.subscribeToFocusSelection(listener),
 }));
 
 vi.mock("@/components/progress-provider", () => ({
@@ -116,6 +119,8 @@ describe("RoadmapFocusProvider", () => {
   beforeEach(() => {
     selectionMocks.readFocusSelection.mockReset();
     selectionMocks.writeFocusSelection.mockReset();
+    selectionMocks.subscribeToFocusSelection.mockReset();
+    selectionMocks.subscribeToFocusSelection.mockImplementation(() => () => {});
     progressMocks.useProgress.mockReset();
     progressMocks.useProgress.mockReturnValue({
       completedLessonKeys: [],
@@ -172,6 +177,5 @@ describe("RoadmapFocusProvider", () => {
     expect(
       screen.queryByRole("heading", { name: /offers/i })
     ).not.toBeInTheDocument();
-    expect(selectionMocks.readFocusSelection).not.toHaveBeenCalled();
   });
 });

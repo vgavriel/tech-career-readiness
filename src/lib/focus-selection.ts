@@ -6,6 +6,7 @@ export type FocusSelectionState = {
 };
 
 export const FOCUS_SELECTION_STORAGE_KEY = "tcr-focus-selection";
+const FOCUS_SELECTION_EVENT = "tcr-focus-selection-change";
 
 const createEmptyState = (): FocusSelectionState => ({
   version: 1,
@@ -13,6 +14,18 @@ const createEmptyState = (): FocusSelectionState => ({
 });
 
 let inMemorySelection = createEmptyState();
+
+const notifyFocusSelectionChange = () => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.dispatchEvent(new Event(FOCUS_SELECTION_EVENT));
+  } catch {
+    // Ignore event dispatch failures.
+  }
+};
 
 const cloneState = (state: FocusSelectionState): FocusSelectionState => ({
   version: 1,
@@ -75,11 +88,13 @@ export const writeFocusSelection = (focusKey: FocusKey | null) => {
 
   const storage = getLocalStorage();
   if (!storage) {
+    notifyFocusSelectionChange();
     return;
   }
 
   try {
     storage.setItem(FOCUS_SELECTION_STORAGE_KEY, JSON.stringify(normalized));
+    notifyFocusSelectionChange();
   } catch {
     // Keep in-memory selection as the fallback.
   }
@@ -91,11 +106,13 @@ export const clearFocusSelection = () => {
 
   const storage = getLocalStorage();
   if (!storage) {
+    notifyFocusSelectionChange();
     return;
   }
 
   try {
     storage.removeItem(FOCUS_SELECTION_STORAGE_KEY);
+    notifyFocusSelectionChange();
   } catch {
     // Keep in-memory selection cleared even if storage fails.
   }
@@ -103,3 +120,25 @@ export const clearFocusSelection = () => {
 
 export const hasFocusSelection = (state: FocusSelectionState) =>
   Boolean(state.focusKey);
+
+export const subscribeToFocusSelection = (callback: () => void) => {
+  if (typeof window === "undefined") {
+    return () => {};
+  }
+
+  const handleStorage = (event: StorageEvent) => {
+    if (event.key === FOCUS_SELECTION_STORAGE_KEY) {
+      callback();
+    }
+  };
+
+  const handleEvent = () => callback();
+
+  window.addEventListener("storage", handleStorage);
+  window.addEventListener(FOCUS_SELECTION_EVENT, handleEvent);
+
+  return () => {
+    window.removeEventListener("storage", handleStorage);
+    window.removeEventListener(FOCUS_SELECTION_EVENT, handleEvent);
+  };
+};

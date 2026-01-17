@@ -1,11 +1,15 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo } from "react";
+import { createContext, useContext, useEffect, useMemo, useSyncExternalStore } from "react";
 
 import type { RoadmapModule } from "@/components/roadmap-module-list";
 import { orderModulesForFocus } from "@/lib/focus-order";
 import type { FocusKey } from "@/lib/focus-options";
-import { readFocusSelection, writeFocusSelection } from "@/lib/focus-selection";
+import {
+  readFocusSelection,
+  subscribeToFocusSelection,
+  writeFocusSelection,
+} from "@/lib/focus-selection";
 
 type RoadmapFocusContextValue = {
   focusKey: FocusKey | null;
@@ -25,15 +29,11 @@ export function RoadmapFocusProvider({
   focusKey,
   children,
 }: RoadmapFocusProviderProps) {
-  const storedFocusKey = useMemo(() => {
-    if (focusKey) {
-      return null;
-    }
-
-    const stored = readFocusSelection();
-    return stored.focusKey ?? null;
-  }, [focusKey]);
-
+  const storedFocusKey = useSyncExternalStore(
+    subscribeToFocusSelection,
+    () => readFocusSelection().focusKey ?? null,
+    () => null
+  );
   const activeFocusKey = focusKey ?? storedFocusKey;
 
   useEffect(() => {
