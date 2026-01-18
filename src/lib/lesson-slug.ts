@@ -33,6 +33,7 @@ const lessonSelect = {
   },
   module: {
     select: {
+      key: true,
       title: true,
       order: true,
     },

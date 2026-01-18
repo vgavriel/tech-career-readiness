@@ -9,6 +9,23 @@ vi.mock("next-auth", () => ({
   getServerSession: authMocks.getServerSession,
 }));
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+}));
+
+vi.mock("@/components/focus-provider", () => ({
+  useFocus: () => ({
+    focusKey: null,
+    isReady: true,
+    isUpdating: false,
+    setFocusKey: vi.fn(),
+  }),
+}));
+
 describe("Home page", () => {
   it("renders the hero and primary CTAs for signed-out visitors", async () => {
     authMocks.getServerSession.mockResolvedValue(null);
@@ -19,18 +36,16 @@ describe("Home page", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: /land your first tech role with a calm, structured plan/i,
+        name: /land your first tech role with a focused, brown-built plan/i,
       })
     ).toBeInTheDocument();
 
-    expect(screen.getByRole("link", { name: /view the roadmap/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /start the course/i })).toHaveAttribute(
       "href",
-      "/roadmap"
+      "/lesson/start-to-finish-roadmap"
     );
 
-    expect(
-      screen.getByRole("button", { name: /sign in to save progress/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /save progress/i })).toBeInTheDocument();
   });
 
   it("hides the sign-in CTA for signed-in visitors", async () => {
@@ -44,7 +59,7 @@ describe("Home page", () => {
     render(ui);
 
     expect(
-      screen.queryByRole("button", { name: /sign in to save progress/i })
+      screen.queryByRole("button", { name: /save progress/i })
     ).not.toBeInTheDocument();
   });
 });

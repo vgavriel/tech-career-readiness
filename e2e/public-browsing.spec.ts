@@ -9,19 +9,15 @@ test("public browsing from landing to lesson content", async ({ page }) => {
     })
   ).toBeVisible();
 
-  await page.getByRole("link", { name: /view the roadmap/i }).click();
-  await expect(page).toHaveURL(/\/roadmap/);
+  await page.getByRole("link", { name: /start the course/i }).click();
+  await expect(page).toHaveURL(/\/lesson\/start-to-finish-roadmap/);
 
   await expect(
-    page.getByRole("heading", { name: /your path through tech recruiting/i })
+    page.getByRole("heading", { name: /start to finish/i })
   ).toBeVisible();
-
-  await page.getByRole("link", { name: /define your goal/i }).click();
-  await expect(page).toHaveURL(/\/lesson\/define-your-goal/);
-
-  await expect(
-    page.getByRole("heading", { name: /define your goal/i })
-  ).toBeVisible();
+  await expect(page.getByRole("complementary")).toContainText(
+    /full curriculum/i
+  );
   await expect(
     page.getByText(/sample lesson content for tests/i)
   ).toBeVisible();

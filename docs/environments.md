@@ -49,6 +49,7 @@ Use this when you need real integrations (Neon, Google OAuth, Upstash).
 ```bash
 npm run env:preview
 # edit .env.preview with real credentials
+npm run dev:preview:setup
 npm run dev:preview
 ```
 
@@ -61,6 +62,8 @@ Requirements:
 Notes:
 - `APP_ENV=preview` disables dev auth and requires Google OAuth.
 - Rate limiting requires Upstash config.
+- `npm run dev:preview` will warn if migrations or seed data look out of date.
+- Use `npm run dev:preview:setup` to migrate + seed the preview database.
 
 ## Tests (APP_ENV=test)
 

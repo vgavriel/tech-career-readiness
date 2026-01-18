@@ -24,7 +24,7 @@ describe("integration: GET /api/lesson-content", () => {
 
   it("returns sanitized HTML for a seeded lesson and caches it", async () => {
     const lesson = await prisma.lesson.findUnique({
-      where: { slug: "define-your-goal" },
+      where: { slug: "start-to-finish-roadmap" },
       select: { id: true, slug: true },
     });
 
