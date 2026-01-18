@@ -63,7 +63,9 @@ export default function LessonNavigator({
   }, [currentLessonSlug, focusKey, isCurrentModuleVisible, router, visibleModules]);
 
   const focusLabel = focusKey
-    ? FOCUS_OPTIONS.find((option) => option.key === focusKey)?.label ?? "Focus"
+    ? `Focus: ${
+        FOCUS_OPTIONS.find((option) => option.key === focusKey)?.label ?? "Focus"
+      }`
     : "Full curriculum";
 
   const { coreCompleted, coreTotal, extraCompleted, extraTotal } = useMemo(() => {
@@ -95,30 +97,25 @@ export default function LessonNavigator({
   }, [isLessonCompleted, isReady, visibleModules]);
 
   return (
-    <div className="flex h-full flex-col gap-5 px-5 pb-6 pt-6">
-      <div className="space-y-3">
+    <div className="flex h-full flex-col gap-3 px-3 pb-3 pt-4">
+      <div className="space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-              Navigator
-            </p>
-            <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
-              {focusLabel}
-            </p>
-          </div>
+          <p className="text-sm font-semibold text-[color:var(--ink-900)]">
+            {focusLabel}
+          </p>
           {focusKey ? (
             <button
               type="button"
               onClick={() => {
                 void setFocusKey(null);
               }}
-              className="rounded-full border border-[color:var(--line-soft)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]"
+              className="rounded-md border border-[color:var(--line-soft)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]"
             >
               Clear focus
             </button>
           ) : null}
         </div>
-        <div className="grid gap-2 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4 text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-600)]">
+        <div className="grid gap-2 rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-2.5 text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-600)]">
           <div className="flex items-center justify-between">
             <span>Core progress</span>
             <span>
@@ -134,7 +131,7 @@ export default function LessonNavigator({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto pr-2">
+      <div className="scroll-panel flex-1 overflow-y-auto pr-2">
         <div className="space-y-4">
           {visibleModules.map((module) => {
             const isActiveModule = module.key === currentModuleKey;
@@ -148,6 +145,10 @@ export default function LessonNavigator({
                 (isReady && isLessonCompleted(lesson.key, lesson.id) ? 1 : 0),
               0
             );
+            const isModuleComplete =
+              isReady && coreLessons.length > 0
+                ? coreCompletedCount === coreLessons.length
+                : false;
             const progressLabel =
               coreLessons.length > 0
                 ? `${coreCompletedCount}/${coreLessons.length} core`
@@ -157,9 +158,9 @@ export default function LessonNavigator({
               <details
                 key={module.id}
                 open={isActiveModule}
-                className="group rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] shadow-[var(--shadow-soft)]"
+                className="group rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] shadow-[var(--shadow-soft)]"
               >
-                <summary className="summary-clean cursor-pointer px-4 py-3">
+                <summary className="summary-clean cursor-pointer px-3 py-2">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
@@ -170,7 +171,26 @@ export default function LessonNavigator({
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-600)]">
+                      {isModuleComplete ? (
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full border border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]">
+                          <span className="sr-only">Module completed</span>
+                          <svg
+                            aria-hidden="true"
+                            className="h-3 w-3"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={3}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        </span>
+                      ) : null}
+                      <span className="rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-600)]">
                         {isReady ? progressLabel : "Loading"}
                       </span>
                       <svg
@@ -190,7 +210,7 @@ export default function LessonNavigator({
                     </div>
                   </div>
                 </summary>
-                <div className="space-y-2 px-4 pb-4">
+                <div className="space-y-2 px-3 pb-3">
                   {module.lessons.map((lesson) => {
                     const isActive = lesson.key === currentLessonKey;
                     const isCompleted =
@@ -201,7 +221,7 @@ export default function LessonNavigator({
                     return (
                       <div
                         key={lesson.id}
-                        className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-sm transition ${
+                        className={`flex items-center gap-2 rounded-md border px-2.5 py-1 text-sm transition ${
                           isActive
                             ? "border-[color:var(--accent-700)] bg-[color:var(--accent-500)] text-[color:var(--ink-900)]"
                             : "border-[color:var(--line-soft)] bg-[color:var(--wash-50)] text-[color:var(--ink-700)] hover:border-[color:var(--line-strong)]"
@@ -209,7 +229,7 @@ export default function LessonNavigator({
                       >
                         <button
                           type="button"
-                          className={`flex h-6 w-6 items-center justify-center rounded-full border text-[color:var(--ink-500)] ${
+                          className={`flex h-4 w-4 items-center justify-center rounded-full border text-[color:var(--ink-500)] ${
                             isCompleted
                               ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
                               : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)]"
@@ -248,18 +268,20 @@ export default function LessonNavigator({
                           aria-current={isActive ? "page" : undefined}
                           id={buildLessonId(lesson.key)}
                         >
-                          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
-                            {module.order}.{lesson.order}
-                          </span>
+                          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
+                            <span>
+                              {module.order}.{lesson.order}
+                            </span>
+                            {isExtra ? (
+                              <span className="rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-600)]">
+                                Extra credit
+                              </span>
+                            ) : null}
+                          </div>
                           <span className="text-sm font-semibold text-[color:var(--ink-900)]">
                             {lesson.title}
                           </span>
                         </Link>
-                        {isExtra ? (
-                          <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-600)]">
-                            Extra
-                          </span>
-                        ) : null}
                       </div>
                     );
                   })}
@@ -270,7 +292,7 @@ export default function LessonNavigator({
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4 text-xs text-[color:var(--ink-600)]">
+      <div className="rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-2.5 text-xs text-[color:var(--ink-600)]">
         {isAuthenticated
           ? "Progress syncs to your account."
           : "Progress is saved in this browser until you sign in."}

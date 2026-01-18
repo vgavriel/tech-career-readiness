@@ -3,6 +3,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 
 import LessonContent from "@/components/lesson-content";
 import LessonNavigator from "@/components/lesson-navigator";
+import LessonProgressToggle from "@/components/lesson-progress-toggle";
 import NavigatorLayout from "@/components/navigator-layout";
 import { getLessonExample } from "@/lib/lesson-examples";
 import { fetchLessonContent } from "@/lib/lesson-content";
@@ -116,7 +117,7 @@ export default async function LessonPage({
   const showErrorState = Boolean(contentError && !fallbackHtml);
 
   return (
-    <div className="page-shell min-h-screen overflow-hidden">
+    <div className="page-shell h-full overflow-hidden">
       <NavigatorLayout
         navigator={
           <LessonNavigator
@@ -127,7 +128,7 @@ export default async function LessonPage({
           />
         }
       >
-        <div className="space-y-8">
+        <div className="space-y-5">
           <nav className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-500)]">
             <Link href="/" className="transition hover:text-[color:var(--ink-900)]">
               Course
@@ -140,19 +141,25 @@ export default async function LessonPage({
             </span>
           </nav>
 
-          <header className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)] md:p-9">
-            <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-700)]">
-              <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1.5 text-[color:var(--ink-900)]">
-                Module {lesson.module?.order ?? "?"}
-              </span>
-              <span className="rounded-full border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] px-3 py-1.5 text-[color:var(--ink-900)]">
-                Lesson {lesson.order}
-              </span>
-              {estimatedMinutes ? (
-                <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1.5 text-[color:var(--ink-700)]">
-                  {estimatedMinutes} min read
+          <header className="rounded-lg border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-4 shadow-[var(--shadow-card)] md:p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-700)]">
+                <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-2 py-0.5 text-[color:var(--ink-900)]">
+                  Module {lesson.module?.order ?? "?"}
                 </span>
-              ) : null}
+                <span className="rounded-full border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] px-2 py-0.5 text-[color:var(--ink-900)]">
+                  Lesson {lesson.order}
+                </span>
+                {estimatedMinutes ? (
+                  <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2 py-0.5 text-[color:var(--ink-700)]">
+                    {estimatedMinutes} min read
+                  </span>
+                ) : null}
+              </div>
+              <LessonProgressToggle
+                lessonKey={lesson.key}
+                legacyLessonId={lesson.id}
+              />
             </div>
             <h1 className="font-display mt-5 text-3xl text-[color:var(--ink-900)] md:text-4xl lg:text-5xl">
               {lesson.title}
@@ -162,8 +169,8 @@ export default async function LessonPage({
             </p>
 
             {lessonExample ? (
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
-                <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
+              <div className="mt-5 grid gap-3 md:grid-cols-2">
+                <div className="rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
                     Focus
                   </p>
@@ -171,7 +178,7 @@ export default async function LessonPage({
                     {lessonExample.focus}
                   </p>
                 </div>
-                <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
+                <div className="rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
                     Deliverable
                   </p>
@@ -184,11 +191,11 @@ export default async function LessonPage({
           </header>
 
           {objectives.length || checklist.length ? (
-            <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)]">
+            <div className="rounded-lg border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-4 shadow-[var(--shadow-card)]">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                 Lesson plan
               </p>
-              <div className="mt-4 grid gap-6 md:grid-cols-2">
+              <div className="mt-4 grid gap-5 md:grid-cols-2">
                 {objectives.length ? (
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
@@ -223,7 +230,7 @@ export default async function LessonPage({
             </div>
           ) : null}
 
-          <section className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)] md:p-9">
+          <section className="rounded-lg border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-4 shadow-[var(--shadow-card)] md:p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                 Lesson content
@@ -247,13 +254,13 @@ export default async function LessonPage({
               </div>
             </div>
             {showFallbackNotice ? (
-              <div className="mt-4 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5 text-sm text-[color:var(--ink-700)]">
+              <div className="mt-3 rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-sm text-[color:var(--ink-700)]">
                 The live document is still syncing. Showing a full sample lesson
                 below in the meantime.
               </div>
             ) : null}
             {showErrorState ? (
-              <div className="mt-4 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5 text-sm text-[color:var(--ink-700)]">
+              <div className="mt-3 rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-sm text-[color:var(--ink-700)]">
                 Lesson content is unavailable right now.{" "}
                 <Link
                   href={`/lesson/${lesson.slug}`}
@@ -271,21 +278,21 @@ export default async function LessonPage({
                   open the source doc
                 </a>
                 .
-              </div>
-            ) : null}
-            {contentHtml ? (
-              <div className="mt-7">
-                <LessonContent html={contentHtml} />
-              </div>
-            ) : null}
-          </section>
+                </div>
+              ) : null}
+              {contentHtml ? (
+                <div className="mt-4">
+                  <LessonContent html={contentHtml} />
+                </div>
+              ) : null}
+            </section>
 
           {lessonExample?.plan.length ? (
-            <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
+            <div className="rounded-lg border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-4 shadow-[var(--shadow-card)]">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                 Action plan
               </p>
-              <div className="mt-4 grid gap-3 text-sm text-[color:var(--ink-700)]">
+              <div className="mt-3 grid gap-3 text-sm text-[color:var(--ink-700)]">
                 {lessonExample.plan.map((step) => (
                   <div key={step.title} className="space-y-1">
                     <p className="font-semibold text-[color:var(--ink-900)]">

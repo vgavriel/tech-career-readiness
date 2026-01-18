@@ -25,7 +25,7 @@ export default function FocusPicker({
 
   return (
     <section
-      className={`space-y-5 rounded-[28px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)] md:p-7 ${
+      className={`space-y-5 rounded-2xl border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6 ${
         className ?? ""
       }`}
     >
@@ -43,7 +43,7 @@ export default function FocusPicker({
         </div>
         <Link
           href="/roles"
-          className="inline-flex items-center gap-2 rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-900)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-900)]"
+          className="inline-flex items-center gap-2 rounded-lg border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-900)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-900)]"
         >
           Explore Brown role library
           <span className="text-[color:var(--ink-700)]">
@@ -52,11 +52,11 @@ export default function FocusPicker({
         </Link>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2">
         {FOCUS_OPTIONS.map((option, index) => (
           <button
             key={option.key}
-            className="group flex h-full flex-col justify-between rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5 text-left shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] animate-fade"
+            className="group flex h-full flex-col justify-between rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4 text-left shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] animate-fade"
             style={{ animationDelay: `${index * 70}ms` }}
             onClick={() => handleSelect(option.key)}
             type="button"
@@ -66,7 +66,7 @@ export default function FocusPicker({
                 <p className="font-display text-lg text-[color:var(--ink-900)]">
                   {option.label}
                 </p>
-                <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)]">
+                <span className="rounded-md border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)]">
                   {option.timing}
                 </span>
               </div>

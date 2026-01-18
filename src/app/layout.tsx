@@ -35,10 +35,12 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className="antialiased">
+      <body className="antialiased h-screen overflow-hidden">
         <Providers session={session} initialFocusKey={user?.focusKey ?? null}>
-          <SiteHeader />
-          {children}
+          <div className="flex h-full flex-col">
+            <SiteHeader />
+            <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+          </div>
         </Providers>
       </body>
     </html>

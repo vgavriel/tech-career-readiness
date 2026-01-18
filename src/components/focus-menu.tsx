@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useFocus } from "@/components/focus-provider";
@@ -10,6 +11,9 @@ export default function FocusMenu() {
   const { focusKey, isUpdating, setFocusKey } = useFocus();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const router = useRouter();
+
+  const focusLessonHref = "/lesson/start-to-finish-roadmap";
 
   const activeOption = useMemo(
     () => FOCUS_OPTIONS.find((option) => option.key === focusKey) ?? null,
@@ -49,6 +53,10 @@ export default function FocusMenu() {
   const handleSelect = (nextFocusKey: FocusKey | null) => {
     void setFocusKey(nextFocusKey);
     setIsOpen(false);
+
+    if (nextFocusKey) {
+      router.push(focusLessonHref);
+    }
   };
 
   return (
@@ -56,7 +64,7 @@ export default function FocusMenu() {
       <button
         type="button"
         onClick={() => setIsOpen((open) => !open)}
-        className="inline-flex items-center gap-2 rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)] transition hover:border-[color:var(--ink-900)]"
+        className="inline-flex items-center gap-2 rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)] transition hover:border-[color:var(--ink-900)]"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
@@ -76,7 +84,7 @@ export default function FocusMenu() {
       </button>
 
       {isOpen ? (
-        <div className="absolute right-0 z-20 mt-3 w-[min(420px,92vw)] rounded-2xl border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-4 shadow-[var(--shadow-card)]">
+        <div className="absolute right-0 z-20 mt-2 w-[min(420px,92vw)] rounded-xl border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-3 shadow-[var(--shadow-card)]">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
@@ -87,13 +95,13 @@ export default function FocusMenu() {
               </p>
             </div>
             {isUpdating ? (
-              <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-700)]">
+              <span className="rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-700)]">
                 Saving...
               </span>
             ) : null}
           </div>
 
-          <div className="mt-4 grid gap-3">
+          <div className="mt-3 grid gap-3">
             {FOCUS_OPTIONS.map((option) => {
               const isActive = option.key === focusKey;
 
@@ -102,7 +110,7 @@ export default function FocusMenu() {
                   key={option.key}
                   type="button"
                   onClick={() => handleSelect(option.key)}
-                  className={`flex w-full flex-col gap-2 rounded-2xl border px-4 py-3 text-left transition ${
+                  className={`flex w-full flex-col gap-2 rounded-xl border px-3 py-2.5 text-left transition ${
                     isActive
                       ? "border-[color:var(--accent-700)] bg-[color:var(--accent-500)] text-[color:var(--ink-900)]"
                       : "border-[color:var(--line-soft)] bg-[color:var(--wash-50)] text-[color:var(--ink-700)] hover:border-[color:var(--line-strong)]"
@@ -112,7 +120,7 @@ export default function FocusMenu() {
                     <span className="font-display text-base text-[color:var(--ink-900)]">
                       {option.label}
                     </span>
-                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-600)]">
+                    <span className="rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-600)]">
                       {option.timing}
                     </span>
                   </div>
@@ -122,10 +130,10 @@ export default function FocusMenu() {
             })}
           </div>
 
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[color:var(--line-soft)] pt-4 text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-600)]">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-[color:var(--line-soft)] pt-3 text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-600)]">
             <button
               type="button"
-              className="rounded-full border border-[color:var(--line-soft)] px-4 py-2 text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]"
+              className="rounded-lg border border-[color:var(--line-soft)] px-3 py-1.5 text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]"
               onClick={() => handleSelect(null)}
               disabled={!focusKey}
             >
@@ -133,9 +141,9 @@ export default function FocusMenu() {
             </button>
             <Link
               href="/roles"
-              className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-4 py-2 text-[color:var(--ink-900)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-900)]"
+              className="rounded-lg border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1.5 text-[color:var(--ink-900)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-900)]"
             >
-              Explore Brown roles
+              Explore Roles in Tech
             </Link>
           </div>
         </div>

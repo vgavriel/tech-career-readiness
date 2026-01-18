@@ -31,10 +31,10 @@ export default async function Home() {
 
   return (
     <div className="page-shell min-h-screen overflow-hidden">
-      <main className="page-content mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 pb-24 pt-16 md:pt-24 lg:gap-16">
+      <main className="page-content mx-auto flex w-full max-w-6xl flex-col gap-10 px-5 pb-20 pt-12 md:pt-20 lg:gap-14">
         <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div className="space-y-6 animate-rise">
-            <div className="inline-flex items-center gap-3 rounded-full border border-[color:var(--accent-500)] bg-[color:var(--wash-0)] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-800)]">
+            <div className="inline-flex items-center gap-3 rounded-lg border border-[color:var(--accent-500)] bg-[color:var(--wash-0)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-800)]">
               <span className="h-2 w-2 rounded-full bg-[color:var(--accent-700)]" />
               Brown student tech recruiting roadmap
             </div>
@@ -49,12 +49,12 @@ export default async function Home() {
             <div className="flex flex-wrap gap-4">
               <Link
                 href={startLessonHref}
-                className="inline-flex w-full items-center justify-center rounded-full bg-[color:var(--accent-700)] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)] sm:w-auto"
+                className="inline-flex w-full items-center justify-center rounded-lg bg-[color:var(--accent-700)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)] sm:w-auto"
               >
                 Start the course
               </Link>
               {!isAuthenticated ? (
-                <SignInCta className="inline-flex w-full items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--ink-900)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-800)] hover:bg-[color:var(--accent-500)] sm:w-auto">
+                <SignInCta className="inline-flex w-full items-center justify-center rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--ink-900)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-800)] hover:bg-[color:var(--accent-500)] sm:w-auto">
                   Save progress
                 </SignInCta>
               ) : null}
@@ -63,7 +63,7 @@ export default async function Home() {
               {stats.map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-2"
+                  className="rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1.5"
                 >
                   <span className="text-[color:var(--ink-700)]">
                     {item.label}
@@ -84,7 +84,7 @@ export default async function Home() {
 
           <div className="relative animate-rise-delayed">
             <div className="absolute -top-12 right-8 h-28 w-28 rounded-full bg-[color:var(--accent-500)] opacity-30 blur-2xl" />
-            <div className="rounded-[30px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-lift)] md:p-8">
+            <div className="rounded-2xl border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-lift)] md:p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-500)]">
                   Start here
@@ -100,7 +100,7 @@ export default async function Home() {
                 {lessonExample?.summary ??
                   "See the recruiting sequence end-to-end and pick a focus."}
               </p>
-              <div className="mt-6 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
+              <div className="mt-5 rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
                   Outcomes
                 </p>
@@ -113,7 +113,7 @@ export default async function Home() {
                   ))}
                 </ul>
               </div>
-              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+              <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
                 <span>{lessonExample?.estimatedMinutes ?? 25} min read</span>
                 <Link
                   href={startLessonHref}

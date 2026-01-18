@@ -107,6 +107,25 @@ body {
   content: "";
 }
 
+.scroll-panel {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+  scrollbar-gutter: stable;
+}
+
+.scroll-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scroll-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-panel::-webkit-scrollbar-thumb {
+  background: rgba(111, 100, 91, 0.5);
+  border-radius: 999px;
+}
+
 @media (max-width: 768px) {
   .page-shell::before {
     background-size: 44px 44px, 44px 44px;

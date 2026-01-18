@@ -26,7 +26,7 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
   const extraBadges = sortedBadges.slice(3);
 
   return (
-    <section className="rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)] md:p-7">
+    <section className="rounded-2xl border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
@@ -36,16 +36,16 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
             Momentum markers
           </h2>
         </div>
-        <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
+        <span className="rounded-md border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
           {earnedCount} of {badges.length} earned
         </span>
       </div>
 
-      <div className="mt-5 grid gap-3">
+      <div className="mt-4 grid gap-3">
         {primaryBadges.map((badge, index) => (
           <div
             key={badge.key}
-            className="flex flex-col gap-3 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 shadow-[var(--shadow-soft)] animate-fade"
+            className="flex flex-col gap-3 rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-2.5 shadow-[var(--shadow-soft)] animate-fade"
             style={{ animationDelay: `${index * 70}ms` }}
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
@@ -58,7 +58,7 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
                 </p>
               </div>
               <span
-                className={`rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] ${
+                className={`rounded-md border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.3em] ${
                   badge.isEarned
                     ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
                     : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-700)]"
@@ -75,7 +75,7 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
       </div>
 
       {extraBadges.length ? (
-        <details className="group mt-4 rounded-2xl border border-dashed border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-4">
+        <details className="group mt-4 rounded-xl border border-dashed border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-3">
           <summary className="summary-clean flex cursor-pointer list-none items-center justify-between text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
             <span>View all badges</span>
             <span className="flex items-center gap-2">
@@ -96,11 +96,11 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
               </svg>
             </span>
           </summary>
-          <div className="mt-4 grid gap-3">
+          <div className="mt-3 grid gap-3">
             {extraBadges.map((badge, index) => (
               <div
                 key={badge.key}
-                className="flex flex-col gap-2 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 shadow-[var(--shadow-soft)]"
+                className="flex flex-col gap-2 rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-2.5 shadow-[var(--shadow-soft)]"
                 style={{ animationDelay: `${(index + 3) * 70}ms` }}
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
@@ -113,7 +113,7 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
                     </p>
                   </div>
                   <span
-                    className={`rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] ${
+                    className={`rounded-md border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.3em] ${
                       badge.isEarned
                         ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
                         : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-700)]"

@@ -20,7 +20,7 @@ export default function RoleLibraryList({ lessons }: RoleLibraryListProps) {
 
   if (lessons.length === 0) {
     return (
-      <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-6 text-sm text-[color:var(--ink-700)] shadow-[var(--shadow-soft)]">
+      <div className="rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-4 text-sm text-[color:var(--ink-700)] shadow-[var(--shadow-soft)]">
         Role deep dives will appear here once the library is loaded.
       </div>
     );
@@ -36,14 +36,14 @@ export default function RoleLibraryList({ lessons }: RoleLibraryListProps) {
           <Link
             key={lesson.id}
             href={`/lesson/${lesson.slug}`}
-            className="group block rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] animate-fade"
+            className="group block rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-4 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] animate-fade"
             style={{ animationDelay: `${index * 70}ms` }}
           >
-            <article className="flex flex-col gap-4">
+            <article className="flex flex-col gap-3">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span
-                    className={`flex h-6 w-6 items-center justify-center rounded-full border text-[color:var(--ink-500)] ${
+                    className={`flex h-5 w-5 items-center justify-center rounded-full border text-[color:var(--ink-500)] ${
                       isCompleted
                         ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
                         : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)]"
@@ -74,7 +74,7 @@ export default function RoleLibraryList({ lessons }: RoleLibraryListProps) {
                   <span className="sr-only">Role deep dive</span>
                 </div>
                 <span
-                  className={`rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.25em] ${
+                  className={`rounded-md border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.25em] ${
                     isCompleted
                       ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
                       : "border-[color:var(--accent-500)] bg-[color:var(--accent-500)] text-[color:var(--ink-900)]"

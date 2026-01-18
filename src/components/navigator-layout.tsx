@@ -28,6 +28,13 @@ export default function NavigatorLayout({
   const [navigatorWidth, setNavigatorWidth] = useState(0.25);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const isCollapsedRef = useRef(isCollapsed);
+  const collapsedByMediaRef = useRef(false);
+  const collapsedStateBeforeAutoRef = useRef(false);
+
+  useEffect(() => {
+    isCollapsedRef.current = isCollapsed;
+  }, [isCollapsed]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -37,7 +44,15 @@ export default function NavigatorLayout({
     const media = window.matchMedia("(max-width: 960px)");
     const handleChange = () => {
       if (media.matches) {
+        collapsedByMediaRef.current = true;
+        collapsedStateBeforeAutoRef.current = isCollapsedRef.current;
         setIsCollapsed(true);
+        return;
+      }
+
+      if (collapsedByMediaRef.current) {
+        setIsCollapsed(collapsedStateBeforeAutoRef.current);
+        collapsedByMediaRef.current = false;
       }
     };
 
@@ -87,11 +102,11 @@ export default function NavigatorLayout({
   return (
     <div
       ref={containerRef}
-      className="page-content mx-auto grid w-full max-w-[1400px] items-start gap-0 px-6 pb-24 pt-6 md:pt-8"
+      className="page-content mx-auto grid h-full w-full max-w-[1400px] items-start gap-0 px-4 py-3 md:px-5 md:py-4"
       style={{ gridTemplateColumns }}
     >
       <aside
-        className={`h-[calc(100vh-120px)] overflow-hidden rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] shadow-[var(--shadow-card)] transition-[width] duration-200 ${
+        className={`h-full min-h-0 overflow-hidden rounded-lg border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] shadow-[var(--shadow-card)] transition-[width] duration-200 ${
           isCollapsed ? "pointer-events-none opacity-0" : "opacity-100"
         }`}
         aria-hidden={isCollapsed}
@@ -100,14 +115,14 @@ export default function NavigatorLayout({
       </aside>
 
       <div
-        className={`relative flex h-[calc(100vh-120px)] items-center justify-center ${
+        className={`relative flex h-full min-h-0 items-center justify-center ${
           isDragging ? "cursor-col-resize" : "cursor-ew-resize"
         }`}
         onPointerDown={handlePointerDown}
         style={{ touchAction: "none" }}
         aria-hidden="true"
       >
-        <div className="absolute inset-y-6 left-1/2 w-px -translate-x-1/2 bg-[color:var(--line-soft)]" />
+        <div className="absolute inset-y-3 left-1/2 w-px -translate-x-1/2 bg-[color:var(--line-soft)]" />
         <button
           type="button"
           onPointerDown={(event) => event.stopPropagation()}
@@ -115,12 +130,14 @@ export default function NavigatorLayout({
             event.stopPropagation();
             setIsCollapsed((collapsed) => !collapsed);
           }}
-          className="absolute top-3 flex h-8 w-8 items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-700)] shadow-[var(--shadow-soft)] transition hover:border-[color:var(--ink-900)]"
+          className="absolute top-3 flex h-7 w-7 items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-700)] shadow-[var(--shadow-soft)] transition hover:border-[color:var(--ink-900)]"
           aria-label={isCollapsed ? "Expand navigator" : "Collapse navigator"}
         >
           <svg
             aria-hidden="true"
-            className={`h-4 w-4 transition ${isCollapsed ? "rotate-180" : ""}`}
+            className={`h-3.5 w-3.5 transition ${
+              isCollapsed ? "rotate-180" : ""
+            }`}
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -135,7 +152,7 @@ export default function NavigatorLayout({
         </button>
       </div>
 
-      <main className="flex min-h-[calc(100vh-120px)] flex-col gap-10 rounded-[28px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] px-6 pb-16 pt-10 shadow-[var(--shadow-card)] md:px-10 md:pt-12">
+      <main className="scroll-panel flex h-full min-h-0 flex-col gap-6 overflow-y-auto rounded-lg border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] px-4 pb-8 pt-6 shadow-[var(--shadow-card)] md:px-6 md:pt-7">
         {children}
       </main>
     </div>
