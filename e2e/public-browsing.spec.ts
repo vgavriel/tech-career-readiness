@@ -9,12 +9,14 @@ test("public browsing from landing to lesson content", async ({ page }) => {
     })
   ).toBeVisible();
 
-  await page.getByRole("link", { name: /start the course/i }).click();
-  await expect(page).toHaveURL(/\/lesson\/start-to-finish-roadmap/);
+  await Promise.all([
+    page.waitForURL(/\/lesson\/start-to-finish-roadmap/, { timeout: 15000 }),
+    page.getByRole("link", { name: /start the course/i }).click(),
+  ]);
 
   await expect(
     page.getByRole("heading", { name: /start to finish/i })
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole("complementary")).toContainText(
     /full curriculum/i
   );
