@@ -30,9 +30,10 @@ export default function FocusPicker({ className }: FocusPickerProps) {
         </div>
         <Link
           href="/roles"
-          className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-600)] transition hover:text-[color:var(--accent-700)]"
+          className="inline-flex items-center gap-2 rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-900)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-900)]"
         >
-          Explore roles
+          Explore role library
+          <span className="text-[color:var(--ink-700)]">Extra credit</span>
         </Link>
       </div>
 

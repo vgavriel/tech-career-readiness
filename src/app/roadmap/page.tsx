@@ -1,7 +1,9 @@
 import RoadmapFocusModuleList from "@/components/roadmap-focus-module-list";
 import { RoadmapFocusProvider } from "@/components/roadmap-focus-provider";
+import RoadmapFocusStatus from "@/components/roadmap-focus-status";
 import RoadmapFocusSummary from "@/components/roadmap-focus-summary";
 import RoadmapBadgeAwards from "@/components/roadmap-badge-awards";
+import FocusPicker from "@/components/focus-picker";
 import { FOCUS_QUERY_PARAM } from "@/lib/focus-options";
 import { getFocusKeyFromParam } from "@/lib/focus-order";
 import { prisma } from "@/lib/prisma";
@@ -66,6 +68,7 @@ export default async function RoadmapPage({ searchParams }: RoadmapPageProps) {
                 Work core lessons in order, then dip into extra credit when you
                 want more depth or role context.
               </p>
+              <RoadmapFocusStatus totalModules={modules.length} />
             </div>
             <div className="space-y-6">
               <RoadmapFocusSummary modules={modules} />
@@ -86,6 +89,7 @@ export default async function RoadmapPage({ searchParams }: RoadmapPageProps) {
                 go deeper on a topic.
               </p>
             </div>
+            <FocusPicker />
             <RoadmapFocusModuleList modules={modules} />
           </section>
         </RoadmapFocusProvider>

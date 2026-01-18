@@ -12,7 +12,9 @@ type RoadmapFocusModuleListProps = {
 export default function RoadmapFocusModuleList({
   modules,
 }: RoadmapFocusModuleListProps) {
-  const { focusModules } = useRoadmapFocus();
+  const { focusKey, focusModules } = useRoadmapFocus();
 
-  return <RoadmapModuleList modules={focusModules ?? modules} />;
+  return (
+    <RoadmapModuleList modules={focusModules ?? modules} focusKey={focusKey} />
+  );
 }

@@ -6,6 +6,9 @@ import LessonProgressCard from "@/components/lesson-progress-card";
 import { getLessonExample } from "@/lib/lesson-examples";
 import { fetchLessonContent } from "@/lib/lesson-content";
 import { buildLessonRedirectPath, findLessonBySlug } from "@/lib/lesson-slug";
+import { FOCUS_QUERY_PARAM } from "@/lib/focus-options";
+import { FOCUS_MODULE_ORDER, getFocusKeyFromParam } from "@/lib/focus-order";
+import { getLessonClassification } from "@/lib/lesson-classification";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -41,6 +44,9 @@ export default async function LessonPage({
 }: LessonPageProps) {
   const { slug } = await params;
   const rawSearchParams = searchParams ? await searchParams : undefined;
+  const focusKey = getFocusKeyFromParam(
+    rawSearchParams?.[FOCUS_QUERY_PARAM]
+  );
   const { lesson, isAlias } = await findLessonBySlug(slug);
 
   if (!lesson) {
@@ -60,6 +66,15 @@ export default async function LessonPage({
   if (isAlias) {
     permanentRedirect(buildLessonRedirectPath(lesson.slug, rawSearchParams));
   }
+
+  const focusModuleKeys = focusKey ? FOCUS_MODULE_ORDER[focusKey] ?? [] : [];
+  const shouldFilterNextModule =
+    Boolean(
+      focusKey &&
+        focusModuleKeys.length > 0 &&
+        lesson.module?.key &&
+        focusModuleKeys.includes(lesson.module.key)
+    );
 
   const moduleOrder = lesson.module?.order ?? null;
   const [previousLesson, nextLesson, nextModule] = await Promise.all([
@@ -83,9 +98,13 @@ export default async function LessonPage({
     }),
     moduleOrder
       ? prisma.module.findFirst({
-          where: { order: { gt: moduleOrder } },
+          where: {
+            order: { gt: moduleOrder },
+            ...(shouldFilterNextModule ? { key: { in: focusModuleKeys } } : {}),
+          },
           orderBy: { order: "asc" },
           select: {
+            key: true,
             order: true,
             title: true,
             lessons: {
@@ -100,6 +119,23 @@ export default async function LessonPage({
   ]);
 
   const nextModuleLesson = nextModule?.lessons[0] ?? null;
+  const buildLessonHref = (lessonSlug: string) =>
+    buildLessonRedirectPath(lessonSlug, rawSearchParams);
+  const previousIsExtra = previousLesson
+    ? getLessonClassification({ slug: previousLesson.slug }).credit === "extra"
+    : false;
+  const nextIsExtra = nextLesson
+    ? getLessonClassification({ slug: nextLesson.slug }).credit === "extra"
+    : false;
+  const nextModuleIsExtra = nextModuleLesson
+    ? getLessonClassification({ slug: nextModuleLesson.slug }).credit === "extra"
+    : false;
+  const extraBadge = (isExtra: boolean) =>
+    isExtra ? (
+      <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)]">
+        Extra credit
+      </span>
+    ) : null;
 
   const lessonExample = getLessonExample(lesson.slug);
   const objectives = lessonExample?.outcomes.length
@@ -319,15 +355,20 @@ export default async function LessonPage({
 
             <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-                Navigate
+                Navigate Module {lesson.module?.order ?? "?"}
               </p>
               <div className="mt-4 flex flex-col gap-3 text-sm font-semibold">
                 {previousLesson ? (
                   <Link
-                    href={`/lesson/${previousLesson.slug}`}
+                    href={buildLessonHref(previousLesson.slug)}
                     className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 text-[color:var(--ink-900)] transition hover:border-[color:var(--accent-700)]"
                   >
-                    ← Lesson {previousLesson.order}: {previousLesson.title}
+                    <span className="flex items-center justify-between gap-3">
+                      <span>
+                        ← Lesson {previousLesson.order}: {previousLesson.title}
+                      </span>
+                      {extraBadge(previousIsExtra)}
+                    </span>
                   </Link>
                 ) : (
                   <div className="rounded-2xl border border-dashed border-[color:var(--line-soft)] px-4 py-3 text-xs uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
@@ -336,18 +377,28 @@ export default async function LessonPage({
                 )}
                 {nextLesson ? (
                   <Link
-                    href={`/lesson/${nextLesson.slug}`}
+                    href={buildLessonHref(nextLesson.slug)}
                     className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 text-[color:var(--ink-900)] transition hover:border-[color:var(--accent-700)]"
                   >
-                    Lesson {nextLesson.order}: {nextLesson.title} →
+                    <span className="flex items-center justify-between gap-3">
+                      <span>
+                        Lesson {nextLesson.order}: {nextLesson.title} →
+                      </span>
+                      {extraBadge(nextIsExtra)}
+                    </span>
                   </Link>
                 ) : nextModuleLesson && nextModule ? (
                   <Link
-                    href={`/lesson/${nextModuleLesson.slug}`}
+                    href={buildLessonHref(nextModuleLesson.slug)}
                     className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 text-[color:var(--ink-900)] transition hover:border-[color:var(--accent-700)]"
                   >
-                    Next module {nextModule.order}: {nextModule.title} — Lesson{" "}
-                    {nextModuleLesson.order}: {nextModuleLesson.title} →
+                    <span className="flex items-center justify-between gap-3">
+                      <span>
+                        Next module {nextModule.order}: {nextModule.title} — Lesson{" "}
+                        {nextModuleLesson.order}: {nextModuleLesson.title} →
+                      </span>
+                      {extraBadge(nextModuleIsExtra)}
+                    </span>
                   </Link>
                 ) : (
                   <div className="rounded-2xl border border-dashed border-[color:var(--line-soft)] px-4 py-3 text-xs uppercase tracking-[0.3em] text-[color:var(--ink-500)]">

@@ -2,6 +2,7 @@ import { normalizeFocusKey, type FocusKey } from "@/lib/focus-options";
 
 type FocusModule = {
   key: string;
+  order?: number | null;
 };
 
 export const FOCUS_MODULE_ORDER: Record<FocusKey, string[]> = {
@@ -16,15 +17,15 @@ export const FOCUS_MODULE_ORDER: Record<FocusKey, string[]> = {
   "applying-soon": [
     "start-here",
     "opportunities-networking",
-    "applications",
     "research-companies",
+    "applications",
     "interviews",
   ],
   "interviewing-soon": [
     "start-here",
-    "interviews",
     "research-companies",
     "applications",
+    "interviews",
   ],
   "offer-in-hand": ["offers", "internship-success"],
 };
@@ -53,15 +54,21 @@ export const orderModulesForFocus = <T extends FocusModule>(
     return modules;
   }
 
-  const orderIndex = new Map(order.map((key, index) => [key, index]));
-  const filtered = modules.filter((module) => orderIndex.has(module.key));
+  const orderSet = new Set(order);
+  const filtered = modules.filter((module) => orderSet.has(module.key));
 
   if (filtered.length === 0) {
     return modules;
   }
 
+  const canSortByOrder = filtered.every(
+    (module) => typeof module.order === "number"
+  );
+  if (!canSortByOrder) {
+    return filtered;
+  }
+
   return [...filtered].sort(
-    (left, right) =>
-      (orderIndex.get(left.key) ?? 0) - (orderIndex.get(right.key) ?? 0)
+    (left, right) => (left.order ?? 0) - (right.order ?? 0)
   );
 };

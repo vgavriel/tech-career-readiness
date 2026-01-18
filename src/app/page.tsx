@@ -34,7 +34,7 @@ export default async function Home() {
           <div className="space-y-6 animate-rise">
             <div className="inline-flex items-center gap-3 rounded-full border border-[color:var(--accent-500)] bg-[color:var(--wash-0)] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-800)]">
               <span className="h-2 w-2 rounded-full bg-[color:var(--accent-700)]" />
-              Brown student recruiting roadmap
+              Brown student tech recruiting roadmap
             </div>
             <h1 className="font-display text-4xl leading-[1.08] text-[color:var(--ink-900)] md:text-5xl lg:text-6xl">
               Land your first tech role with a focused, Brown-built plan.

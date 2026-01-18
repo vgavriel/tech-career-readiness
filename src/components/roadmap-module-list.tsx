@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { useProgress } from "@/components/progress-provider";
+import { FOCUS_QUERY_PARAM, type FocusKey } from "@/lib/focus-options";
 import { isExtraCreditLesson } from "@/lib/lesson-classification";
 
 /**
@@ -34,6 +35,7 @@ export type RoadmapModule = {
  */
 type RoadmapModuleListProps = {
   modules: RoadmapModule[];
+  focusKey?: FocusKey | null;
 };
 
 /**
@@ -43,8 +45,12 @@ type RoadmapModuleListProps = {
  * Presents ordered modules/lessons and reflects completion from progress
  * context; no side effects.
  */
-export default function RoadmapModuleList({ modules }: RoadmapModuleListProps) {
+export default function RoadmapModuleList({
+  modules,
+  focusKey = null,
+}: RoadmapModuleListProps) {
   const { isLessonCompleted, isReady } = useProgress();
+  const focusQuery = focusKey ? `?${FOCUS_QUERY_PARAM}=${focusKey}` : "";
 
   if (modules.length === 0) {
     return (
@@ -124,7 +130,7 @@ export default function RoadmapModuleList({ modules }: RoadmapModuleListProps) {
                       {module.order}.{lesson.order}
                     </span>
                     <Link
-                      href={`/lesson/${lesson.slug}`}
+                      href={`/lesson/${lesson.slug}${focusQuery}`}
                       className="text-sm font-semibold text-[color:var(--ink-900)] transition group-hover:text-[color:var(--accent-700)] md:text-base"
                     >
                       {lesson.title}

@@ -30,13 +30,13 @@ describe("focus ordering", () => {
     expect(getFocusKeyFromParam(["applying-soon"])).toBe("applying-soon");
   });
 
-  it("filters and orders modules for a focus", () => {
+  it("filters modules for a focus and preserves module order", () => {
     const ordered = orderModulesForFocus(modules, "interviewing-soon");
     expect(moduleKeys(ordered)).toEqual([
       "start-here",
-      "interviews",
       "research-companies",
       "applications",
+      "interviews",
     ]);
   });
 
