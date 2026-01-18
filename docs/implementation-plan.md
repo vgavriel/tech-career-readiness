@@ -268,15 +268,6 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Replace the standalone roadmap page with a persistent navigator (collapsible + resizable)
 - [x] Add a badges page linked from the global header
 
-### Phase 7.3 — UX validation + design excellence
-- [ ] Run a task-based usability assessment (landing -> focus/roles -> lesson -> mark complete)
-- [ ] Complete a heuristic UX review (clarity, feedback, error prevention, progress visibility)
-- [ ] Validate visual hierarchy + typography across breakpoints (mobile/tablet/desktop)
-- [ ] Accessibility audit (keyboard flow, contrast, headings, focus states)
-- [ ] Performance check (Lighthouse/Core Web Vitals) on landing, roadmap, lesson pages
-- [ ] QA empty/edge states (no progress, no lessons, slow network, unauthenticated)
-- [ ] Gather qualitative feedback from Brown students and log the top 5 fixes
-
 ### Phase 7.5 — Observability (lightweight)
 - [ ] Add request ID generation (middleware) and return `x-request-id` headers for server routes
 - [ ] Create a minimal structured logger wrapper with env-based log levels and default redaction for secrets/PII

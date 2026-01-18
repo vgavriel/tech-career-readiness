@@ -131,7 +131,7 @@ export default function LessonNavigator({
         </div>
       </div>
 
-      <div className="scroll-panel flex-1 overflow-y-auto pr-2">
+      <div className="scroll-panel flex-1 overflow-y-auto">
         <div className="space-y-4">
           {visibleModules.map((module) => {
             const isActiveModule = module.key === currentModuleKey;
