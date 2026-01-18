@@ -1,3 +1,4 @@
+import { JSDOM } from "jsdom";
 import sanitizeHtml from "sanitize-html";
 
 import {
@@ -10,7 +11,7 @@ import { getEnv } from "@/lib/env";
 const allowedLessonHosts = new Set(["docs.google.com", "drive.google.com"]);
 
 const sanitizeOptions: sanitizeHtml.IOptions = {
-  allowedTags: sanitizeHtml.defaults.allowedTags,
+  allowedTags: [...sanitizeHtml.defaults.allowedTags, "style"],
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,
     "*": ["class", "style"],
@@ -25,6 +26,75 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
     colgroup: ["class", "style", "span", "width"],
     col: ["class", "style", "span", "width"],
   },
+  allowVulnerableTags: true,
+};
+
+const GOOGLE_DOCS_BANNER_PHRASES = [
+  "Published using Google Docs",
+  "Report abuse",
+  "Updated automatically every 5 minutes",
+];
+
+const normalizeBannerText = (text: string) => text.replace(/\s+/g, " ").trim();
+
+const stripGoogleDocsBanner = (root: Element) => {
+  const elements = Array.from(root.querySelectorAll("*"));
+  const bannerElement = elements.find((element) =>
+    normalizeBannerText(element.textContent ?? "").includes(
+      "Published using Google Docs"
+    )
+  );
+
+  if (bannerElement) {
+    let current: Element | null = bannerElement;
+    while (current) {
+      const previous = current.previousElementSibling;
+      current.remove();
+      current = previous;
+    }
+  }
+
+  for (const element of Array.from(root.querySelectorAll("*"))) {
+    const text = normalizeBannerText(element.textContent ?? "");
+    if (
+      text &&
+      GOOGLE_DOCS_BANNER_PHRASES.some((phrase) => text.includes(phrase))
+    ) {
+      element.remove();
+    }
+  }
+
+  const children = Array.from(root.children);
+  if (children.length >= 2) {
+    const firstText = normalizeBannerText(children[0].textContent ?? "");
+    const secondText = normalizeBannerText(children[1].textContent ?? "");
+    if (firstText && firstText === secondText) {
+      children[0].remove();
+    }
+  }
+};
+
+const extractLessonHtml = (rawHtml: string) => {
+  const dom = new JSDOM(rawHtml);
+  const document = dom.window.document;
+
+  const contentRoot =
+    document.querySelector("#contents") ??
+    document.querySelector(".doc-content") ??
+    document.body;
+
+  if (!contentRoot) {
+    return rawHtml;
+  }
+
+  stripGoogleDocsBanner(contentRoot);
+
+  const extraStyles = Array.from(document.querySelectorAll("style"))
+    .filter((style) => !contentRoot.contains(style))
+    .map((style) => style.outerHTML)
+    .join("");
+
+  return `${extraStyles}${contentRoot.innerHTML}`;
 };
 
 /**
@@ -128,7 +198,8 @@ export async function fetchLessonContent(
 
   const validatedUrl = assertAllowedLessonUrl(lesson.publishedUrl);
   const rawHtml = await fetchLessonHtml(validatedUrl);
-  const sanitizedHtml = sanitizeHtml(rawHtml, sanitizeOptions);
+  const extractedHtml = extractLessonHtml(rawHtml);
+  const sanitizedHtml = sanitizeHtml(extractedHtml, sanitizeOptions);
   setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
 
   return { lessonId: lesson.id, html: sanitizedHtml, cached: false };
