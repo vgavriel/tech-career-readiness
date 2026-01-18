@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import RoleLibraryList from "@/components/role-library-list";
 import { ROLE_DEEP_DIVE_LESSON_SLUGS } from "@/lib/lesson-classification";
+import { getLessonExample } from "@/lib/lesson-examples";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -14,6 +15,10 @@ export const dynamic = "force-dynamic";
  * Pulls curated role deep dives from the lesson catalog and preserves ordering.
  */
 export default async function RolesPage() {
+  const startLessonSlug =
+    getLessonExample("start-to-finish-roadmap")?.slug ??
+    "start-to-finish-roadmap";
+
   const lessons = await prisma.lesson.findMany({
     where: {
       slug: { in: ROLE_DEEP_DIVE_LESSON_SLUGS },
@@ -51,10 +56,10 @@ export default async function RolesPage() {
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
-                href="/roadmap"
+                href={`/lesson/${startLessonSlug}`}
                 className="inline-flex w-full items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-800)] hover:bg-[color:var(--accent-500)] sm:w-auto"
               >
-                Back to roadmap
+                Back to course
               </Link>
             </div>
           </div>

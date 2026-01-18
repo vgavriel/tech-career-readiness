@@ -16,6 +16,8 @@ export default async function Home() {
   const session = await getServerSession(authOptions);
   const isAuthenticated = Boolean(session?.user);
   const lessonExample = getLessonExample("start-to-finish-roadmap");
+  const startLessonSlug = lessonExample?.slug ?? "start-to-finish-roadmap";
+  const startLessonHref = `/lesson/${startLessonSlug}`;
   const outcomes = lessonExample?.outcomes ?? [
     "Pick the focus that matches your urgency.",
     "Sequence the next three lessons.",
@@ -46,10 +48,10 @@ export default async function Home() {
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
-                href="/roadmap"
+                href={startLessonHref}
                 className="inline-flex w-full items-center justify-center rounded-full bg-[color:var(--accent-700)] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)] sm:w-auto"
               >
-                Start the roadmap
+                Start the course
               </Link>
               {!isAuthenticated ? (
                 <SignInCta className="inline-flex w-full items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--ink-900)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-800)] hover:bg-[color:var(--accent-500)] sm:w-auto">
@@ -114,7 +116,7 @@ export default async function Home() {
               <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
                 <span>{lessonExample?.estimatedMinutes ?? 25} min read</span>
                 <Link
-                  href={`/lesson/${lessonExample?.slug ?? "start-to-finish-roadmap"}`}
+                  href={startLessonHref}
                   className="text-[color:var(--accent-700)]"
                 >
                   Open lesson
@@ -124,7 +126,7 @@ export default async function Home() {
           </div>
         </section>
 
-        <FocusPicker className="animate-rise" />
+        <FocusPicker className="animate-rise" startHref={startLessonHref} />
       </main>
     </div>
   );

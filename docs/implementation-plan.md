@@ -53,49 +53,45 @@ Source of truth for modules, focuses, progress categories, and gamification:
 ## Core user flows (MVP)
 ### Public browsing flow
 1) User lands on homepage.
-2) User uses the quick picker or clicks “View the roadmap.”
-3) User browses modules and lessons (core + extra credit).
+2) User uses the quick picker or chooses a focus from the header.
+3) User browses modules and lessons (core + extra credit) via the navigator.
 4) User opens a lesson and reads content.
 
 ### Progress tracking flow (authenticated)
 1) User clicks “Sign in with Google.”
-2) User returns to roadmap page.
+2) User returns to any lesson (navigator stays visible).
 3) If guest progress exists, prompt to merge and apply it to the user account.
 3) User marks lessons complete or incomplete.
 4) Progress persists across sessions.
 5) User clicks “Continue” to jump to the next incomplete lesson.
 
 ### Progress tracking flow (guest)
-1) User browses roadmap and toggles lessons.
+1) User browses lessons via the navigator and toggles completion.
 2) Progress is stored in localStorage.
 3) User sees UI guidance that sign-in saves progress across devices.
 
 ## App pages (MVP)
 1) `/` (Landing)
 - Title and short description
-- CTA: “View the roadmap”
+- CTA: “Start the course”
 - CTA: “Sign in to save progress”
 - Quick picker for urgency focuses + “Explore roles” entry
 - Optional: small “How this course works” block
 
-2) `/roadmap` (Curriculum overview)
-- List modules in order
-- Under each module, list lessons
-- Show completion checkmarks for logged-in users
-- Show core progress percent and extra credit progress
-- Button: “Continue where you left off” (logged in)
-- If logged out: show “Sign in to save progress,” show guest checkmarks, and note they are stored locally
-
-3) `/lesson/[lessonSlugOrId]` (Lesson detail)
+2) `/lesson/[lessonSlugOrId]` (Lesson detail)
 - Title
 - Optional: lesson objectives and “What success looks like”
 - Render lesson content from publishedUrl (sanitized HTML)
-- Buttons:
-  - Mark complete / Mark incomplete (requires login)
-  - Next lesson / Previous lesson navigation
-  - Open source doc in new tab (optional, uses publishedUrl)
+- Navigator (left rail) with modules + lesson completion toggles
+- Open source doc in new tab (optional, uses publishedUrl)
 
-4) `/account` (Optional, can be minimal)
+3) `/badges` (Badge awards)
+- Badge summary with earned/in-progress status
+
+4) `/roadmap` (Legacy redirect)
+- Redirects to the first lesson (navigator handles browsing)
+
+5) `/account` (Optional, can be minimal)
 - User profile basics
 - Sign out
 
@@ -106,6 +102,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
   - email (unique)
   - name
   - image
+  - focusKey (nullable string, current focus selection)
   - createdAt
   - updatedAt
 
@@ -225,14 +222,13 @@ Source of truth for modules, focuses, progress categories, and gamification:
 
 ### Phase 4 — Core pages (public browsing)
 - [x] Landing page (`/`)
-- [x] Roadmap page (`/roadmap`) with ordered modules/lessons
-- [x] Lesson page (`/lesson/[slug]`) with content rendering
+- [x] Lesson page (`/lesson/[slug]`) with content rendering + navigator rail
+- [x] Roadmap redirect (`/roadmap`) to the first lesson
 
 ### Phase 5 — Progress tracking
 - [x] Add progress API routes (complete/incomplete)
 - [x] Lesson completion toggle UI
-- [x] Roadmap progress UI + percent complete
-- [x] Global progress summary + Continue link
+- [x] Navigator progress UI + core/extra credit summary
 - [x] Store guest progress in localStorage and merge on sign-in
 
 ### Phase 5.5 — Security hardening + admin analytics
@@ -268,6 +264,9 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Add lesson classification mapping for core/extra credit + role deep dives (badge source of truth)
 - [x] Add Role Library view showing all role deep dives
 - [x] Add lightweight badge awards (no streaks) based on lesson completion
+- [x] Persist focus selection in the database and surface it in the header picker
+- [x] Replace the standalone roadmap page with a persistent navigator (collapsible + resizable)
+- [x] Add a badges page linked from the global header
 
 ### Phase 7.3 — UX validation + design excellence
 - [ ] Run a task-based usability assessment (landing -> focus/roles -> lesson -> mark complete)
@@ -303,13 +302,13 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - Prisma 7 uses `prisma.config.ts` for datasource and seed configuration.
 
 ## Acceptance criteria
-- Any visitor can browse `/roadmap` and open lessons.
+- Any visitor can browse lessons via the navigator (and `/roadmap` redirects to the first lesson).
 - Guests can track lesson completion locally and optionally merge on sign-in.
 - Lesson content loads from publishedUrl and renders in-app without iframe.
 - A user can sign in with Google and save lesson completion state.
 - Completion state persists across sessions.
-- Roadmap shows progress percent for logged-in users.
-- Continue button takes user to first incomplete lesson.
+- Navigator shows completion status for core + extra credit lessons.
+- Focus selection persists to the user account and is visible in the header.
 
 ## Optional enhancements (post-MVP)
 - Search lessons by keyword (title and optionally HTML text)

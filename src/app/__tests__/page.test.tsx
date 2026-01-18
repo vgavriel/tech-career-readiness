@@ -9,6 +9,23 @@ vi.mock("next-auth", () => ({
   getServerSession: authMocks.getServerSession,
 }));
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+}));
+
+vi.mock("@/components/focus-provider", () => ({
+  useFocus: () => ({
+    focusKey: null,
+    isReady: true,
+    isUpdating: false,
+    setFocusKey: vi.fn(),
+  }),
+}));
+
 describe("Home page", () => {
   it("renders the hero and primary CTAs for signed-out visitors", async () => {
     authMocks.getServerSession.mockResolvedValue(null);
@@ -23,9 +40,9 @@ describe("Home page", () => {
       })
     ).toBeInTheDocument();
 
-    expect(screen.getByRole("link", { name: /start the roadmap/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /start the course/i })).toHaveAttribute(
       "href",
-      "/roadmap"
+      "/lesson/start-to-finish-roadmap"
     );
 
     expect(screen.getByRole("button", { name: /save progress/i })).toBeInTheDocument();

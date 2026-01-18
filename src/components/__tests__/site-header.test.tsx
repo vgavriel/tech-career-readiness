@@ -19,6 +19,10 @@ vi.mock("next-auth/react", () => ({
   getProviders: (...args: unknown[]) => authMocks.getProviders(...args),
 }));
 
+vi.mock("@/components/focus-menu", () => ({
+  default: () => <div>Focus menu</div>,
+}));
+
 vi.mock("next/link", () => ({
   default: ({
     href,

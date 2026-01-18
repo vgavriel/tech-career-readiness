@@ -1,7 +1,8 @@
-import { getServerSession } from "next-auth";
+import { type Session, getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { getEnv } from "@/lib/env";
+import { normalizeFocusKey } from "@/lib/focus-options";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -13,6 +14,7 @@ export type AuthenticatedUser = {
   name: string | null;
   image: string | null;
   isAdmin: boolean;
+  focusKey: ReturnType<typeof normalizeFocusKey>;
 };
 
 /**
@@ -27,9 +29,11 @@ const normalizeEmailList = (value?: string) =>
 /**
  * Fetch or create the signed-in user and return the normalized profile data.
  */
-export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> {
+export async function getAuthenticatedUser(
+  sessionOverride?: Session | null
+): Promise<AuthenticatedUser | null> {
   const env = getEnv();
-  const session = await getServerSession(authOptions);
+  const session = sessionOverride ?? (await getServerSession(authOptions));
   const email = session?.user?.email;
 
   if (!email) {
@@ -65,5 +69,6 @@ export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> 
     name: user.name,
     image: user.image,
     isAdmin: user.isAdmin,
+    focusKey: normalizeFocusKey(user.focusKey),
   };
 }

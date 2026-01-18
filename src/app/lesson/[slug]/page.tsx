@@ -2,13 +2,11 @@ import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 
 import LessonContent from "@/components/lesson-content";
-import LessonProgressCard from "@/components/lesson-progress-card";
+import LessonNavigator from "@/components/lesson-navigator";
+import NavigatorLayout from "@/components/navigator-layout";
 import { getLessonExample } from "@/lib/lesson-examples";
 import { fetchLessonContent } from "@/lib/lesson-content";
 import { buildLessonRedirectPath, findLessonBySlug } from "@/lib/lesson-slug";
-import { FOCUS_QUERY_PARAM } from "@/lib/focus-options";
-import { FOCUS_MODULE_ORDER, getFocusKeyFromParam } from "@/lib/focus-order";
-import { getLessonClassification } from "@/lib/lesson-classification";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -44,9 +42,6 @@ export default async function LessonPage({
 }: LessonPageProps) {
   const { slug } = await params;
   const rawSearchParams = searchParams ? await searchParams : undefined;
-  const focusKey = getFocusKeyFromParam(
-    rawSearchParams?.[FOCUS_QUERY_PARAM]
-  );
   const { lesson, isAlias } = await findLessonBySlug(slug);
 
   if (!lesson) {
@@ -67,75 +62,28 @@ export default async function LessonPage({
     permanentRedirect(buildLessonRedirectPath(lesson.slug, rawSearchParams));
   }
 
-  const focusModuleKeys = focusKey ? FOCUS_MODULE_ORDER[focusKey] ?? [] : [];
-  const shouldFilterNextModule =
-    Boolean(
-      focusKey &&
-        focusModuleKeys.length > 0 &&
-        lesson.module?.key &&
-        focusModuleKeys.includes(lesson.module.key)
-    );
-
-  const moduleOrder = lesson.module?.order ?? null;
-  const [previousLesson, nextLesson, nextModule] = await Promise.all([
-    prisma.lesson.findFirst({
-      where: {
-        moduleId: lesson.moduleId,
-        isArchived: false,
-        order: { lt: lesson.order },
+  const modules = await prisma.module.findMany({
+    orderBy: { order: "asc" },
+    select: {
+      id: true,
+      key: true,
+      title: true,
+      description: true,
+      order: true,
+      lessons: {
+        where: { isArchived: false },
+        orderBy: { order: "asc" },
+        select: {
+          id: true,
+          key: true,
+          slug: true,
+          title: true,
+          order: true,
+          estimatedMinutes: true,
+        },
       },
-      orderBy: { order: "desc" },
-      select: { slug: true, title: true, order: true },
-    }),
-    prisma.lesson.findFirst({
-      where: {
-        moduleId: lesson.moduleId,
-        isArchived: false,
-        order: { gt: lesson.order },
-      },
-      orderBy: { order: "asc" },
-      select: { slug: true, title: true, order: true },
-    }),
-    moduleOrder
-      ? prisma.module.findFirst({
-          where: {
-            order: { gt: moduleOrder },
-            ...(shouldFilterNextModule ? { key: { in: focusModuleKeys } } : {}),
-          },
-          orderBy: { order: "asc" },
-          select: {
-            key: true,
-            order: true,
-            title: true,
-            lessons: {
-              where: { isArchived: false },
-              orderBy: { order: "asc" },
-              take: 1,
-              select: { slug: true, title: true, order: true },
-            },
-          },
-        })
-      : Promise.resolve(null),
-  ]);
-
-  const nextModuleLesson = nextModule?.lessons[0] ?? null;
-  const buildLessonHref = (lessonSlug: string) =>
-    buildLessonRedirectPath(lessonSlug, rawSearchParams);
-  const previousIsExtra = previousLesson
-    ? getLessonClassification({ slug: previousLesson.slug }).credit === "extra"
-    : false;
-  const nextIsExtra = nextLesson
-    ? getLessonClassification({ slug: nextLesson.slug }).credit === "extra"
-    : false;
-  const nextModuleIsExtra = nextModuleLesson
-    ? getLessonClassification({ slug: nextModuleLesson.slug }).credit === "extra"
-    : false;
-  const extraBadge = (isExtra: boolean) =>
-    isExtra ? (
-      <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)]">
-        Extra credit
-      </span>
-    ) : null;
+    },
+  });
 
   const lessonExample = getLessonExample(lesson.slug);
   const objectives = lessonExample?.outcomes.length
@@ -169,248 +117,188 @@ export default async function LessonPage({
 
   return (
     <div className="page-shell min-h-screen overflow-hidden">
-      <main className="page-content mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 pb-24 pt-16 md:pt-22">
-        <nav className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-500)]">
-          <Link
-            href="/roadmap"
-            className="transition hover:text-[color:var(--ink-900)]"
-          >
-            Roadmap
-          </Link>
-          <span>/</span>
-          <span>
-            Module {lesson.module?.order ?? "?"}:{lesson.module?.title
-              ? ` ${lesson.module.title}`
-              : ""}
-          </span>
-        </nav>
+      <NavigatorLayout
+        navigator={
+          <LessonNavigator
+            modules={modules}
+            currentLessonKey={lesson.key}
+            currentLessonSlug={lesson.slug}
+            currentModuleKey={lesson.module?.key ?? null}
+          />
+        }
+      >
+        <div className="space-y-8">
+          <nav className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-500)]">
+            <Link href="/" className="transition hover:text-[color:var(--ink-900)]">
+              Course
+            </Link>
+            <span>/</span>
+            <span>
+              Module {lesson.module?.order ?? "?"}:{lesson.module?.title
+                ? ` ${lesson.module.title}`
+                : ""}
+            </span>
+          </nav>
 
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
-          <section className="space-y-6">
-            <header className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)] md:p-9">
-              <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-700)]">
-                <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1.5 text-[color:var(--ink-900)]">
-                  Module {lesson.module?.order ?? "?"}
+          <header className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)] md:p-9">
+            <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-700)]">
+              <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1.5 text-[color:var(--ink-900)]">
+                Module {lesson.module?.order ?? "?"}
+              </span>
+              <span className="rounded-full border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] px-3 py-1.5 text-[color:var(--ink-900)]">
+                Lesson {lesson.order}
+              </span>
+              {estimatedMinutes ? (
+                <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1.5 text-[color:var(--ink-700)]">
+                  {estimatedMinutes} min read
                 </span>
-                <span className="rounded-full border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] px-3 py-1.5 text-[color:var(--ink-900)]">
-                  Lesson {lesson.order}
-                </span>
-                {estimatedMinutes ? (
-                  <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1.5 text-[color:var(--ink-700)]">
-                    {estimatedMinutes} min read
-                  </span>
-                ) : null}
-              </div>
-              <h1 className="font-display mt-5 text-3xl text-[color:var(--ink-900)] md:text-4xl lg:text-5xl">
-                {lesson.title}
-              </h1>
-              <p className="mt-3 text-sm text-[color:var(--ink-700)] md:text-base">
-                {lessonSummary}
-              </p>
-
-              {lessonExample ? (
-                <div className="mt-6 grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
-                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
-                      Focus
-                    </p>
-                    <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
-                      {lessonExample.focus}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
-                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
-                      Deliverable
-                    </p>
-                    <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
-                      {lessonExample.deliverable}
-                    </p>
-                  </div>
-                </div>
               ) : null}
-            </header>
+            </div>
+            <h1 className="font-display mt-5 text-3xl text-[color:var(--ink-900)] md:text-4xl lg:text-5xl">
+              {lesson.title}
+            </h1>
+            <p className="mt-3 text-sm text-[color:var(--ink-700)] md:text-base">
+              {lessonSummary}
+            </p>
 
-            {objectives.length || checklist.length ? (
-              <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)]">
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-                  Lesson plan
-                </p>
-                <div className="mt-4 grid gap-6 md:grid-cols-2">
-                  {objectives.length ? (
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
-                        Outcomes
-                      </p>
-                      <ul className="mt-3 grid gap-3 text-sm text-[color:var(--ink-700)]">
-                        {objectives.map((objective) => (
-                          <li key={objective} className="flex items-start gap-3">
-                            <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[color:var(--accent-700)]" />
-                            <span>{objective}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
-                  {checklist.length ? (
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
-                        Checklist
-                      </p>
-                      <ul className="mt-3 grid gap-2 text-sm text-[color:var(--ink-700)]">
-                        {checklist.map((item) => (
-                          <li key={item} className="flex items-center gap-2">
-                            <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--accent-700)]" />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
+            {lessonExample ? (
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
+                <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+                    Focus
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
+                    {lessonExample.focus}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+                    Deliverable
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
+                    {lessonExample.deliverable}
+                  </p>
                 </div>
               </div>
             ) : null}
+          </header>
 
-            <section className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)] md:p-9">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-                  Lesson content
-                </p>
-                <div className="flex flex-wrap items-center gap-3">
-                  {lesson.publishedUrl ? (
-                    <a
-                      href={lesson.publishedUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--accent-700)]"
-                    >
-                      Open source doc
-                    </a>
-                  ) : null}
-                  {contentError ? (
-                    <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
-                      Syncing docs
-                    </span>
-                  ) : null}
-                </div>
+          {objectives.length || checklist.length ? (
+            <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                Lesson plan
+              </p>
+              <div className="mt-4 grid gap-6 md:grid-cols-2">
+                {objectives.length ? (
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+                      Outcomes
+                    </p>
+                    <ul className="mt-3 grid gap-3 text-sm text-[color:var(--ink-700)]">
+                      {objectives.map((objective) => (
+                        <li key={objective} className="flex items-start gap-3">
+                          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[color:var(--accent-700)]" />
+                          <span>{objective}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+                {checklist.length ? (
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+                      Checklist
+                    </p>
+                    <ul className="mt-3 grid gap-2 text-sm text-[color:var(--ink-700)]">
+                      {checklist.map((item) => (
+                        <li key={item} className="flex items-center gap-2">
+                          <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--accent-700)]" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
               </div>
-              {showFallbackNotice ? (
-                <div className="mt-4 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5 text-sm text-[color:var(--ink-700)]">
-                  The live document is still syncing. Showing a full sample lesson
-                  below in the meantime.
-                </div>
-              ) : null}
-              {showErrorState ? (
-                <div className="mt-4 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5 text-sm text-[color:var(--ink-700)]">
-                  Lesson content is unavailable right now.{" "}
-                  <Link
-                    href={`/lesson/${lesson.slug}`}
-                    className="font-semibold text-[color:var(--accent-700)] underline"
-                  >
-                    Try again
-                  </Link>{" "}
-                  or{" "}
+            </div>
+          ) : null}
+
+          <section className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)] md:p-9">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                Lesson content
+              </p>
+              <div className="flex flex-wrap items-center gap-3">
+                {lesson.publishedUrl ? (
                   <a
                     href={lesson.publishedUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="font-semibold text-[color:var(--accent-700)] underline"
+                    className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--accent-700)]"
                   >
-                    open the source doc
+                    Open source doc
                   </a>
-                  .
-                </div>
-              ) : null}
-              {contentHtml ? (
-                <div className="mt-7">
-                  <LessonContent html={contentHtml} />
-                </div>
-              ) : null}
-            </section>
-          </section>
-
-          <aside className="flex flex-col gap-5">
-            <LessonProgressCard
-              lessonKey={lesson.key}
-              legacyLessonId={lesson.id}
-              lessonTitle={lesson.title}
-            />
-
-            {lessonExample?.plan.length ? (
-              <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-                  Action plan
-                </p>
-                <div className="mt-4 grid gap-3 text-sm text-[color:var(--ink-700)]">
-                  {lessonExample.plan.map((step) => (
-                    <div key={step.title} className="space-y-1">
-                      <p className="font-semibold text-[color:var(--ink-900)]">
-                        {step.title}
-                      </p>
-                      <p>{step.detail}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-
-            <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-                Navigate Module {lesson.module?.order ?? "?"}
-              </p>
-              <div className="mt-4 flex flex-col gap-3 text-sm font-semibold">
-                {previousLesson ? (
-                  <Link
-                    href={buildLessonHref(previousLesson.slug)}
-                    className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 text-[color:var(--ink-900)] transition hover:border-[color:var(--accent-700)]"
-                  >
-                    <span className="flex items-center justify-between gap-3">
-                      <span>
-                        ← Lesson {previousLesson.order}: {previousLesson.title}
-                      </span>
-                      {extraBadge(previousIsExtra)}
-                    </span>
-                  </Link>
-                ) : (
-                  <div className="rounded-2xl border border-dashed border-[color:var(--line-soft)] px-4 py-3 text-xs uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-                    You are at the first lesson
-                  </div>
-                )}
-                {nextLesson ? (
-                  <Link
-                    href={buildLessonHref(nextLesson.slug)}
-                    className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 text-[color:var(--ink-900)] transition hover:border-[color:var(--accent-700)]"
-                  >
-                    <span className="flex items-center justify-between gap-3">
-                      <span>
-                        Lesson {nextLesson.order}: {nextLesson.title} →
-                      </span>
-                      {extraBadge(nextIsExtra)}
-                    </span>
-                  </Link>
-                ) : nextModuleLesson && nextModule ? (
-                  <Link
-                    href={buildLessonHref(nextModuleLesson.slug)}
-                    className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 text-[color:var(--ink-900)] transition hover:border-[color:var(--accent-700)]"
-                  >
-                    <span className="flex items-center justify-between gap-3">
-                      <span>
-                        Next module {nextModule.order}: {nextModule.title} — Lesson{" "}
-                        {nextModuleLesson.order}: {nextModuleLesson.title} →
-                      </span>
-                      {extraBadge(nextModuleIsExtra)}
-                    </span>
-                  </Link>
-                ) : (
-                  <div className="rounded-2xl border border-dashed border-[color:var(--line-soft)] px-4 py-3 text-xs uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-                    You are at the final lesson
-                  </div>
-                )}
+                ) : null}
+                {contentError ? (
+                  <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
+                    Syncing docs
+                  </span>
+                ) : null}
               </div>
             </div>
+            {showFallbackNotice ? (
+              <div className="mt-4 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5 text-sm text-[color:var(--ink-700)]">
+                The live document is still syncing. Showing a full sample lesson
+                below in the meantime.
+              </div>
+            ) : null}
+            {showErrorState ? (
+              <div className="mt-4 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5 text-sm text-[color:var(--ink-700)]">
+                Lesson content is unavailable right now.{" "}
+                <Link
+                  href={`/lesson/${lesson.slug}`}
+                  className="font-semibold text-[color:var(--accent-700)] underline"
+                >
+                  Try again
+                </Link>{" "}
+                or{" "}
+                <a
+                  href={lesson.publishedUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-semibold text-[color:var(--accent-700)] underline"
+                >
+                  open the source doc
+                </a>
+                .
+              </div>
+            ) : null}
+            {contentHtml ? (
+              <div className="mt-7">
+                <LessonContent html={contentHtml} />
+              </div>
+            ) : null}
+          </section>
 
-          </aside>
+          {lessonExample?.plan.length ? (
+            <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                Action plan
+              </p>
+              <div className="mt-4 grid gap-3 text-sm text-[color:var(--ink-700)]">
+                {lessonExample.plan.map((step) => (
+                  <div key={step.title} className="space-y-1">
+                    <p className="font-semibold text-[color:var(--ink-900)]">
+                      {step.title}
+                    </p>
+                    <p>{step.detail}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
-      </main>
+      </NavigatorLayout>
     </div>
   );
 }

@@ -18,6 +18,8 @@ const redis = shouldRateLimit ? Redis.fromEnv() : null;
  * Named rate-limit buckets used across API routes.
  */
 type RateLimitBucket =
+  | "focus-read"
+  | "focus-write"
   | "progress-read"
   | "progress-write"
   | "progress-merge"
@@ -27,6 +29,14 @@ const limiterConfigs: Record<
   RateLimitBucket,
   { prefix: string; limiter: ReturnType<typeof Ratelimit.slidingWindow> }
 > = {
+  "focus-read": {
+    prefix: "ratelimit:focus-read",
+    limiter: Ratelimit.slidingWindow(60, "1 m"),
+  },
+  "focus-write": {
+    prefix: "ratelimit:focus-write",
+    limiter: Ratelimit.slidingWindow(30, "1 m"),
+  },
   "progress-read": {
     prefix: "ratelimit:progress-read",
     limiter: Ratelimit.slidingWindow(60, "1 m"),

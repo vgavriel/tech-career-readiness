@@ -52,6 +52,3 @@ export const normalizeFocusKey = (value: unknown): FocusKey | null => {
 
   return isFocusKey(value) ? value : null;
 };
-
-export const buildFocusHref = (focusKey: FocusKey) =>
-  `/roadmap?${FOCUS_QUERY_PARAM}=${focusKey}`;

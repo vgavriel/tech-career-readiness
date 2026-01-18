@@ -1,15 +1,28 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-import { FOCUS_OPTIONS, buildFocusHref } from "@/lib/focus-options";
-import { writeFocusSelection } from "@/lib/focus-selection";
+import { useFocus } from "@/components/focus-provider";
+import { FOCUS_OPTIONS, type FocusKey } from "@/lib/focus-options";
 
 type FocusPickerProps = {
   className?: string;
+  startHref?: string;
 };
 
-export default function FocusPicker({ className }: FocusPickerProps) {
+export default function FocusPicker({
+  className,
+  startHref = "/lesson/start-to-finish-roadmap",
+}: FocusPickerProps) {
+  const { setFocusKey } = useFocus();
+  const router = useRouter();
+
+  const handleSelect = (focusKey: FocusKey) => {
+    void setFocusKey(focusKey);
+    router.push(startHref);
+  };
+
   return (
     <section
       className={`space-y-5 rounded-[28px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)] md:p-7 ${
@@ -32,19 +45,21 @@ export default function FocusPicker({ className }: FocusPickerProps) {
           href="/roles"
           className="inline-flex items-center gap-2 rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-900)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-900)]"
         >
-          Explore role library
-          <span className="text-[color:var(--ink-700)]">Extra credit</span>
+          Explore Brown role library
+          <span className="text-[color:var(--ink-700)]">
+            Extra credit deep dives
+          </span>
         </Link>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         {FOCUS_OPTIONS.map((option, index) => (
-          <Link
+          <button
             key={option.key}
-            href={buildFocusHref(option.key)}
-            onClick={() => writeFocusSelection(option.key)}
             className="group flex h-full flex-col justify-between rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5 text-left shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] animate-fade"
             style={{ animationDelay: `${index * 70}ms` }}
+            onClick={() => handleSelect(option.key)}
+            type="button"
           >
             <div>
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -62,7 +77,7 @@ export default function FocusPicker({ className }: FocusPickerProps) {
             <span className="mt-4 text-xs font-semibold uppercase tracking-[0.24em] text-[color:var(--accent-700)]">
               Apply this focus
             </span>
-          </Link>
+          </button>
         ))}
       </div>
     </section>

@@ -31,6 +31,7 @@ vi.mock("next-auth/react", () => ({
     sessionTracker.received = session;
     return <div data-testid="session-provider">{children}</div>;
   },
+  useSession: () => ({ data: null, status: "unauthenticated" }),
 }));
 
 describe("Providers", () => {
