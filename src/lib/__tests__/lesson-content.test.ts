@@ -82,7 +82,7 @@ describe("fetchLessonContent", () => {
     expect(fetchMock).toHaveBeenCalledTimes(4);
   });
 
-  it("strips Google Docs banners and injects a styled title", async () => {
+  it("strips Google Docs banners and removes the doc title", async () => {
     process.env.APP_ENV = "preview";
     fetchMock.mockResolvedValueOnce(
       new Response(
@@ -105,9 +105,8 @@ describe("fetchLessonContent", () => {
 
     const result = await fetchLessonContent(lesson);
 
-    expect(result.html).toContain('class="lesson-doc-title"');
-    expect(result.html).toContain(">Tech Recruiting Timeline</h1>");
     expect(result.html).toContain("Body");
+    expect(result.html).not.toContain("Tech Recruiting Timeline");
     expect(result.html).not.toContain("<style");
     expect(result.html).not.toContain('class="doc-title"');
     expect(result.html).not.toContain("Published using Google Docs");

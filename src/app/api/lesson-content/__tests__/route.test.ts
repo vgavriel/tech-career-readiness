@@ -135,9 +135,8 @@ describe("GET /api/lesson-content", () => {
 
     expect(response.status).toBe(200);
     expect(body.cached).toBe(false);
-    expect(body.html).toContain("<h1");
-    expect(body.html).toContain("Lesson</h1>");
-    expect(body.html).toContain('class="lesson-doc-title"');
+    expect(body.html).not.toContain('class="doc-title"');
+    expect(body.html).not.toContain("Lesson</p>");
     expect(body.html).toContain('class="doc-emphasis"');
     expect(body.html).toContain('style="color:red"');
     expect(body.html).toContain("<table");

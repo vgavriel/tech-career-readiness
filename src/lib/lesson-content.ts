@@ -55,11 +55,7 @@ const stripGoogleDocsBanner = (root: Element) => {
     const firstText = normalizeBannerText(children[0].textContent ?? "");
     const secondText = normalizeBannerText(children[1].textContent ?? "");
     if (firstText && firstText === secondText) {
-      if (children[0].classList.contains("lesson-doc-title")) {
-        children[1].remove();
-      } else {
-        children[0].remove();
-      }
+      children[0].remove();
     }
   }
 };
@@ -80,14 +76,9 @@ const findLessonTitleElement = (root: Element) => {
   return null;
 };
 
-const injectLessonTitle = (document: Document, root: Element) => {
+const removeLessonTitle = (root: Element) => {
   const titleElement = findLessonTitleElement(root);
   if (!titleElement) {
-    return;
-  }
-
-  const titleText = normalizeBannerText(titleElement.textContent ?? "");
-  if (!titleText) {
     return;
   }
 
@@ -102,10 +93,6 @@ const injectLessonTitle = (document: Document, root: Element) => {
     parent.remove();
   }
 
-  const title = document.createElement("h1");
-  title.className = "lesson-doc-title";
-  title.textContent = titleText;
-  root.prepend(title);
 };
 
 const extractLessonHtml = (rawHtml: string) => {
@@ -123,7 +110,7 @@ const extractLessonHtml = (rawHtml: string) => {
     return cleanedHtml;
   }
 
-  injectLessonTitle(document, contentRoot);
+  removeLessonTitle(contentRoot);
   stripGoogleDocsBanner(contentRoot);
 
   return contentRoot.innerHTML;
