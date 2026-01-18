@@ -1,3 +1,4 @@
+import { JSDOM, VirtualConsole } from "jsdom";
 import sanitizeHtml from "sanitize-html";
 
 import {
@@ -25,6 +26,94 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
     colgroup: ["class", "style", "span", "width"],
     col: ["class", "style", "span", "width"],
   },
+};
+
+const GOOGLE_DOCS_BANNER_PHRASES = [
+  "Published using Google Docs",
+  "Report abuse",
+  "Updated automatically every 5 minutes",
+];
+
+const normalizeBannerText = (text: string) => text.replace(/\s+/g, " ").trim();
+
+const stripStyleTags = (rawHtml: string) =>
+  rawHtml.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "");
+
+const stripGoogleDocsBanner = (root: Element) => {
+  for (const element of Array.from(root.querySelectorAll("*"))) {
+    const text = normalizeBannerText(element.textContent ?? "");
+    if (
+      text &&
+      GOOGLE_DOCS_BANNER_PHRASES.some((phrase) => text.includes(phrase))
+    ) {
+      element.remove();
+    }
+  }
+
+  const children = Array.from(root.children);
+  if (children.length >= 2) {
+    const firstText = normalizeBannerText(children[0].textContent ?? "");
+    const secondText = normalizeBannerText(children[1].textContent ?? "");
+    if (firstText && firstText === secondText) {
+      children[0].remove();
+    }
+  }
+};
+
+const findLessonTitleElement = (root: Element) => {
+  const titleCandidate = root.querySelector(".doc-title, .title");
+  if (titleCandidate && normalizeBannerText(titleCandidate.textContent ?? "")) {
+    return titleCandidate;
+  }
+
+  const firstChild = Array.from(root.children).find((child) =>
+    normalizeBannerText(child.textContent ?? "")
+  );
+  if (firstChild?.tagName === "H1") {
+    return firstChild;
+  }
+
+  return null;
+};
+
+const removeLessonTitle = (root: Element) => {
+  const titleElement = findLessonTitleElement(root);
+  if (!titleElement) {
+    return;
+  }
+
+  const parent = titleElement.parentElement;
+  titleElement.remove();
+
+  if (
+    parent &&
+    parent !== root &&
+    normalizeBannerText(parent.textContent ?? "") === ""
+  ) {
+    parent.remove();
+  }
+
+};
+
+const extractLessonHtml = (rawHtml: string) => {
+  const cleanedHtml = stripStyleTags(rawHtml);
+  const virtualConsole = new VirtualConsole();
+  const dom = new JSDOM(cleanedHtml, { virtualConsole });
+  const document = dom.window.document;
+
+  const contentRoot =
+    document.querySelector("#contents") ??
+    document.querySelector(".doc-content") ??
+    document.body;
+
+  if (!contentRoot) {
+    return cleanedHtml;
+  }
+
+  removeLessonTitle(contentRoot);
+  stripGoogleDocsBanner(contentRoot);
+
+  return contentRoot.innerHTML;
 };
 
 /**
@@ -128,7 +217,8 @@ export async function fetchLessonContent(
 
   const validatedUrl = assertAllowedLessonUrl(lesson.publishedUrl);
   const rawHtml = await fetchLessonHtml(validatedUrl);
-  const sanitizedHtml = sanitizeHtml(rawHtml, sanitizeOptions);
+  const extractedHtml = extractLessonHtml(rawHtml);
+  const sanitizedHtml = sanitizeHtml(extractedHtml, sanitizeOptions);
   setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
 
   return { lessonId: lesson.id, html: sanitizedHtml, cached: false };

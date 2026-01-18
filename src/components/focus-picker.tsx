@@ -45,7 +45,7 @@ export default function FocusPicker({
           href="/roles"
           className="inline-flex items-center gap-2 rounded-lg border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-900)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-900)]"
         >
-          Explore Brown role library
+          Explore Roles in Tech
           <span className="text-[color:var(--ink-700)]">
             Extra credit deep dives
           </span>

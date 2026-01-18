@@ -240,7 +240,7 @@ export default async function LessonPage({
                   <a
                     href={lesson.publishedUrl}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--accent-700)]"
                   >
                     Open source doc
@@ -272,7 +272,7 @@ export default async function LessonPage({
                 <a
                   href={lesson.publishedUrl}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="font-semibold text-[color:var(--accent-700)] underline"
                 >
                   open the source doc

@@ -81,4 +81,36 @@ describe("fetchLessonContent", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(4);
   });
+
+  it("strips Google Docs banners and removes the doc title", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><head>",
+          '<style type="text/css">.doc-title{color:#a61c00;font-size:28px;}</style>',
+          "</head><body>",
+          '<div id="contents">',
+          '<p class="doc-title">Tech Recruiting Timeline</p>',
+          "<p>Published using Google Docs</p>",
+          "<p>Report abuseLearn more</p>",
+          "<p>Updated automatically every 5 minutes</p>",
+          "<p>Body</p>",
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain("Body");
+    expect(result.html).not.toContain("Tech Recruiting Timeline");
+    expect(result.html).not.toContain("<style");
+    expect(result.html).not.toContain('class="doc-title"');
+    expect(result.html).not.toContain("Published using Google Docs");
+    expect(result.html).not.toContain("Report abuse");
+    expect(result.html).not.toContain("Updated automatically every 5 minutes");
+  });
 });

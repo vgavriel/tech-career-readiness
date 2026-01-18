@@ -29,9 +29,9 @@
   --accent-300: #f7ddb0;
   --line-soft: #dbcbb8;
   --line-strong: var(--brand-taupe);
-  --shadow-soft: 0 20px 50px -40px rgba(78, 54, 41, 0.35);
-  --shadow-card: 0 30px 70px -55px rgba(78, 54, 41, 0.35);
-  --shadow-lift: 0 40px 90px -60px rgba(78, 54, 41, 0.45);
+  --shadow-soft: none;
+  --shadow-card: none;
+  --shadow-lift: none;
 }
 
 html,
@@ -166,6 +166,7 @@ body {
   font-size: 1.35rem;
 }
 
+
 .lesson-content ul,
 .lesson-content ol {
   padding-left: 1.6rem;
@@ -245,6 +246,7 @@ body {
   .lesson-content h3 {
     font-size: 1.2rem;
   }
+
 
   .lesson-content table {
     display: block;

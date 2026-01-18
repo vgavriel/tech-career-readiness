@@ -26,7 +26,6 @@ Note: Core lessons count toward progress. Extra credit lessons are optional and 
 - [Core] Start to Finish: The Roadmap to a Tech Internship or Job
 - [Core] Tech Recruiting Timeline
 - [Extra] 3 Short Stories to Illustrate the Tech Career Exploration Journey at Brown University
-- [Extra] Your Tech Career Exploration Journey (PDF)
 
 ### Module 1: Explore roles (Role Library)
 - [Core] Explore Various Technology Jobs and Fields
