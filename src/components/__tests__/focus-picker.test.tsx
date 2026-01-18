@@ -57,7 +57,7 @@ describe("FocusPicker", () => {
     expect(focusMocks.setFocusKey).toHaveBeenCalledWith("just-starting");
     expect(routerMocks.push).toHaveBeenCalledWith("/lesson/start-here");
     expect(
-      screen.getByRole("link", { name: /explore brown role library/i })
+      screen.getByRole("link", { name: /explore roles in tech/i })
     ).toHaveAttribute("href", "/roles");
   });
 });
