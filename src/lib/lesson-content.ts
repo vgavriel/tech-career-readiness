@@ -1,4 +1,4 @@
-import { JSDOM } from "jsdom";
+import { JSDOM, VirtualConsole } from "jsdom";
 import sanitizeHtml from "sanitize-html";
 
 import {
@@ -11,7 +11,7 @@ import { getEnv } from "@/lib/env";
 const allowedLessonHosts = new Set(["docs.google.com", "drive.google.com"]);
 
 const sanitizeOptions: sanitizeHtml.IOptions = {
-  allowedTags: [...sanitizeHtml.defaults.allowedTags, "style"],
+  allowedTags: sanitizeHtml.defaults.allowedTags,
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,
     "*": ["class", "style"],
@@ -26,7 +26,6 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
     colgroup: ["class", "style", "span", "width"],
     col: ["class", "style", "span", "width"],
   },
-  allowVulnerableTags: true,
 };
 
 const GOOGLE_DOCS_BANNER_PHRASES = [
@@ -37,23 +36,10 @@ const GOOGLE_DOCS_BANNER_PHRASES = [
 
 const normalizeBannerText = (text: string) => text.replace(/\s+/g, " ").trim();
 
+const stripStyleTags = (rawHtml: string) =>
+  rawHtml.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "");
+
 const stripGoogleDocsBanner = (root: Element) => {
-  const elements = Array.from(root.querySelectorAll("*"));
-  const bannerElement = elements.find((element) =>
-    normalizeBannerText(element.textContent ?? "").includes(
-      "Published using Google Docs"
-    )
-  );
-
-  if (bannerElement) {
-    let current: Element | null = bannerElement;
-    while (current) {
-      const previous = current.previousElementSibling;
-      current.remove();
-      current = previous;
-    }
-  }
-
   for (const element of Array.from(root.querySelectorAll("*"))) {
     const text = normalizeBannerText(element.textContent ?? "");
     if (
@@ -69,13 +55,63 @@ const stripGoogleDocsBanner = (root: Element) => {
     const firstText = normalizeBannerText(children[0].textContent ?? "");
     const secondText = normalizeBannerText(children[1].textContent ?? "");
     if (firstText && firstText === secondText) {
-      children[0].remove();
+      if (children[0].classList.contains("lesson-doc-title")) {
+        children[1].remove();
+      } else {
+        children[0].remove();
+      }
     }
   }
 };
 
+const findLessonTitleElement = (root: Element) => {
+  const titleCandidate = root.querySelector(".doc-title, .title");
+  if (titleCandidate && normalizeBannerText(titleCandidate.textContent ?? "")) {
+    return titleCandidate;
+  }
+
+  const firstChild = Array.from(root.children).find((child) =>
+    normalizeBannerText(child.textContent ?? "")
+  );
+  if (firstChild?.tagName === "H1") {
+    return firstChild;
+  }
+
+  return null;
+};
+
+const injectLessonTitle = (document: Document, root: Element) => {
+  const titleElement = findLessonTitleElement(root);
+  if (!titleElement) {
+    return;
+  }
+
+  const titleText = normalizeBannerText(titleElement.textContent ?? "");
+  if (!titleText) {
+    return;
+  }
+
+  const parent = titleElement.parentElement;
+  titleElement.remove();
+
+  if (
+    parent &&
+    parent !== root &&
+    normalizeBannerText(parent.textContent ?? "") === ""
+  ) {
+    parent.remove();
+  }
+
+  const title = document.createElement("h1");
+  title.className = "lesson-doc-title";
+  title.textContent = titleText;
+  root.prepend(title);
+};
+
 const extractLessonHtml = (rawHtml: string) => {
-  const dom = new JSDOM(rawHtml);
+  const cleanedHtml = stripStyleTags(rawHtml);
+  const virtualConsole = new VirtualConsole();
+  const dom = new JSDOM(cleanedHtml, { virtualConsole });
   const document = dom.window.document;
 
   const contentRoot =
@@ -84,17 +120,13 @@ const extractLessonHtml = (rawHtml: string) => {
     document.body;
 
   if (!contentRoot) {
-    return rawHtml;
+    return cleanedHtml;
   }
 
+  injectLessonTitle(document, contentRoot);
   stripGoogleDocsBanner(contentRoot);
 
-  const extraStyles = Array.from(document.querySelectorAll("style"))
-    .filter((style) => !contentRoot.contains(style))
-    .map((style) => style.outerHTML)
-    .join("");
-
-  return `${extraStyles}${contentRoot.innerHTML}`;
+  return contentRoot.innerHTML;
 };
 
 /**

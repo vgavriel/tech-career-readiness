@@ -145,22 +145,31 @@ body {
   margin-top: 1.35rem;
 }
 
-.lesson-content :where(h1, h2, h3, h4) {
+.lesson-content h1,
+.lesson-content h2,
+.lesson-content h3,
+.lesson-content h4 {
   color: var(--ink-900);
   font-family: var(--font-display), var(--font-body), serif;
   letter-spacing: -0.02em;
 }
 
-.lesson-content :where(h1) {
+.lesson-content h1 {
   font-size: 2.2rem;
 }
 
-.lesson-content :where(h2) {
+.lesson-content h2 {
   font-size: 1.75rem;
 }
 
-.lesson-content :where(h3) {
+.lesson-content h3 {
   font-size: 1.35rem;
+}
+
+.lesson-content .lesson-doc-title {
+  color: var(--accent-700);
+  font-size: 2.6rem;
+  line-height: 1.2;
 }
 
 .lesson-content ul,
@@ -241,6 +250,10 @@ body {
 
   .lesson-content h3 {
     font-size: 1.2rem;
+  }
+
+  .lesson-content .lesson-doc-title {
+    font-size: 2.1rem;
   }
 
   .lesson-content table {
