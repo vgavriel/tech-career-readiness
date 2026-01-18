@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import {
   clearGuestProgress,
+  GUEST_PROGRESS_STORAGE_KEY,
   hasGuestProgress,
   readGuestProgress,
   updateGuestProgress,
@@ -55,6 +56,42 @@ describe("guest progress storage", () => {
       const updated = updateGuestProgress("lesson-1", true);
       expect(updated.completed["lesson-1"]).toBe("completed");
       expect(readGuestProgress().completed["lesson-1"]).toBe("completed");
+
+      clearGuestProgress();
+      expect(readGuestProgress()).toEqual({ version: 1, completed: {} });
+    } finally {
+      Object.defineProperty(window, "localStorage", {
+        configurable: true,
+        value: originalStorage,
+      });
+    }
+  });
+
+  it("resets invalid stored progress and ignores blank updates", () => {
+    localStorage.setItem(
+      GUEST_PROGRESS_STORAGE_KEY,
+      JSON.stringify({ version: 0, completed: { "lesson-1": "completed" } })
+    );
+
+    expect(readGuestProgress()).toEqual({ version: 1, completed: {} });
+
+    const updated = updateGuestProgress("   ", true);
+    expect(updated.completed).toEqual({});
+  });
+
+  it("keeps in-memory progress when storage is unavailable", () => {
+    const originalStorage = window.localStorage;
+
+    Object.defineProperty(window, "localStorage", {
+      configurable: true,
+      get: () => {
+        throw new Error("blocked");
+      },
+    });
+
+    try {
+      const updated = updateGuestProgress("lesson-1", true);
+      expect(updated.completed["lesson-1"]).toBe("completed");
 
       clearGuestProgress();
       expect(readGuestProgress()).toEqual({ version: 1, completed: {} });

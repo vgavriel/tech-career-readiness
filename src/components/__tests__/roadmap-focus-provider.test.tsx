@@ -3,7 +3,10 @@ import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import RoadmapFocusModuleList from "@/components/roadmap-focus-module-list";
-import { RoadmapFocusProvider } from "@/components/roadmap-focus-provider";
+import {
+  RoadmapFocusProvider,
+  useRoadmapFocus,
+} from "@/components/roadmap-focus-provider";
 import RoadmapFocusSummary from "@/components/roadmap-focus-summary";
 import type { RoadmapModule } from "@/components/roadmap-module-list";
 
@@ -177,5 +180,44 @@ describe("RoadmapFocusProvider", () => {
     expect(
       screen.queryByRole("heading", { name: /offers/i })
     ).not.toBeInTheDocument();
+  });
+
+  it("returns null focus modules when no selection is active", () => {
+    selectionMocks.readFocusSelection.mockReturnValue({
+      version: 1,
+      focusKey: null,
+    });
+
+    const FocusConsumer = () => {
+      const { focusKey, focusModules } = useRoadmapFocus();
+      return (
+        <div data-testid="focus-state">
+          {focusKey ?? "none"}-{focusModules ? focusModules.length : 0}
+        </div>
+      );
+    };
+
+    render(
+      <RoadmapFocusProvider modules={modules}>
+        <FocusConsumer />
+      </RoadmapFocusProvider>
+    );
+
+    expect(screen.getByTestId("focus-state")).toHaveTextContent("none-0");
+  });
+
+  it("throws when useRoadmapFocus is used outside the provider", () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const BrokenConsumer = () => {
+      useRoadmapFocus();
+      return null;
+    };
+
+    expect(() => render(<BrokenConsumer />)).toThrow(
+      "useRoadmapFocus must be used within RoadmapFocusProvider."
+    );
+
+    consoleError.mockRestore();
   });
 });
