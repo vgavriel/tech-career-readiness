@@ -37,7 +37,6 @@ export const ROLE_DEEP_DIVE_LESSON_SLUGS = [
 
 const EXTRA_CREDIT_LESSON_SLUGS = [
   "tech-career-stories",
-  "tech-career-exploration-journey",
   "internship-success-handbook",
   "internship-success-checklist",
   ...ROLE_DEEP_DIVE_LESSON_SLUGS,

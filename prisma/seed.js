@@ -45,11 +45,6 @@ const modules = [
         publishedUrl: "https://docs.google.com/document/d/e/2PACX-1vTyuE0viX0FlrN-9-sBWRLXlQ8L_igcRe6Kp3K9HuXCRkPmcQPQzkZUvQ_OuuaXh3UV17cXegspmMBZ/pub",
         order: 3,
       },
-      {
-        title: "Your Tech Career Exploration Journey",
-        slug: "tech-career-exploration-journey",
-        order: 4,
-      },
     ],
   },
   {
@@ -111,7 +106,7 @@ const modules = [
       {
         title: "Learn about Computer Vision Engineering",
         slug: "learn-about-computer-vision-engineering",
-        publishedUrl: "https://docs.google.com/document/d/e/2PACX-1vRJkJKmxapmMtuKMjsucqetO2Ecm7w5zcmA78pO64AxKyrQneGPkcOVUY6IwT9EWc3KF9xaaA2gep4L/pub",
+        publishedUrl: "https://docs.google.com/document/d/e/2PACX-1vTcAFO4BF0pYKT4NRm4zdbYXv1jTRZOoggAvaTUMemAxNDXHtj-jhqWsr4WA6Zwo6f-Zr01C9vPTEAa/pub",
         order: 9,
       },
       {
