@@ -2,40 +2,7 @@ import type { NextConfig } from "next";
 
 const isProduction = process.env.NODE_ENV === "production";
 
-/**
- * Build the Content Security Policy header value from configured directives.
- */
-const buildContentSecurityPolicy = () => {
-  const scriptSrc = ["'self'", "'unsafe-inline'"];
-  const connectSrc = ["'self'"];
-
-  if (!isProduction) {
-    scriptSrc.push("'unsafe-eval'");
-    connectSrc.push("ws:", "wss:");
-  }
-
-  const directives = [
-    "default-src 'self'",
-    "base-uri 'self'",
-    "form-action 'self'",
-    "frame-ancestors 'none'",
-    "object-src 'none'",
-    "img-src 'self' data: https:",
-    "style-src 'self' 'unsafe-inline'",
-    "font-src 'self' data: https: blob:",
-    `script-src ${scriptSrc.join(" ")}`,
-    `connect-src ${connectSrc.join(" ")}`,
-    "upgrade-insecure-requests",
-  ];
-
-  return directives.join("; ");
-};
-
 const securityHeaders = [
-  {
-    key: "Content-Security-Policy",
-    value: buildContentSecurityPolicy(),
-  },
   {
     key: "X-Content-Type-Options",
     value: "nosniff",

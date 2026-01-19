@@ -145,6 +145,7 @@ export default async function AdminAnalyticsPage() {
                 const progressPercent = totalLessons
                   ? Math.round((completedCount / totalLessons) * 100)
                   : 0;
+                const progressValue = Math.min(100, Math.max(0, progressPercent));
 
                 return (
                   <div
@@ -168,11 +169,30 @@ export default async function AdminAnalyticsPage() {
                           <span>Progress</span>
                           <span>{progressPercent}%</span>
                         </div>
-                        <div className="h-2 w-full rounded-full bg-[color:var(--wash-200)]">
-                          <div
-                            className="h-2 rounded-full bg-[color:var(--accent-500)]"
-                            style={{ width: `${progressPercent}%` }}
-                          />
+                        <div className="h-2 w-full">
+                          <svg
+                            className="h-2 w-full"
+                            viewBox="0 0 100 8"
+                            preserveAspectRatio="none"
+                            aria-hidden="true"
+                          >
+                            <rect
+                              x="0"
+                              y="0"
+                              width="100"
+                              height="8"
+                              rx="4"
+                              fill="var(--wash-200)"
+                            />
+                            <rect
+                              x="0"
+                              y="0"
+                              width={progressValue}
+                              height="8"
+                              rx="4"
+                              fill="var(--accent-500)"
+                            />
+                          </svg>
                         </div>
                         <p className="text-xs text-[color:var(--ink-500)]">
                           {completedCount} of {totalLessons} lessons complete

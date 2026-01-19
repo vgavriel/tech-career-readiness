@@ -3,17 +3,15 @@
 import { useProgress } from "@/components/progress-provider";
 
 type LessonProgressToggleProps = {
-  lessonKey: string;
-  legacyLessonId?: string;
+  lessonSlug: string;
 };
 
 export default function LessonProgressToggle({
-  lessonKey,
-  legacyLessonId,
+  lessonSlug,
 }: LessonProgressToggleProps) {
   const { isLessonCompleted, isReady, isMerging, setLessonCompletion } =
     useProgress();
-  const completed = isReady && isLessonCompleted(lessonKey, legacyLessonId);
+  const completed = isReady && isLessonCompleted(lessonSlug);
   const disabled = !isReady || isMerging;
   const label = !isReady
     ? "Loading..."
@@ -30,7 +28,7 @@ export default function LessonProgressToggle({
           : "bg-[color:var(--accent-700)] text-[color:var(--wash-0)] hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
       }`}
       disabled={disabled}
-      onClick={() => setLessonCompletion(lessonKey, !completed)}
+      onClick={() => setLessonCompletion(lessonSlug, !completed)}
       aria-pressed={completed}
       aria-label={label}
     >

@@ -119,7 +119,7 @@ describe("GET /api/lesson-content", () => {
       new Response(
         [
           '<p class="doc-title">Lesson</p>',
-          '<p class="doc-emphasis" style="color:red">Subtitle</p>',
+          '<p class="doc-emphasis" style="font-weight:700;font-style:italic;text-decoration:underline;color:#ff0000">Subtitle</p>',
           '<table class="doc-table" style="width:100%">',
           '<tr><th colspan="2" style="text-align:left">Header</th></tr>',
           "</table>",
@@ -137,8 +137,11 @@ describe("GET /api/lesson-content", () => {
     expect(body.cached).toBe(false);
     expect(body.html).not.toContain('class="doc-title"');
     expect(body.html).not.toContain("Lesson</p>");
-    expect(body.html).toContain('class="doc-emphasis"');
-    expect(body.html).toContain('style="color:red"');
+    expect(body.html).toContain('class="doc-emphasis');
+    expect(body.html).toContain("doc-bold");
+    expect(body.html).toContain("doc-italic");
+    expect(body.html).toContain("doc-underline");
+    expect(body.html).not.toContain("style=");
     expect(body.html).toContain("<table");
     expect(body.html).toContain('colspan="2"');
     expect(body.html).not.toContain("<script");

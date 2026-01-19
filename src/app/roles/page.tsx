@@ -26,7 +26,6 @@ export default async function RolesPage() {
     },
     select: {
       id: true,
-      key: true,
       slug: true,
       title: true,
     },

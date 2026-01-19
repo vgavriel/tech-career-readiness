@@ -20,7 +20,6 @@ const getModule = async () => import("@/lib/lesson-slug");
 
 const baseLesson = {
   id: "lesson-1",
-  key: "lesson-1",
   title: "Lesson 1",
   slug: "lesson-1",
   order: 1,

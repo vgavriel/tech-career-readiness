@@ -10,21 +10,171 @@ import { getEnv } from "@/lib/env";
 
 const allowedLessonHosts = new Set(["docs.google.com", "drive.google.com"]);
 
+const LESSON_CONTENT_FETCH_TIMEOUT_MS = 8000;
+
+const extractTextStyleClasses = (styleValue: string) => {
+  const classes = new Set<string>();
+  const normalized = styleValue.toLowerCase();
+  const fontWeightMatch = normalized.match(/font-weight\s*:\s*([^;]+)/);
+  if (fontWeightMatch) {
+    const weight = fontWeightMatch[1].trim();
+    const numeric = Number.parseInt(weight, 10);
+    if (weight === "bold" || (!Number.isNaN(numeric) && numeric >= 600)) {
+      classes.add("doc-bold");
+    }
+  }
+
+  const fontStyleMatch = normalized.match(/font-style\s*:\s*([^;]+)/);
+  if (fontStyleMatch && /(italic|oblique)/.test(fontStyleMatch[1])) {
+    classes.add("doc-italic");
+  }
+
+  const textDecorationMatch = normalized.match(
+    /text-decoration(?:-line)?\s*:\s*([^;]+)/
+  );
+  if (textDecorationMatch && textDecorationMatch[1].includes("underline")) {
+    classes.add("doc-underline");
+  }
+
+  return Array.from(classes);
+};
+
+const mergeClassNames = (existing: string | undefined, additions: string[]) => {
+  if (additions.length === 0) {
+    return existing;
+  }
+
+  const merged = new Set<string>(
+    (existing ?? "")
+      .split(/\s+/)
+      .map((value) => value.trim())
+      .filter(Boolean)
+  );
+  for (const addition of additions) {
+    merged.add(addition);
+  }
+
+  return Array.from(merged).join(" ");
+};
+
+const stripInlineStyle = (attribs: Record<string, string | undefined>) => {
+  if (!attribs.style) {
+    return attribs;
+  }
+
+  const classes = extractTextStyleClasses(attribs.style);
+  const nextAttribs = { ...attribs };
+  const mergedClass = mergeClassNames(nextAttribs.class, classes);
+  if (mergedClass) {
+    nextAttribs.class = mergedClass;
+  }
+  delete nextAttribs.style;
+
+  return nextAttribs;
+};
+
+const extractDocClassStyleMap = (document: Document) => {
+  const styleNodes = Array.from(document.querySelectorAll("style"));
+  const map = new Map<string, Set<string>>();
+  if (styleNodes.length === 0) {
+    return map;
+  }
+
+  const cssText = styleNodes
+    .map((node) => node.textContent ?? "")
+    .join("\n");
+  const ruleRegex = /([^{}]+)\{([^}]+)\}/g;
+  let match: RegExpExecArray | null;
+  while ((match = ruleRegex.exec(cssText)) !== null) {
+    const selectors = match[1].split(",");
+    const declarations = match[2];
+    const docClasses = extractTextStyleClasses(declarations);
+    if (docClasses.length === 0) {
+      continue;
+    }
+
+    for (const selector of selectors) {
+      const classMatches = selector.matchAll(/\.([a-zA-Z0-9_-]+)/g);
+      for (const classMatch of classMatches) {
+        const className = classMatch[1];
+        let existing = map.get(className);
+        if (!existing) {
+          existing = new Set<string>();
+          map.set(className, existing);
+        }
+        for (const docClass of docClasses) {
+          existing.add(docClass);
+        }
+      }
+    }
+  }
+
+  styleNodes.forEach((node) => node.remove());
+  return map;
+};
+
+const applyDocClassStyles = (
+  root: Element,
+  classStyleMap: Map<string, Set<string>>
+) => {
+  if (classStyleMap.size === 0) {
+    return;
+  }
+
+  const elements = root.matches("[class]")
+    ? [root, ...Array.from(root.querySelectorAll("[class]"))]
+    : Array.from(root.querySelectorAll("[class]"));
+
+  for (const element of elements) {
+    const additions = new Set<string>();
+    for (const className of Array.from(element.classList)) {
+      const mapped = classStyleMap.get(className);
+      if (mapped) {
+        for (const docClass of mapped) {
+          additions.add(docClass);
+        }
+      }
+    }
+    for (const docClass of additions) {
+      element.classList.add(docClass);
+    }
+  }
+};
+
 const sanitizeOptions: sanitizeHtml.IOptions = {
   allowedTags: sanitizeHtml.defaults.allowedTags,
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,
-    "*": ["class", "style"],
+    "*": ["class"],
     a: ["href", "name", "target", "rel"],
-    table: ["class", "style", "border", "cellpadding", "cellspacing", "width"],
-    thead: ["class", "style"],
-    tbody: ["class", "style"],
-    tfoot: ["class", "style"],
-    tr: ["class", "style"],
-    th: ["class", "style", "colspan", "rowspan", "scope", "width", "height"],
-    td: ["class", "style", "colspan", "rowspan", "width", "height"],
-    colgroup: ["class", "style", "span", "width"],
-    col: ["class", "style", "span", "width"],
+    table: ["class", "border", "cellpadding", "cellspacing", "width"],
+    thead: ["class"],
+    tbody: ["class"],
+    tfoot: ["class"],
+    tr: ["class"],
+    th: ["class", "colspan", "rowspan", "scope", "width", "height"],
+    td: ["class", "colspan", "rowspan", "width", "height"],
+    colgroup: ["class", "span", "width"],
+    col: ["class", "span", "width"],
+  },
+  transformTags: {
+    a: (tagName, attribs) => {
+      const nextAttribs = { ...attribs, target: "_blank" };
+      const rel = new Set(
+        (nextAttribs.rel ?? "")
+          .split(/\s+/)
+          .map((value) => value.trim())
+          .filter(Boolean)
+      );
+      rel.add("noopener");
+      rel.add("noreferrer");
+      nextAttribs.rel = Array.from(rel).join(" ");
+      return { tagName, attribs: nextAttribs };
+    },
+    "*": (tagName, attribs) => ({
+      tagName,
+      attribs: stripInlineStyle(attribs),
+    }),
   },
 };
 
@@ -35,9 +185,6 @@ const GOOGLE_DOCS_BANNER_PHRASES = [
 ];
 
 const normalizeBannerText = (text: string) => text.replace(/\s+/g, " ").trim();
-
-const stripStyleTags = (rawHtml: string) =>
-  rawHtml.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "");
 
 const stripGoogleDocsBanner = (root: Element) => {
   for (const element of Array.from(root.querySelectorAll("*"))) {
@@ -96,10 +243,10 @@ const removeLessonTitle = (root: Element) => {
 };
 
 const extractLessonHtml = (rawHtml: string) => {
-  const cleanedHtml = stripStyleTags(rawHtml);
   const virtualConsole = new VirtualConsole();
-  const dom = new JSDOM(cleanedHtml, { virtualConsole });
+  const dom = new JSDOM(rawHtml, { virtualConsole });
   const document = dom.window.document;
+  const classStyleMap = extractDocClassStyleMap(document);
 
   const contentRoot =
     document.querySelector("#contents") ??
@@ -107,11 +254,12 @@ const extractLessonHtml = (rawHtml: string) => {
     document.body;
 
   if (!contentRoot) {
-    return cleanedHtml;
+    return rawHtml;
   }
 
   removeLessonTitle(contentRoot);
   stripGoogleDocsBanner(contentRoot);
+  applyDocClassStyles(contentRoot, classStyleMap);
 
   return contentRoot.innerHTML;
 };
@@ -133,6 +281,8 @@ export type LessonContentResult = {
   cached: boolean;
 };
 
+const lessonContentInFlight = new Map<string, Promise<LessonContentResult>>();
+
 /**
  * Validate and return the lesson URL, enforcing the allowlist.
  */
@@ -152,6 +302,21 @@ const assertAllowedLessonUrl = (publishedUrl: string) => {
   return url;
 };
 
+const fetchWithTimeout = async (
+  input: string,
+  init: RequestInit,
+  timeoutMs: number
+) => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(input, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
+};
+
 /**
  * Fetch published lesson HTML, following safe redirects up to the limit.
  */
@@ -159,10 +324,14 @@ const fetchLessonHtml = async (url: URL, maxRedirects = 3) => {
   let currentUrl = url;
 
   for (let attempt = 0; attempt <= maxRedirects; attempt += 1) {
-    const response = await fetch(currentUrl.toString(), {
-      cache: "no-store",
-      redirect: "manual",
-    });
+    const response = await fetchWithTimeout(
+      currentUrl.toString(),
+      {
+        cache: "no-store",
+        redirect: "manual",
+      },
+      LESSON_CONTENT_FETCH_TIMEOUT_MS
+    );
 
     if (
       response.status >= 300 &&
@@ -208,18 +377,46 @@ export async function fetchLessonContent(
     }
   }
 
-  const mockHtml = env.LESSON_CONTENT_MOCK_HTML;
-  if (mockHtml && (env.isLocal || env.isTest)) {
-    const sanitizedHtml = sanitizeHtml(mockHtml, sanitizeOptions);
-    setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
-    return { lessonId: lesson.id, html: sanitizedHtml, cached: false };
+  if (!bypassCache) {
+    const inFlight = lessonContentInFlight.get(lesson.id);
+    if (inFlight) {
+      return inFlight;
+    }
   }
 
-  const validatedUrl = assertAllowedLessonUrl(lesson.publishedUrl);
-  const rawHtml = await fetchLessonHtml(validatedUrl);
-  const extractedHtml = extractLessonHtml(rawHtml);
-  const sanitizedHtml = sanitizeHtml(extractedHtml, sanitizeOptions);
-  setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
+  const fetchPromise = (async () => {
+    const mockHtml = env.LESSON_CONTENT_MOCK_HTML;
+    if (mockHtml && (env.isLocal || env.isTest)) {
+      const sanitizedHtml = sanitizeHtml(mockHtml, sanitizeOptions);
+      setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
+      return { lessonId: lesson.id, html: sanitizedHtml, cached: false };
+    }
 
-  return { lessonId: lesson.id, html: sanitizedHtml, cached: false };
+    const validatedUrl = assertAllowedLessonUrl(lesson.publishedUrl);
+    const rawHtml = await fetchLessonHtml(validatedUrl);
+    const extractedHtml = extractLessonHtml(rawHtml);
+    const sanitizedHtml = sanitizeHtml(extractedHtml, sanitizeOptions);
+    setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
+
+    return { lessonId: lesson.id, html: sanitizedHtml, cached: false };
+  })();
+
+  if (!bypassCache) {
+    lessonContentInFlight.set(lesson.id, fetchPromise);
+  }
+
+  try {
+    return await fetchPromise;
+  } catch (error) {
+    console.error("Failed to fetch lesson content.", {
+      lessonId: lesson.id,
+      publishedUrl: lesson.publishedUrl,
+      error,
+    });
+    throw error;
+  } finally {
+    if (!bypassCache) {
+      lessonContentInFlight.delete(lesson.id);
+    }
+  }
 }

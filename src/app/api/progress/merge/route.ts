@@ -1,4 +1,4 @@
-import { LessonProgressAction, Prisma } from "@prisma/client";
+import { LessonProgressAction } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -13,7 +13,7 @@ export const runtime = "nodejs";
 
 const progressMergeSchema = z
   .object({
-    entries: z.array(z.unknown()).min(1).max(200),
+    lessonSlugs: z.array(z.string()).min(1).max(200),
   })
   .strict();
 
@@ -48,55 +48,26 @@ export async function POST(request: Request) {
     return parsedBody.error;
   }
 
-  const lessonKeySet = new Set<string>();
-  const lessonIdSet = new Set<string>();
+  const lessonSlugs = Array.from(
+    new Set(parsedBody.data.lessonSlugs.map((slug) => slug.trim()).filter(Boolean))
+  );
 
-  parsedBody.data.entries.forEach((entry) => {
-    if (!entry || typeof entry !== "object") {
-      return;
-    }
-
-    const payload = entry as { lessonKey?: unknown; lessonId?: unknown };
-    const lessonKey =
-      typeof payload.lessonKey === "string" ? payload.lessonKey.trim() : "";
-    if (lessonKey) {
-      lessonKeySet.add(lessonKey);
-    }
-
-    const lessonId =
-      typeof payload.lessonId === "string" ? payload.lessonId.trim() : "";
-    if (lessonId) {
-      lessonIdSet.add(lessonId);
-    }
-  });
-
-  const lessonKeys = Array.from(lessonKeySet);
-  const lessonIds = Array.from(lessonIdSet);
-
-  if (lessonKeys.length === 0 && lessonIds.length === 0) {
+  if (lessonSlugs.length === 0) {
     return NextResponse.json({ error: "No valid lessons to merge." }, { status: 400 });
-  }
-
-  const lessonFilters: Prisma.LessonWhereInput[] = [];
-  if (lessonKeys.length > 0) {
-    lessonFilters.push({ key: { in: lessonKeys } });
-  }
-  if (lessonIds.length > 0) {
-    lessonFilters.push({ id: { in: lessonIds } });
   }
 
   const lessons = await prisma.lesson.findMany({
     where: {
       isArchived: false,
-      OR: lessonFilters,
+      slug: { in: lessonSlugs },
     },
-    select: { id: true, key: true },
+    select: { id: true, slug: true },
   });
 
   const validLessonIds = lessons.map((lesson) => lesson.id);
-  const validLessonKeys = lessons.map((lesson) => lesson.key);
+  const validLessonSlugs = lessons.map((lesson) => lesson.slug);
   const validLessonIdSet = new Set(validLessonIds);
-  const validLessonKeySet = new Set(validLessonKeys);
+  const validLessonSlugSet = new Set(validLessonSlugs);
 
   if (validLessonIds.length === 0) {
     return NextResponse.json({ error: "No valid lessons to merge." }, { status: 400 });
@@ -134,16 +105,12 @@ export async function POST(request: Request) {
     ])
   );
 
-  const skippedLessonKeys = lessonKeys.filter(
-    (lessonKey) => !validLessonKeySet.has(lessonKey)
-  );
-  const skippedLessonIds = lessonIds.filter(
-    (lessonId) => !validLessonIdSet.has(lessonId)
+  const skippedLessonSlugs = lessonSlugs.filter(
+    (lessonSlug) => !validLessonSlugSet.has(lessonSlug)
   );
 
   return NextResponse.json({
-    mergedLessonKeys: validLessonKeys,
-    skippedLessonKeys,
-    skippedLessonIds,
+    mergedLessonSlugs: validLessonSlugs,
+    skippedLessonSlugs,
   });
 }

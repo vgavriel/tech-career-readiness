@@ -57,7 +57,6 @@ const modules: RoadmapModule[] = [
     lessons: [
       {
         id: "lesson-start",
-        key: "lesson-start",
         slug: "start-here",
         title: "Start here lesson",
         order: 1,
@@ -74,7 +73,6 @@ const modules: RoadmapModule[] = [
     lessons: [
       {
         id: "lesson-interviews",
-        key: "lesson-interviews",
         slug: "interviews",
         title: "Interview prep",
         order: 1,
@@ -91,7 +89,6 @@ const modules: RoadmapModule[] = [
     lessons: [
       {
         id: "lesson-offers",
-        key: "lesson-offers",
         slug: "offer",
         title: "Offer review",
         order: 1,
@@ -108,7 +105,6 @@ const modules: RoadmapModule[] = [
     lessons: [
       {
         id: "lesson-internship",
-        key: "lesson-internship",
         slug: "internship",
         title: "Internship prep",
         order: 1,
@@ -126,7 +122,7 @@ describe("RoadmapFocusProvider", () => {
     selectionMocks.subscribeToFocusSelection.mockImplementation(() => () => {});
     progressMocks.useProgress.mockReset();
     progressMocks.useProgress.mockReturnValue({
-      completedLessonKeys: [],
+      completedLessonSlugs: [],
       isAuthenticated: true,
       isMerging: false,
       isReady: true,

@@ -14,7 +14,6 @@ import { isExtraCreditLesson } from "@/lib/lesson-classification";
  */
 type OrderedLesson = {
   id: string;
-  key: string;
   slug: string;
   title: string;
   order: number;
@@ -35,7 +34,6 @@ type ProgressSummary = {
   totalLessons: number;
   completedCount: number;
   progressPercent: number;
-  progressDegrees: number;
   continueLesson?: OrderedLesson;
   firstLesson?: OrderedLesson;
   allComplete: boolean;
@@ -49,7 +47,6 @@ const buildOrderedLessons = (modules: RoadmapModule[]): OrderedLesson[] =>
   modules.flatMap((module) =>
     module.lessons.map((lesson) => ({
       id: lesson.id,
-      key: lesson.key,
       slug: lesson.slug,
       title: lesson.title,
       order: lesson.order,
@@ -65,18 +62,16 @@ const buildProgressSummaryFromLessons = (
   const totalLessons = orderedLessons.length;
   const completedCount = orderedLessons.reduce(
     (count, lesson) =>
-      count +
-      (completedSet.has(lesson.key) || completedSet.has(lesson.id) ? 1 : 0),
+      count + (completedSet.has(lesson.slug) ? 1 : 0),
     0
   );
   const continueLesson = orderedLessons.find(
-    (lesson) => !completedSet.has(lesson.key) && !completedSet.has(lesson.id)
+    (lesson) => !completedSet.has(lesson.slug)
   );
   const firstLesson = orderedLessons[0];
   const allComplete = isReady && totalLessons > 0 && completedCount >= totalLessons;
   const progressPercent =
     totalLessons === 0 ? 0 : Math.round((completedCount / totalLessons) * 100);
-  const progressDegrees = Math.min(100, Math.max(0, progressPercent)) * 3.6;
   const progressLabel = isReady
     ? `${completedCount} of ${totalLessons} complete`
     : "Loading progress...";
@@ -86,7 +81,6 @@ const buildProgressSummaryFromLessons = (
     totalLessons,
     completedCount,
     progressPercent,
-    progressDegrees,
     continueLesson,
     firstLesson,
     allComplete,
@@ -121,10 +115,10 @@ export default function RoadmapProgressSummary({
   focusModules,
   focusKey,
 }: RoadmapProgressSummaryProps) {
-  const { completedLessonKeys, isAuthenticated, isMerging, isReady } = useProgress();
+  const { completedLessonSlugs, isAuthenticated, isMerging, isReady } = useProgress();
   const completedSet = useMemo(
-    () => new Set(completedLessonKeys),
-    [completedLessonKeys]
+    () => new Set(completedLessonSlugs),
+    [completedLessonSlugs]
   );
   const orderedLessons = useMemo(() => buildOrderedLessons(modules), [modules]);
   const { coreLessons, extraLessons } = useMemo(
@@ -162,6 +156,10 @@ export default function RoadmapProgressSummary({
     ? FOCUS_OPTIONS.find((option) => option.key === focusKey) ?? null
     : null;
   const activeSummary = focusSummary ?? coreSummary;
+  const progressValue = Math.min(100, Math.max(0, coreSummary.progressPercent));
+  const ringRadius = 42;
+  const ringCircumference = 2 * Math.PI * ringRadius;
+  const ringOffset = ringCircumference * (1 - progressValue / 100);
 
   const primaryLesson =
     activeSummary.continueLesson ?? activeSummary.firstLesson;
@@ -181,16 +179,38 @@ export default function RoadmapProgressSummary({
     <div className="flex flex-col gap-6 rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)]">
       <div className="flex flex-wrap items-center gap-4">
         <div
-          className="relative h-24 w-24 rounded-full p-1.5"
-          style={{
-            background: `conic-gradient(var(--accent-500) ${coreSummary.progressDegrees}deg, var(--wash-200) 0deg)`,
-          }}
+          className="relative h-24 w-24"
           role="progressbar"
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-valuenow={coreSummary.progressPercent}
+          aria-valuenow={progressValue}
         >
-          <div className="flex h-full w-full items-center justify-center rounded-full bg-[color:var(--wash-0)] text-sm font-semibold text-[color:var(--ink-900)]">
+          <svg
+            className="h-full w-full -rotate-90"
+            viewBox="0 0 100 100"
+            aria-hidden="true"
+          >
+            <circle
+              cx="50"
+              cy="50"
+              r={ringRadius}
+              fill="none"
+              stroke="var(--wash-200)"
+              strokeWidth={8}
+            />
+            <circle
+              cx="50"
+              cy="50"
+              r={ringRadius}
+              fill="none"
+              stroke="var(--accent-500)"
+              strokeWidth={8}
+              strokeDasharray={ringCircumference}
+              strokeDashoffset={ringOffset}
+              strokeLinecap="round"
+            />
+          </svg>
+          <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[color:var(--wash-0)] text-sm font-semibold text-[color:var(--ink-900)]">
             {coreSummary.progressPercent}%
           </div>
         </div>

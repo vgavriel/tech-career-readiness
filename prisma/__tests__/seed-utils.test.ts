@@ -2,27 +2,27 @@ import { describe, expect, it } from "vitest";
 
 import seedUtils from "../seed-utils";
 
-const { resolveExistingRecord, getLessonKey, collectLessonKeys } = seedUtils;
+const { resolveExistingRecord, getLessonSlug, collectLessonSlugs } = seedUtils;
 
 describe("seed utils", () => {
-  it("prefers key matches even when an order match exists", () => {
-    const keyRecord = { id: "key" };
+  it("prefers slug matches even when an order match exists", () => {
+    const slugRecord = { id: "slug" };
     const orderRecord = { id: "order" };
 
     const result = resolveExistingRecord({
-      recordByKey: keyRecord,
+      recordBySlug: slugRecord,
       recordByOrder: orderRecord,
     });
 
-    expect(result.record).toBe(keyRecord);
-    expect(result.reason).toBe("key");
+    expect(result.record).toBe(slugRecord);
+    expect(result.reason).toBe("slug");
   });
 
-  it("falls back to order when key matches are missing", () => {
+  it("falls back to order when slug matches are missing", () => {
     const orderRecord = { id: "order" };
 
     const result = resolveExistingRecord({
-      recordByKey: null,
+      recordBySlug: null,
       recordByOrder: orderRecord,
     });
 
@@ -32,7 +32,7 @@ describe("seed utils", () => {
 
   it("returns null when no match is found", () => {
     const result = resolveExistingRecord({
-      recordByKey: null,
+      recordBySlug: null,
       recordByOrder: null,
     });
 
@@ -40,22 +40,16 @@ describe("seed utils", () => {
     expect(result.reason).toBe("create");
   });
 
-  it("derives lesson keys from explicit keys first", () => {
-    expect(getLessonKey({ key: "lesson-key", slug: "lesson-slug" })).toBe(
-      "lesson-key"
-    );
+  it("derives lesson slugs from the payload", () => {
+    expect(getLessonSlug({ slug: "lesson-slug" })).toBe("lesson-slug");
   });
 
-  it("derives lesson keys from slugs when keys are missing", () => {
-    expect(getLessonKey({ slug: "lesson-slug" })).toBe("lesson-slug");
-  });
-
-  it("collects lesson keys in order", () => {
-    const keys = collectLessonKeys([
-      { key: "lesson-a", slug: "lesson-a" },
+  it("collects lesson slugs in order", () => {
+    const slugs = collectLessonSlugs([
+      { slug: "lesson-a" },
       { slug: "lesson-b" },
     ]);
 
-    expect(keys).toEqual(["lesson-a", "lesson-b"]);
+    expect(slugs).toEqual(["lesson-a", "lesson-b"]);
   });
 });

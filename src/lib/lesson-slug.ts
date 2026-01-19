@@ -7,7 +7,6 @@ import { prisma } from "@/lib/prisma";
  */
 const lessonSelect = {
   id: true,
-  key: true,
   title: true,
   slug: true,
   order: true,

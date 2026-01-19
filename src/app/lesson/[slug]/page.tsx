@@ -71,15 +71,14 @@ export default async function LessonPage({
       title: true,
       description: true,
       order: true,
-      lessons: {
-        where: { isArchived: false },
-        orderBy: { order: "asc" },
-        select: {
-          id: true,
-          key: true,
-          slug: true,
-          title: true,
-          order: true,
+        lessons: {
+          where: { isArchived: false },
+          orderBy: { order: "asc" },
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            order: true,
           estimatedMinutes: true,
         },
       },
@@ -122,7 +121,6 @@ export default async function LessonPage({
         navigator={
           <LessonNavigator
             modules={modules}
-            currentLessonKey={lesson.key}
             currentLessonSlug={lesson.slug}
             currentModuleKey={lesson.module?.key ?? null}
           />
@@ -157,8 +155,7 @@ export default async function LessonPage({
                 ) : null}
               </div>
               <LessonProgressToggle
-                lessonKey={lesson.key}
-                legacyLessonId={lesson.id}
+                lessonSlug={lesson.slug}
               />
             </div>
             <h1 className="font-display mt-5 text-3xl text-[color:var(--ink-900)] md:text-4xl lg:text-5xl">

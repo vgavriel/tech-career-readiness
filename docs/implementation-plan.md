@@ -99,74 +99,57 @@ Source of truth for modules, focuses, progress categories, and gamification:
 ### Models
 - User
   - id (string or uuid)
-  - email (unique)
+  - email (unique, lowercase/citext)
   - name
   - image
   - focusKey (nullable string, current focus selection)
+  - isAdmin
   - createdAt
-  - updatedAt
-
-- Cohort (future readiness)
-  - id
-  - name
-  - slug (unique)
-  - isDefault (boolean)
-  - createdAt
-  - updatedAt
 
 - Module
   - id
-  - key (unique, stable internal identifier)
-  - slug (unique, user-facing)
+  - key (unique, stable identifier)
   - title
   - order (int)
   - description (string, optional)
-  - cohortId (optional)
-  - createdAt
-  - updatedAt
 
 - Lesson
   - id
-  - key (unique, stable internal identifier)
   - moduleId (FK)
   - title
-  - slug (unique, stable)
+  - slug (unique, stable + user-facing)
   - order (int)
   - publishedUrl (string)
   - estimatedMinutes (int, optional)
   - objectivesMarkdown (string, optional)
-  - cohortId (optional)
   - isArchived (boolean, default false)
   - supersededByLessonId (optional FK to Lesson)
-  - createdAt
-  - updatedAt
 
 - LessonSlugAlias
   - id
   - lessonId (FK)
   - slug (unique)
-  - createdAt
-
-- ModuleSlugAlias
-  - id
-  - moduleId (FK)
-  - slug (unique)
-  - createdAt
 
 - LessonProgress
   - id
   - userId (FK)
   - lessonId (FK)
   - completedAt (datetime nullable)
-  - updatedAt
-  - createdAt
   - unique constraint on (userId, lessonId)
+  - index on (userId, completedAt)
+
+- LessonProgressEvent
+  - id
+  - userId (FK)
+  - lessonId (FK)
+  - action (completed/incomplete)
+  - createdAt
+  - indexes on (userId, createdAt) and (lessonId, createdAt)
 
 ### Notes
 - Store curriculum structure in DB for ordering, navigation, and progress calculations.
-- Use stable module keys; store legacy module slugs in ModuleSlugAlias to support redirects.
+- Use stable module keys for focus ordering and badge progress.
 - Use stable lesson slugs; store legacy slugs in LessonSlugAlias to support redirects.
-- Cohort readiness allows future per-cohort curricula without major refactor.
 
 ## Seed data
 - Use a seed script to populate:
@@ -174,7 +157,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
   - Lessons per module for core + extra credit content
   - Placeholder `publishedUrl` values until real Google Doc URLs are ready
 - Seed should be idempotent (use upsert where possible).
-- Seed should use stable module keys as identity and insert module slug aliases on slug changes.
+- Seed should use stable module keys as identity and insert lesson slug aliases on slug changes.
 
 ## Auth + progress
 - Configure Google OAuth with Auth.js (NextAuth).
@@ -204,7 +187,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Link curriculum plan from this doc and update MVP scope for quick picker + extra credit progress
 
 ### Phase 1 — Database modeling + curriculum seed
-- [x] Implement Prisma schema with User, Cohort, Module (key + slug), ModuleSlugAlias, Lesson, LessonSlugAlias, LessonProgress
+- [x] Implement Prisma schema with User, Module (key), Lesson (slug), LessonSlugAlias, LessonProgress, LessonProgressEvent
 - [x] Run initial migration
 - [x] Add seed script (modules + lessons + placeholder URLs)
 - [x] Update seed data to match `docs/curriculum-plan.md` modules and lessons
@@ -236,6 +219,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Add Upstash rate limiting for API routes
 - [x] Enforce request size limits and Zod validation for API inputs
 - [x] Restrict lesson content fetch to Google Docs domains only (SSRF allowlist)
+- [x] Tighten lesson sanitization (style allowlist + rel enforcement) and add fetch timeouts/in-flight caching
 - [x] Add `User.isAdmin` flag + admin analytics page
 - [x] Record `LessonProgressEvent` entries for every toggle
 - [x] Document admin bootstrap via `ADMIN_EMAILS` (preview/test only; prod via DB flag)
@@ -243,10 +227,13 @@ Source of truth for modules, focuses, progress categories, and gamification:
 ### Phase 5.6 — CSP nonces/hashes (deferred)
 - [ ] Replace `unsafe-inline` styles/scripts with CSP nonces/hashes once lesson HTML is finalized
 
-### Phase 6 — Slug alias redirects
+### Phase 6 — Schema reset + slug aliases
 - [x] Implement alias lookup in lesson route
 - [x] Redirect old slugs to canonical slug
-- [ ] remove double id and key logic for lessons
+- [x] Remove duplicate lesson key/id handling (slug-only progress)
+- [x] Drop unused cohort/module slug tables and simplify seed data
+- [x] Normalize user emails and add progress indexes
+- [x] Regenerate baseline migration for the reset schema
 
 ### Phase 7 — Quality pass + polish
 - [x] Error handling for missing lessons/content fetch failures
@@ -306,3 +293,4 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - Lightweight feedback button per lesson
 - Better caching (Redis) and background refresh
 - Table of contents generation from doc headings
+- Support for multiple different courses
