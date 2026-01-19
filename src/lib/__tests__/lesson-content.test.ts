@@ -176,4 +176,27 @@ describe("fetchLessonContent", () => {
     expect(result.html).not.toContain("margin-left");
     expect(result.html).not.toContain("style=");
   });
+
+  it("preserves ordered list start and item value attributes", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          '<ol start="3">',
+          '<li value="3">Week 3</li>',
+          "</ol>",
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain('ol start="3"');
+    expect(result.html).toContain('li value="3"');
+  });
 });

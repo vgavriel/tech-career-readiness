@@ -159,7 +159,7 @@ export default function LessonNavigator({
                 className="group rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] shadow-[var(--shadow-soft)]"
               >
                 <summary className="summary-clean flex min-h-11 cursor-pointer items-center px-3 py-2">
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex w-full items-start gap-3">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                         Module {module.order}
@@ -168,7 +168,7 @@ export default function LessonNavigator({
                         {module.title}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="ml-auto flex items-center gap-2">
                       {isModuleComplete ? (
                         <span className="flex h-5 w-5 items-center justify-center rounded-full border border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]">
                           <span className="sr-only">Module completed</span>
@@ -224,6 +224,26 @@ export default function LessonNavigator({
                             : "border-[color:var(--line-soft)] bg-[color:var(--wash-50)] text-[color:var(--ink-700)] hover:border-[color:var(--line-strong)]"
                         }`}
                       >
+                        <Link
+                          href={`/lesson/${lesson.slug}`}
+                          className="no-underline flex flex-1 flex-col justify-center gap-1 py-1"
+                          aria-current={isActive ? "page" : undefined}
+                          id={buildLessonId(lesson.slug)}
+                        >
+                          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
+                            <span>
+                              {module.order}.{lesson.order}
+                            </span>
+                            {isExtra ? (
+                              <span className="rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-600)]">
+                                Extra credit
+                              </span>
+                            ) : null}
+                          </div>
+                          <span className="text-sm font-semibold text-[color:var(--ink-900)]">
+                            {lesson.title}
+                          </span>
+                        </Link>
                         <button
                           type="button"
                           className="flex h-11 w-11 items-center justify-center"
@@ -263,26 +283,6 @@ export default function LessonNavigator({
                             ) : null}
                           </span>
                         </button>
-                        <Link
-                          href={`/lesson/${lesson.slug}`}
-                          className="no-underline flex flex-1 flex-col justify-center gap-1 py-1"
-                          aria-current={isActive ? "page" : undefined}
-                          id={buildLessonId(lesson.slug)}
-                        >
-                          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
-                            <span>
-                              {module.order}.{lesson.order}
-                            </span>
-                            {isExtra ? (
-                              <span className="rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-600)]">
-                                Extra credit
-                              </span>
-                            ) : null}
-                          </div>
-                          <span className="text-sm font-semibold text-[color:var(--ink-900)]">
-                            {lesson.title}
-                          </span>
-                        </Link>
                       </div>
                     );
                   })}

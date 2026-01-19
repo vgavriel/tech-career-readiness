@@ -200,6 +200,8 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
     ...sanitizeHtml.defaults.allowedAttributes,
     "*": ["class"],
     a: ["href", "name", "target", "rel"],
+    ol: ["class", "start"],
+    li: ["class", "value"],
     table: ["class", "border", "cellpadding", "cellspacing", "width"],
     thead: ["class"],
     tbody: ["class"],
