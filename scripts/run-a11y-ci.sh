@@ -34,10 +34,12 @@ NODE
 
 ensure_test_db() {
   if [[ "${A11Y_DB_READY:-}" == "1" ]] || [[ "${A11Y_SKIP_TEST_DB:-}" == "1" ]]; then
+    echo "A11Y DB: using existing database (auto-start disabled)."
     return 0
   fi
 
   if is_db_ready; then
+    echo "A11Y DB: database reachable; using existing database."
     return 0
   fi
 
@@ -46,7 +48,7 @@ ensure_test_db() {
     return 0
   fi
 
-  echo "Database not reachable; starting ephemeral test DB..."
+  echo "A11Y DB: database not reachable; starting ephemeral test DB..."
   export A11Y_DB_READY=1
   export PORT
   exec "${SCRIPT_DIR}/with-test-db.sh" bash "${SCRIPT_DIR}/run-a11y-ci.sh"
