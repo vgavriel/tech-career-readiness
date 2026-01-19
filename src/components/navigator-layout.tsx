@@ -14,15 +14,18 @@ type NavigatorLayoutProps = {
   children: React.ReactNode;
 };
 
-const WIDTH_STEPS = [15, 20, 25, 30, 35] as const;
+const WIDTH_STEPS = [20, 22, 24, 26, 28, 30, 32, 34] as const;
 const MIN_WIDTH = WIDTH_STEPS[0];
 const MAX_WIDTH = WIDTH_STEPS[WIDTH_STEPS.length - 1];
 const GRID_TEMPLATE_BY_WIDTH: Record<(typeof WIDTH_STEPS)[number], string> = {
-  15: "grid-cols-[15%_12px_minmax(0,1fr)]",
   20: "grid-cols-[20%_12px_minmax(0,1fr)]",
-  25: "grid-cols-[25%_12px_minmax(0,1fr)]",
+  22: "grid-cols-[22%_12px_minmax(0,1fr)]",
+  24: "grid-cols-[24%_12px_minmax(0,1fr)]",
+  26: "grid-cols-[26%_12px_minmax(0,1fr)]",
+  28: "grid-cols-[28%_12px_minmax(0,1fr)]",
   30: "grid-cols-[30%_12px_minmax(0,1fr)]",
-  35: "grid-cols-[35%_12px_minmax(0,1fr)]",
+  32: "grid-cols-[32%_12px_minmax(0,1fr)]",
+  34: "grid-cols-[34%_12px_minmax(0,1fr)]",
 };
 const COLLAPSED_GRID_CLASS = "grid-cols-[0px_12px_minmax(0,1fr)]";
 
@@ -34,7 +37,7 @@ export default function NavigatorLayout({
   children,
 }: NavigatorLayoutProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [navigatorWidth, setNavigatorWidth] = useState<(typeof WIDTH_STEPS)[number]>(25);
+  const [navigatorWidth, setNavigatorWidth] = useState<(typeof WIDTH_STEPS)[number]>(26);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const isCollapsedRef = useRef(isCollapsed);

@@ -75,10 +75,10 @@ export default async function Home() {
               ))}
             </div>
             <p className="max-w-2xl text-xs text-[color:var(--ink-500)]">
-              All lessons are open.{" "}
+              All lessons are free.{" "}
               {isAuthenticated
-                ? "Progress syncs to your account."
-                : "Sign in only when you want progress saved."}
+                ? "Your course progress is saved to your account."
+                : "Sign in if you want your progress saved."}
             </p>
           </div>
 

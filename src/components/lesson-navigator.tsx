@@ -188,7 +188,7 @@ export default function LessonNavigator({
                           </svg>
                         </span>
                       ) : null}
-                      <span className="rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-600)]">
+                      <span className="shrink-0 whitespace-nowrap rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-600)]">
                         {isReady ? progressLabel : "Loading"}
                       </span>
                       <svg
