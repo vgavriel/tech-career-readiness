@@ -260,6 +260,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Add skip link, focus-visible styles, and reduced-motion handling
 - [x] Increase interactive target sizes and add keyboard resizing for the navigator
 - [x] Reinforce link affordances and progress visuals for non-text contrast
+- [x] Preserve lesson list indentation when sanitizing Google Docs HTML
 
 ### Phase 7.5 — Observability (lightweight)
 - [ ] Add request ID generation (middleware) and return `x-request-id` headers for server routes

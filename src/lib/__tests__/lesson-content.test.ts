@@ -133,10 +133,12 @@ describe("fetchLessonContent", () => {
           "<html><head>",
           "<style>",
           ".c1{font-weight:700;font-style:italic;text-decoration:underline;}",
+          ".c2{margin-left:36pt;}",
           "</style>",
           "</head><body>",
           '<div id="contents">',
           '<p><span class="c1">Styled</span></p>',
+          '<p class="c2">Indented</p>',
           "</div>",
           "</body></html>",
         ].join(""),
@@ -149,6 +151,29 @@ describe("fetchLessonContent", () => {
     expect(result.html).toContain("doc-bold");
     expect(result.html).toContain("doc-italic");
     expect(result.html).toContain("doc-underline");
+    expect(result.html).toContain("doc-indent-2");
     expect(result.html).not.toContain("<style");
+  });
+
+  it("maps inline indentation styles to doc indent classes", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          '<p style="margin-left:24px">Indented</p>',
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain("doc-indent-1");
+    expect(result.html).not.toContain("margin-left");
+    expect(result.html).not.toContain("style=");
   });
 });

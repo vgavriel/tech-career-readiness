@@ -238,6 +238,22 @@ body {
   list-style: decimal;
 }
 
+.lesson-content .doc-indent-1 {
+  padding-left: 1.5rem;
+}
+
+.lesson-content .doc-indent-2 {
+  padding-left: 3rem;
+}
+
+.lesson-content .doc-indent-3 {
+  padding-left: 4.5rem;
+}
+
+.lesson-content .doc-indent-4 {
+  padding-left: 6rem;
+}
+
 .lesson-content a {
   color: var(--accent-700);
   text-decoration: underline;

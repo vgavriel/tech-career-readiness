@@ -12,7 +12,55 @@ const allowedLessonHosts = new Set(["docs.google.com", "drive.google.com"]);
 
 const LESSON_CONTENT_FETCH_TIMEOUT_MS = 8000;
 
-const extractTextStyleClasses = (styleValue: string) => {
+const INDENT_STEP_PX = 24;
+const MAX_INDENT_LEVEL = 4;
+
+const parseCssLength = (value: string) => {
+  const match = value.trim().match(/^(-?\d*\.?\d+)(px|pt|rem|em)?$/);
+  if (!match) {
+    return null;
+  }
+
+  const numeric = Number.parseFloat(match[1]);
+  if (Number.isNaN(numeric)) {
+    return null;
+  }
+
+  const unit = match[2] ?? "px";
+  if (unit === "pt") {
+    return numeric * (4 / 3);
+  }
+  if (unit === "rem" || unit === "em") {
+    return numeric * 16;
+  }
+
+  return numeric;
+};
+
+const extractIndentClass = (styleValue: string) => {
+  const normalized = styleValue.toLowerCase();
+  const candidates = [
+    normalized.match(/margin-left\s*:\s*([^;]+)/)?.[1],
+    normalized.match(/padding-left\s*:\s*([^;]+)/)?.[1],
+    normalized.match(/text-indent\s*:\s*([^;]+)/)?.[1],
+  ]
+    .map((value) => (value ? parseCssLength(value) : null))
+    .filter((value): value is number => value !== null && value > 0);
+
+  if (candidates.length === 0) {
+    return null;
+  }
+
+  const maxValue = Math.max(...candidates);
+  const level = Math.min(
+    MAX_INDENT_LEVEL,
+    Math.max(1, Math.round(maxValue / INDENT_STEP_PX))
+  );
+
+  return `doc-indent-${level}`;
+};
+
+const extractDocStyleClasses = (styleValue: string) => {
   const classes = new Set<string>();
   const normalized = styleValue.toLowerCase();
   const fontWeightMatch = normalized.match(/font-weight\s*:\s*([^;]+)/);
@@ -34,6 +82,11 @@ const extractTextStyleClasses = (styleValue: string) => {
   );
   if (textDecorationMatch && textDecorationMatch[1].includes("underline")) {
     classes.add("doc-underline");
+  }
+
+  const indentClass = extractIndentClass(styleValue);
+  if (indentClass) {
+    classes.add(indentClass);
   }
 
   return Array.from(classes);
@@ -62,7 +115,7 @@ const stripInlineStyle = (attribs: Record<string, string | undefined>) => {
     return attribs;
   }
 
-  const classes = extractTextStyleClasses(attribs.style);
+  const classes = extractDocStyleClasses(attribs.style);
   const nextAttribs = { ...attribs };
   const mergedClass = mergeClassNames(nextAttribs.class, classes);
   if (mergedClass) {
@@ -88,7 +141,7 @@ const extractDocClassStyleMap = (document: Document) => {
   while ((match = ruleRegex.exec(cssText)) !== null) {
     const selectors = match[1].split(",");
     const declarations = match[2];
-    const docClasses = extractTextStyleClasses(declarations);
+    const docClasses = extractDocStyleClasses(declarations);
     if (docClasses.length === 0) {
       continue;
     }
