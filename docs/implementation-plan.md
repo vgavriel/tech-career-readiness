@@ -255,6 +255,12 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Replace the standalone roadmap page with a persistent navigator (collapsible + resizable)
 - [x] Add a badges page linked from the global header
 
+### Phase 7.4 — Accessibility (WCAG AAA)
+- [x] Update color tokens for AAA contrast (text + non-text UI)
+- [x] Add skip link, focus-visible styles, and reduced-motion handling
+- [x] Increase interactive target sizes and add keyboard resizing for the navigator
+- [x] Reinforce link affordances and progress visuals for non-text contrast
+
 ### Phase 7.5 — Observability (lightweight)
 - [ ] Add request ID generation (middleware) and return `x-request-id` headers for server routes
 - [ ] Create a minimal structured logger wrapper with env-based log levels and default redaction for secrets/PII

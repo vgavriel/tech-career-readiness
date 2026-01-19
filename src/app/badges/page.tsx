@@ -32,7 +32,11 @@ export default async function BadgesPage() {
 
   return (
     <div className="page-shell min-h-screen overflow-hidden">
-      <main className="page-content mx-auto flex w-full max-w-5xl flex-col gap-9 px-5 pb-20 pt-12 md:pt-18">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="page-content mx-auto flex w-full max-w-5xl flex-col gap-9 px-5 pb-20 pt-12 md:pt-18"
+      >
         <section className="space-y-4">
           <div className="inline-flex items-center gap-3 rounded-lg border border-[color:var(--accent-500)] bg-[color:var(--wash-0)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-800)]">
             <span className="h-2 w-2 rounded-full bg-[color:var(--accent-700)]" />

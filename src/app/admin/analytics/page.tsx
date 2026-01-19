@@ -91,7 +91,11 @@ export default async function AdminAnalyticsPage() {
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_#fff7ed,_#f7f1e8_55%,_#f0e1cf_100%)]">
       <div className="pointer-events-none absolute -top-24 right-[-6rem] h-72 w-72 rounded-full bg-[color:var(--wash-200)] opacity-70 blur-3xl animate-float-slow" />
       <div className="pointer-events-none absolute bottom-[-6rem] left-[-6rem] h-72 w-72 rounded-full bg-[color:var(--accent-500)] opacity-10 blur-[120px]" />
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-24 pt-14 md:pt-20">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-24 pt-14 md:pt-20"
+      >
         <section className="flex flex-col gap-4">
           <p className="text-xs font-semibold uppercase tracking-[0.4em] text-[color:var(--ink-500)]">
             Admin analytics
@@ -190,7 +194,7 @@ export default async function AdminAnalyticsPage() {
                               width={progressValue}
                               height="8"
                               rx="4"
-                              fill="var(--accent-500)"
+                              fill="var(--accent-700)"
                             />
                           </svg>
                         </div>
@@ -201,7 +205,7 @@ export default async function AdminAnalyticsPage() {
                     </div>
 
                     <details className="mt-6 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-100)] p-4">
-                      <summary className="cursor-pointer text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
+                      <summary className="min-h-11 cursor-pointer text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
                         Progress timeline ({learner.events.length})
                       </summary>
                       <div className="mt-4 grid gap-3">

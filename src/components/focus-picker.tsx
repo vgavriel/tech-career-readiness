@@ -43,7 +43,7 @@ export default function FocusPicker({
         </div>
         <Link
           href="/roles"
-          className="inline-flex items-center gap-2 rounded-lg border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-900)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-900)]"
+          className="no-underline inline-flex min-h-11 items-center gap-2 rounded-lg border border-[color:var(--line-strong)] bg-[color:var(--accent-500)] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-900)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-900)]"
         >
           Explore Roles in Tech
           <span className="text-[color:var(--ink-700)]">
@@ -65,7 +65,7 @@ export default function FocusPicker({
                 <p className="font-display text-lg text-[color:var(--ink-900)]">
                   {option.label}
                 </p>
-                <span className="rounded-md border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)]">
+                <span className="rounded-md border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-2.5 py-0.5 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)]">
                   {option.timing}
                 </span>
               </div>

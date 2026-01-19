@@ -35,7 +35,10 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className="antialiased h-screen overflow-hidden">
+      <body className="antialiased h-screen overflow-hidden relative">
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
         <Providers session={session} initialFocusKey={user?.focusKey ?? null}>
           <div className="flex h-full flex-col">
             <SiteHeader />
