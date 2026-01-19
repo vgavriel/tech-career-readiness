@@ -110,13 +110,16 @@ const mergeClassNames = (existing: string | undefined, additions: string[]) => {
   return Array.from(merged).join(" ");
 };
 
-const stripInlineStyle = (attribs: Record<string, string | undefined>) => {
-  if (!attribs.style) {
-    return attribs;
+const stripInlineStyle = (
+  attribs: sanitizeHtml.Attributes
+): sanitizeHtml.Attributes => {
+  const nextAttribs: sanitizeHtml.Attributes = { ...attribs };
+  const styleValue = nextAttribs.style;
+  if (!styleValue) {
+    return nextAttribs;
   }
 
-  const classes = extractDocStyleClasses(attribs.style);
-  const nextAttribs = { ...attribs };
+  const classes = extractDocStyleClasses(styleValue);
   const mergedClass = mergeClassNames(nextAttribs.class, classes);
   if (mergedClass) {
     nextAttribs.class = mergedClass;
@@ -214,7 +217,10 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
   },
   transformTags: {
     a: (tagName, attribs) => {
-      const nextAttribs = { ...attribs, target: "_blank" };
+      const nextAttribs: sanitizeHtml.Attributes = {
+        ...attribs,
+        target: "_blank",
+      };
       const rel = new Set(
         (nextAttribs.rel ?? "")
           .split(/\s+/)
