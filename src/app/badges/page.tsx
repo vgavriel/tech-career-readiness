@@ -21,7 +21,6 @@ export default async function BadgesPage() {
         orderBy: { order: "asc" },
         select: {
           id: true,
-          key: true,
           slug: true,
           title: true,
           order: true,

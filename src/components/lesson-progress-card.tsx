@@ -7,8 +7,7 @@ import SignInCta from "@/components/sign-in-cta";
  * Props for the lesson progress control card.
  */
 type LessonProgressCardProps = {
-  lessonKey: string;
-  legacyLessonId?: string;
+  lessonSlug: string;
   lessonTitle: string;
 };
 
@@ -20,8 +19,7 @@ type LessonProgressCardProps = {
  * state from progress context.
  */
 export default function LessonProgressCard({
-  lessonKey,
-  legacyLessonId,
+  lessonSlug,
   lessonTitle,
 }: LessonProgressCardProps) {
   const {
@@ -31,7 +29,7 @@ export default function LessonProgressCard({
     isReady,
     setLessonCompletion,
   } = useProgress();
-  const completed = isReady && isLessonCompleted(lessonKey, legacyLessonId);
+  const completed = isReady && isLessonCompleted(lessonSlug);
   const disabled = !isReady || isMerging;
   const statusLabel = !isReady
     ? "Loading progress..."
@@ -60,7 +58,7 @@ export default function LessonProgressCard({
             : "bg-[color:var(--accent-700)] text-[color:var(--wash-0)] hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
         }`}
         disabled={disabled}
-        onClick={() => setLessonCompletion(lessonKey, !completed)}
+        onClick={() => setLessonCompletion(lessonSlug, !completed)}
         type="button"
         aria-pressed={completed}
       >

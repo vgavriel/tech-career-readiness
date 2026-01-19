@@ -13,13 +13,12 @@ export const runtime = "nodejs";
 
 const progressUpdateSchema = z
   .object({
-    lessonKey: z.string().trim().min(1).optional(),
-    lessonId: z.string().trim().min(1).optional(),
+    lessonSlug: z.string().trim().min(1),
     completed: z.boolean(),
   })
   .strict()
-  .refine((data) => Boolean(data.lessonKey || data.lessonId), {
-    message: "Provide lessonKey.",
+  .refine((data) => Boolean(data.lessonSlug), {
+    message: "Provide lessonSlug.",
   });
 
 /**
@@ -50,14 +49,14 @@ export async function GET(request: Request) {
     select: {
       lesson: {
         select: {
-          key: true,
+          slug: true,
         },
       },
     },
   });
 
   return NextResponse.json({
-    completedLessonKeys: progress.map((entry) => entry.lesson.key),
+    completedLessonSlugs: progress.map((entry) => entry.lesson.slug),
   });
 }
 
@@ -90,13 +89,11 @@ export async function POST(request: Request) {
     return parsedBody.error;
   }
 
-  const { lessonKey, lessonId, completed } = parsedBody.data;
+  const { lessonSlug, completed } = parsedBody.data;
 
   const lesson = await prisma.lesson.findFirst({
-    where: lessonKey
-      ? { key: lessonKey, isArchived: false }
-      : { id: lessonId ?? "", isArchived: false },
-    select: { id: true, key: true },
+    where: { slug: lessonSlug, isArchived: false },
+    select: { id: true, slug: true },
   });
 
   if (!lesson) {
@@ -144,5 +141,5 @@ export async function POST(request: Request) {
     ])
   );
 
-  return NextResponse.json({ lessonKey: lesson.key, completed });
+  return NextResponse.json({ lessonSlug: lesson.slug, completed });
 }

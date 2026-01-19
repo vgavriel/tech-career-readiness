@@ -90,7 +90,6 @@ const lookupClassification = (key?: string | null) =>
   key ? LESSON_CLASSIFICATIONS[key] : undefined;
 
 export const getLessonClassification = (lesson: {
-  key?: string | null;
   slug?: string | null;
 }): LessonClassificationResult => {
   const bySlug = lookupClassification(lesson.slug);
@@ -98,20 +97,13 @@ export const getLessonClassification = (lesson: {
     return { ...bySlug, isMapped: true };
   }
 
-  const byKey = lookupClassification(lesson.key);
-  if (byKey) {
-    return { ...byKey, isMapped: true };
-  }
-
   return DEFAULT_CLASSIFICATION;
 };
 
 export const isExtraCreditLesson = (lesson: {
-  key?: string | null;
   slug?: string | null;
 }) => getLessonClassification(lesson).credit === "extra";
 
 export const isRoleDeepDiveLesson = (lesson: {
-  key?: string | null;
   slug?: string | null;
 }) => getLessonClassification(lesson).roleDeepDive;

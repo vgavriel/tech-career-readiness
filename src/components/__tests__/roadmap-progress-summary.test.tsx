@@ -38,7 +38,6 @@ const modules: RoadmapModule[] = [
     lessons: [
       {
         id: "lesson-1",
-        key: "lesson-1",
         slug: "intro",
         title: "Intro",
         order: 1,
@@ -46,7 +45,6 @@ const modules: RoadmapModule[] = [
       },
       {
         id: "lesson-2",
-        key: "lesson-2",
         slug: "next",
         title: "Next steps",
         order: 2,
@@ -66,7 +64,6 @@ const modulesWithExtraCredit: RoadmapModule[] = [
     lessons: [
       {
         id: "lesson-core",
-        key: "start-to-finish-roadmap",
         slug: "start-to-finish-roadmap",
         title: "Start to Finish",
         order: 1,
@@ -74,7 +71,6 @@ const modulesWithExtraCredit: RoadmapModule[] = [
       },
       {
         id: "lesson-extra",
-        key: "tech-career-stories",
         slug: "tech-career-stories",
         title: "Tech Career Stories",
         order: 2,
@@ -91,7 +87,7 @@ describe("RoadmapProgressSummary", () => {
 
   it("shows progress and a continue link", () => {
     progressMocks.useProgress.mockReturnValue({
-      completedLessonKeys: ["lesson-1"],
+      completedLessonSlugs: ["intro"],
       isAuthenticated: false,
       isMerging: false,
       isReady: true,
@@ -110,7 +106,7 @@ describe("RoadmapProgressSummary", () => {
 
   it("shows a review action when all lessons are complete", () => {
     progressMocks.useProgress.mockReturnValue({
-      completedLessonKeys: ["lesson-1", "lesson-2"],
+      completedLessonSlugs: ["intro", "next"],
       isAuthenticated: true,
       isMerging: false,
       isReady: true,
@@ -128,7 +124,7 @@ describe("RoadmapProgressSummary", () => {
 
   it("shows focus progress when a focus is selected", () => {
     progressMocks.useProgress.mockReturnValue({
-      completedLessonKeys: ["lesson-1"],
+      completedLessonSlugs: ["intro"],
       isAuthenticated: true,
       isMerging: false,
       isReady: true,
@@ -155,7 +151,7 @@ describe("RoadmapProgressSummary", () => {
 
   it("shows extra credit progress separately from core progress", () => {
     progressMocks.useProgress.mockReturnValue({
-      completedLessonKeys: ["tech-career-stories"],
+      completedLessonSlugs: ["tech-career-stories"],
       isAuthenticated: false,
       isMerging: false,
       isReady: true,

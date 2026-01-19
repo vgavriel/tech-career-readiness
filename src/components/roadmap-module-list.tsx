@@ -11,7 +11,6 @@ import { isExtraCreditLesson } from "@/lib/lesson-classification";
  */
 export type RoadmapLesson = {
   id: string;
-  key: string;
   slug: string;
   title: string;
   order: number;
@@ -73,22 +72,19 @@ export default function RoadmapModuleList({
         const hasExtra = extraLessons.length > 0;
         const coreCompleted = coreLessons.reduce(
           (count, lesson) =>
-            count +
-            (isReady && isLessonCompleted(lesson.key, lesson.id) ? 1 : 0),
+            count + (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
           0
         );
         const extraCompleted = extraLessons.reduce(
           (count, lesson) =>
-            count +
-            (isReady && isLessonCompleted(lesson.key, lesson.id) ? 1 : 0),
+            count + (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
           0
         );
 
         const renderLessons = (lessons: RoadmapLesson[]) => (
           <ol className="grid gap-3">
             {lessons.map((lesson, lessonIndex) => {
-              const isCompleted =
-                isReady && isLessonCompleted(lesson.key, lesson.id);
+              const isCompleted = isReady && isLessonCompleted(lesson.slug);
 
               return (
                 <li

@@ -11,10 +11,10 @@ type RoadmapBadgeAwardsProps = {
 };
 
 export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps) {
-  const { completedLessonKeys } = useProgress();
+  const { completedLessonSlugs } = useProgress();
   const badges = useMemo(
-    () => buildBadgeStatuses(modules, completedLessonKeys),
-    [modules, completedLessonKeys]
+    () => buildBadgeStatuses(modules, completedLessonSlugs),
+    [modules, completedLessonSlugs]
   );
   const sortedBadges = useMemo(() => {
     const earned = badges.filter((badge) => badge.isEarned);

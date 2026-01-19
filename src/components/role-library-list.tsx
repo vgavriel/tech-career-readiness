@@ -6,7 +6,6 @@ import { useProgress } from "@/components/progress-provider";
 
 export type RoleLibraryLesson = {
   id: string;
-  key: string;
   slug: string;
   title: string;
 };
@@ -29,8 +28,7 @@ export default function RoleLibraryList({ lessons }: RoleLibraryListProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {lessons.map((lesson, index) => {
-        const isCompleted =
-          isReady && isLessonCompleted(lesson.key, lesson.id);
+        const isCompleted = isReady && isLessonCompleted(lesson.slug);
 
         return (
           <Link

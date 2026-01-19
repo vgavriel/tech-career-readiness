@@ -1,6 +1,6 @@
-const resolveExistingRecord = ({ recordByKey, recordByOrder }) => {
-  if (recordByKey) {
-    return { record: recordByKey, reason: "key" };
+const resolveExistingRecord = ({ recordBySlug, recordByOrder }) => {
+  if (recordBySlug) {
+    return { record: recordBySlug, reason: "slug" };
   }
   if (recordByOrder) {
     return { record: recordByOrder, reason: "order" };
@@ -8,12 +8,12 @@ const resolveExistingRecord = ({ recordByKey, recordByOrder }) => {
   return { record: null, reason: "create" };
 };
 
-const getLessonKey = (lessonData) => lessonData.key ?? lessonData.slug;
+const getLessonSlug = (lessonData) => lessonData.slug;
 
-const collectLessonKeys = (lessons) => lessons.map(getLessonKey);
+const collectLessonSlugs = (lessons) => lessons.map(getLessonSlug);
 
 module.exports = {
   resolveExistingRecord,
-  getLessonKey,
-  collectLessonKeys,
+  getLessonSlug,
+  collectLessonSlugs,
 };

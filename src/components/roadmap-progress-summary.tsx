@@ -14,7 +14,6 @@ import { isExtraCreditLesson } from "@/lib/lesson-classification";
  */
 type OrderedLesson = {
   id: string;
-  key: string;
   slug: string;
   title: string;
   order: number;
@@ -49,7 +48,6 @@ const buildOrderedLessons = (modules: RoadmapModule[]): OrderedLesson[] =>
   modules.flatMap((module) =>
     module.lessons.map((lesson) => ({
       id: lesson.id,
-      key: lesson.key,
       slug: lesson.slug,
       title: lesson.title,
       order: lesson.order,
@@ -65,12 +63,11 @@ const buildProgressSummaryFromLessons = (
   const totalLessons = orderedLessons.length;
   const completedCount = orderedLessons.reduce(
     (count, lesson) =>
-      count +
-      (completedSet.has(lesson.key) || completedSet.has(lesson.id) ? 1 : 0),
+      count + (completedSet.has(lesson.slug) ? 1 : 0),
     0
   );
   const continueLesson = orderedLessons.find(
-    (lesson) => !completedSet.has(lesson.key) && !completedSet.has(lesson.id)
+    (lesson) => !completedSet.has(lesson.slug)
   );
   const firstLesson = orderedLessons[0];
   const allComplete = isReady && totalLessons > 0 && completedCount >= totalLessons;
@@ -121,10 +118,10 @@ export default function RoadmapProgressSummary({
   focusModules,
   focusKey,
 }: RoadmapProgressSummaryProps) {
-  const { completedLessonKeys, isAuthenticated, isMerging, isReady } = useProgress();
+  const { completedLessonSlugs, isAuthenticated, isMerging, isReady } = useProgress();
   const completedSet = useMemo(
-    () => new Set(completedLessonKeys),
-    [completedLessonKeys]
+    () => new Set(completedLessonSlugs),
+    [completedLessonSlugs]
   );
   const orderedLessons = useMemo(() => buildOrderedLessons(modules), [modules]);
   const { coreLessons, extraLessons } = useMemo(

@@ -14,17 +14,15 @@ import { isExtraCreditLesson } from "@/lib/lesson-classification";
 
 type LessonNavigatorProps = {
   modules: RoadmapModule[];
-  currentLessonKey: string;
   currentLessonSlug: string;
   currentModuleKey: string | null;
 };
 
-const buildLessonId = (lessonKey: string) =>
-  `navigator-lesson-${lessonKey.replace(/[^a-z0-9-]/gi, "-")}`;
+const buildLessonId = (lessonSlug: string) =>
+  `navigator-lesson-${lessonSlug.replace(/[^a-z0-9-]/gi, "-")}`;
 
 export default function LessonNavigator({
   modules,
-  currentLessonKey,
   currentLessonSlug,
   currentModuleKey,
 }: LessonNavigatorProps) {
@@ -77,7 +75,7 @@ export default function LessonNavigator({
 
     for (const lesson of allLessons) {
       const isExtra = isExtraCreditLesson(lesson);
-      const completed = isReady && isLessonCompleted(lesson.key, lesson.id);
+      const completed = isReady && isLessonCompleted(lesson.slug);
 
       if (isExtra) {
         extraCount += 1;
@@ -142,7 +140,7 @@ export default function LessonNavigator({
             const coreCompletedCount = coreLessons.reduce(
               (count, lesson) =>
                 count +
-                (isReady && isLessonCompleted(lesson.key, lesson.id) ? 1 : 0),
+                (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
               0
             );
             const isModuleComplete =
@@ -212,9 +210,8 @@ export default function LessonNavigator({
                 </summary>
                 <div className="space-y-2 px-3 pb-3">
                   {module.lessons.map((lesson) => {
-                    const isActive = lesson.key === currentLessonKey;
-                    const isCompleted =
-                      isReady && isLessonCompleted(lesson.key, lesson.id);
+                    const isActive = lesson.slug === currentLessonSlug;
+                    const isCompleted = isReady && isLessonCompleted(lesson.slug);
                     const isExtra = isExtraCreditLesson(lesson);
                     const isDisabled = !isReady || isMerging;
 
@@ -242,7 +239,7 @@ export default function LessonNavigator({
                           }
                           disabled={isDisabled}
                           onClick={() =>
-                            void setLessonCompletion(lesson.key, !isCompleted)
+                            void setLessonCompletion(lesson.slug, !isCompleted)
                           }
                         >
                           {isCompleted ? (
@@ -266,7 +263,7 @@ export default function LessonNavigator({
                           href={`/lesson/${lesson.slug}`}
                           className="flex flex-1 flex-col gap-1"
                           aria-current={isActive ? "page" : undefined}
-                          id={buildLessonId(lesson.key)}
+                          id={buildLessonId(lesson.slug)}
                         >
                           <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
                             <span>

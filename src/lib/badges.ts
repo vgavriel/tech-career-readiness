@@ -21,8 +21,6 @@ export type BadgeStatus = {
 };
 
 type LessonSummary = {
-  id: string;
-  key: string;
   slug: string;
   moduleKey: string;
   classification: ReturnType<typeof getLessonClassification>;
@@ -37,19 +35,16 @@ type LessonProgress = {
 const buildLessonSummaries = (modules: RoadmapModule[]): LessonSummary[] =>
   modules.flatMap((module) =>
     module.lessons.map((lesson) => ({
-      id: lesson.id,
-      key: lesson.key,
       slug: lesson.slug,
       moduleKey: module.key,
       classification: getLessonClassification({
-        key: lesson.key,
         slug: lesson.slug,
       }),
     }))
   );
 
 const isLessonCompleted = (lesson: LessonSummary, completedSet: Set<string>) =>
-  completedSet.has(lesson.key) || completedSet.has(lesson.id);
+  completedSet.has(lesson.slug);
 
 const summarizeLessons = (
   lessons: LessonSummary[],
@@ -97,10 +92,10 @@ const getModuleProgress = (
 
 export const buildBadgeStatuses = (
   modules: RoadmapModule[],
-  completedLessonKeys: string[]
+  completedLessonSlugs: string[]
 ): BadgeStatus[] => {
   const lessons = buildLessonSummaries(modules);
-  const completedSet = new Set(completedLessonKeys);
+  const completedSet = new Set(completedLessonSlugs);
 
   const startHere = getModuleProgress(lessons, completedSet, "start-here");
   const exploreRoles = getModuleProgress(lessons, completedSet, "explore-roles");

@@ -4,8 +4,8 @@ const { Pool } = require("pg");
 
 const {
   resolveExistingRecord,
-  getLessonKey,
-  collectLessonKeys,
+  getLessonSlug,
+  collectLessonSlugs,
 } = require("./seed-utils");
 
 const connectionString = process.env.DATABASE_URL;
@@ -21,7 +21,6 @@ const prisma = new PrismaClient({ adapter });
 const modules = [
   {
     key: "start-here",
-    slug: "start-here",
     title: "Start Here",
     order: 1,
     description: "Begin with the Brown-specific roadmap and recruiting timeline.",
@@ -49,7 +48,6 @@ const modules = [
   },
   {
     key: "explore-roles",
-    slug: "explore-roles",
     title: "Explore Roles",
     order: 2,
     description:
@@ -221,7 +219,6 @@ const modules = [
   },
   {
     key: "build-experience",
-    slug: "build-experience",
     title: "Build Experience",
     order: 3,
     description:
@@ -237,7 +234,6 @@ const modules = [
   },
   {
     key: "opportunities-networking",
-    slug: "opportunities-networking",
     title: "Find Opportunities & Network",
     order: 4,
     description: "Use job boards, outreach, and referrals to get interviews.",
@@ -270,7 +266,6 @@ const modules = [
   },
   {
     key: "research-companies",
-    slug: "research-companies",
     title: "Research Companies",
     order: 5,
     description: "Align your applications with company values and roles.",
@@ -285,7 +280,6 @@ const modules = [
   },
   {
     key: "applications",
-    slug: "applications",
     title: "Applications",
     order: 6,
     description: "Craft resumes and submissions that stand out quickly.",
@@ -312,7 +306,6 @@ const modules = [
   },
   {
     key: "interviews",
-    slug: "interviews",
     title: "Interviews",
     order: 7,
     description: "Prepare for technical, behavioral, and strategic interviews.",
@@ -339,7 +332,6 @@ const modules = [
   },
   {
     key: "offers",
-    slug: "offers",
     title: "Offers",
     order: 8,
     description: "Evaluate and negotiate offers with confidence.",
@@ -360,7 +352,6 @@ const modules = [
   },
   {
     key: "internship-success",
-    slug: "internship-success",
     title: "Internship Success",
     order: 9,
     description: "Make the most of your internship from day one.",
@@ -382,85 +373,36 @@ const modules = [
 ];
 
 async function main() {
-  const defaultCohort = await prisma.cohort.upsert({
-    where: { slug: "default" },
-    update: { name: "Default", isDefault: true },
-    create: { name: "Default", slug: "default", isDefault: true },
-  });
-
   for (const moduleData of modules) {
-    const moduleByKey = await prisma.module.findUnique({
+    const moduleRecord = await prisma.module.upsert({
       where: { key: moduleData.key },
+      update: {
+        title: moduleData.title,
+        order: moduleData.order,
+        description: moduleData.description,
+      },
+      create: {
+        key: moduleData.key,
+        title: moduleData.title,
+        order: moduleData.order,
+        description: moduleData.description,
+      },
     });
-    const moduleByOrder = await prisma.module.findFirst({
-      where: { cohortId: defaultCohort.id, order: moduleData.order },
-    });
-    const { record: existingModule } = resolveExistingRecord({
-      recordByKey: moduleByKey,
-      recordByOrder: moduleByOrder,
-    });
-
-    const previousSlug = existingModule?.slug ?? null;
-
-    const moduleRecord = existingModule
-      ? await prisma.module.update({
-          where: { id: existingModule.id },
-          data: {
-            key: moduleData.key,
-            slug: moduleData.slug,
-            title: moduleData.title,
-            order: moduleData.order,
-            description: moduleData.description,
-            cohortId: defaultCohort.id,
-          },
-        })
-      : await prisma.module.create({
-          data: {
-            key: moduleData.key,
-            slug: moduleData.slug,
-            title: moduleData.title,
-            order: moduleData.order,
-            description: moduleData.description,
-            cohortId: defaultCohort.id,
-          },
-        });
-
-    if (previousSlug && previousSlug !== moduleData.slug) {
-      await prisma.moduleSlugAlias.upsert({
-        where: { slug: previousSlug },
-        update: { moduleId: moduleRecord.id },
-        create: { slug: previousSlug, moduleId: moduleRecord.id },
-      });
-    }
-
-    const aliases = moduleData.aliases ?? [];
-
-    for (const alias of aliases) {
-      if (alias === moduleData.slug) {
-        continue;
-      }
-
-      await prisma.moduleSlugAlias.upsert({
-        where: { slug: alias },
-        update: { moduleId: moduleRecord.id },
-        create: { slug: alias, moduleId: moduleRecord.id },
-      });
-    }
 
     for (const lessonData of moduleData.lessons) {
-      const lessonKey = getLessonKey(lessonData);
+      const lessonSlug = getLessonSlug(lessonData);
       const publishedUrl =
         lessonData.publishedUrl ??
         `https://docs.google.com/document/d/e/${lessonData.slug}/pub`;
 
-      const lessonByKey = await prisma.lesson.findUnique({
-        where: { key: lessonKey },
+      const lessonBySlug = await prisma.lesson.findUnique({
+        where: { slug: lessonSlug },
       });
       const lessonByOrder = await prisma.lesson.findFirst({
         where: { moduleId: moduleRecord.id, order: lessonData.order },
       });
       const { record: existingLesson } = resolveExistingRecord({
-        recordByKey: lessonByKey,
+        recordBySlug: lessonBySlug,
         recordByOrder: lessonByOrder,
       });
 
@@ -470,25 +412,21 @@ async function main() {
         ? await prisma.lesson.update({
             where: { id: existingLesson.id },
             data: {
-              key: lessonKey,
               title: lessonData.title,
               slug: lessonData.slug,
               order: lessonData.order,
               moduleId: moduleRecord.id,
               publishedUrl,
-              cohortId: defaultCohort.id,
               isArchived: false,
             },
           })
         : await prisma.lesson.create({
             data: {
-              key: lessonKey,
               title: lessonData.title,
               slug: lessonData.slug,
               order: lessonData.order,
               moduleId: moduleRecord.id,
               publishedUrl,
-              cohortId: defaultCohort.id,
               isArchived: false,
             },
           });
@@ -515,12 +453,12 @@ async function main() {
       }
     }
 
-    const lessonKeys = collectLessonKeys(moduleData.lessons);
+    const lessonSlugs = collectLessonSlugs(moduleData.lessons);
 
     await prisma.lesson.updateMany({
       where: {
         moduleId: moduleRecord.id,
-        key: { notIn: lessonKeys },
+        slug: { notIn: lessonSlugs },
       },
       data: { isArchived: true },
     });

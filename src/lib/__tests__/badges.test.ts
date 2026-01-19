@@ -5,7 +5,6 @@ import type { RoadmapModule } from "@/components/roadmap-module-list";
 
 const makeLesson = (slug: string, order: number) => ({
   id: slug,
-  key: slug,
   slug,
   title: slug.replace(/-/g, " "),
   order,

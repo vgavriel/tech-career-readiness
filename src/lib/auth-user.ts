@@ -49,9 +49,9 @@ export async function getAuthenticatedUser(
 
   // TODO: need an upsert every time?
   const user = await prisma.user.upsert({
-    where: { email },
+    where: { email: normalizedEmail },
     create: {
-      email,
+      email: normalizedEmail,
       name: session.user?.name ?? null,
       image: session.user?.image ?? null,
       isAdmin: shouldBeAdmin,

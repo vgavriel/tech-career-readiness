@@ -8,7 +8,7 @@ import RoleLibraryList, {
 
 vi.mock("@/components/progress-provider", () => ({
   useProgress: () => ({
-    isLessonCompleted: (key: string) => key === "lesson-ai",
+    isLessonCompleted: (slug: string) => slug === "learn-about-ai-engineering",
     isReady: true,
   }),
 }));
@@ -33,13 +33,11 @@ describe("RoleLibraryList", () => {
     const lessons: RoleLibraryLesson[] = [
       {
         id: "lesson-1",
-        key: "lesson-ai",
         slug: "learn-about-ai-engineering",
         title: "Learn about AI Engineering",
       },
       {
         id: "lesson-2",
-        key: "lesson-backend",
         slug: "learn-about-backend-engineering",
         title: "Learn about Backend Engineering",
       },
