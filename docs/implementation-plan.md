@@ -293,3 +293,4 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - Lightweight feedback button per lesson
 - Better caching (Redis) and background refresh
 - Table of contents generation from doc headings
+- Support for multiple different courses
