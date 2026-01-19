@@ -1,3 +1,6 @@
+[![E2E](https://github.com/vgavriel/tech-career-readiness/actions/workflows/e2e.yml/badge.svg?branch=main)](https://github.com/vgavriel/tech-career-readiness/actions/workflows/e2e.yml)
+[![A11y (WCAG AAA)](https://github.com/vgavriel/tech-career-readiness/actions/workflows/a11y.yml/badge.svg?branch=main)](https://github.com/vgavriel/tech-career-readiness/actions/workflows/a11y.yml) [WCAG AAA](https://www.w3.org/WAI/WCAG21/Understanding/conformance)
+
 Tech Career Readiness is a self-paced learning app for college students. It's built with Next.js, Prisma, and Postgres.
 
 ## Getting started
