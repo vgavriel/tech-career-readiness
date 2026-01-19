@@ -260,6 +260,29 @@ body {
   padding-left: 6rem;
 }
 
+.lesson-content li.doc-indent-1,
+.lesson-content li.doc-indent-2,
+.lesson-content li.doc-indent-3,
+.lesson-content li.doc-indent-4 {
+  padding-left: 0;
+}
+
+.lesson-content li.doc-indent-1 {
+  margin-left: 1.5rem;
+}
+
+.lesson-content li.doc-indent-2 {
+  margin-left: 3rem;
+}
+
+.lesson-content li.doc-indent-3 {
+  margin-left: 4.5rem;
+}
+
+.lesson-content li.doc-indent-4 {
+  margin-left: 6rem;
+}
+
 .lesson-content a {
   color: var(--accent-700);
   text-decoration: underline;
