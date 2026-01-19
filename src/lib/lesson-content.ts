@@ -10,6 +10,8 @@ import { getEnv } from "@/lib/env";
 
 const allowedLessonHosts = new Set(["docs.google.com", "drive.google.com"]);
 
+const LESSON_CONTENT_FETCH_TIMEOUT_MS = 8000;
+
 const sanitizeOptions: sanitizeHtml.IOptions = {
   allowedTags: sanitizeHtml.defaults.allowedTags,
   allowedAttributes: {
@@ -25,6 +27,55 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
     td: ["class", "style", "colspan", "rowspan", "width", "height"],
     colgroup: ["class", "style", "span", "width"],
     col: ["class", "style", "span", "width"],
+  },
+  allowedStyles: {
+    "*": {
+      color: [/^#([0-9a-f]{3}|[0-9a-f]{6})$/i, /^rgba?\((\s*\d+\s*,?){3,4}\)$/i],
+      "background-color": [
+        /^#([0-9a-f]{3}|[0-9a-f]{6})$/i,
+        /^rgba?\((\s*\d+\s*,?){3,4}\)$/i,
+        /^transparent$/i,
+      ],
+      "text-align": [/^(left|right|center|justify)$/i],
+      "font-weight": [/^(bold|normal|[1-9]00)$/i],
+      "font-style": [/^(normal|italic)$/i],
+      "text-decoration": [/^(none|underline|line-through)$/i],
+      "font-size": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
+      "line-height": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
+      "margin-left": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
+      "margin-right": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
+      "margin-top": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
+      "margin-bottom": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
+      "padding-left": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
+      "padding-right": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
+      "padding-top": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
+      "padding-bottom": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
+      width: [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
+      height: [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
+      border: [/^\d+(\.\d+)?(px|pt) solid .+$/i],
+      "border-top": [/^\d+(\.\d+)?(px|pt) solid .+$/i],
+      "border-right": [/^\d+(\.\d+)?(px|pt) solid .+$/i],
+      "border-bottom": [/^\d+(\.\d+)?(px|pt) solid .+$/i],
+      "border-left": [/^\d+(\.\d+)?(px|pt) solid .+$/i],
+      "border-collapse": [/^(collapse|separate)$/i],
+    },
+  },
+  transformTags: {
+    a: (tagName, attribs) => {
+      const nextAttribs = { ...attribs };
+      if (nextAttribs.target === "_blank") {
+        const rel = new Set(
+          (nextAttribs.rel ?? "")
+            .split(/\s+/)
+            .map((value) => value.trim())
+            .filter(Boolean)
+        );
+        rel.add("noopener");
+        rel.add("noreferrer");
+        nextAttribs.rel = Array.from(rel).join(" ");
+      }
+      return { tagName, attribs: nextAttribs };
+    },
   },
 };
 
@@ -133,6 +184,8 @@ export type LessonContentResult = {
   cached: boolean;
 };
 
+const lessonContentInFlight = new Map<string, Promise<LessonContentResult>>();
+
 /**
  * Validate and return the lesson URL, enforcing the allowlist.
  */
@@ -152,6 +205,21 @@ const assertAllowedLessonUrl = (publishedUrl: string) => {
   return url;
 };
 
+const fetchWithTimeout = async (
+  input: string,
+  init: RequestInit,
+  timeoutMs: number
+) => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(input, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
+};
+
 /**
  * Fetch published lesson HTML, following safe redirects up to the limit.
  */
@@ -159,10 +227,14 @@ const fetchLessonHtml = async (url: URL, maxRedirects = 3) => {
   let currentUrl = url;
 
   for (let attempt = 0; attempt <= maxRedirects; attempt += 1) {
-    const response = await fetch(currentUrl.toString(), {
-      cache: "no-store",
-      redirect: "manual",
-    });
+    const response = await fetchWithTimeout(
+      currentUrl.toString(),
+      {
+        cache: "no-store",
+        redirect: "manual",
+      },
+      LESSON_CONTENT_FETCH_TIMEOUT_MS
+    );
 
     if (
       response.status >= 300 &&
@@ -208,18 +280,46 @@ export async function fetchLessonContent(
     }
   }
 
-  const mockHtml = env.LESSON_CONTENT_MOCK_HTML;
-  if (mockHtml && (env.isLocal || env.isTest)) {
-    const sanitizedHtml = sanitizeHtml(mockHtml, sanitizeOptions);
-    setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
-    return { lessonId: lesson.id, html: sanitizedHtml, cached: false };
+  if (!bypassCache) {
+    const inFlight = lessonContentInFlight.get(lesson.id);
+    if (inFlight) {
+      return inFlight;
+    }
   }
 
-  const validatedUrl = assertAllowedLessonUrl(lesson.publishedUrl);
-  const rawHtml = await fetchLessonHtml(validatedUrl);
-  const extractedHtml = extractLessonHtml(rawHtml);
-  const sanitizedHtml = sanitizeHtml(extractedHtml, sanitizeOptions);
-  setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
+  const fetchPromise = (async () => {
+    const mockHtml = env.LESSON_CONTENT_MOCK_HTML;
+    if (mockHtml && (env.isLocal || env.isTest)) {
+      const sanitizedHtml = sanitizeHtml(mockHtml, sanitizeOptions);
+      setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
+      return { lessonId: lesson.id, html: sanitizedHtml, cached: false };
+    }
 
-  return { lessonId: lesson.id, html: sanitizedHtml, cached: false };
+    const validatedUrl = assertAllowedLessonUrl(lesson.publishedUrl);
+    const rawHtml = await fetchLessonHtml(validatedUrl);
+    const extractedHtml = extractLessonHtml(rawHtml);
+    const sanitizedHtml = sanitizeHtml(extractedHtml, sanitizeOptions);
+    setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
+
+    return { lessonId: lesson.id, html: sanitizedHtml, cached: false };
+  })();
+
+  if (!bypassCache) {
+    lessonContentInFlight.set(lesson.id, fetchPromise);
+  }
+
+  try {
+    return await fetchPromise;
+  } catch (error) {
+    console.error("Failed to fetch lesson content.", {
+      lessonId: lesson.id,
+      publishedUrl: lesson.publishedUrl,
+      error,
+    });
+    throw error;
+  } finally {
+    if (!bypassCache) {
+      lessonContentInFlight.delete(lesson.id);
+    }
+  }
 }

@@ -36,14 +36,21 @@ describe("fetchLessonContent", () => {
 
   it("uses mock HTML in local mode and caches it", async () => {
     process.env.APP_ENV = "local";
-    process.env.LESSON_CONTENT_MOCK_HTML =
-      '<h2>Mock</h2><script>alert("x")</script>';
+    process.env.LESSON_CONTENT_MOCK_HTML = [
+      "<h2>Mock</h2>",
+      '<p style="position:fixed;color:#111">Hello</p>',
+      '<a href="https://example.com" target="_blank">Link</a>',
+      '<script>alert("x")</script>',
+    ].join("");
 
     const first = await fetchLessonContent(lesson);
 
     expect(first.cached).toBe(false);
     expect(first.html).toContain("<h2>Mock</h2>");
     expect(first.html).not.toContain("<script");
+    expect(first.html).not.toContain("position:fixed");
+    expect(first.html).toMatch(/color:\s*#111/i);
+    expect(first.html).toContain('rel="noopener noreferrer"');
     expect(fetchMock).not.toHaveBeenCalled();
 
     const second = await fetchLessonContent(lesson);
