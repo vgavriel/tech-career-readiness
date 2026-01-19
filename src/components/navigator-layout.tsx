@@ -14,8 +14,17 @@ type NavigatorLayoutProps = {
   children: React.ReactNode;
 };
 
-const MIN_WIDTH = 0.15;
-const MAX_WIDTH = 0.35;
+const WIDTH_STEPS = [15, 20, 25, 30, 35] as const;
+const MIN_WIDTH = WIDTH_STEPS[0];
+const MAX_WIDTH = WIDTH_STEPS[WIDTH_STEPS.length - 1];
+const GRID_TEMPLATE_BY_WIDTH: Record<(typeof WIDTH_STEPS)[number], string> = {
+  15: "grid-cols-[15%_12px_minmax(0,1fr)]",
+  20: "grid-cols-[20%_12px_minmax(0,1fr)]",
+  25: "grid-cols-[25%_12px_minmax(0,1fr)]",
+  30: "grid-cols-[30%_12px_minmax(0,1fr)]",
+  35: "grid-cols-[35%_12px_minmax(0,1fr)]",
+};
+const COLLAPSED_GRID_CLASS = "grid-cols-[0px_12px_minmax(0,1fr)]";
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
@@ -25,7 +34,7 @@ export default function NavigatorLayout({
   children,
 }: NavigatorLayoutProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [navigatorWidth, setNavigatorWidth] = useState(0.25);
+  const [navigatorWidth, setNavigatorWidth] = useState<(typeof WIDTH_STEPS)[number]>(25);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const isCollapsedRef = useRef(isCollapsed);
@@ -76,10 +85,13 @@ export default function NavigatorLayout({
       }
 
       const rect = containerRef.current.getBoundingClientRect();
-      const nextValue = (moveEvent.clientX - rect.left) / rect.width;
-      const clamped = clamp(nextValue, MIN_WIDTH, MAX_WIDTH);
+      const nextPercent = ((moveEvent.clientX - rect.left) / rect.width) * 100;
+      const clamped = clamp(nextPercent, MIN_WIDTH, MAX_WIDTH);
+      const closest = WIDTH_STEPS.reduce((best, candidate) =>
+        Math.abs(candidate - clamped) < Math.abs(best - clamped) ? candidate : best
+      );
 
-      setNavigatorWidth(clamped);
+      setNavigatorWidth(closest);
       setIsCollapsed(false);
     };
 
@@ -93,17 +105,15 @@ export default function NavigatorLayout({
     window.addEventListener("pointerup", handlePointerUp);
   }, []);
 
-  const gridTemplateColumns = useMemo(
-    () =>
-      `${isCollapsed ? "0px" : `${navigatorWidth * 100}%`} 12px minmax(0, 1fr)`,
+  const gridClass = useMemo(
+    () => (isCollapsed ? COLLAPSED_GRID_CLASS : GRID_TEMPLATE_BY_WIDTH[navigatorWidth]),
     [isCollapsed, navigatorWidth]
   );
 
   return (
     <div
       ref={containerRef}
-      className="page-content mx-auto grid h-full w-full max-w-[1400px] items-start gap-0 px-4 py-3 md:px-5 md:py-4"
-      style={{ gridTemplateColumns }}
+      className={`page-content mx-auto grid h-full w-full max-w-[1400px] items-start gap-0 px-4 py-3 md:px-5 md:py-4 ${gridClass}`}
     >
       <aside
         className={`h-full min-h-0 overflow-hidden rounded-lg border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] shadow-[var(--shadow-card)] transition-[width] duration-200 ${
@@ -115,11 +125,10 @@ export default function NavigatorLayout({
       </aside>
 
       <div
-        className={`relative flex h-full min-h-0 items-center justify-center ${
+        className={`relative flex h-full min-h-0 items-center justify-center touch-none ${
           isDragging ? "cursor-col-resize" : "cursor-ew-resize"
         }`}
         onPointerDown={handlePointerDown}
-        style={{ touchAction: "none" }}
         aria-hidden="true"
       >
         <div className="absolute inset-y-3 left-1/2 w-px -translate-x-1/2 bg-[color:var(--line-soft)]" />

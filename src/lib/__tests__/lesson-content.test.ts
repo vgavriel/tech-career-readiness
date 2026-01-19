@@ -38,7 +38,7 @@ describe("fetchLessonContent", () => {
     process.env.APP_ENV = "local";
     process.env.LESSON_CONTENT_MOCK_HTML = [
       "<h2>Mock</h2>",
-      '<p style="position:fixed;color:#111">Hello</p>',
+      '<p style="position:fixed;font-weight:700;font-style:italic;text-decoration:underline;color:#111">Hello</p>',
       '<a href="https://example.com">Link</a>',
       '<script>alert("x")</script>',
     ].join("");
@@ -49,7 +49,10 @@ describe("fetchLessonContent", () => {
     expect(first.html).toContain("<h2>Mock</h2>");
     expect(first.html).not.toContain("<script");
     expect(first.html).not.toContain("position:fixed");
-    expect(first.html).toMatch(/color:\s*#111/i);
+    expect(first.html).not.toContain("style=");
+    expect(first.html).toContain("doc-bold");
+    expect(first.html).toContain("doc-italic");
+    expect(first.html).toContain("doc-underline");
     expect(first.html).toContain('target="_blank"');
     expect(first.html).toContain('rel="noopener noreferrer"');
     expect(fetchMock).not.toHaveBeenCalled();
@@ -120,5 +123,32 @@ describe("fetchLessonContent", () => {
     expect(result.html).not.toContain("Published using Google Docs");
     expect(result.html).not.toContain("Report abuse");
     expect(result.html).not.toContain("Updated automatically every 5 minutes");
+  });
+
+  it("maps Google Docs class styles to emphasis classes", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><head>",
+          "<style>",
+          ".c1{font-weight:700;font-style:italic;text-decoration:underline;}",
+          "</style>",
+          "</head><body>",
+          '<div id="contents">',
+          '<p><span class="c1">Styled</span></p>',
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain("doc-bold");
+    expect(result.html).toContain("doc-italic");
+    expect(result.html).toContain("doc-underline");
+    expect(result.html).not.toContain("<style");
   });
 });

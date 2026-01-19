@@ -12,53 +12,150 @@ const allowedLessonHosts = new Set(["docs.google.com", "drive.google.com"]);
 
 const LESSON_CONTENT_FETCH_TIMEOUT_MS = 8000;
 
+const extractTextStyleClasses = (styleValue: string) => {
+  const classes = new Set<string>();
+  const normalized = styleValue.toLowerCase();
+  const fontWeightMatch = normalized.match(/font-weight\s*:\s*([^;]+)/);
+  if (fontWeightMatch) {
+    const weight = fontWeightMatch[1].trim();
+    const numeric = Number.parseInt(weight, 10);
+    if (weight === "bold" || (!Number.isNaN(numeric) && numeric >= 600)) {
+      classes.add("doc-bold");
+    }
+  }
+
+  const fontStyleMatch = normalized.match(/font-style\s*:\s*([^;]+)/);
+  if (fontStyleMatch && /(italic|oblique)/.test(fontStyleMatch[1])) {
+    classes.add("doc-italic");
+  }
+
+  const textDecorationMatch = normalized.match(
+    /text-decoration(?:-line)?\s*:\s*([^;]+)/
+  );
+  if (textDecorationMatch && textDecorationMatch[1].includes("underline")) {
+    classes.add("doc-underline");
+  }
+
+  return Array.from(classes);
+};
+
+const mergeClassNames = (existing: string | undefined, additions: string[]) => {
+  if (additions.length === 0) {
+    return existing;
+  }
+
+  const merged = new Set<string>(
+    (existing ?? "")
+      .split(/\s+/)
+      .map((value) => value.trim())
+      .filter(Boolean)
+  );
+  for (const addition of additions) {
+    merged.add(addition);
+  }
+
+  return Array.from(merged).join(" ");
+};
+
+const stripInlineStyle = (attribs: Record<string, string | undefined>) => {
+  if (!attribs.style) {
+    return attribs;
+  }
+
+  const classes = extractTextStyleClasses(attribs.style);
+  const nextAttribs = { ...attribs };
+  const mergedClass = mergeClassNames(nextAttribs.class, classes);
+  if (mergedClass) {
+    nextAttribs.class = mergedClass;
+  }
+  delete nextAttribs.style;
+
+  return nextAttribs;
+};
+
+const extractDocClassStyleMap = (document: Document) => {
+  const styleNodes = Array.from(document.querySelectorAll("style"));
+  const map = new Map<string, Set<string>>();
+  if (styleNodes.length === 0) {
+    return map;
+  }
+
+  const cssText = styleNodes
+    .map((node) => node.textContent ?? "")
+    .join("\n");
+  const ruleRegex = /([^{}]+)\{([^}]+)\}/g;
+  let match: RegExpExecArray | null;
+  while ((match = ruleRegex.exec(cssText)) !== null) {
+    const selectors = match[1].split(",");
+    const declarations = match[2];
+    const docClasses = extractTextStyleClasses(declarations);
+    if (docClasses.length === 0) {
+      continue;
+    }
+
+    for (const selector of selectors) {
+      const classMatches = selector.matchAll(/\.([a-zA-Z0-9_-]+)/g);
+      for (const classMatch of classMatches) {
+        const className = classMatch[1];
+        let existing = map.get(className);
+        if (!existing) {
+          existing = new Set<string>();
+          map.set(className, existing);
+        }
+        for (const docClass of docClasses) {
+          existing.add(docClass);
+        }
+      }
+    }
+  }
+
+  styleNodes.forEach((node) => node.remove());
+  return map;
+};
+
+const applyDocClassStyles = (
+  root: Element,
+  classStyleMap: Map<string, Set<string>>
+) => {
+  if (classStyleMap.size === 0) {
+    return;
+  }
+
+  const elements = root.matches("[class]")
+    ? [root, ...Array.from(root.querySelectorAll("[class]"))]
+    : Array.from(root.querySelectorAll("[class]"));
+
+  for (const element of elements) {
+    const additions = new Set<string>();
+    for (const className of Array.from(element.classList)) {
+      const mapped = classStyleMap.get(className);
+      if (mapped) {
+        for (const docClass of mapped) {
+          additions.add(docClass);
+        }
+      }
+    }
+    for (const docClass of additions) {
+      element.classList.add(docClass);
+    }
+  }
+};
+
 const sanitizeOptions: sanitizeHtml.IOptions = {
   allowedTags: sanitizeHtml.defaults.allowedTags,
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,
-    "*": ["class", "style"],
+    "*": ["class"],
     a: ["href", "name", "target", "rel"],
-    table: ["class", "style", "border", "cellpadding", "cellspacing", "width"],
-    thead: ["class", "style"],
-    tbody: ["class", "style"],
-    tfoot: ["class", "style"],
-    tr: ["class", "style"],
-    th: ["class", "style", "colspan", "rowspan", "scope", "width", "height"],
-    td: ["class", "style", "colspan", "rowspan", "width", "height"],
-    colgroup: ["class", "style", "span", "width"],
-    col: ["class", "style", "span", "width"],
-  },
-  allowedStyles: {
-    "*": {
-      color: [/^#([0-9a-f]{3}|[0-9a-f]{6})$/i, /^rgba?\((\s*\d+\s*,?){3,4}\)$/i],
-      "background-color": [
-        /^#([0-9a-f]{3}|[0-9a-f]{6})$/i,
-        /^rgba?\((\s*\d+\s*,?){3,4}\)$/i,
-        /^transparent$/i,
-      ],
-      "text-align": [/^(left|right|center|justify)$/i],
-      "font-weight": [/^(bold|normal|[1-9]00)$/i],
-      "font-style": [/^(normal|italic)$/i],
-      "text-decoration": [/^(none|underline|line-through)$/i],
-      "font-size": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
-      "line-height": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
-      "margin-left": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
-      "margin-right": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
-      "margin-top": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
-      "margin-bottom": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
-      "padding-left": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
-      "padding-right": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
-      "padding-top": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
-      "padding-bottom": [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
-      width: [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
-      height: [/^\d+(\.\d+)?(px|pt|em|rem|%)$/i],
-      border: [/^\d+(\.\d+)?(px|pt) solid .+$/i],
-      "border-top": [/^\d+(\.\d+)?(px|pt) solid .+$/i],
-      "border-right": [/^\d+(\.\d+)?(px|pt) solid .+$/i],
-      "border-bottom": [/^\d+(\.\d+)?(px|pt) solid .+$/i],
-      "border-left": [/^\d+(\.\d+)?(px|pt) solid .+$/i],
-      "border-collapse": [/^(collapse|separate)$/i],
-    },
+    table: ["class", "border", "cellpadding", "cellspacing", "width"],
+    thead: ["class"],
+    tbody: ["class"],
+    tfoot: ["class"],
+    tr: ["class"],
+    th: ["class", "colspan", "rowspan", "scope", "width", "height"],
+    td: ["class", "colspan", "rowspan", "width", "height"],
+    colgroup: ["class", "span", "width"],
+    col: ["class", "span", "width"],
   },
   transformTags: {
     a: (tagName, attribs) => {
@@ -74,6 +171,10 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
       nextAttribs.rel = Array.from(rel).join(" ");
       return { tagName, attribs: nextAttribs };
     },
+    "*": (tagName, attribs) => ({
+      tagName,
+      attribs: stripInlineStyle(attribs),
+    }),
   },
 };
 
@@ -84,9 +185,6 @@ const GOOGLE_DOCS_BANNER_PHRASES = [
 ];
 
 const normalizeBannerText = (text: string) => text.replace(/\s+/g, " ").trim();
-
-const stripStyleTags = (rawHtml: string) =>
-  rawHtml.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "");
 
 const stripGoogleDocsBanner = (root: Element) => {
   for (const element of Array.from(root.querySelectorAll("*"))) {
@@ -145,10 +243,10 @@ const removeLessonTitle = (root: Element) => {
 };
 
 const extractLessonHtml = (rawHtml: string) => {
-  const cleanedHtml = stripStyleTags(rawHtml);
   const virtualConsole = new VirtualConsole();
-  const dom = new JSDOM(cleanedHtml, { virtualConsole });
+  const dom = new JSDOM(rawHtml, { virtualConsole });
   const document = dom.window.document;
+  const classStyleMap = extractDocClassStyleMap(document);
 
   const contentRoot =
     document.querySelector("#contents") ??
@@ -156,11 +254,12 @@ const extractLessonHtml = (rawHtml: string) => {
     document.body;
 
   if (!contentRoot) {
-    return cleanedHtml;
+    return rawHtml;
   }
 
   removeLessonTitle(contentRoot);
   stripGoogleDocsBanner(contentRoot);
+  applyDocClassStyles(contentRoot, classStyleMap);
 
   return contentRoot.innerHTML;
 };

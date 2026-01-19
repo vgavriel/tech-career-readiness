@@ -61,7 +61,7 @@ export default function RoadmapModuleList({
 
   return (
     <div className="space-y-12">
-      {modules.map((module, moduleIndex) => {
+      {modules.map((module) => {
         const coreLessons = module.lessons.filter(
           (lesson) => !isExtraCreditLesson(lesson)
         );
@@ -83,14 +83,13 @@ export default function RoadmapModuleList({
 
         const renderLessons = (lessons: RoadmapLesson[]) => (
           <ol className="grid gap-3">
-            {lessons.map((lesson, lessonIndex) => {
+            {lessons.map((lesson) => {
               const isCompleted = isReady && isLessonCompleted(lesson.slug);
 
               return (
                 <li
                   key={lesson.id}
                   className="group flex flex-col gap-3 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-3 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] sm:flex-row sm:items-center sm:justify-between animate-fade"
-                  style={{ animationDelay: `${lessonIndex * 70}ms` }}
                 >
                   <div className="flex flex-wrap items-center gap-3">
                     <span
@@ -147,7 +146,6 @@ export default function RoadmapModuleList({
           <section
             key={module.id}
             className="relative overflow-hidden rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)] md:p-8 animate-fade"
-            style={{ animationDelay: `${moduleIndex * 90}ms` }}
           >
             <div className="absolute -right-12 top-6 h-28 w-28 rounded-full bg-[color:var(--accent-500)] opacity-20 blur-3xl" />
             <div className="relative space-y-6">

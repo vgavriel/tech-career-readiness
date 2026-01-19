@@ -53,11 +53,10 @@ export default function FocusPicker({
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        {FOCUS_OPTIONS.map((option, index) => (
+        {FOCUS_OPTIONS.map((option) => (
           <button
             key={option.key}
             className="group flex h-full flex-col justify-between rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4 text-left shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] animate-fade"
-            style={{ animationDelay: `${index * 70}ms` }}
             onClick={() => handleSelect(option.key)}
             type="button"
           >

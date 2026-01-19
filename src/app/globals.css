@@ -166,6 +166,25 @@ body {
   font-size: 1.35rem;
 }
 
+.lesson-content strong,
+.lesson-content b,
+.lesson-content .doc-bold {
+  font-weight: 700;
+}
+
+.lesson-content em,
+.lesson-content i,
+.lesson-content .doc-italic {
+  font-style: italic;
+}
+
+.lesson-content u,
+.lesson-content .doc-underline {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
 
 .lesson-content ul,
 .lesson-content ol {

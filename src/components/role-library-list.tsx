@@ -27,7 +27,7 @@ export default function RoleLibraryList({ lessons }: RoleLibraryListProps) {
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      {lessons.map((lesson, index) => {
+      {lessons.map((lesson) => {
         const isCompleted = isReady && isLessonCompleted(lesson.slug);
 
         return (
@@ -35,7 +35,6 @@ export default function RoleLibraryList({ lessons }: RoleLibraryListProps) {
             key={lesson.id}
             href={`/lesson/${lesson.slug}`}
             className="group block rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-4 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] animate-fade"
-            style={{ animationDelay: `${index * 70}ms` }}
           >
             <article className="flex flex-col gap-3">
               <div className="flex items-center justify-between gap-3">

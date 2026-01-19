@@ -42,11 +42,10 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
       </div>
 
       <div className="mt-4 grid gap-3">
-        {primaryBadges.map((badge, index) => (
+        {primaryBadges.map((badge) => (
           <div
             key={badge.key}
             className="flex flex-col gap-3 rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-2.5 shadow-[var(--shadow-soft)] animate-fade"
-            style={{ animationDelay: `${index * 70}ms` }}
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="space-y-1">
@@ -97,11 +96,10 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
             </span>
           </summary>
           <div className="mt-3 grid gap-3">
-            {extraBadges.map((badge, index) => (
+            {extraBadges.map((badge) => (
               <div
                 key={badge.key}
                 className="flex flex-col gap-2 rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-2.5 shadow-[var(--shadow-soft)]"
-                style={{ animationDelay: `${(index + 3) * 70}ms` }}
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="space-y-1">
