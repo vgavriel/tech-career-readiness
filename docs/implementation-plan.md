@@ -233,7 +233,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Remove duplicate lesson key/id handling (slug-only progress)
 - [x] Drop unused cohort/module slug tables and simplify seed data
 - [x] Normalize user emails and add progress indexes
-- [ ] Regenerate baseline migration for the reset schema
+- [x] Regenerate baseline migration for the reset schema
 
 ### Phase 7 — Quality pass + polish
 - [x] Error handling for missing lessons/content fetch failures
