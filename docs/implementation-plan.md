@@ -181,6 +181,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Add CI pipeline to run lint + unit tests on every PR
 - [x] Add integration tests job once APIs exist (Phase 3+)
 - [x] Add E2E tests job once core pages exist (Phase 4+)
+- [x] Add accessibility checks with pa11y (WCAG AAA) in CI and local scripts
 
 ### Phase 0.9 — Curriculum planning (Brown-specific)
 - [x] Create `docs/curriculum-plan.md` with modules, focuses, progress categories, and gamification

@@ -1,0 +1,16 @@
+{
+  "defaults": {
+    "standard": "WCAG2AAA",
+    "timeout": 60000,
+    "wait": 1000,
+    "chromeLaunchConfig": {
+      "args": ["--no-sandbox"]
+    }
+  },
+  "urls": [
+    "http://localhost:3000/",
+    "http://localhost:3000/lesson/ace-interview-prep-timeline",
+    "http://localhost:3000/badges",
+    "http://localhost:3000/roles"
+  ]
+}
