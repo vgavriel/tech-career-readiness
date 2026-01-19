@@ -19,7 +19,7 @@ export default function SiteHeader() {
   const signInOptions = buildSignInOptions(authProvider.id);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[color:var(--line-soft)] border-t-4 border-t-[color:var(--accent-500)] bg-[rgba(255,250,244,0.92)] backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-[color:var(--line-soft)] border-t-4 border-t-[color:var(--accent-500)] bg-[color:var(--wash-0)]">
       <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-2 px-5 py-2 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap items-center gap-4">
           <Link

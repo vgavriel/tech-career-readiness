@@ -201,7 +201,7 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
   allowedTags: sanitizeHtml.defaults.allowedTags,
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,
-    "*": ["class"],
+    "*": ["class", "id"],
     a: ["href", "name", "target", "rel"],
     ol: ["class", "start"],
     li: ["class", "value"],
@@ -246,6 +246,61 @@ const GOOGLE_DOCS_BANNER_PHRASES = [
 ];
 
 const normalizeBannerText = (text: string) => text.replace(/\s+/g, " ").trim();
+
+const hasMeaningfulText = (text: string | null | undefined) =>
+  normalizeBannerText(text ?? "") !== "";
+
+const removeEmptyHeadings = (root: Element) => {
+  for (const heading of Array.from(
+    root.querySelectorAll("h1,h2,h3,h4,h5,h6")
+  )) {
+    if (!hasMeaningfulText(heading.textContent)) {
+      heading.remove();
+    }
+  }
+};
+
+const normalizeHeadingLevels = (root: Element) => {
+  const headings = Array.from(root.querySelectorAll("h1,h2,h3,h4,h5,h6"));
+  let currentLevel = 1;
+
+  for (const heading of headings) {
+    const level = Number.parseInt(heading.tagName.slice(1), 10);
+    if (!Number.isFinite(level)) {
+      continue;
+    }
+
+    const targetLevel = Math.min(level, currentLevel + 1);
+    if (targetLevel !== level) {
+      const replacement = root.ownerDocument?.createElement(`h${targetLevel}`);
+      if (replacement) {
+        for (const attribute of Array.from(heading.attributes)) {
+          replacement.setAttribute(attribute.name, attribute.value);
+        }
+        while (heading.firstChild) {
+          replacement.appendChild(heading.firstChild);
+        }
+        heading.replaceWith(replacement);
+      }
+    }
+
+    currentLevel = targetLevel;
+  }
+};
+
+const stripEmptyAnchors = (root: Element) => {
+  for (const anchor of Array.from(root.querySelectorAll("a"))) {
+    if (anchor.hasAttribute("id") || anchor.hasAttribute("name")) {
+      continue;
+    }
+
+    const hasText = hasMeaningfulText(anchor.textContent);
+    const hasMedia = Boolean(anchor.querySelector("img, svg"));
+    if (!hasText && !hasMedia) {
+      anchor.remove();
+    }
+  }
+};
 
 const stripGoogleDocsBanner = (root: Element) => {
   for (const element of Array.from(root.querySelectorAll("*"))) {
@@ -321,6 +376,9 @@ const extractLessonHtml = (rawHtml: string) => {
   removeLessonTitle(contentRoot);
   stripGoogleDocsBanner(contentRoot);
   applyDocClassStyles(contentRoot, classStyleMap);
+  stripEmptyAnchors(contentRoot);
+  removeEmptyHeadings(contentRoot);
+  normalizeHeadingLevels(contentRoot);
 
   return contentRoot.innerHTML;
 };

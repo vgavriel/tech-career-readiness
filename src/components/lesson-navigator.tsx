@@ -230,7 +230,13 @@ export default function LessonNavigator({
                           aria-current={isActive ? "page" : undefined}
                           id={buildLessonId(lesson.slug)}
                         >
-                          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
+                          <div
+                            className={`flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] ${
+                              isActive
+                                ? "text-[color:var(--ink-900)]"
+                                : "text-[color:var(--ink-700)]"
+                            }`}
+                          >
                             <span>
                               {module.order}.{lesson.order}
                             </span>

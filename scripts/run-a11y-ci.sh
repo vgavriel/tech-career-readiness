@@ -29,4 +29,6 @@ if ! curl -sf "${BASE_URL}/" >/dev/null; then
   exit 1
 fi
 
-npm run test:a11y:local
+PA11Y_CONFIG="tooling/pa11yci.config.js"
+
+PA11Y_BASE_URL="${BASE_URL}" ./node_modules/.bin/pa11y-ci --config "${PA11Y_CONFIG}"

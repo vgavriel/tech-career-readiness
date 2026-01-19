@@ -199,4 +199,52 @@ describe("fetchLessonContent", () => {
     expect(result.html).toContain('ol start="3"');
     expect(result.html).toContain('li value="3"');
   });
+
+  it("preserves in-page anchors and removes empty links", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          '<a id="h.anchor"></a>',
+          '<p><a href="#h.anchor">Jump</a></p>',
+          '<p><a href="https://example.com">&nbsp;</a></p>',
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain('id="h.anchor"');
+    expect(result.html).toContain('href="#h.anchor"');
+    expect(result.html).not.toContain('href="https://example.com"');
+  });
+
+  it("normalizes heading order and drops empty headings", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          "<h4>Section One</h4>",
+          "<h3>Subsection</h3>",
+          "<h2> </h2>",
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain("<h2>Section One</h2>");
+    expect(result.html).toContain("<h3>Subsection</h3>");
+    expect(result.html).not.toContain("<h2> </h2>");
+  });
 });
