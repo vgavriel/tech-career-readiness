@@ -39,7 +39,7 @@ describe("fetchLessonContent", () => {
     process.env.LESSON_CONTENT_MOCK_HTML = [
       "<h2>Mock</h2>",
       '<p style="position:fixed;color:#111">Hello</p>',
-      '<a href="https://example.com" target="_blank">Link</a>',
+      '<a href="https://example.com">Link</a>',
       '<script>alert("x")</script>',
     ].join("");
 
@@ -50,6 +50,7 @@ describe("fetchLessonContent", () => {
     expect(first.html).not.toContain("<script");
     expect(first.html).not.toContain("position:fixed");
     expect(first.html).toMatch(/color:\s*#111/i);
+    expect(first.html).toContain('target="_blank"');
     expect(first.html).toContain('rel="noopener noreferrer"');
     expect(fetchMock).not.toHaveBeenCalled();
 

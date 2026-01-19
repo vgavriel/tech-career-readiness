@@ -62,18 +62,16 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
   },
   transformTags: {
     a: (tagName, attribs) => {
-      const nextAttribs = { ...attribs };
-      if (nextAttribs.target === "_blank") {
-        const rel = new Set(
-          (nextAttribs.rel ?? "")
-            .split(/\s+/)
-            .map((value) => value.trim())
-            .filter(Boolean)
-        );
-        rel.add("noopener");
-        rel.add("noreferrer");
-        nextAttribs.rel = Array.from(rel).join(" ");
-      }
+      const nextAttribs = { ...attribs, target: "_blank" };
+      const rel = new Set(
+        (nextAttribs.rel ?? "")
+          .split(/\s+/)
+          .map((value) => value.trim())
+          .filter(Boolean)
+      );
+      rel.add("noopener");
+      rel.add("noreferrer");
+      nextAttribs.rel = Array.from(rel).join(" ");
       return { tagName, attribs: nextAttribs };
     },
   },
