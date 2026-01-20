@@ -217,19 +217,22 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
   },
   transformTags: {
     a: (tagName, attribs) => {
-      const nextAttribs: sanitizeHtml.Attributes = {
-        ...attribs,
-        target: "_blank",
-      };
-      const rel = new Set(
-        (nextAttribs.rel ?? "")
-          .split(/\s+/)
-          .map((value) => value.trim())
-          .filter(Boolean)
-      );
-      rel.add("noopener");
-      rel.add("noreferrer");
-      nextAttribs.rel = Array.from(rel).join(" ");
+      const nextAttribs: sanitizeHtml.Attributes = { ...attribs };
+      if (isExternalHref(nextAttribs.href)) {
+        nextAttribs.target = "_blank";
+        const rel = new Set(
+          (nextAttribs.rel ?? "")
+            .split(/\s+/)
+            .map((value) => value.trim())
+            .filter(Boolean)
+        );
+        rel.add("noopener");
+        rel.add("noreferrer");
+        nextAttribs.rel = Array.from(rel).join(" ");
+      } else {
+        delete nextAttribs.target;
+        delete nextAttribs.rel;
+      }
       return { tagName, attribs: nextAttribs };
     },
     "*": (tagName, attribs) => ({
@@ -246,6 +249,40 @@ const GOOGLE_DOCS_BANNER_PHRASES = [
 ];
 
 const normalizeBannerText = (text: string) => text.replace(/\s+/g, " ").trim();
+
+const isExternalHref = (href: string | undefined) => {
+  if (!href) {
+    return false;
+  }
+
+  const trimmed = href.trim();
+  if (!trimmed) {
+    return false;
+  }
+
+  if (trimmed.startsWith("//")) {
+    return true;
+  }
+
+  if (
+    trimmed.startsWith("#") ||
+    trimmed.startsWith("/") ||
+    trimmed.startsWith("./") ||
+    trimmed.startsWith("../") ||
+    trimmed.startsWith("mailto:") ||
+    trimmed.startsWith("tel:") ||
+    trimmed.startsWith("sms:")
+  ) {
+    return false;
+  }
+
+  try {
+    const url = new URL(trimmed);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+};
 
 const hasMeaningfulText = (text: string | null | undefined) =>
   normalizeBannerText(text ?? "") !== "";
