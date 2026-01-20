@@ -66,7 +66,6 @@ export async function POST(request: Request) {
 
   const validLessonIds = lessons.map((lesson) => lesson.id);
   const validLessonSlugs = lessons.map((lesson) => lesson.slug);
-  const validLessonIdSet = new Set(validLessonIds);
   const validLessonSlugSet = new Set(validLessonSlugs);
 
   if (validLessonIds.length === 0) {
