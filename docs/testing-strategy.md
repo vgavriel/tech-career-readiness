@@ -58,6 +58,12 @@ Run against the built app with a seeded test DB.
   - unknown lesson slug shows 404
   - upstream content failure shows a friendly error state
 
+## Accessibility checks (automated)
+- Use pa11y-ci with WCAG AAA standard for key routes.
+- Run locally with `npm run test:a11y:local` (server already running) or `npm run test:a11y` (build + start).
+- CI runs `npm run test:a11y` against a seeded test database with mock lesson content.
+- `npm run test:a11y` will auto-start the Dockerized test DB if `DATABASE_URL` is missing or unreachable (set `A11Y_SKIP_TEST_DB=1` to skip).
+
 ## Flake prevention checklist
 - Do not hit real OAuth or external content URLs in tests.
 - Mock all network calls with MSW or Playwright routing.

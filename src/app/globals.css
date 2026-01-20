@@ -7,7 +7,7 @@
   --brand-brown: #4e3629;
   --brand-brown-dark: #2f1f17;
   --brand-gold: #ffc72c;
-  --brand-deep-red: #c00404;
+  --brand-deep-red: #a00000;
   --brand-gray: #98a4ae;
   --brand-sky: #59cbe8;
   --brand-emerald: #00b398;
@@ -20,18 +20,19 @@
   --wash-300: #d8c6b4;
   --surface: #fffaf4;
   --ink-900: var(--brand-brown-dark);
-  --ink-800: var(--brand-brown);
-  --ink-700: #5a4638;
-  --ink-600: #635246;
-  --ink-500: #6f645b;
+  --ink-800: #3b2a20;
+  --ink-700: var(--brand-brown);
+  --ink-600: #5a4638;
+  --ink-500: #5f4a3e;
   --accent-700: var(--brand-deep-red);
   --accent-500: var(--brand-gold);
   --accent-300: #f7ddb0;
-  --line-soft: #dbcbb8;
-  --line-strong: var(--brand-taupe);
+  --line-soft: #927766;
+  --line-strong: #7a6155;
   --shadow-soft: none;
   --shadow-card: none;
   --shadow-lift: none;
+  --focus-ring: var(--brand-navy);
 }
 
 html,
@@ -44,6 +45,7 @@ body {
   color: var(--ink-900);
   background: var(--wash-100);
   font-family: var(--font-body), sans-serif;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color-scheme: light;
@@ -58,7 +60,10 @@ body {
 
   a {
     color: inherit;
-    text-decoration: none;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.2em;
+    text-decoration-color: currentColor;
   }
 }
 
@@ -95,6 +100,31 @@ body {
   z-index: 1;
 }
 
+#main-content {
+  scroll-margin-top: 5rem;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1.5rem;
+  top: 1rem;
+  z-index: 100;
+  border-radius: 999px;
+  background: var(--accent-500);
+  color: var(--ink-900);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.65rem 1.2rem;
+  text-transform: uppercase;
+  transform: translateY(-200%);
+  transition: transform 0.2s ease;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
 .summary-clean {
   list-style: none;
 }
@@ -122,8 +152,17 @@ body {
 }
 
 .scroll-panel::-webkit-scrollbar-thumb {
-  background: rgba(111, 100, 91, 0.5);
+  background: rgba(74, 53, 41, 0.6);
   border-radius: 999px;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
 }
 
 @media (max-width: 768px) {
@@ -197,6 +236,51 @@ body {
 
 .lesson-content ol {
   list-style: decimal;
+}
+
+.lesson-content li > ul,
+.lesson-content li > ol {
+  margin-top: 0.75rem;
+  padding-left: 1.6rem;
+}
+
+.lesson-content .doc-indent-1 {
+  padding-left: 1.5rem;
+}
+
+.lesson-content .doc-indent-2 {
+  padding-left: 3rem;
+}
+
+.lesson-content .doc-indent-3 {
+  padding-left: 4.5rem;
+}
+
+.lesson-content .doc-indent-4 {
+  padding-left: 6rem;
+}
+
+.lesson-content li.doc-indent-1,
+.lesson-content li.doc-indent-2,
+.lesson-content li.doc-indent-3,
+.lesson-content li.doc-indent-4 {
+  padding-left: 0;
+}
+
+.lesson-content li.doc-indent-1 {
+  margin-left: 1.5rem;
+}
+
+.lesson-content li.doc-indent-2 {
+  margin-left: 3rem;
+}
+
+.lesson-content li.doc-indent-3 {
+  margin-left: 4.5rem;
+}
+
+.lesson-content li.doc-indent-4 {
+  margin-left: 6rem;
 }
 
 .lesson-content a {
@@ -320,5 +404,23 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-rise,
+  .animate-rise-delayed,
+  .animate-float-slow,
+  .animate-fade {
+    animation: none !important;
   }
 }

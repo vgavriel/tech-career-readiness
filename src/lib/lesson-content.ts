@@ -12,7 +12,55 @@ const allowedLessonHosts = new Set(["docs.google.com", "drive.google.com"]);
 
 const LESSON_CONTENT_FETCH_TIMEOUT_MS = 8000;
 
-const extractTextStyleClasses = (styleValue: string) => {
+const INDENT_STEP_PX = 24;
+const MAX_INDENT_LEVEL = 4;
+
+const parseCssLength = (value: string) => {
+  const match = value.trim().match(/^(-?\d*\.?\d+)(px|pt|rem|em)?$/);
+  if (!match) {
+    return null;
+  }
+
+  const numeric = Number.parseFloat(match[1]);
+  if (Number.isNaN(numeric)) {
+    return null;
+  }
+
+  const unit = match[2] ?? "px";
+  if (unit === "pt") {
+    return numeric * (4 / 3);
+  }
+  if (unit === "rem" || unit === "em") {
+    return numeric * 16;
+  }
+
+  return numeric;
+};
+
+const extractIndentClass = (styleValue: string) => {
+  const normalized = styleValue.toLowerCase();
+  const candidates = [
+    normalized.match(/margin-left\s*:\s*([^;]+)/)?.[1],
+    normalized.match(/padding-left\s*:\s*([^;]+)/)?.[1],
+    normalized.match(/text-indent\s*:\s*([^;]+)/)?.[1],
+  ]
+    .map((value) => (value ? parseCssLength(value) : null))
+    .filter((value): value is number => value !== null && value > 0);
+
+  if (candidates.length === 0) {
+    return null;
+  }
+
+  const maxValue = Math.max(...candidates);
+  const level = Math.min(
+    MAX_INDENT_LEVEL,
+    Math.max(1, Math.round(maxValue / INDENT_STEP_PX))
+  );
+
+  return `doc-indent-${level}`;
+};
+
+const extractDocStyleClasses = (styleValue: string) => {
   const classes = new Set<string>();
   const normalized = styleValue.toLowerCase();
   const fontWeightMatch = normalized.match(/font-weight\s*:\s*([^;]+)/);
@@ -36,6 +84,11 @@ const extractTextStyleClasses = (styleValue: string) => {
     classes.add("doc-underline");
   }
 
+  const indentClass = extractIndentClass(styleValue);
+  if (indentClass) {
+    classes.add(indentClass);
+  }
+
   return Array.from(classes);
 };
 
@@ -57,13 +110,16 @@ const mergeClassNames = (existing: string | undefined, additions: string[]) => {
   return Array.from(merged).join(" ");
 };
 
-const stripInlineStyle = (attribs: Record<string, string | undefined>) => {
-  if (!attribs.style) {
-    return attribs;
+const stripInlineStyle = (
+  attribs: sanitizeHtml.Attributes
+): sanitizeHtml.Attributes => {
+  const nextAttribs: sanitizeHtml.Attributes = { ...attribs };
+  const styleValue = nextAttribs.style;
+  if (!styleValue) {
+    return nextAttribs;
   }
 
-  const classes = extractTextStyleClasses(attribs.style);
-  const nextAttribs = { ...attribs };
+  const classes = extractDocStyleClasses(styleValue);
   const mergedClass = mergeClassNames(nextAttribs.class, classes);
   if (mergedClass) {
     nextAttribs.class = mergedClass;
@@ -88,7 +144,7 @@ const extractDocClassStyleMap = (document: Document) => {
   while ((match = ruleRegex.exec(cssText)) !== null) {
     const selectors = match[1].split(",");
     const declarations = match[2];
-    const docClasses = extractTextStyleClasses(declarations);
+    const docClasses = extractDocStyleClasses(declarations);
     if (docClasses.length === 0) {
       continue;
     }
@@ -145,8 +201,10 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
   allowedTags: sanitizeHtml.defaults.allowedTags,
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,
-    "*": ["class"],
+    "*": ["class", "id"],
     a: ["href", "name", "target", "rel"],
+    ol: ["class", "start"],
+    li: ["class", "value"],
     table: ["class", "border", "cellpadding", "cellspacing", "width"],
     thead: ["class"],
     tbody: ["class"],
@@ -159,16 +217,22 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
   },
   transformTags: {
     a: (tagName, attribs) => {
-      const nextAttribs = { ...attribs, target: "_blank" };
-      const rel = new Set(
-        (nextAttribs.rel ?? "")
-          .split(/\s+/)
-          .map((value) => value.trim())
-          .filter(Boolean)
-      );
-      rel.add("noopener");
-      rel.add("noreferrer");
-      nextAttribs.rel = Array.from(rel).join(" ");
+      const nextAttribs: sanitizeHtml.Attributes = { ...attribs };
+      if (isExternalHref(nextAttribs.href)) {
+        nextAttribs.target = "_blank";
+        const rel = new Set(
+          (nextAttribs.rel ?? "")
+            .split(/\s+/)
+            .map((value) => value.trim())
+            .filter(Boolean)
+        );
+        rel.add("noopener");
+        rel.add("noreferrer");
+        nextAttribs.rel = Array.from(rel).join(" ");
+      } else {
+        delete nextAttribs.target;
+        delete nextAttribs.rel;
+      }
       return { tagName, attribs: nextAttribs };
     },
     "*": (tagName, attribs) => ({
@@ -185,6 +249,95 @@ const GOOGLE_DOCS_BANNER_PHRASES = [
 ];
 
 const normalizeBannerText = (text: string) => text.replace(/\s+/g, " ").trim();
+
+const isExternalHref = (href: string | undefined) => {
+  if (!href) {
+    return false;
+  }
+
+  const trimmed = href.trim();
+  if (!trimmed) {
+    return false;
+  }
+
+  if (trimmed.startsWith("//")) {
+    return true;
+  }
+
+  if (
+    trimmed.startsWith("#") ||
+    trimmed.startsWith("/") ||
+    trimmed.startsWith("./") ||
+    trimmed.startsWith("../") ||
+    trimmed.startsWith("mailto:") ||
+    trimmed.startsWith("tel:") ||
+    trimmed.startsWith("sms:")
+  ) {
+    return false;
+  }
+
+  try {
+    const url = new URL(trimmed);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
+const hasMeaningfulText = (text: string | null | undefined) =>
+  normalizeBannerText(text ?? "") !== "";
+
+const removeEmptyHeadings = (root: Element) => {
+  for (const heading of Array.from(
+    root.querySelectorAll("h1,h2,h3,h4,h5,h6")
+  )) {
+    if (!hasMeaningfulText(heading.textContent)) {
+      heading.remove();
+    }
+  }
+};
+
+const normalizeHeadingLevels = (root: Element) => {
+  const headings = Array.from(root.querySelectorAll("h1,h2,h3,h4,h5,h6"));
+  let currentLevel = 1;
+
+  for (const heading of headings) {
+    const level = Number.parseInt(heading.tagName.slice(1), 10);
+    if (!Number.isFinite(level)) {
+      continue;
+    }
+
+    const targetLevel = Math.min(level, currentLevel + 1);
+    if (targetLevel !== level) {
+      const replacement = root.ownerDocument?.createElement(`h${targetLevel}`);
+      if (replacement) {
+        for (const attribute of Array.from(heading.attributes)) {
+          replacement.setAttribute(attribute.name, attribute.value);
+        }
+        while (heading.firstChild) {
+          replacement.appendChild(heading.firstChild);
+        }
+        heading.replaceWith(replacement);
+      }
+    }
+
+    currentLevel = targetLevel;
+  }
+};
+
+const stripEmptyAnchors = (root: Element) => {
+  for (const anchor of Array.from(root.querySelectorAll("a"))) {
+    if (anchor.hasAttribute("id") || anchor.hasAttribute("name")) {
+      continue;
+    }
+
+    const hasText = hasMeaningfulText(anchor.textContent);
+    const hasMedia = Boolean(anchor.querySelector("img, svg"));
+    if (!hasText && !hasMedia) {
+      anchor.remove();
+    }
+  }
+};
 
 const stripGoogleDocsBanner = (root: Element) => {
   for (const element of Array.from(root.querySelectorAll("*"))) {
@@ -260,6 +413,9 @@ const extractLessonHtml = (rawHtml: string) => {
   removeLessonTitle(contentRoot);
   stripGoogleDocsBanner(contentRoot);
   applyDocClassStyles(contentRoot, classStyleMap);
+  stripEmptyAnchors(contentRoot);
+  removeEmptyHeadings(contentRoot);
+  normalizeHeadingLevels(contentRoot);
 
   return contentRoot.innerHTML;
 };

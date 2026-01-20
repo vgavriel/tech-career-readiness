@@ -107,7 +107,7 @@ export default function LessonNavigator({
               onClick={() => {
                 void setFocusKey(null);
               }}
-              className="rounded-md border border-[color:var(--line-soft)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]"
+              className="min-h-11 rounded-md border border-[color:var(--line-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]"
             >
               Clear focus
             </button>
@@ -158,8 +158,8 @@ export default function LessonNavigator({
                 open={isActiveModule}
                 className="group rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] shadow-[var(--shadow-soft)]"
               >
-                <summary className="summary-clean cursor-pointer px-3 py-2">
-                  <div className="flex items-start justify-between gap-3">
+                <summary className="summary-clean flex min-h-11 cursor-pointer items-center px-3 py-2">
+                  <div className="flex w-full items-start gap-3">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                         Module {module.order}
@@ -168,7 +168,7 @@ export default function LessonNavigator({
                         {module.title}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="ml-auto flex items-center gap-2">
                       {isModuleComplete ? (
                         <span className="flex h-5 w-5 items-center justify-center rounded-full border border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]">
                           <span className="sr-only">Module completed</span>
@@ -188,7 +188,7 @@ export default function LessonNavigator({
                           </svg>
                         </span>
                       ) : null}
-                      <span className="shrink-0 whitespace-nowrap rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-600)]">
+                      <span className="shrink-0 whitespace-nowrap rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-600)]">
                         {isReady ? progressLabel : "Loading"}
                       </span>
                       <svg
@@ -218,19 +218,41 @@ export default function LessonNavigator({
                     return (
                       <div
                         key={lesson.id}
-                        className={`flex items-center gap-2 rounded-md border px-2.5 py-1 text-sm transition ${
+                        className={`flex min-h-11 items-stretch gap-2 rounded-md border px-2.5 py-2 text-sm transition ${
                           isActive
                             ? "border-[color:var(--accent-700)] bg-[color:var(--accent-500)] text-[color:var(--ink-900)]"
                             : "border-[color:var(--line-soft)] bg-[color:var(--wash-50)] text-[color:var(--ink-700)] hover:border-[color:var(--line-strong)]"
                         }`}
                       >
+                        <Link
+                          href={`/lesson/${lesson.slug}`}
+                          className="no-underline flex flex-1 flex-col justify-center gap-1 py-1"
+                          aria-current={isActive ? "page" : undefined}
+                          id={buildLessonId(lesson.slug)}
+                        >
+                          <div
+                            className={`flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] ${
+                              isActive
+                                ? "text-[color:var(--ink-900)]"
+                                : "text-[color:var(--ink-700)]"
+                            }`}
+                          >
+                            <span>
+                              {module.order}.{lesson.order}
+                            </span>
+                            {isExtra ? (
+                              <span className="rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-600)]">
+                                Extra credit
+                              </span>
+                            ) : null}
+                          </div>
+                          <span className="text-sm font-semibold text-[color:var(--ink-900)]">
+                            {lesson.title}
+                          </span>
+                        </Link>
                         <button
                           type="button"
-                          className={`flex h-4 w-4 items-center justify-center rounded-full border text-[color:var(--ink-500)] ${
-                            isCompleted
-                              ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
-                              : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)]"
-                          }`}
+                          className="flex h-11 w-11 items-center justify-center"
                           aria-pressed={isCompleted}
                           aria-label={
                             isCompleted
@@ -242,43 +264,31 @@ export default function LessonNavigator({
                             void setLessonCompletion(lesson.slug, !isCompleted)
                           }
                         >
-                          {isCompleted ? (
-                            <svg
-                              aria-hidden="true"
-                              className="h-3.5 w-3.5"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={3}
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                          ) : null}
-                        </button>
-                        <Link
-                          href={`/lesson/${lesson.slug}`}
-                          className="flex flex-1 flex-col gap-1"
-                          aria-current={isActive ? "page" : undefined}
-                          id={buildLessonId(lesson.slug)}
-                        >
-                          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
-                            <span>
-                              {module.order}.{lesson.order}
-                            </span>
-                            {isExtra ? (
-                              <span className="rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-600)]">
-                                Extra credit
-                              </span>
+                          <span
+                            className={`flex h-5 w-5 items-center justify-center rounded-full border text-[color:var(--ink-500)] ${
+                              isCompleted
+                                ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
+                                : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)]"
+                            }`}
+                          >
+                            {isCompleted ? (
+                              <svg
+                                aria-hidden="true"
+                                className="h-3.5 w-3.5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={3}
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M5 13l4 4L19 7"
+                                />
+                              </svg>
                             ) : null}
-                          </div>
-                          <span className="text-sm font-semibold text-[color:var(--ink-900)]">
-                            {lesson.title}
                           </span>
-                        </Link>
+                        </button>
                       </div>
                     );
                   })}
@@ -294,11 +304,11 @@ export default function LessonNavigator({
           ? "Progress syncs to your account."
           : "Progress is saved in this browser until you sign in."}
         {isMerging ? " Syncing guest progress..." : ""}
-        {!isAuthenticated ? (
-          <SignInCta className="mt-3 inline-flex text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent-700)]">
-            Sign in to save progress
-          </SignInCta>
-        ) : null}
+      {!isAuthenticated ? (
+        <SignInCta className="mt-3 inline-flex min-h-11 items-center px-3 text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--accent-700)]">
+          Sign in to save progress
+        </SignInCta>
+      ) : null}
       </div>
     </div>
   );

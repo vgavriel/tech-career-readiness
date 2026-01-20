@@ -133,10 +133,12 @@ describe("fetchLessonContent", () => {
           "<html><head>",
           "<style>",
           ".c1{font-weight:700;font-style:italic;text-decoration:underline;}",
+          ".c2{margin-left:36pt;}",
           "</style>",
           "</head><body>",
           '<div id="contents">',
           '<p><span class="c1">Styled</span></p>',
+          '<p class="c2">Indented</p>',
           "</div>",
           "</body></html>",
         ].join(""),
@@ -149,6 +151,143 @@ describe("fetchLessonContent", () => {
     expect(result.html).toContain("doc-bold");
     expect(result.html).toContain("doc-italic");
     expect(result.html).toContain("doc-underline");
+    expect(result.html).toContain("doc-indent-2");
     expect(result.html).not.toContain("<style");
+  });
+
+  it("maps inline indentation styles to doc indent classes", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          '<p style="margin-left:24px">Indented</p>',
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain("doc-indent-1");
+    expect(result.html).not.toContain("margin-left");
+    expect(result.html).not.toContain("style=");
+  });
+
+  it("preserves ordered list start and item value attributes", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          '<ol start="3">',
+          '<li value="3">Week 3</li>',
+          "</ol>",
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain('ol start="3"');
+    expect(result.html).toContain('li value="3"');
+  });
+
+  it("preserves in-page anchors and removes empty links", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          '<a id="h.anchor"></a>',
+          '<p><a href="#h.anchor">Jump</a></p>',
+          '<p><a href="https://example.com">&nbsp;</a></p>',
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain('id="h.anchor"');
+    expect(result.html).toContain('href="#h.anchor"');
+    expect(result.html).not.toContain('target="_blank"');
+    expect(result.html).not.toContain('rel="noopener');
+    expect(result.html).not.toContain('href="https://example.com"');
+  });
+
+  it("normalizes heading order and drops empty headings", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          "<h4>Section One</h4>",
+          "<h3>Subsection</h3>",
+          "<h2> </h2>",
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain("<h2>Section One</h2>");
+    expect(result.html).toContain("<h3>Subsection</h3>");
+    expect(result.html).not.toContain("<h2> </h2>");
+  });
+
+  it("adds target/rel only for external links", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          '<p><a href="https://example.com">External</a></p>',
+          '<p><a href="//example.com">Protocol</a></p>',
+          '<p><a href="#section">In-page</a></p>',
+          '<p><a href="/relative">Relative</a></p>',
+          '<p><a href="mailto:test@example.com">Mail</a></p>',
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = result.html;
+
+    const external = wrapper.querySelector('a[href="https://example.com"]');
+    const protocol = wrapper.querySelector('a[href="//example.com"]');
+    const inPage = wrapper.querySelector('a[href="#section"]');
+    const relative = wrapper.querySelector('a[href="/relative"]');
+    const mail = wrapper.querySelector('a[href="mailto:test@example.com"]');
+
+    expect(external).toHaveAttribute("target", "_blank");
+    expect(external).toHaveAttribute("rel", "noopener noreferrer");
+    expect(protocol).toHaveAttribute("target", "_blank");
+    expect(protocol).toHaveAttribute("rel", "noopener noreferrer");
+    expect(inPage).not.toHaveAttribute("target");
+    expect(inPage).not.toHaveAttribute("rel");
+    expect(relative).not.toHaveAttribute("target");
+    expect(relative).not.toHaveAttribute("rel");
+    expect(mail).not.toHaveAttribute("target");
+    expect(mail).not.toHaveAttribute("rel");
   });
 });

@@ -6,7 +6,11 @@ import Link from "next/link";
 export default function LessonNotFound() {
   return (
     <div className="page-shell min-h-screen overflow-hidden">
-      <main className="page-content mx-auto flex w-full max-w-4xl flex-col px-5 pb-20 pt-12 md:pt-20">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="page-content mx-auto flex w-full max-w-4xl flex-col px-5 pb-20 pt-12 md:pt-20"
+      >
         <section className="rounded-2xl border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
             Lesson not found
@@ -21,13 +25,13 @@ export default function LessonNotFound() {
           <div className="mt-6 flex flex-wrap gap-4">
             <Link
               href="/lesson/start-to-finish-roadmap"
-              className="rounded-lg bg-[color:var(--accent-700)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
+              className="no-underline inline-flex min-h-11 items-center justify-center rounded-lg bg-[color:var(--accent-700)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
             >
               Back to course
             </Link>
             <Link
               href="/"
-              className="rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-800)] hover:bg-[color:var(--accent-500)]"
+              className="no-underline inline-flex min-h-11 items-center justify-center rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-800)] hover:bg-[color:var(--accent-500)]"
             >
               Go to landing
             </Link>

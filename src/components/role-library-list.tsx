@@ -34,7 +34,7 @@ export default function RoleLibraryList({ lessons }: RoleLibraryListProps) {
           <Link
             key={lesson.id}
             href={`/lesson/${lesson.slug}`}
-            className="group block rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-4 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] animate-fade"
+            className="no-underline group block rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-4 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--line-strong)] animate-fade"
           >
             <article className="flex flex-col gap-3">
               <div className="flex items-center justify-between gap-3">
@@ -71,7 +71,7 @@ export default function RoleLibraryList({ lessons }: RoleLibraryListProps) {
                   <span className="sr-only">Role deep dive</span>
                 </div>
                 <span
-                  className={`rounded-md border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.25em] ${
+                  className={`rounded-md border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-[0.25em] ${
                     isCompleted
                       ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
                       : "border-[color:var(--accent-500)] bg-[color:var(--accent-500)] text-[color:var(--ink-900)]"

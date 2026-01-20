@@ -36,7 +36,7 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
             Momentum markers
           </h2>
         </div>
-        <span className="rounded-md border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
+        <span className="rounded-md border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-2.5 py-0.5 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
           {earnedCount} of {badges.length} earned
         </span>
       </div>
@@ -57,7 +57,7 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
                 </p>
               </div>
               <span
-                className={`rounded-md border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.3em] ${
+                className={`rounded-md border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-[0.3em] ${
                   badge.isEarned
                     ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
                     : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-700)]"
@@ -75,7 +75,7 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
 
       {extraBadges.length ? (
         <details className="group mt-4 rounded-xl border border-dashed border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-3">
-          <summary className="summary-clean flex cursor-pointer list-none items-center justify-between text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+          <summary className="summary-clean flex min-h-11 cursor-pointer list-none items-center justify-between text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
             <span>View all badges</span>
             <span className="flex items-center gap-2">
               {extraBadges.length} more
@@ -111,7 +111,7 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
                     </p>
                   </div>
                   <span
-                    className={`rounded-md border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.3em] ${
+                    className={`rounded-md border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-[0.3em] ${
                       badge.isEarned
                         ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
                         : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-700)]"

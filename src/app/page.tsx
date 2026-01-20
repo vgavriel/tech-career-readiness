@@ -31,7 +31,11 @@ export default async function Home() {
 
   return (
     <div className="page-shell min-h-screen overflow-hidden">
-      <main className="page-content mx-auto flex w-full max-w-6xl flex-col gap-10 px-5 pb-20 pt-12 md:pt-20 lg:gap-14">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="page-content mx-auto flex w-full max-w-6xl flex-col gap-10 px-5 pb-20 pt-12 md:pt-20 lg:gap-14"
+      >
         <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div className="space-y-6 animate-rise">
             <div className="inline-flex items-center gap-3 rounded-lg border border-[color:var(--accent-500)] bg-[color:var(--wash-0)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-800)]">
@@ -49,12 +53,12 @@ export default async function Home() {
             <div className="flex flex-wrap gap-4">
               <Link
                 href={startLessonHref}
-                className="inline-flex w-full items-center justify-center rounded-lg bg-[color:var(--accent-700)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)] sm:w-auto"
+                className="no-underline inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-[color:var(--accent-700)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)] sm:w-auto"
               >
                 Start the course
               </Link>
               {!isAuthenticated ? (
-                <SignInCta className="inline-flex w-full items-center justify-center rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--ink-900)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-800)] hover:bg-[color:var(--accent-500)] sm:w-auto">
+                <SignInCta className="inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--ink-900)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-800)] hover:bg-[color:var(--accent-500)] sm:w-auto">
                   Save progress
                 </SignInCta>
               ) : null}
@@ -89,7 +93,7 @@ export default async function Home() {
                 <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-500)]">
                   Start here
                 </p>
-                <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
+                <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
                   Module 1
                 </span>
               </div>

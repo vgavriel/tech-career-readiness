@@ -126,7 +126,7 @@ export default function RoadmapModuleList({
                     </span>
                     <Link
                       href={`/lesson/${lesson.slug}${focusQuery}`}
-                      className="text-sm font-semibold text-[color:var(--ink-900)] transition group-hover:text-[color:var(--accent-700)] md:text-base"
+                      className="inline-flex min-h-11 items-center text-sm font-semibold text-[color:var(--ink-900)] transition group-hover:text-[color:var(--accent-700)] md:text-base"
                     >
                       {lesson.title}
                     </Link>
@@ -155,16 +155,16 @@ export default function RoadmapModuleList({
                     Module {module.order}
                   </p>
                   {hasCore ? (
-                    <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
+                    <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
                       {coreLessons.length} core
                     </span>
                   ) : (
-                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-700)]">
+                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-700)]">
                       Extra credit only
                     </span>
                   )}
                   {hasExtra ? (
-                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-700)]">
+                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-700)]">
                       {hasCore
                         ? `+${extraLessons.length} extra`
                         : `${extraLessons.length} lessons`}
@@ -199,7 +199,7 @@ export default function RoadmapModuleList({
                 {hasExtra ? (
                   hasCore ? (
                     <details className="group rounded-2xl border border-dashed border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5">
-                      <summary className="summary-clean flex cursor-pointer list-none items-center justify-between gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+                      <summary className="summary-clean flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
                         <span>Extra credit (optional)</span>
                         <span className="flex items-center gap-2 text-[color:var(--ink-500)]">
                           {isReady

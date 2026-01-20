@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
   type PointerEvent as ReactPointerEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 
 type NavigatorLayoutProps = {
@@ -108,6 +109,52 @@ export default function NavigatorLayout({
     window.addEventListener("pointerup", handlePointerUp);
   }, []);
 
+  const handleResizeKeyDown = useCallback(
+    (event: ReactKeyboardEvent<HTMLDivElement>) => {
+      const currentIndex = WIDTH_STEPS.indexOf(navigatorWidth);
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        if (isCollapsed) {
+          return;
+        }
+        if (currentIndex <= 0) {
+          setIsCollapsed(true);
+          return;
+        }
+        setNavigatorWidth(WIDTH_STEPS[currentIndex - 1]);
+        return;
+      }
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        if (isCollapsed) {
+          setIsCollapsed(false);
+          setNavigatorWidth(MIN_WIDTH);
+          return;
+        }
+        if (currentIndex >= WIDTH_STEPS.length - 1) {
+          return;
+        }
+        setNavigatorWidth(WIDTH_STEPS[currentIndex + 1]);
+        return;
+      }
+
+      if (event.key === "Home") {
+        event.preventDefault();
+        setIsCollapsed(false);
+        setNavigatorWidth(MIN_WIDTH);
+      }
+
+      if (event.key === "End") {
+        event.preventDefault();
+        setIsCollapsed(false);
+        setNavigatorWidth(MAX_WIDTH);
+      }
+    },
+    [isCollapsed, navigatorWidth]
+  );
+
   const gridClass = useMemo(
     () => (isCollapsed ? COLLAPSED_GRID_CLASS : GRID_TEMPLATE_BY_WIDTH[navigatorWidth]),
     [isCollapsed, navigatorWidth]
@@ -119,6 +166,8 @@ export default function NavigatorLayout({
       className={`page-content mx-auto grid h-full w-full max-w-[1400px] items-start gap-0 px-4 py-3 md:px-5 md:py-4 ${gridClass}`}
     >
       <aside
+        id="lesson-navigator"
+        aria-label="Lesson navigator"
         className={`h-full min-h-0 overflow-hidden rounded-lg border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] shadow-[var(--shadow-card)] transition-[width] duration-200 ${
           isCollapsed ? "pointer-events-none opacity-0" : "opacity-100"
         }`}
@@ -132,7 +181,17 @@ export default function NavigatorLayout({
           isDragging ? "cursor-col-resize" : "cursor-ew-resize"
         }`}
         onPointerDown={handlePointerDown}
-        aria-hidden="true"
+        role="separator"
+        tabIndex={0}
+        aria-controls="lesson-navigator"
+        aria-orientation="vertical"
+        aria-valuemin={0}
+        aria-valuemax={MAX_WIDTH}
+        aria-valuenow={isCollapsed ? 0 : navigatorWidth}
+        aria-valuetext={
+          isCollapsed ? "Navigator collapsed" : `Navigator width ${navigatorWidth}%`
+        }
+        onKeyDown={handleResizeKeyDown}
       >
         <div className="absolute inset-y-3 left-1/2 w-px -translate-x-1/2 bg-[color:var(--line-soft)]" />
         <button
@@ -142,7 +201,7 @@ export default function NavigatorLayout({
             event.stopPropagation();
             setIsCollapsed((collapsed) => !collapsed);
           }}
-          className="absolute top-3 flex h-7 w-7 items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-700)] shadow-[var(--shadow-soft)] transition hover:border-[color:var(--ink-900)]"
+          className="absolute top-3 flex h-11 w-11 items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-700)] shadow-[var(--shadow-soft)] transition hover:border-[color:var(--ink-900)]"
           aria-label={isCollapsed ? "Expand navigator" : "Collapse navigator"}
         >
           <svg
@@ -164,7 +223,11 @@ export default function NavigatorLayout({
         </button>
       </div>
 
-      <main className="scroll-panel flex h-full min-h-0 flex-col gap-6 overflow-y-auto rounded-lg border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] px-4 pb-8 pt-6 shadow-[var(--shadow-card)] md:px-6 md:pt-7">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="scroll-panel flex h-full min-h-0 flex-col gap-6 overflow-y-auto rounded-lg border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] px-4 pb-8 pt-6 shadow-[var(--shadow-card)] md:px-6 md:pt-7"
+      >
         {children}
       </main>
     </div>

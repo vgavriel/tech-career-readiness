@@ -52,7 +52,7 @@ export default function LessonProgressCard({
       <p className="mt-1 text-xs text-[color:var(--ink-500)]">{statusLabel}</p>
 
       <button
-        className={`mt-4 w-full rounded-full px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.2em] shadow-[var(--shadow-soft)] transition disabled:cursor-not-allowed disabled:opacity-60 ${
+        className={`mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-full px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.2em] shadow-[var(--shadow-soft)] transition disabled:cursor-not-allowed disabled:opacity-60 ${
           completed
             ? "border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-900)] hover:border-[color:var(--ink-900)]"
             : "bg-[color:var(--accent-700)] text-[color:var(--wash-0)] hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
@@ -77,7 +77,7 @@ export default function LessonProgressCard({
 
       {!isAuthenticated ? (
         <SignInCta
-          className="mt-3 inline-flex text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-700)]"
+          className="mt-3 inline-flex min-h-11 items-center px-3 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-700)]"
         >
           Sign in to save progress
         </SignInCta>

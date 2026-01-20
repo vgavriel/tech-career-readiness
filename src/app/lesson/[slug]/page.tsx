@@ -127,7 +127,10 @@ export default async function LessonPage({
         }
       >
         <div className="space-y-5">
-          <nav className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-500)]">
+          <nav
+            aria-label="Breadcrumb"
+            className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-500)]"
+          >
             <Link href="/" className="transition hover:text-[color:var(--ink-900)]">
               Course
             </Link>
@@ -244,7 +247,7 @@ export default async function LessonPage({
                   </a>
                 ) : null}
                 {contentError ? (
-                  <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
+                  <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
                     Syncing docs
                   </span>
                 ) : null}

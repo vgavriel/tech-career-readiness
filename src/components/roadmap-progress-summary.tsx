@@ -184,6 +184,7 @@ export default function RoadmapProgressSummary({
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={progressValue}
+          aria-valuetext={coreSummary.progressLabel}
         >
           <svg
             className="h-full w-full -rotate-90"
@@ -203,7 +204,7 @@ export default function RoadmapProgressSummary({
               cy="50"
               r={ringRadius}
               fill="none"
-              stroke="var(--accent-500)"
+              stroke="var(--accent-700)"
               strokeWidth={8}
               strokeDasharray={ringCircumference}
               strokeDashoffset={ringOffset}
@@ -254,7 +255,7 @@ export default function RoadmapProgressSummary({
       {primaryLesson ? (
         <Link
           href={`/lesson/${primaryLesson.slug}`}
-          className="inline-flex w-full items-center justify-center rounded-full bg-[color:var(--accent-700)] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)] sm:w-auto"
+          className="no-underline inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[color:var(--accent-700)] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)] sm:w-auto"
         >
           {ctaLabel}
         </Link>
@@ -275,7 +276,7 @@ export default function RoadmapProgressSummary({
 
       {!isAuthenticated ? (
         <SignInCta
-          className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-700)]"
+          className="inline-flex min-h-11 items-center px-3 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-700)]"
         >
           Sign in to save progress
         </SignInCta>

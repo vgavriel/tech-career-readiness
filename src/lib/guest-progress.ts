@@ -98,7 +98,7 @@ export const readGuestProgress = (): GuestProgressState => {
       return cloneState(emptyState);
     }
 
-    const normalized = {
+    const normalized: GuestProgressState = {
       version: 1,
       completed: normalizeCompleted(parsed.completed),
     };
@@ -114,7 +114,7 @@ export const readGuestProgress = (): GuestProgressState => {
  * Persist guest progress to storage and update the in-memory fallback.
  */
 export const writeGuestProgress = (state: GuestProgressState) => {
-  const normalized = {
+  const normalized: GuestProgressState = {
     version: 1,
     completed: normalizeCompleted(state.completed),
   };
