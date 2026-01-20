@@ -16,6 +16,7 @@ This file provides meta-context for coding agents working in this repo.
 - Commit after each phase; run a pre-commit review for bugs/edge cases/cleanup.
 - Add/update tests for features or bugfixes; avoid real network/OAuth in tests.
 - State which tests were run or why they were not run.
+- Use the installed Context7 MCP for up-to-date docs for all deps and packages.
 
 ## Key paths
 - App routes and pages: `src/app`
