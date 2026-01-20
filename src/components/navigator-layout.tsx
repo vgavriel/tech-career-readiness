@@ -163,12 +163,12 @@ export default function NavigatorLayout({
   return (
     <div
       ref={containerRef}
-      className={`page-content mx-auto grid h-full w-full max-w-[1400px] items-start gap-0 px-4 py-3 md:px-5 md:py-4 ${gridClass}`}
+      className={`page-content mx-auto grid h-full w-full max-w-[1400px] items-start gap-0 px-4 py-4 md:px-6 md:py-6 ${gridClass}`}
     >
       <aside
         id="lesson-navigator"
         aria-label="Lesson navigator"
-        className={`h-full min-h-0 overflow-hidden rounded-lg border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] shadow-[var(--shadow-card)] transition-[width] duration-200 ${
+        className={`h-full min-h-0 overflow-hidden rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] shadow-[var(--shadow-card)] transition-[width] duration-200 ${
           isCollapsed ? "pointer-events-none opacity-0" : "opacity-100"
         }`}
         aria-hidden={isCollapsed}
@@ -193,7 +193,7 @@ export default function NavigatorLayout({
         }
         onKeyDown={handleResizeKeyDown}
       >
-        <div className="absolute inset-y-3 left-1/2 w-px -translate-x-1/2 bg-[color:var(--line-soft)]" />
+        <div className="absolute inset-y-6 left-1/2 w-px -translate-x-1/2 bg-[color:var(--line-soft)]" />
         <button
           type="button"
           onPointerDown={(event) => event.stopPropagation()}
@@ -201,7 +201,7 @@ export default function NavigatorLayout({
             event.stopPropagation();
             setIsCollapsed((collapsed) => !collapsed);
           }}
-          className="absolute top-3 flex h-11 w-11 items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-700)] shadow-[var(--shadow-soft)] transition hover:border-[color:var(--ink-900)]"
+          className="absolute top-6 flex h-10 w-10 items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-700)] shadow-[var(--shadow-soft)] transition hover:border-[color:var(--ink-900)]"
           aria-label={isCollapsed ? "Expand navigator" : "Collapse navigator"}
         >
           <svg
@@ -226,7 +226,7 @@ export default function NavigatorLayout({
       <main
         id="main-content"
         tabIndex={-1}
-        className="scroll-panel flex h-full min-h-0 flex-col gap-6 overflow-y-auto rounded-lg border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] px-4 pb-8 pt-6 shadow-[var(--shadow-card)] md:px-6 md:pt-7"
+        className="scroll-panel flex h-full min-h-0 flex-col gap-6 overflow-y-auto rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] px-5 pb-8 pt-6 shadow-[var(--shadow-card)] md:px-7 md:pt-8"
       >
         {children}
       </main>

@@ -94,9 +94,85 @@ export default function LessonNavigator({
     };
   }, [isLessonCompleted, isReady, visibleModules]);
 
+  const renderLessonRow = (
+    lesson: RoadmapModule["lessons"][number],
+    moduleOrder: number,
+    options?: { showExtraTag?: boolean }
+  ) => {
+    const isActive = lesson.slug === currentLessonSlug;
+    const isCompleted = isReady && isLessonCompleted(lesson.slug);
+    const isExtra = isExtraCreditLesson(lesson);
+    const isDisabled = !isReady || isMerging;
+
+    return (
+      <div
+        key={lesson.id}
+        className={`flex min-h-11 items-stretch gap-2 rounded-xl border px-3 py-2 text-sm transition ${
+          isActive
+            ? "border-[color:var(--accent-700)] bg-[color:var(--accent-300)] text-[color:var(--ink-900)]"
+            : "border-[color:var(--line-soft)] bg-[color:var(--wash-50)] text-[color:var(--ink-700)] hover:border-[color:var(--line-strong)]"
+        }`}
+      >
+        <Link
+          href={`/lesson/${lesson.slug}`}
+          className="no-underline flex flex-1 flex-col justify-center gap-1 py-1"
+          aria-current={isActive ? "page" : undefined}
+          id={buildLessonId(lesson.slug)}
+        >
+          <div className="flex flex-wrap items-center gap-2 text-xs text-[color:var(--ink-600)]">
+            <span>
+              {moduleOrder}.{lesson.order}
+            </span>
+            {options?.showExtraTag && isExtra ? (
+              <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2 py-0.5 text-[0.7rem] font-semibold text-[color:var(--ink-600)]">
+                Extra credit
+              </span>
+            ) : null}
+          </div>
+          <span className="text-sm font-semibold text-[color:var(--ink-900)]">
+            {lesson.title}
+          </span>
+        </Link>
+        <button
+          type="button"
+          className={`flex h-10 w-10 items-center justify-center rounded-full border transition disabled:cursor-not-allowed disabled:opacity-60 ${
+            isCompleted
+              ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
+              : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-600)]"
+          }`}
+          aria-pressed={isCompleted}
+          aria-label={
+            isCompleted
+              ? `Mark ${lesson.title} incomplete`
+              : `Mark ${lesson.title} complete`
+          }
+          disabled={isDisabled}
+          onClick={() => void setLessonCompletion(lesson.slug, !isCompleted)}
+        >
+          {isCompleted ? (
+            <svg
+              aria-hidden="true"
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={3}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          ) : null}
+        </button>
+      </div>
+    );
+  };
+
   return (
-    <div className="flex h-full flex-col gap-3 px-3 pb-3 pt-4">
-      <div className="space-y-2">
+    <div className="flex h-full flex-col gap-4 px-4 pb-4 pt-5">
+      <div className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm font-semibold text-[color:var(--ink-900)]">
             {focusLabel}
@@ -107,24 +183,20 @@ export default function LessonNavigator({
               onClick={() => {
                 void setFocusKey(null);
               }}
-              className="min-h-11 rounded-md border border-[color:var(--line-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]"
+              className="min-h-10 rounded-full border border-[color:var(--line-soft)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]"
             >
               Clear focus
             </button>
           ) : null}
         </div>
-        <div className="grid gap-2 rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-2.5 text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-600)]">
+        <div className="grid gap-2 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-xs text-[color:var(--ink-600)]">
           <div className="flex items-center justify-between">
             <span>Core progress</span>
-            <span>
-              {isReady ? `${coreCompleted} / ${coreTotal}` : "Loading"}
-            </span>
+            <span>{isReady ? `${coreCompleted} / ${coreTotal}` : "Loading"}</span>
           </div>
           <div className="flex items-center justify-between">
             <span>Extra credit</span>
-            <span>
-              {isReady ? `${extraCompleted} / ${extraTotal}` : "Loading"}
-            </span>
+            <span>{isReady ? `${extraCompleted} / ${extraTotal}` : "Loading"}</span>
           </div>
         </div>
       </div>
@@ -136,8 +208,16 @@ export default function LessonNavigator({
             const coreLessons = module.lessons.filter(
               (lesson) => !isExtraCreditLesson(lesson)
             );
-            const extraLessonsCount = module.lessons.length - coreLessons.length;
+            const extraLessons = module.lessons.filter((lesson) =>
+              isExtraCreditLesson(lesson)
+            );
             const coreCompletedCount = coreLessons.reduce(
+              (count, lesson) =>
+                count +
+                (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
+              0
+            );
+            const extraCompletedCount = extraLessons.reduce(
               (count, lesson) =>
                 count +
                 (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
@@ -150,18 +230,21 @@ export default function LessonNavigator({
             const progressLabel =
               coreLessons.length > 0
                 ? `${coreCompletedCount}/${coreLessons.length} core`
-                : `${extraLessonsCount} extra`;
+                : `${extraCompletedCount}/${extraLessons.length} extra`;
+            const isActiveExtra = extraLessons.some(
+              (lesson) => lesson.slug === currentLessonSlug
+            );
 
             return (
               <details
                 key={module.id}
                 open={isActiveModule}
-                className="group rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] shadow-[var(--shadow-soft)]"
+                className="group rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] shadow-[var(--shadow-soft)]"
               >
-                <summary className="summary-clean flex min-h-11 cursor-pointer items-center px-3 py-2">
-                  <div className="flex w-full items-start gap-3">
+                <summary className="summary-clean flex min-h-11 cursor-pointer items-center px-3 py-3">
+                  <div className="flex w-full items-center gap-3">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                      <p className="text-xs font-semibold text-[color:var(--ink-500)]">
                         Module {module.order}
                       </p>
                       <p className="mt-1 text-sm font-semibold text-[color:var(--ink-900)]">
@@ -188,7 +271,7 @@ export default function LessonNavigator({
                           </svg>
                         </span>
                       ) : null}
-                      <span className="shrink-0 whitespace-nowrap rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-600)]">
+                      <span className="shrink-0 whitespace-nowrap rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2.5 py-0.5 text-xs font-semibold text-[color:var(--ink-600)]">
                         {isReady ? progressLabel : "Loading"}
                       </span>
                       <svg
@@ -208,90 +291,48 @@ export default function LessonNavigator({
                     </div>
                   </div>
                 </summary>
-                <div className="space-y-2 px-3 pb-3">
-                  {module.lessons.map((lesson) => {
-                    const isActive = lesson.slug === currentLessonSlug;
-                    const isCompleted = isReady && isLessonCompleted(lesson.slug);
-                    const isExtra = isExtraCreditLesson(lesson);
-                    const isDisabled = !isReady || isMerging;
-
-                    return (
-                      <div
-                        key={lesson.id}
-                        className={`flex min-h-11 items-stretch gap-2 rounded-md border px-2.5 py-2 text-sm transition ${
-                          isActive
-                            ? "border-[color:var(--accent-700)] bg-[color:var(--accent-500)] text-[color:var(--ink-900)]"
-                            : "border-[color:var(--line-soft)] bg-[color:var(--wash-50)] text-[color:var(--ink-700)] hover:border-[color:var(--line-strong)]"
-                        }`}
-                      >
-                        <Link
-                          href={`/lesson/${lesson.slug}`}
-                          className="no-underline flex flex-1 flex-col justify-center gap-1 py-1"
-                          aria-current={isActive ? "page" : undefined}
-                          id={buildLessonId(lesson.slug)}
-                        >
-                          <div
-                            className={`flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] ${
-                              isActive
-                                ? "text-[color:var(--ink-900)]"
-                                : "text-[color:var(--ink-700)]"
-                            }`}
+                <div className="space-y-3 px-3 pb-3">
+                  {coreLessons.length ? (
+                    <div className="space-y-2">
+                      {coreLessons.map((lesson) =>
+                        renderLessonRow(lesson, module.order)
+                      )}
+                    </div>
+                  ) : null}
+                  {extraLessons.length ? (
+                    <details
+                      open={isActiveExtra || coreLessons.length === 0}
+                      className="group rounded-xl border border-dashed border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-2"
+                    >
+                      <summary className="summary-clean flex min-h-11 cursor-pointer items-center justify-between gap-3 text-xs font-semibold text-[color:var(--ink-600)]">
+                        <span>Extra credit</span>
+                        <span className="flex items-center gap-2 text-[color:var(--ink-500)]">
+                          {isReady
+                            ? `${extraCompletedCount} / ${extraLessons.length}`
+                            : "Loading"}
+                          <svg
+                            aria-hidden="true"
+                            className="h-4 w-4 transition group-open:rotate-180"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2}
                           >
-                            <span>
-                              {module.order}.{lesson.order}
-                            </span>
-                            {isExtra ? (
-                              <span className="rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-600)]">
-                                Extra credit
-                              </span>
-                            ) : null}
-                          </div>
-                          <span className="text-sm font-semibold text-[color:var(--ink-900)]">
-                            {lesson.title}
-                          </span>
-                        </Link>
-                        <button
-                          type="button"
-                          className="flex h-11 w-11 items-center justify-center"
-                          aria-pressed={isCompleted}
-                          aria-label={
-                            isCompleted
-                              ? `Mark ${lesson.title} incomplete`
-                              : `Mark ${lesson.title} complete`
-                          }
-                          disabled={isDisabled}
-                          onClick={() =>
-                            void setLessonCompletion(lesson.slug, !isCompleted)
-                          }
-                        >
-                          <span
-                            className={`flex h-5 w-5 items-center justify-center rounded-full border text-[color:var(--ink-500)] ${
-                              isCompleted
-                                ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
-                                : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)]"
-                            }`}
-                          >
-                            {isCompleted ? (
-                              <svg
-                                aria-hidden="true"
-                                className="h-3.5 w-3.5"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth={3}
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M5 13l4 4L19 7"
-                                />
-                              </svg>
-                            ) : null}
-                          </span>
-                        </button>
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M6 9l6 6 6-6"
+                            />
+                          </svg>
+                        </span>
+                      </summary>
+                      <div className="mt-2 space-y-2 pb-2">
+                        {extraLessons.map((lesson) =>
+                          renderLessonRow(lesson, module.order)
+                        )}
                       </div>
-                    );
-                  })}
+                    </details>
+                  ) : null}
                 </div>
               </details>
             );
@@ -299,16 +340,16 @@ export default function LessonNavigator({
         </div>
       </div>
 
-      <div className="rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-2.5 text-xs text-[color:var(--ink-600)]">
+      <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-xs text-[color:var(--ink-600)]">
         {isAuthenticated
           ? "Progress syncs to your account."
           : "Progress is saved in this browser until you sign in."}
         {isMerging ? " Syncing guest progress..." : ""}
-      {!isAuthenticated ? (
-        <SignInCta className="mt-3 inline-flex min-h-11 items-center px-3 text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--accent-700)]">
-          Sign in to save progress
-        </SignInCta>
-      ) : null}
+        {!isAuthenticated ? (
+          <SignInCta className="mt-3 inline-flex min-h-10 items-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 text-xs font-semibold text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]">
+            Sign in to save progress
+          </SignInCta>
+        ) : null}
       </div>
     </div>
   );

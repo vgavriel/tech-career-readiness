@@ -4,34 +4,34 @@
   --font-body: Arial, "Helvetica Neue", Helvetica, sans-serif;
   --font-display: Georgia, "Times New Roman", serif;
   --font-mono: Arial, "Helvetica Neue", Helvetica, sans-serif;
-  --brand-brown: #4e3629;
-  --brand-brown-dark: #2f1f17;
-  --brand-gold: #ffc72c;
-  --brand-deep-red: #a00000;
-  --brand-gray: #98a4ae;
-  --brand-sky: #59cbe8;
-  --brand-emerald: #00b398;
-  --brand-navy: #003c71;
-  --brand-taupe: #b7b09c;
-  --wash-0: #ffffff;
-  --wash-50: #fbf7f1;
-  --wash-100: #f4ede4;
-  --wash-200: #e8dccd;
-  --wash-300: #d8c6b4;
-  --surface: #fffaf4;
+  --brand-brown: #4a332b;
+  --brand-brown-dark: #2b1d18;
+  --brand-gold: #d6b185;
+  --brand-deep-red: #7e1f1f;
+  --brand-gray: #8f9aa3;
+  --brand-sky: #4c7fa1;
+  --brand-emerald: #1a7a67;
+  --brand-navy: #1f4f73;
+  --brand-taupe: #b7a490;
+  --wash-0: #fefcf9;
+  --wash-50: #f8f3ec;
+  --wash-100: #f1e9df;
+  --wash-200: #e3d7c9;
+  --wash-300: #d2c0ae;
+  --surface: #fbf6ef;
   --ink-900: var(--brand-brown-dark);
-  --ink-800: #3b2a20;
-  --ink-700: var(--brand-brown);
-  --ink-600: #5a4638;
-  --ink-500: #5f4a3e;
+  --ink-800: #3a2620;
+  --ink-700: #4f372c;
+  --ink-600: #5f4538;
+  --ink-500: #6f594d;
   --accent-700: var(--brand-deep-red);
   --accent-500: var(--brand-gold);
-  --accent-300: #f7ddb0;
-  --line-soft: #927766;
-  --line-strong: #7a6155;
-  --shadow-soft: none;
-  --shadow-card: none;
-  --shadow-lift: none;
+  --accent-300: #e9d1b2;
+  --line-soft: #d1c1b2;
+  --line-strong: #b6a090;
+  --shadow-soft: 0 1px 2px rgba(33, 24, 19, 0.08);
+  --shadow-card: 0 14px 32px rgba(33, 24, 19, 0.12);
+  --shadow-lift: 0 22px 48px rgba(33, 24, 19, 0.18);
   --focus-ring: var(--brand-navy);
 }
 
@@ -61,7 +61,7 @@ body {
   a {
     color: inherit;
     text-decoration: underline;
-    text-decoration-thickness: 2px;
+    text-decoration-thickness: 1px;
     text-underline-offset: 0.2em;
     text-decoration-color: currentColor;
   }
@@ -75,10 +75,9 @@ body {
   position: relative;
   isolation: isolate;
   background:
-    radial-gradient(circle at 14% 12%, rgba(255, 199, 44, 0.16), transparent 54%),
-    radial-gradient(circle at 88% -6%, rgba(192, 4, 4, 0.12), transparent 52%),
-    radial-gradient(circle at 18% 70%, rgba(0, 60, 113, 0.1), transparent 55%),
-    linear-gradient(180deg, #fffaf4 0%, #f7efe4 52%, #efe3d7 100%);
+    radial-gradient(circle at 12% 10%, rgba(126, 31, 31, 0.08), transparent 56%),
+    radial-gradient(circle at 86% 6%, rgba(76, 127, 161, 0.08), transparent 54%),
+    linear-gradient(180deg, #fefcf9 0%, #f7efe4 55%, #efe4d7 100%);
 }
 
 .page-shell::before {
@@ -86,12 +85,12 @@ body {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(78, 54, 41, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(78, 54, 41, 0.03) 1px, transparent 1px);
-  background-size: 56px 56px, 56px 56px;
+    linear-gradient(rgba(78, 54, 41, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(78, 54, 41, 0.025) 1px, transparent 1px);
+  background-size: 64px 64px, 64px 64px;
   background-position: 0 0, 0 0;
   background-repeat: repeat, repeat;
-  opacity: 0.12;
+  opacity: 0.08;
   pointer-events: none;
 }
 
@@ -112,10 +111,10 @@ body {
   border-radius: 999px;
   background: var(--accent-500);
   color: var(--ink-900);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  padding: 0.65rem 1.2rem;
+  padding: 0.6rem 1.1rem;
   text-transform: uppercase;
   transform: translateY(-200%);
   transition: transform 0.2s ease;
@@ -176,6 +175,8 @@ body {
   color: var(--ink-700);
   font-size: 1.05rem;
   line-height: 1.85;
+  max-width: 68ch;
+  margin: 0 auto;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
@@ -359,12 +360,12 @@ body {
 }
 
 .animate-rise {
-  animation: rise-in 0.7s ease-out both;
+  animation: rise-in 0.5s ease-out both;
 }
 
 .animate-rise-delayed {
-  animation: rise-in 0.8s ease-out both;
-  animation-delay: 0.1s;
+  animation: rise-in 0.6s ease-out both;
+  animation-delay: 0.08s;
 }
 
 .animate-float-slow {
@@ -372,13 +373,13 @@ body {
 }
 
 .animate-fade {
-  animation: fade-in 0.7s ease-out both;
+  animation: fade-in 0.5s ease-out both;
 }
 
 @keyframes rise-in {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -399,7 +400,7 @@ body {
 @keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;

@@ -2,9 +2,10 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 
 import FocusPicker from "@/components/focus-picker";
-import SignInCta from "@/components/sign-in-cta";
+import HomeProgressCard from "@/components/home-progress-card";
 import { authOptions } from "@/lib/auth";
 import { getLessonExample } from "@/lib/lesson-examples";
+import { prisma } from "@/lib/prisma";
 
 /**
  * Renders the marketing landing page with the primary CTAs and highlights.
@@ -18,15 +19,36 @@ export default async function Home() {
   const lessonExample = getLessonExample("start-to-finish-roadmap");
   const startLessonSlug = lessonExample?.slug ?? "start-to-finish-roadmap";
   const startLessonHref = `/lesson/${startLessonSlug}`;
+  const modules = await prisma.module.findMany({
+    orderBy: { order: "asc" },
+    select: {
+      id: true,
+      key: true,
+      title: true,
+      description: true,
+      order: true,
+      lessons: {
+        where: { isArchived: false },
+        orderBy: { order: "asc" },
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          order: true,
+          estimatedMinutes: true,
+        },
+      },
+    },
+  });
   const outcomes = lessonExample?.outcomes ?? [
     "Pick the focus that matches your urgency.",
     "Sequence the next three lessons.",
     "Turn the plan into weekly action.",
   ];
   const stats = [
-    { label: "9 modules", value: "Brown-built sequence" },
-    { label: "Core-first", value: "Extra credit optional" },
-    { label: "15-30 min", value: "Short, scoped reads" },
+    { label: "9 modules", value: "Brown-specific sequence" },
+    { label: "Short lessons", value: "15-30 minutes" },
+    { label: "Clear next steps", value: "Know what is next" },
   ];
 
   return (
@@ -36,38 +58,38 @@ export default async function Home() {
         tabIndex={-1}
         className="page-content mx-auto flex w-full max-w-6xl flex-col gap-10 px-5 pb-20 pt-12 md:pt-20 lg:gap-14"
       >
-        <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+        <section className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
           <div className="space-y-6 animate-rise">
-            <div className="inline-flex items-center gap-3 rounded-lg border border-[color:var(--accent-500)] bg-[color:var(--wash-0)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-800)]">
+            <div className="inline-flex items-center gap-3 rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-2 text-xs font-semibold text-[color:var(--ink-700)]">
               <span className="h-2 w-2 rounded-full bg-[color:var(--accent-700)]" />
-              Brown student tech recruiting roadmap
+              Brown CS recruiting roadmap
             </div>
-            <h1 className="font-display text-4xl leading-[1.08] text-[color:var(--ink-900)] md:text-5xl lg:text-6xl">
-              Land your first tech role with a focused, Brown-built plan.
+            <h1 className="font-display text-4xl leading-[1.1] text-[color:var(--ink-900)] md:text-5xl lg:text-6xl">
+              Calm, step-by-step prep for tech recruiting at Brown.
             </h1>
             <p className="max-w-2xl text-base text-[color:var(--ink-700)] md:text-lg">
-              Follow a clear sequence: positioning, portfolio, outreach,
-              interviews, and offers. Each lesson is short, scoped, and mapped
-              to real recruiting milestones.
+              Short, focused lessons paired with Brown-specific resources so you
+              always know the next move.
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-3">
               <Link
                 href={startLessonHref}
-                className="no-underline inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-[color:var(--accent-700)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)] sm:w-auto"
+                className="no-underline inline-flex min-h-11 items-center justify-center rounded-full border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] px-5 py-2 text-xs font-semibold text-[color:var(--ink-900)] shadow-[var(--shadow-soft)] transition hover:border-[color:var(--ink-900)]"
               >
-                Start the course
+                Start with lesson 1
               </Link>
-              {!isAuthenticated ? (
-                <SignInCta className="inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--ink-900)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-800)] hover:bg-[color:var(--accent-500)] sm:w-auto">
-                  Save progress
-                </SignInCta>
-              ) : null}
+              <Link
+                href="/roles"
+                className="no-underline inline-flex min-h-11 items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-5 py-2 text-xs font-semibold text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]"
+              >
+                Role library
+              </Link>
             </div>
-            <div className="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-[0.24em] text-[color:var(--ink-500)]">
+            <div className="flex flex-wrap gap-3 text-xs font-semibold text-[color:var(--ink-500)]">
               {stats.map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1.5"
+                  className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1.5"
                 >
                   <span className="text-[color:var(--ink-700)]">
                     {item.label}
@@ -81,56 +103,54 @@ export default async function Home() {
             <p className="max-w-2xl text-xs text-[color:var(--ink-500)]">
               All lessons are free.{" "}
               {isAuthenticated
-                ? "Your course progress is saved to your account."
-                : "Sign in if you want your progress saved."}
+                ? "Your progress is saved to your account."
+                : "Sign in to save progress across devices."}
             </p>
           </div>
 
-          <div className="relative animate-rise-delayed">
-            <div className="absolute -top-12 right-8 h-28 w-28 rounded-full bg-[color:var(--accent-500)] opacity-30 blur-2xl" />
-            <div className="rounded-2xl border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-lift)] md:p-6">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--ink-500)]">
-                  Start here
-                </p>
-                <span className="rounded-full border border-[color:var(--accent-500)] bg-[color:var(--accent-500)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-900)]">
-                  Module 1
-                </span>
-              </div>
-              <h2 className="font-display mt-5 text-2xl text-[color:var(--ink-900)] md:text-3xl">
-                {lessonExample?.title ?? "Start to Finish Roadmap"}
-              </h2>
-              <p className="mt-3 text-sm text-[color:var(--ink-700)] md:text-base">
-                {lessonExample?.summary ??
-                  "See the recruiting sequence end-to-end and pick a focus."}
-              </p>
-              <div className="mt-5 rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
-                  Outcomes
-                </p>
-                <ul className="mt-3 grid gap-2.5 text-sm text-[color:var(--ink-700)]">
-                  {outcomes.slice(0, 3).map((item) => (
-                    <li key={item} className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--accent-700)]" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
-                <span>{lessonExample?.estimatedMinutes ?? 25} min read</span>
-                <Link
-                  href={startLessonHref}
-                  className="text-[color:var(--accent-700)]"
-                >
-                  Open lesson
-                </Link>
-              </div>
-            </div>
+          <div className="animate-rise-delayed">
+            <HomeProgressCard modules={modules} />
           </div>
         </section>
 
-        <FocusPicker className="animate-rise" startHref={startLessonHref} />
+        <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+          <div className="rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-xs font-semibold text-[color:var(--ink-500)]">
+                Start here
+              </p>
+              <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
+                Module 1
+              </span>
+            </div>
+            <h2 className="mt-4 font-display text-2xl text-[color:var(--ink-900)]">
+              {lessonExample?.title ?? "Start to Finish Roadmap"}
+            </h2>
+            <p className="mt-2 text-sm text-[color:var(--ink-700)]">
+              {lessonExample?.summary ??
+                "See the recruiting sequence end-to-end and pick a focus."}
+            </p>
+            <ul className="mt-4 grid gap-2 text-sm text-[color:var(--ink-700)]">
+              {outcomes.slice(0, 3).map((item) => (
+                <li key={item} className="flex items-start gap-2">
+                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[color:var(--accent-700)]" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-4 flex items-center justify-between text-xs text-[color:var(--ink-500)]">
+              <span>{lessonExample?.estimatedMinutes ?? 25} min read</span>
+              <Link
+                href={startLessonHref}
+                className="text-xs font-semibold text-[color:var(--accent-700)]"
+              >
+                Open lesson
+              </Link>
+            </div>
+          </div>
+
+          <FocusPicker className="animate-rise" startHref={startLessonHref} />
+        </section>
       </main>
     </div>
   );

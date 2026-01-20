@@ -88,16 +88,14 @@ export default async function AdminAnalyticsPage() {
   const totalUsers = users.length;
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_#fff7ed,_#f7f1e8_55%,_#f0e1cf_100%)]">
-      <div className="pointer-events-none absolute -top-24 right-[-6rem] h-72 w-72 rounded-full bg-[color:var(--wash-200)] opacity-70 blur-3xl animate-float-slow" />
-      <div className="pointer-events-none absolute bottom-[-6rem] left-[-6rem] h-72 w-72 rounded-full bg-[color:var(--accent-500)] opacity-10 blur-[120px]" />
+    <div className="page-shell min-h-screen overflow-hidden">
       <main
         id="main-content"
         tabIndex={-1}
-        className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-24 pt-14 md:pt-20"
+        className="page-content mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-24 pt-14 md:pt-18"
       >
         <section className="flex flex-col gap-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.4em] text-[color:var(--ink-500)]">
+          <p className="text-xs font-semibold text-[color:var(--ink-500)]">
             Admin analytics
           </p>
           <h1 className="font-display text-3xl text-[color:var(--ink-900)] md:text-4xl">
@@ -105,7 +103,7 @@ export default async function AdminAnalyticsPage() {
           </h1>
           <div className="grid gap-4 md:grid-cols-3">
             <div className="rounded-3xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-soft)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+              <p className="text-xs font-semibold text-[color:var(--ink-500)]">
                 Total users
               </p>
               <p className="mt-3 text-3xl font-semibold text-[color:var(--ink-900)]">
@@ -113,7 +111,7 @@ export default async function AdminAnalyticsPage() {
               </p>
             </div>
             <div className="rounded-3xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-soft)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+              <p className="text-xs font-semibold text-[color:var(--ink-500)]">
                 Total lessons
               </p>
               <p className="mt-3 text-3xl font-semibold text-[color:var(--ink-900)]">
@@ -121,7 +119,7 @@ export default async function AdminAnalyticsPage() {
               </p>
             </div>
             <div className="rounded-3xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-soft)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+              <p className="text-xs font-semibold text-[color:var(--ink-500)]">
                 Admin
               </p>
               <p className="mt-3 text-base font-semibold text-[color:var(--ink-900)]">
@@ -168,11 +166,11 @@ export default async function AdminAnalyticsPage() {
                           Joined {formatTimestamp(learner.createdAt)}
                         </p>
                       </div>
-                      <div className="flex min-w-[200px] flex-col gap-2">
-                        <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
-                          <span>Progress</span>
-                          <span>{progressPercent}%</span>
-                        </div>
+                    <div className="flex min-w-[200px] flex-col gap-2">
+                      <div className="flex items-center justify-between text-xs font-semibold text-[color:var(--ink-500)]">
+                        <span>Progress</span>
+                        <span>{progressPercent}%</span>
+                      </div>
                         <div className="h-2 w-full">
                           <svg
                             className="h-2 w-full"
@@ -205,7 +203,7 @@ export default async function AdminAnalyticsPage() {
                     </div>
 
                     <details className="mt-6 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-100)] p-4">
-                      <summary className="min-h-11 cursor-pointer text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
+                      <summary className="min-h-11 cursor-pointer text-xs font-semibold text-[color:var(--ink-500)]">
                         Progress timeline ({learner.events.length})
                       </summary>
                       <div className="mt-4 grid gap-3">

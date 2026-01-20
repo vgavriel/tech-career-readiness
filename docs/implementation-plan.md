@@ -240,6 +240,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Error handling for missing lessons/content fetch failures
 - [x] Confirm public access to curriculum and lessons
 - [x] UI polish for readability and CTAs
+- [x] UI redesign pass for calmer, Brown-specific layout and reduced text density
 - [x] Add TSDoc for functions/types and component intent comments
 - [x] Document local/preview workflows and gate auth/rate limiting by `APP_ENV`
 

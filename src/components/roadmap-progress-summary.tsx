@@ -168,6 +168,8 @@ export default function RoadmapProgressSummary({
   if (primaryLesson) {
     if (activeSummary.allComplete) {
       ctaLabel = "Review from the start";
+    } else if (activeSummary.completedCount === 0) {
+      ctaLabel = "Start with lesson 1";
     } else if (activeSummary.continueLesson) {
       ctaLabel = "Continue where you left off";
     } else {
@@ -176,7 +178,16 @@ export default function RoadmapProgressSummary({
   }
 
   return (
-    <div className="flex flex-col gap-6 rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)]">
+    <div className="flex flex-col gap-6 rounded-[28px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
+      <div className="space-y-2">
+        <p className="text-xs font-semibold text-[color:var(--ink-500)]">
+          Your progress
+        </p>
+        <h2 className="font-display text-2xl text-[color:var(--ink-900)]">
+          Your roadmap snapshot.
+        </h2>
+      </div>
+
       <div className="flex flex-wrap items-center gap-4">
         <div
           className="relative h-24 w-24"
@@ -216,7 +227,7 @@ export default function RoadmapProgressSummary({
           </div>
         </div>
         <div className="space-y-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+          <p className="text-xs font-semibold text-[color:var(--ink-500)]">
             Core progress
           </p>
           <p className="text-sm font-semibold text-[color:var(--ink-900)]">
@@ -230,7 +241,7 @@ export default function RoadmapProgressSummary({
 
       {focusSummary && focusOption ? (
         <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+          <p className="text-xs font-semibold text-[color:var(--ink-500)]">
             Focus: {focusOption.label}
           </p>
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-[color:var(--ink-900)]">
@@ -242,7 +253,7 @@ export default function RoadmapProgressSummary({
 
       {extraSummary.totalLessons > 0 ? (
         <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+          <p className="text-xs font-semibold text-[color:var(--ink-500)]">
             Extra credit
           </p>
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-[color:var(--ink-900)]">
@@ -255,7 +266,7 @@ export default function RoadmapProgressSummary({
       {primaryLesson ? (
         <Link
           href={`/lesson/${primaryLesson.slug}`}
-          className="no-underline inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[color:var(--accent-700)] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)] sm:w-auto"
+          className="no-underline inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[color:var(--accent-700)] px-5 py-2.5 text-xs font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)] sm:w-auto"
         >
           {ctaLabel}
         </Link>
@@ -276,7 +287,7 @@ export default function RoadmapProgressSummary({
 
       {!isAuthenticated ? (
         <SignInCta
-          className="inline-flex min-h-11 items-center px-3 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-700)]"
+          className="inline-flex min-h-11 items-center px-3 text-xs font-semibold text-[color:var(--accent-700)]"
         >
           Sign in to save progress
         </SignInCta>

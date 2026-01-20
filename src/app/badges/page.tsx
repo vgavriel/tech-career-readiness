@@ -35,19 +35,19 @@ export default async function BadgesPage() {
       <main
         id="main-content"
         tabIndex={-1}
-        className="page-content mx-auto flex w-full max-w-5xl flex-col gap-9 px-5 pb-20 pt-12 md:pt-18"
+        className="page-content mx-auto flex w-full max-w-5xl flex-col gap-8 px-5 pb-20 pt-12 md:pt-16"
       >
         <section className="space-y-4">
-          <div className="inline-flex items-center gap-3 rounded-lg border border-[color:var(--accent-500)] bg-[color:var(--wash-0)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-800)]">
+          <div className="inline-flex items-center gap-3 rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-2 text-xs font-semibold text-[color:var(--ink-700)]">
             <span className="h-2 w-2 rounded-full bg-[color:var(--accent-700)]" />
             Badge awards
           </div>
           <h1 className="font-display text-4xl text-[color:var(--ink-900)] md:text-5xl">
-            Track your recruiting momentum.
+            See your recruiting momentum.
           </h1>
           <p className="max-w-2xl text-base text-[color:var(--ink-700)] md:text-lg">
-            Badges are earned by finishing core lessons and optional extra
-            credit. Keep moving and collect the milestones.
+            Earn badges by completing core lessons and optional extra credit.
+            Every milestone is a signal of steady progress.
           </p>
         </section>
 
