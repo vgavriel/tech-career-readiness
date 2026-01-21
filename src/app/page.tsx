@@ -41,14 +41,11 @@ export default async function Home() {
         <section className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
           <div className="space-y-6 animate-rise">
             <h1 className="font-display text-4xl leading-[1.1] text-[color:var(--ink-900)] md:text-5xl lg:text-6xl">
-              Calm, step-by-step prep for tech recruiting at Brown.
+              Step-by-step prep for tech recruiting at Brown.
             </h1>
             <p className="max-w-2xl text-base text-[color:var(--ink-700)] md:text-lg">
               Short, focused lessons paired with Brown-specific resources so you
               always know the next move.
-            </p>
-            <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-              9 modules · 15-30 minutes each
             </p>
           </div>
 

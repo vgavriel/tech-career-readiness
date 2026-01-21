@@ -125,6 +125,38 @@ describe("fetchLessonContent", () => {
     expect(result.html).not.toContain("Updated automatically every 5 minutes");
   });
 
+  it("removes the standard lesson footer content", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          '<div class="doc-content">',
+          "<p>Lesson body</p>",
+          "<hr>",
+          "<p>Questions? Reach out: Center for Career Exploration</p>",
+          "<p>Author: Test Author</p>",
+          "<p>Last updated May 6, 2025</p>",
+          "<p>Footer note</p>",
+          "</div>",
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain("Lesson body");
+    expect(result.html).not.toContain("Questions? Reach out");
+    expect(result.html).not.toContain("Author:");
+    expect(result.html).not.toContain("Last updated");
+    expect(result.html).not.toContain("Footer note");
+    expect(result.html).not.toContain("<hr");
+  });
+
   it("maps Google Docs class styles to emphasis classes", async () => {
     process.env.APP_ENV = "preview";
     fetchMock.mockResolvedValueOnce(

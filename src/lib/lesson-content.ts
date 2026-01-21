@@ -249,6 +249,14 @@ const GOOGLE_DOCS_BANNER_PHRASES = [
 ];
 
 const normalizeBannerText = (text: string) => text.replace(/\s+/g, " ").trim();
+const normalizeContentText = (text: string) =>
+  normalizeBannerText(text).toLowerCase();
+
+const LESSON_FOOTER_PHRASES = [
+  "questions? reach out",
+  "author:",
+  "last updated",
+];
 
 const isExternalHref = (href: string | undefined) => {
   if (!href) {
@@ -360,6 +368,81 @@ const stripGoogleDocsBanner = (root: Element) => {
   }
 };
 
+const isDividerElement = (element: Element) => {
+  if (element.tagName === "HR") {
+    return true;
+  }
+
+  const text = normalizeBannerText(element.textContent ?? "");
+  if (!text) {
+    return false;
+  }
+
+  const stripped = text.replace(/[\s\-–—_•·.]+/g, "");
+  return stripped.length === 0;
+};
+
+const stripLessonFooter = (root: Element) => {
+  const blocks = Array.from(root.querySelectorAll("p, li, hr"));
+  if (blocks.length === 0) {
+    return;
+  }
+
+  const tailStartIndex = Math.max(0, blocks.length - 12);
+  const footerStart = blocks
+    .map((block, index) => {
+      const text = normalizeContentText(block.textContent ?? "");
+      if (
+        index >= tailStartIndex &&
+        text &&
+        LESSON_FOOTER_PHRASES.some((phrase) => text.includes(phrase))
+      ) {
+        return block;
+      }
+      return null;
+    })
+    .filter((block): block is Element => block !== null)[0];
+
+  if (!footerStart) {
+    return;
+  }
+
+  let start = footerStart;
+  while (start.previousElementSibling) {
+    const previous = start.previousElementSibling;
+    if (
+      isDividerElement(previous) ||
+      !hasMeaningfulText(previous.textContent)
+    ) {
+      start = previous;
+      continue;
+    }
+    break;
+  }
+
+  const parent = start.parentElement;
+  if (!parent) {
+    return;
+  }
+
+  let current: Element | null = start;
+  while (current) {
+    const next = current.nextElementSibling;
+    current.remove();
+    current = next;
+  }
+
+  let cleanup: Element | null = parent;
+  while (cleanup && cleanup !== root) {
+    if (hasMeaningfulText(cleanup.textContent)) {
+      break;
+    }
+    const next = cleanup.parentElement;
+    cleanup.remove();
+    cleanup = next;
+  }
+};
+
 const findLessonTitleElement = (root: Element) => {
   const titleCandidate = root.querySelector(".doc-title, .title");
   if (titleCandidate && normalizeBannerText(titleCandidate.textContent ?? "")) {
@@ -412,6 +495,7 @@ const extractLessonHtml = (rawHtml: string) => {
 
   removeLessonTitle(contentRoot);
   stripGoogleDocsBanner(contentRoot);
+  stripLessonFooter(contentRoot);
   applyDocClassStyles(contentRoot, classStyleMap);
   stripEmptyAnchors(contentRoot);
   removeEmptyHeadings(contentRoot);

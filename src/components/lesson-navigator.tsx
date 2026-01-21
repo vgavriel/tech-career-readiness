@@ -346,11 +346,11 @@ export default function LessonNavigator({
       <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-xs text-[color:var(--ink-600)]">
         {isAuthenticated
           ? "Progress syncs to your account."
-          : "Progress is saved in this browser."}
+          : "Progress is saved locally in browser."}
         {isMerging ? " Syncing guest progress..." : ""}
         {!isAuthenticated ? (
-          <SignInCta className="mt-3 inline-flex min-h-10 items-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 text-xs font-semibold text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]">
-            Sign in to save progress
+          <SignInCta className="mt-3 inline-flex min-h-10 items-center rounded-full bg-[color:var(--accent-700)] text-[color:var(--wash-0)] hover:bg-[color:var(--ink-800)] px-3 text-xs font-semibold text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]">
+            Sign in to save to your account.
           </SignInCta>
         ) : null}
       </div>

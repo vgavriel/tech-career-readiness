@@ -163,18 +163,13 @@ export default function RoadmapProgressSummary({
     : null;
   const activeSummary = focusSummary ?? coreSummary;
   const progressValue = Math.min(100, Math.max(0, coreSummary.progressPercent));
-  const ringRadius = 42;
+  const ringRadius = 44;
+  const ringStroke = 10;
   const ringCircumference = 2 * Math.PI * ringRadius;
   const ringOffset = ringCircumference * (1 - progressValue / 100);
 
   const primaryLesson =
     activeSummary.continueLesson ?? activeSummary.firstLesson;
-
-  const headerLabel = activeSummary.allComplete
-    ? "Review your course."
-    : activeSummary.completedCount === 0
-      ? "Start your course."
-      : "Continue your course.";
 
   let ctaLabel = "Check back soon";
   if (primaryLesson) {
@@ -188,17 +183,13 @@ export default function RoadmapProgressSummary({
       ctaLabel = "Start course";
     }
   }
-  const progressTitle = showExtraCredit ? "Core progress" : "Progress";
+  const progressTitle = showExtraCredit ? "Core progress" : "Course Progress";
 
   return (
-    <div className="flex flex-col gap-6 rounded-[28px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
-      <h2 className="font-display text-2xl text-[color:var(--ink-900)]">
-        {headerLabel}
-      </h2>
-
-      <div className="flex flex-wrap items-center gap-4">
+    <div className="flex flex-col gap-5 rounded-[28px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
+      <div className="flex flex-wrap items-center gap-5">
         <div
-          className="relative h-24 w-24"
+          className="relative h-28 w-28"
           role="progressbar"
           aria-valuemin={0}
           aria-valuemax={100}
@@ -215,8 +206,8 @@ export default function RoadmapProgressSummary({
               cy="50"
               r={ringRadius}
               fill="none"
-              stroke="var(--wash-200)"
-              strokeWidth={8}
+              stroke="var(--ring-track)"
+              strokeWidth={ringStroke}
             />
             <circle
               cx="50"
@@ -224,21 +215,21 @@ export default function RoadmapProgressSummary({
               r={ringRadius}
               fill="none"
               stroke="var(--accent-700)"
-              strokeWidth={8}
+              strokeWidth={ringStroke}
               strokeDasharray={ringCircumference}
               strokeDashoffset={ringOffset}
               strokeLinecap="round"
             />
           </svg>
-          <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[color:var(--wash-0)] text-sm font-semibold text-[color:var(--ink-900)]">
+          <div className="absolute inset-3 flex items-center justify-center rounded-full bg-[color:var(--wash-0)] text-lg font-semibold text-[color:var(--ink-900)] shadow-[var(--shadow-soft)]">
             {coreSummary.progressPercent}%
           </div>
         </div>
-          <div className="space-y-1">
-          <p className="text-xs font-semibold text-[color:var(--ink-500)]">
+        <div className="space-y-1">
+          <p className="text-base font-semibold text-[color:var(--ink-600)]">
             {progressTitle}
           </p>
-          <p className="text-sm font-semibold text-[color:var(--ink-900)]">
+          <p className="text-lg font-semibold text-[color:var(--ink-900)]">
             {coreSummary.progressLabel}
           </p>
         </div>
@@ -250,7 +241,7 @@ export default function RoadmapProgressSummary({
             Focus: {focusOption.label}
           </p>
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-[color:var(--ink-900)]">
-            <span>{focusSummary.progressLabel}</span>
+            <span>Focus progress: {focusSummary.progressLabel}</span>
             <span>{focusSummary.progressPercent}%</span>
           </div>
         </div>

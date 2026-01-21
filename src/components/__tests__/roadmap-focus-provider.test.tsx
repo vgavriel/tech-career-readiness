@@ -130,7 +130,7 @@ describe("RoadmapFocusProvider", () => {
     });
   });
 
-  it("uses stored focus selection to drive the continue CTA", async () => {
+  it("uses stored focus selection to drive the primary CTA", async () => {
     selectionMocks.readFocusSelection.mockReturnValue({
       version: 1,
       focusKey: "offer-in-hand",
@@ -144,7 +144,7 @@ describe("RoadmapFocusProvider", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole("link", { name: /continue where you left off/i })
+        screen.getByRole("link", { name: /start course/i })
       ).toHaveAttribute("href", "/lesson/offer");
     });
   });

@@ -112,9 +112,6 @@ export default function FocusMenu() {
                     <span className="font-display text-base text-[color:var(--ink-900)]">
                       {option.label}
                     </span>
-                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2.5 py-0.5 text-xs font-semibold text-[color:var(--ink-600)]">
-                      {option.timing}
-                    </span>
                   </div>
                   <span className="text-xs">{option.description}</span>
                 </button>

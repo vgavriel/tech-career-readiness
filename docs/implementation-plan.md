@@ -243,6 +243,8 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] UI redesign pass for calmer, Brown-specific layout and reduced text density
 - [x] UI simplification pass to remove low-value text and redundant elements
 - [x] Streamline focus selection and homepage CTA hierarchy for clarity
+- [x] Strip standardized footer blocks from lesson content
+- [x] Refine homepage progress card and timeline picker density
 - [x] Add TSDoc for functions/types and component intent comments
 - [x] Document local/preview workflows and gate auth/rate limiting by `APP_ENV`
 
