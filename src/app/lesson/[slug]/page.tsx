@@ -192,10 +192,7 @@ export default async function LessonPage({
 
           {objectives.length || checklist.length ? (
             <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)]">
-              <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-                Lesson plan
-              </p>
-              <div className="mt-4 grid gap-5 md:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-2">
                 {objectives.length ? (
                   <div>
                     <p className="text-xs font-semibold text-[color:var(--ink-500)]">

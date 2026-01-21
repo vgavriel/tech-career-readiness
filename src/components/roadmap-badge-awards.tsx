@@ -29,10 +29,7 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
     <section className="rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-            Badge awards
-          </p>
-          <h2 className="mt-2 font-display text-2xl text-[color:var(--ink-900)]">
+          <h2 className="font-display text-2xl text-[color:var(--ink-900)]">
             Momentum markers
           </h2>
         </div>
@@ -58,18 +55,13 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
                   key={badge.key}
                   className="flex flex-col gap-3 rounded-2xl border border-[color:var(--accent-700)] bg-[color:var(--wash-0)] px-4 py-3 shadow-[var(--shadow-soft)]"
                 >
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="space-y-1">
-                      <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-                        {badge.title}
-                      </p>
-                      <p className="text-sm font-semibold text-[color:var(--ink-900)]">
-                        {badge.description}
-                      </p>
-                    </div>
-                    <span className="rounded-full border border-[color:var(--accent-700)] bg-[color:var(--accent-700)] px-3 py-1 text-xs font-semibold text-[color:var(--wash-0)]">
-                      {badge.statusLabel}
-                    </span>
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-[color:var(--ink-500)]">
+                      {badge.title}
+                    </p>
+                    <p className="text-sm font-semibold text-[color:var(--ink-900)]">
+                      {badge.description}
+                    </p>
                   </div>
                   <p className="text-xs text-[color:var(--ink-500)]">
                     {badge.progressLabel}
@@ -99,18 +91,13 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
                 key={badge.key}
                 className="flex flex-col gap-2 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 shadow-[var(--shadow-soft)]"
               >
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-                      {badge.title}
-                    </p>
-                    <p className="text-sm font-semibold text-[color:var(--ink-900)]">
-                      {badge.description}
-                    </p>
-                  </div>
-                  <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
-                    {badge.statusLabel}
-                  </span>
+                <div className="space-y-1">
+                  <p className="text-xs font-semibold text-[color:var(--ink-500)]">
+                    {badge.title}
+                  </p>
+                  <p className="text-sm font-semibold text-[color:var(--ink-900)]">
+                    {badge.description}
+                  </p>
                 </div>
                 <p className="text-xs text-[color:var(--ink-500)]">
                   {badge.progressLabel}

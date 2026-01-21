@@ -38,10 +38,6 @@ export default async function BadgesPage() {
         className="page-content mx-auto flex w-full max-w-5xl flex-col gap-8 px-5 pb-20 pt-12 md:pt-16"
       >
         <section className="space-y-4">
-          <div className="inline-flex items-center gap-3 rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-2 text-xs font-semibold text-[color:var(--ink-700)]">
-            <span className="h-2 w-2 rounded-full bg-[color:var(--accent-700)]" />
-            Badge awards
-          </div>
           <h1 className="font-display text-4xl text-[color:var(--ink-900)] md:text-5xl">
             See your recruiting momentum.
           </h1>

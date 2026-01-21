@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -91,11 +90,8 @@ export default function FocusMenu() {
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-                Focus filter
-              </p>
-              <p className="mt-1 text-sm text-[color:var(--ink-700)]">
-                Narrow the roadmap to your timeline.
+              <p className="text-sm text-[color:var(--ink-700)]">
+                Filter the roadmap by timeline.
               </p>
             </div>
             {isUpdating ? (
@@ -143,12 +139,6 @@ export default function FocusMenu() {
             >
               Clear focus
             </button>
-            <Link
-              href="/roles"
-              className="no-underline inline-flex min-h-11 items-center rounded-full border border-[color:var(--line-strong)] bg-[color:var(--accent-300)] px-3 py-1.5 text-[color:var(--ink-900)] shadow-[var(--shadow-soft)] transition hover:border-[color:var(--ink-900)]"
-            >
-              Role library
-            </Link>
           </div>
         </div>
       ) : null}

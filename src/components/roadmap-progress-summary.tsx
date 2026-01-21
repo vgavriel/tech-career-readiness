@@ -179,14 +179,9 @@ export default function RoadmapProgressSummary({
 
   return (
     <div className="flex flex-col gap-6 rounded-[28px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
-      <div className="space-y-2">
-        <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-          Your progress
-        </p>
-        <h2 className="font-display text-2xl text-[color:var(--ink-900)]">
-          Your roadmap snapshot.
-        </h2>
-      </div>
+      <h2 className="font-display text-2xl text-[color:var(--ink-900)]">
+        Continue your roadmap.
+      </h2>
 
       <div className="flex flex-wrap items-center gap-4">
         <div
@@ -232,9 +227,6 @@ export default function RoadmapProgressSummary({
           </p>
           <p className="text-sm font-semibold text-[color:var(--ink-900)]">
             {coreSummary.progressLabel}
-          </p>
-          <p className="text-xs text-[color:var(--ink-500)]">
-            {modules.length} modules - {coreSummary.totalLessons} core lessons
           </p>
         </div>
       </div>

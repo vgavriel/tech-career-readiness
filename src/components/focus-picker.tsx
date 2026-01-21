@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { useFocus } from "@/components/focus-provider";
@@ -29,24 +28,13 @@ export default function FocusPicker({
         className ?? ""
       }`}
     >
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-            Quick focus
-          </p>
-          <h2 className="mt-2 font-display text-2xl text-[color:var(--ink-900)]">
-            Pick a focus.
-          </h2>
-          <p className="mt-2 text-sm text-[color:var(--ink-700)]">
-            Choose the timeline that matches your recruiting window.
-          </p>
-        </div>
-        <Link
-          href="/roles"
-          className="no-underline inline-flex min-h-11 items-center gap-2 rounded-full border border-[color:var(--line-strong)] bg-[color:var(--accent-300)] px-4 py-1.5 text-xs font-semibold text-[color:var(--ink-900)] shadow-[var(--shadow-soft)] transition hover:border-[color:var(--ink-900)]"
-        >
-          Role library
-        </Link>
+      <div>
+        <h2 className="font-display text-2xl text-[color:var(--ink-900)]">
+          Pick a focus.
+        </h2>
+        <p className="mt-2 text-sm text-[color:var(--ink-700)]">
+          Choose the timeline that matches your recruiting window.
+        </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -70,9 +58,6 @@ export default function FocusPicker({
                 {option.description}
               </p>
             </div>
-            <span className="mt-4 text-xs font-semibold text-[color:var(--accent-700)]">
-              Apply focus
-            </span>
           </button>
         ))}
       </div>

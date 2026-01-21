@@ -15,7 +15,6 @@ import { prisma } from "@/lib/prisma";
  */
 export default async function Home() {
   const session = await getServerSession(authOptions);
-  const isAuthenticated = Boolean(session?.user);
   const lessonExample = getLessonExample("start-to-finish-roadmap");
   const startLessonSlug = lessonExample?.slug ?? "start-to-finish-roadmap";
   const startLessonHref = `/lesson/${startLessonSlug}`;
@@ -48,7 +47,6 @@ export default async function Home() {
   const stats = [
     { label: "9 modules", value: "Brown-specific sequence" },
     { label: "Short lessons", value: "15-30 minutes" },
-    { label: "Clear next steps", value: "Know what is next" },
   ];
 
   return (
@@ -78,12 +76,6 @@ export default async function Home() {
               >
                 Start with lesson 1
               </Link>
-              <Link
-                href="/roles"
-                className="no-underline inline-flex min-h-11 items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-5 py-2 text-xs font-semibold text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]"
-              >
-                Role library
-              </Link>
             </div>
             <div className="flex flex-wrap gap-3 text-xs font-semibold text-[color:var(--ink-500)]">
               {stats.map((item) => (
@@ -100,12 +92,6 @@ export default async function Home() {
                 </div>
               ))}
             </div>
-            <p className="max-w-2xl text-xs text-[color:var(--ink-500)]">
-              All lessons are free.{" "}
-              {isAuthenticated
-                ? "Your progress is saved to your account."
-                : "Sign in to save progress across devices."}
-            </p>
           </div>
 
           <div className="animate-rise-delayed">
@@ -116,9 +102,6 @@ export default async function Home() {
         <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           <div className="rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-                Start here
-              </p>
               <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
                 Module 1
               </span>
@@ -131,7 +114,7 @@ export default async function Home() {
                 "See the recruiting sequence end-to-end and pick a focus."}
             </p>
             <ul className="mt-4 grid gap-2 text-sm text-[color:var(--ink-700)]">
-              {outcomes.slice(0, 3).map((item) => (
+              {outcomes.slice(0, 2).map((item) => (
                 <li key={item} className="flex items-start gap-2">
                   <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[color:var(--accent-700)]" />
                   <span>{item}</span>

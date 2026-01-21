@@ -46,10 +46,6 @@ export default async function RolesPage() {
       >
         <section className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
           <div className="space-y-5">
-            <div className="inline-flex items-center gap-3 rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-2 text-xs font-semibold text-[color:var(--ink-700)]">
-              <span className="h-2 w-2 rounded-full bg-[color:var(--accent-700)]" />
-              Role library
-            </div>
             <h1 className="font-display text-4xl text-[color:var(--ink-900)] md:text-5xl">
               Explore Brown-specific tech roles.
             </h1>
@@ -67,21 +63,10 @@ export default async function RolesPage() {
             </div>
           </div>
           <div className="rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
-            <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-              Quick use
+            <p className="text-sm text-[color:var(--ink-700)]">
+              Pick 2-3 roles, scan for skills and Brown-specific signals, then
+              use the insights to refine your focus.
             </p>
-            <ul className="mt-4 grid gap-3 text-sm text-[color:var(--ink-700)]">
-              {[
-                "Pick 2-3 roles to explore.",
-                "Scan for skills and Brown-specific signals.",
-                "Use findings to refine your focus and applications.",
-              ].map((item) => (
-                <li key={item} className="flex items-center gap-2">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--accent-700)]" />
-                  {item}
-                </li>
-              ))}
-            </ul>
           </div>
         </section>
 

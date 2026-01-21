@@ -64,7 +64,7 @@ export default function LessonNavigator({
     ? `Focus: ${
         FOCUS_OPTIONS.find((option) => option.key === focusKey)?.label ?? "Focus"
       }`
-    : "Full curriculum";
+    : "Curriculum";
 
   const { coreCompleted, coreTotal, extraCompleted, extraTotal } = useMemo(() => {
     const allLessons = visibleModules.flatMap((module) => module.lessons);
@@ -343,7 +343,7 @@ export default function LessonNavigator({
       <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-xs text-[color:var(--ink-600)]">
         {isAuthenticated
           ? "Progress syncs to your account."
-          : "Progress is saved in this browser until you sign in."}
+          : "Progress is saved in this browser."}
         {isMerging ? " Syncing guest progress..." : ""}
         {!isAuthenticated ? (
           <SignInCta className="mt-3 inline-flex min-h-10 items-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 text-xs font-semibold text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]">
