@@ -103,6 +103,9 @@ export default function LessonNavigator({
     const isCompleted = isReady && isLessonCompleted(lesson.slug);
     const isExtra = isExtraCreditLesson(lesson);
     const isDisabled = !isReady || isMerging;
+    const metaTextColor = isActive
+      ? "text-[color:var(--ink-700)]"
+      : "text-[color:var(--ink-600)]";
 
     return (
       <div
@@ -119,7 +122,7 @@ export default function LessonNavigator({
           aria-current={isActive ? "page" : undefined}
           id={buildLessonId(lesson.slug)}
         >
-          <div className="flex flex-wrap items-center gap-2 text-xs text-[color:var(--ink-600)]">
+          <div className={`flex flex-wrap items-center gap-2 text-xs ${metaTextColor}`}>
             <span>
               {moduleOrder}.{lesson.order}
             </span>

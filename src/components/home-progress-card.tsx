@@ -23,6 +23,9 @@ export default function HomeProgressCard({ modules }: HomeProgressCardProps) {
       modules={modules}
       focusKey={focusKey}
       focusModules={focusModules}
+      showExtraCredit={false}
+      showNextLesson={false}
+      showSignIn={false}
     />
   );
 }

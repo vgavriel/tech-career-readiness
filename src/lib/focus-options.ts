@@ -18,25 +18,25 @@ export const FOCUS_OPTIONS: FocusOption[] = [
     key: "just-starting",
     label: "Just starting",
     timing: "Explore",
-    description: "Explore roles and build your plan.",
+    description: "Explore roles and plan.",
   },
   {
     key: "applying-soon",
     label: "Applying soon",
     timing: "1-2 weeks",
-    description: "Polish resume, outreach, and targeted apps.",
+    description: "Polish resume + outreach.",
   },
   {
     key: "interviewing-soon",
     label: "Interviewing soon",
     timing: "Next up",
-    description: "Practice interviews and tighten stories.",
+    description: "Practice interviews + stories.",
   },
   {
     key: "offer-in-hand",
     label: "Offer in hand",
     timing: "Decision",
-    description: "Evaluate the offer and negotiate.",
+    description: "Evaluate and negotiate.",
   },
 ];
 

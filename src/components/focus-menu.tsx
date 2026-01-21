@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useFocus } from "@/components/focus-provider";
@@ -10,9 +9,6 @@ export default function FocusMenu() {
   const { focusKey, isUpdating, setFocusKey } = useFocus();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const router = useRouter();
-
-  const focusLessonHref = "/lesson/start-to-finish-roadmap";
 
   const activeOption = useMemo(
     () => FOCUS_OPTIONS.find((option) => option.key === focusKey) ?? null,
@@ -52,10 +48,6 @@ export default function FocusMenu() {
   const handleSelect = (nextFocusKey: FocusKey | null) => {
     void setFocusKey(nextFocusKey);
     setIsOpen(false);
-
-    if (nextFocusKey) {
-      router.push(focusLessonHref);
-    }
   };
 
   return (
@@ -69,7 +61,7 @@ export default function FocusMenu() {
         aria-controls="focus-menu-panel"
       >
         <span>
-          {activeOption ? `Focus: ${activeOption.label}` : "Choose focus"}
+          {activeOption ? `Focus: ${activeOption.label}` : "Timeline"}
         </span>
         <svg
           aria-hidden="true"
@@ -91,7 +83,7 @@ export default function FocusMenu() {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <p className="text-sm text-[color:var(--ink-700)]">
-                Filter the roadmap by timeline.
+                Filter by timeline.
               </p>
             </div>
             {isUpdating ? (

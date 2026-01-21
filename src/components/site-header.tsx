@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import FocusMenu from "@/components/focus-menu";
@@ -17,6 +18,8 @@ export default function SiteHeader() {
   const { data: session } = useSession();
   const authProvider = useAuthProvider();
   const signInOptions = buildSignInOptions(authProvider.id);
+  const pathname = usePathname();
+  const showFocusMenu = pathname !== "/";
 
   return (
     <header className="sticky top-0 z-50 border-b border-[color:var(--line-soft)] bg-[color:var(--wash-0)] shadow-[var(--shadow-soft)]">
@@ -60,7 +63,7 @@ export default function SiteHeader() {
           </nav>
         </div>
         <div className="flex w-full flex-wrap items-center justify-between gap-3 text-sm sm:w-auto sm:justify-end">
-          <FocusMenu />
+          {showFocusMenu ? <FocusMenu /> : null}
           {session?.user ? (
             <>
               <span className="text-sm text-[color:var(--ink-600)]">

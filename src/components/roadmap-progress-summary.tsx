@@ -27,6 +27,9 @@ type RoadmapProgressSummaryProps = {
   modules: RoadmapModule[];
   focusModules?: RoadmapModule[] | null;
   focusKey?: FocusKey | null;
+  showExtraCredit?: boolean;
+  showNextLesson?: boolean;
+  showSignIn?: boolean;
 };
 
 type ProgressSummary = {
@@ -114,6 +117,9 @@ export default function RoadmapProgressSummary({
   modules,
   focusModules,
   focusKey,
+  showExtraCredit = true,
+  showNextLesson = true,
+  showSignIn = true,
 }: RoadmapProgressSummaryProps) {
   const { completedLessonSlugs, isAuthenticated, isMerging, isReady } = useProgress();
   const completedSet = useMemo(
@@ -164,23 +170,30 @@ export default function RoadmapProgressSummary({
   const primaryLesson =
     activeSummary.continueLesson ?? activeSummary.firstLesson;
 
+  const headerLabel = activeSummary.allComplete
+    ? "Review your course."
+    : activeSummary.completedCount === 0
+      ? "Start your course."
+      : "Continue your course.";
+
   let ctaLabel = "Check back soon";
   if (primaryLesson) {
     if (activeSummary.allComplete) {
-      ctaLabel = "Review from the start";
+      ctaLabel = "Review course";
     } else if (activeSummary.completedCount === 0) {
-      ctaLabel = "Start with lesson 1";
+      ctaLabel = "Start course";
     } else if (activeSummary.continueLesson) {
-      ctaLabel = "Continue where you left off";
+      ctaLabel = "Continue course";
     } else {
-      ctaLabel = "Start with lesson 1";
+      ctaLabel = "Start course";
     }
   }
+  const progressTitle = showExtraCredit ? "Core progress" : "Progress";
 
   return (
     <div className="flex flex-col gap-6 rounded-[28px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
       <h2 className="font-display text-2xl text-[color:var(--ink-900)]">
-        Continue your roadmap.
+        {headerLabel}
       </h2>
 
       <div className="flex flex-wrap items-center gap-4">
@@ -221,9 +234,9 @@ export default function RoadmapProgressSummary({
             {coreSummary.progressPercent}%
           </div>
         </div>
-        <div className="space-y-1">
+          <div className="space-y-1">
           <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-            Core progress
+            {progressTitle}
           </p>
           <p className="text-sm font-semibold text-[color:var(--ink-900)]">
             {coreSummary.progressLabel}
@@ -243,7 +256,7 @@ export default function RoadmapProgressSummary({
         </div>
       ) : null}
 
-      {extraSummary.totalLessons > 0 ? (
+      {showExtraCredit && extraSummary.totalLessons > 0 ? (
         <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4">
           <p className="text-xs font-semibold text-[color:var(--ink-500)]">
             Extra credit
@@ -264,7 +277,7 @@ export default function RoadmapProgressSummary({
         </Link>
       ) : null}
 
-      {primaryLesson && activeSummary.continueLesson ? (
+      {showNextLesson && primaryLesson && activeSummary.continueLesson ? (
         <p className="text-xs text-[color:var(--ink-500)]">
           Up next: Lesson {activeSummary.continueLesson.moduleOrder}.
           {activeSummary.continueLesson.order} - {activeSummary.continueLesson.title}
@@ -277,7 +290,7 @@ export default function RoadmapProgressSummary({
         </p>
       ) : null}
 
-      {!isAuthenticated ? (
+      {!isAuthenticated && showSignIn ? (
         <SignInCta
           className="inline-flex min-h-11 items-center px-3 text-xs font-semibold text-[color:var(--accent-700)]"
         >
