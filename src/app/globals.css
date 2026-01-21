@@ -137,6 +137,14 @@ body {
   content: "";
 }
 
+.extra-credit-details summary svg {
+  transform: rotate(0deg);
+}
+
+.extra-credit-details[open] summary svg {
+  transform: rotate(180deg);
+}
+
 .scroll-panel {
   scrollbar-width: thin;
   scrollbar-color: var(--line-strong) transparent;
@@ -175,9 +183,9 @@ body {
 .lesson-content {
   color: var(--ink-700);
   font-size: 1.05rem;
-  line-height: 1.85;
-  max-width: 68ch;
-  margin: 0 auto;
+  line-height: 1.4;
+  max-width: 100%;
+  margin: 0;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
@@ -196,11 +204,17 @@ body {
 }
 
 .lesson-content h1 {
-  font-size: 2.2rem;
+  font-family: var(--font-body), sans-serif;
+  font-size: 1.2rem;
+  line-height: 3;
+  margin-top: 1.5rem;
 }
 
 .lesson-content h2 {
-  font-size: 1.75rem;
+  font-family: var(--font-body), sans-serif;
+  font-size: 1rem;
+  line-height: 2.4;
+  margin-top: 0.75rem;
 }
 
 .lesson-content h3 {
@@ -285,6 +299,10 @@ body {
   margin-left: 6rem;
 }
 
+.lesson-content hr {
+  display: none;
+}
+
 .lesson-content a {
   color: var(--accent-700);
   text-decoration: underline;
@@ -313,17 +331,30 @@ body {
 
 .lesson-content table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   background: var(--wash-0);
   border-radius: 1rem;
   overflow: hidden;
+  border: 1px solid var(--line-soft);
 }
 
 .lesson-content th,
 .lesson-content td {
-  border: 1px solid var(--line-soft);
+  border-right: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
   padding: 0.75rem 0.9rem;
   text-align: left;
+}
+
+.lesson-content th:last-child,
+.lesson-content td:last-child {
+  border-right: 0;
+}
+
+.lesson-content tr:last-child th,
+.lesson-content tr:last-child td {
+  border-bottom: 0;
 }
 
 .lesson-content code {
@@ -337,19 +368,21 @@ body {
 @media (max-width: 640px) {
   .lesson-content {
     font-size: 1rem;
-    line-height: 1.75;
+    line-height: 1.4;
   }
 
   .lesson-content h1 {
-    font-size: 1.8rem;
+    font-size: 1.2rem;
+    line-height: 3;
   }
 
   .lesson-content h2 {
-    font-size: 1.5rem;
+    font-size: 1rem;
+    line-height: 2.4;
   }
 
   .lesson-content h3 {
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
 
 

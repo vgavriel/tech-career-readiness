@@ -157,6 +157,70 @@ describe("fetchLessonContent", () => {
     expect(result.html).not.toContain("<hr");
   });
 
+  it("removes horizontal rules inside lesson content", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          "<p>Section one</p>",
+          "<hr>",
+          "<p>Section two</p>",
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain("Section one");
+    expect(result.html).toContain("Section two");
+    expect(result.html).not.toContain("<hr");
+  });
+
+  it("trims leading whitespace in table cells", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          "<table>",
+          "<tr>",
+          "<td><p> </p><p>First</p></td>",
+          "<td><p>&nbsp;</p><p>&nbsp;</p><ul><li>Second</li></ul></td>",
+          "<td><br><p>Third</p></td>",
+          "</tr>",
+          "</table>",
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = result.html;
+
+    const cells = wrapper.querySelectorAll("td");
+    expect(cells).toHaveLength(3);
+    expect(cells[0].firstElementChild?.textContent?.trim()).toBe("First");
+    expect(cells[1].firstElementChild?.tagName).toBe("UL");
+    expect(cells[2].firstElementChild?.textContent?.trim()).toBe("Third");
+
+    const emptyParagraphs = Array.from(wrapper.querySelectorAll("td p")).filter(
+      (paragraph) =>
+        !paragraph.textContent ||
+        paragraph.textContent.replace(/[\s\u00a0]/g, "") === ""
+    );
+    expect(emptyParagraphs).toHaveLength(0);
+    expect(wrapper.querySelectorAll("td br")).toHaveLength(0);
+  });
+
   it("maps Google Docs class styles to emphasis classes", async () => {
     process.env.APP_ENV = "preview";
     fetchMock.mockResolvedValueOnce(
@@ -280,6 +344,31 @@ describe("fetchLessonContent", () => {
     expect(result.html).toContain("<h2>Section One</h2>");
     expect(result.html).toContain("<h3>Subsection</h3>");
     expect(result.html).not.toContain("<h2> </h2>");
+  });
+
+  it("ensures h1 headings render as bold", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          "<p>Intro</p>",
+          "<h1>Step 3: Make Initial Contact</h1>",
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = result.html;
+
+    const heading = wrapper.querySelector("h1");
+    expect(heading).not.toBeNull();
+    expect(heading?.classList.contains("doc-bold")).toBe(true);
   });
 
   it("adds target/rel only for external links", async () => {

@@ -245,6 +245,10 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Streamline focus selection and homepage CTA hierarchy for clarity
 - [x] Strip standardized footer blocks from lesson content
 - [x] Refine homepage progress card and timeline picker density
+- [x] Remove lesson Focus/Deliverable and Outcomes/Checklist panels from lesson pages
+- [x] Normalize lesson table spacing and borders
+- [x] Hide horizontal rules inside lesson content
+- [x] Fix in-lesson hash navigation to avoid scroll trap in nested containers
 - [x] Add TSDoc for functions/types and component intent comments
 - [x] Document local/preview workflows and gate auth/rate limiting by `APP_ENV`
 

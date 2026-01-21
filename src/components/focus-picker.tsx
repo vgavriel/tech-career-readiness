@@ -26,7 +26,7 @@ export default function FocusPicker({ className }: FocusPickerProps) {
     >
       <div>
         <h2 className="font-display text-2xl text-[color:var(--ink-900)]">
-          Choose your timeline.
+          Optional: choose a module.
         </h2>
       </div>
 

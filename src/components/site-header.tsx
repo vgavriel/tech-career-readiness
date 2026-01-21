@@ -32,9 +32,6 @@ export default function SiteHeader() {
             >
               Tech Career Readiness
             </Link>
-            <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2.5 py-1 text-xs font-semibold text-[color:var(--ink-600)]">
-              Brown CS
-            </span>
           </div>
           <nav
             aria-label="Primary"

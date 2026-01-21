@@ -118,27 +118,25 @@ export default function LessonNavigator({
       >
         <Link
           href={`/lesson/${lesson.slug}`}
-          className="no-underline flex flex-1 flex-col justify-center gap-1 py-1"
+          className="no-underline flex flex-1 flex-wrap items-center gap-2 py-1"
           aria-current={isActive ? "page" : undefined}
           id={buildLessonId(lesson.slug)}
         >
-          <div className={`flex flex-wrap items-center gap-2 text-xs ${metaTextColor}`}>
-            <span>
-              {moduleOrder}.{lesson.order}
-            </span>
-            {options?.showExtraTag && isExtra ? (
-              <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2 py-0.5 text-[0.7rem] font-semibold text-[color:var(--ink-600)]">
-                Extra credit
-              </span>
-            ) : null}
-          </div>
           <span className="text-sm font-semibold text-[color:var(--ink-900)]">
+            <span className={`text-xs font-semibold ${metaTextColor}`}>
+              {moduleOrder}.{lesson.order}
+            </span>{" "}
             {lesson.title}
           </span>
+          {options?.showExtraTag && isExtra ? (
+            <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2 py-0.5 text-[0.7rem] font-semibold text-[color:var(--ink-600)]">
+              Extra credit
+            </span>
+          ) : null}
         </Link>
         <button
           type="button"
-          className={`flex h-10 w-10 items-center justify-center rounded-full border transition disabled:cursor-not-allowed disabled:opacity-60 ${
+          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition disabled:cursor-not-allowed disabled:opacity-60 ${
             isCompleted
               ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
               : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-600)]"
@@ -155,7 +153,7 @@ export default function LessonNavigator({
           {isCompleted ? (
             <svg
               aria-hidden="true"
-              className="h-4 w-4"
+              className="h-3 w-3"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -305,7 +303,7 @@ export default function LessonNavigator({
                   {extraLessons.length ? (
                     <details
                       open={isActiveExtra || coreLessons.length === 0}
-                      className="group rounded-xl border border-dashed border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-2"
+                      className="extra-credit-details rounded-xl border border-dashed border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-2"
                     >
                       <summary className="summary-clean flex min-h-11 cursor-pointer items-center justify-between gap-3 text-xs font-semibold text-[color:var(--ink-600)]">
                         <span>Extra credit</span>
@@ -315,7 +313,7 @@ export default function LessonNavigator({
                             : "Loading"}
                           <svg
                             aria-hidden="true"
-                            className="h-4 w-4 transition group-open:rotate-180"
+                            className="h-4 w-4 transition"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"

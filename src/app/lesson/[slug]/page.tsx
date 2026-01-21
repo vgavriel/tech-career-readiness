@@ -22,16 +22,7 @@ type LessonPageProps = {
 };
 
 /**
- * Parse the objectives markdown list into clean bullet strings.
- */
-const parseObjectives = (objectivesMarkdown: string | null) =>
-  (objectivesMarkdown ?? "")
-    .split("\n")
-    .map((line) => line.replace(/^[-*]\s*/, "").trim())
-    .filter(Boolean);
-
-/**
- * Render the lesson page with content, objectives, and progress actions.
+ * Render the lesson page with content and progress actions.
  *
  * @remarks
  * Fetches lesson data/content on the server and handles content errors while
@@ -86,18 +77,8 @@ export default async function LessonPage({
   });
 
   const lessonExample = getLessonExample(lesson.slug);
-  const objectives = lessonExample?.outcomes.length
-    ? lessonExample.outcomes
-    : parseObjectives(lesson.objectivesMarkdown);
-  const checklist = lessonExample?.checklist ?? [];
   const estimatedMinutes =
     lesson.estimatedMinutes ?? lessonExample?.estimatedMinutes;
-  const lessonSummary =
-    lessonExample?.summary ??
-    (lesson.module?.title
-      ? `Part of ${lesson.module.title}, focused on the next step in your recruiting system.`
-      : "A focused lesson designed to keep your recruiting system moving.");
-
   let lessonContent: Awaited<ReturnType<typeof fetchLessonContent>> | null = null;
   let contentError = false;
 
@@ -152,8 +133,8 @@ export default async function LessonPage({
                   Lesson {lesson.order}
                 </span>
                 {estimatedMinutes ? (
-                  <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2.5 py-0.5 text-[color:var(--ink-700)]">
-                    {estimatedMinutes} min read
+                  <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2.5 py-0.5 text-[color:var(--ink-700)]">
+                    {estimatedMinutes} min estimated reading time
                   </span>
                 ) : null}
               </div>
@@ -164,92 +145,10 @@ export default async function LessonPage({
             <h1 className="font-display mt-5 text-3xl text-[color:var(--ink-900)] md:text-4xl lg:text-5xl">
               {lesson.title}
             </h1>
-            <p className="mt-3 text-sm text-[color:var(--ink-700)] md:text-base">
-              {lessonSummary}
-            </p>
 
-            {lessonExample ? (
-              <div className="mt-5 grid gap-3 md:grid-cols-2">
-                <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4">
-                  <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-                    Focus
-                  </p>
-                  <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
-                    {lessonExample.focus}
-                  </p>
-                </div>
-                <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4">
-                  <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-                    Deliverable
-                  </p>
-                  <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
-                    {lessonExample.deliverable}
-                  </p>
-                </div>
-              </div>
-            ) : null}
           </header>
 
-          {objectives.length || checklist.length ? (
-            <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)]">
-              <div className="grid gap-5 md:grid-cols-2">
-                {objectives.length ? (
-                  <div>
-                    <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-                      Outcomes
-                    </p>
-                    <ul className="mt-3 grid gap-3 text-sm text-[color:var(--ink-700)]">
-                      {objectives.map((objective) => (
-                        <li key={objective} className="flex items-start gap-3">
-                          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[color:var(--accent-700)]" />
-                          <span>{objective}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-                {checklist.length ? (
-                  <div>
-                    <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-                      Checklist
-                    </p>
-                    <ul className="mt-3 grid gap-2 text-sm text-[color:var(--ink-700)]">
-                      {checklist.map((item) => (
-                        <li key={item} className="flex items-center gap-2">
-                          <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--accent-700)]" />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          ) : null}
-
           <section className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-                Lesson content
-              </p>
-              <div className="flex flex-wrap items-center gap-3">
-                {lesson.publishedUrl ? (
-                  <a
-                    href={lesson.publishedUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-semibold text-[color:var(--accent-700)]"
-                  >
-                    Open source doc
-                  </a>
-                ) : null}
-                {contentError ? (
-                  <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
-                    Syncing docs
-                  </span>
-                ) : null}
-              </div>
-            </div>
             {showFallbackNotice ? (
               <div className="mt-3 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-sm text-[color:var(--ink-700)]">
                 The live document is still syncing. Showing a full sample lesson

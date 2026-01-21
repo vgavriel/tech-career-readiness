@@ -333,6 +333,12 @@ const normalizeHeadingLevels = (root: Element) => {
   }
 };
 
+const boldenPrimaryHeadings = (root: Element) => {
+  for (const heading of Array.from(root.querySelectorAll("h1"))) {
+    heading.classList.add("doc-bold");
+  }
+};
+
 const stripEmptyAnchors = (root: Element) => {
   for (const anchor of Array.from(root.querySelectorAll("a"))) {
     if (anchor.hasAttribute("id") || anchor.hasAttribute("name")) {
@@ -443,6 +449,51 @@ const stripLessonFooter = (root: Element) => {
   }
 };
 
+const stripHorizontalRules = (root: Element) => {
+  for (const rule of Array.from(root.querySelectorAll("hr"))) {
+    rule.remove();
+  }
+};
+
+const trimLeadingWhitespaceNodes = (element: Element) => {
+  let node: ChildNode | null = element.firstChild;
+  while (node) {
+    const next = node.nextSibling;
+    if (node.nodeType === 3) {
+      if (!hasMeaningfulText(node.textContent)) {
+        node.remove();
+        node = next;
+        continue;
+      }
+      break;
+    }
+
+    if (node.nodeType === 1) {
+      const child = node as Element;
+      if (child.tagName === "BR") {
+        child.remove();
+        node = next;
+        continue;
+      }
+      const hasMedia = Boolean(child.querySelector("img, svg, video, iframe"));
+      if (!hasMeaningfulText(child.textContent) && !hasMedia) {
+        child.remove();
+        node = next;
+        continue;
+      }
+      break;
+    }
+
+    break;
+  }
+};
+
+const trimTableCellWhitespace = (root: Element) => {
+  for (const cell of Array.from(root.querySelectorAll("td, th"))) {
+    trimLeadingWhitespaceNodes(cell);
+  }
+};
+
 const findLessonTitleElement = (root: Element) => {
   const titleCandidate = root.querySelector(".doc-title, .title");
   if (titleCandidate && normalizeBannerText(titleCandidate.textContent ?? "")) {
@@ -496,10 +547,13 @@ const extractLessonHtml = (rawHtml: string) => {
   removeLessonTitle(contentRoot);
   stripGoogleDocsBanner(contentRoot);
   stripLessonFooter(contentRoot);
+  stripHorizontalRules(contentRoot);
+  trimTableCellWhitespace(contentRoot);
   applyDocClassStyles(contentRoot, classStyleMap);
   stripEmptyAnchors(contentRoot);
   removeEmptyHeadings(contentRoot);
   normalizeHeadingLevels(contentRoot);
+  boldenPrimaryHeadings(contentRoot);
 
   return contentRoot.innerHTML;
 };

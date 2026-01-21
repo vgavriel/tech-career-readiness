@@ -38,6 +38,7 @@ export default function NavigatorLayout({
   children,
 }: NavigatorLayoutProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const mainRef = useRef<HTMLElement | null>(null);
   const [navigatorWidth, setNavigatorWidth] = useState<(typeof WIDTH_STEPS)[number]>(26);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -160,6 +161,96 @@ export default function NavigatorLayout({
     [isCollapsed, navigatorWidth]
   );
 
+  const normalizeHash = useCallback((hash: string) => {
+    const trimmed = hash.trim();
+    if (!trimmed || !trimmed.startsWith("#") || trimmed.length < 2) {
+      return null;
+    }
+
+    const rawId = trimmed.slice(1);
+    try {
+      return decodeURIComponent(rawId);
+    } catch {
+      return rawId;
+    }
+  }, []);
+
+  const scrollToHash = useCallback(
+    (hash: string, behavior: ScrollBehavior = "auto") => {
+      const main = mainRef.current;
+      if (!main) {
+        return;
+      }
+
+      const id = normalizeHash(hash);
+      if (!id) {
+        return;
+      }
+
+      const target = document.getElementById(id);
+      if (!target) {
+        return;
+      }
+
+      const mainRect = main.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+      const nextTop = Math.max(0, targetRect.top - mainRect.top + main.scrollTop);
+      main.scrollTo({ top: nextTop, behavior });
+
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    },
+    [normalizeHash]
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const handleHash = () => {
+      scrollToHash(window.location.hash);
+    };
+
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    window.addEventListener("popstate", handleHash);
+
+    return () => {
+      window.removeEventListener("hashchange", handleHash);
+      window.removeEventListener("popstate", handleHash);
+    };
+  }, [scrollToHash]);
+
+  const handleMainClick = useCallback(
+    (event: React.MouseEvent<HTMLElement>) => {
+      const target = event.target as HTMLElement | null;
+      const anchor = target?.closest("a");
+      if (!anchor) {
+        return;
+      }
+
+      const href = anchor.getAttribute("href");
+      if (!href || !href.startsWith("#")) {
+        return;
+      }
+
+      const id = normalizeHash(href);
+      if (!id || !document.getElementById(id)) {
+        return;
+      }
+
+      event.preventDefault();
+
+      if (window.location.hash !== href) {
+        window.history.pushState(null, "", href);
+      }
+
+      scrollToHash(href);
+    },
+    [normalizeHash, scrollToHash]
+  );
+
   return (
     <div
       ref={containerRef}
@@ -226,6 +317,8 @@ export default function NavigatorLayout({
       <main
         id="main-content"
         tabIndex={-1}
+        ref={mainRef}
+        onClickCapture={handleMainClick}
         className="scroll-panel flex h-full min-h-0 flex-col gap-6 overflow-y-auto rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] px-5 pb-8 pt-6 shadow-[var(--shadow-card)] md:px-7 md:pt-8"
       >
         {children}
