@@ -97,7 +97,7 @@ describe("RoadmapProgressSummary", () => {
 
     expect(screen.getByText(/50%/i)).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /continue where you left off/i })
+      screen.getByRole("link", { name: /continue course/i })
     ).toHaveAttribute("href", "/lesson/next");
     expect(
       screen.getByRole("button", { name: /sign in to save progress/i })
@@ -115,7 +115,7 @@ describe("RoadmapProgressSummary", () => {
     render(<RoadmapProgressSummary modules={modules} />);
 
     expect(
-      screen.getByRole("link", { name: /review from the start/i })
+      screen.getByRole("link", { name: /review course/i })
     ).toHaveAttribute("href", "/lesson/intro");
     expect(
       screen.queryByRole("button", { name: /sign in to save progress/i })

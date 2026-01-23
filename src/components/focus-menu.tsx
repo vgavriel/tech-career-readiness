@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useFocus } from "@/components/focus-provider";
@@ -11,9 +9,6 @@ export default function FocusMenu() {
   const { focusKey, isUpdating, setFocusKey } = useFocus();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const router = useRouter();
-
-  const focusLessonHref = "/lesson/start-to-finish-roadmap";
 
   const activeOption = useMemo(
     () => FOCUS_OPTIONS.find((option) => option.key === focusKey) ?? null,
@@ -53,10 +48,6 @@ export default function FocusMenu() {
   const handleSelect = (nextFocusKey: FocusKey | null) => {
     void setFocusKey(nextFocusKey);
     setIsOpen(false);
-
-    if (nextFocusKey) {
-      router.push(focusLessonHref);
-    }
   };
 
   return (
@@ -64,13 +55,13 @@ export default function FocusMenu() {
       <button
         type="button"
         onClick={() => setIsOpen((open) => !open)}
-        className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)] transition hover:border-[color:var(--ink-900)]"
+        className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-2 text-sm font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)]"
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-controls="focus-menu-panel"
       >
         <span>
-          {activeOption ? `Focus: ${activeOption.label}` : "Choose a focus"}
+          {activeOption ? `Focus: ${activeOption.label}` : "Timeline"}
         </span>
         <svg
           aria-hidden="true"
@@ -87,19 +78,16 @@ export default function FocusMenu() {
       {isOpen ? (
         <div
           id="focus-menu-panel"
-          className="absolute right-0 z-20 mt-2 w-[min(420px,92vw)] rounded-xl border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-3 shadow-[var(--shadow-card)]"
+          className="absolute right-0 z-20 mt-3 w-[min(420px,92vw)] rounded-2xl border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-4 shadow-[var(--shadow-card)]"
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-                Focus selection
-              </p>
-              <p className="mt-1 text-sm text-[color:var(--ink-700)]">
-                Keep the navigator tuned to what matters most now.
+              <p className="text-sm text-[color:var(--ink-700)]">
+                Filter by timeline.
               </p>
             </div>
             {isUpdating ? (
-              <span className="rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2.5 py-0.5 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-700)]">
+              <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2.5 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
                 Saving...
               </span>
             ) : null}
@@ -116,16 +104,13 @@ export default function FocusMenu() {
                   onClick={() => handleSelect(option.key)}
                   className={`flex w-full flex-col gap-2 rounded-xl border px-3 py-2.5 text-left transition ${
                     isActive
-                      ? "border-[color:var(--accent-700)] bg-[color:var(--accent-500)] text-[color:var(--ink-900)]"
+                      ? "border-[color:var(--accent-700)] bg-[color:var(--accent-300)] text-[color:var(--ink-900)]"
                       : "border-[color:var(--line-soft)] bg-[color:var(--wash-50)] text-[color:var(--ink-700)] hover:border-[color:var(--line-strong)]"
                   }`}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="font-display text-base text-[color:var(--ink-900)]">
                       {option.label}
-                    </span>
-                    <span className="rounded-md border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2.5 py-0.5 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-600)]">
-                      {option.timing}
                     </span>
                   </div>
                   <span className="text-xs">{option.description}</span>
@@ -134,21 +119,15 @@ export default function FocusMenu() {
             })}
           </div>
 
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-[color:var(--line-soft)] pt-3 text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--ink-600)]">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[color:var(--line-soft)] pt-3 text-xs font-semibold text-[color:var(--ink-600)]">
             <button
               type="button"
-              className="min-h-11 rounded-lg border border-[color:var(--line-soft)] px-3 py-1.5 text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]"
+              className="min-h-11 rounded-full border border-[color:var(--line-soft)] px-3 py-1.5 text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]"
               onClick={() => handleSelect(null)}
               disabled={!focusKey}
             >
               Clear focus
             </button>
-            <Link
-              href="/roles"
-              className="no-underline inline-flex min-h-11 items-center rounded-lg border border-[color:var(--line-strong)] bg-[color:var(--accent-500)] px-3 py-1.5 text-[color:var(--ink-900)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-900)]"
-            >
-              Explore Roles in Tech
-            </Link>
           </div>
         </div>
       ) : null}

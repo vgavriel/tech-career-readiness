@@ -14,7 +14,7 @@ type LessonContentProps = {
 export default function LessonContent({ html }: LessonContentProps) {
   return (
     <div
-      className="lesson-content"
+      className="lesson-content !max-w-full !mx-0"
       data-testid="lesson-content"
       dangerouslySetInnerHTML={{ __html: html }}
     />

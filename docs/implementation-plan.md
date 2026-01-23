@@ -85,8 +85,8 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - Navigator (left rail) with modules + lesson completion toggles
 - Open source doc in new tab (optional, uses publishedUrl)
 
-3) `/badges` (Badge awards)
-- Badge summary with earned/in-progress status
+3) `/gold-stars` (Gold Stars awards)
+- Gold Stars summary with earned/in-progress status
 
 4) `/roadmap` (Legacy redirect)
 - Redirects to the first lesson (navigator handles browsing)
@@ -240,6 +240,15 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Error handling for missing lessons/content fetch failures
 - [x] Confirm public access to curriculum and lessons
 - [x] UI polish for readability and CTAs
+- [x] UI redesign pass for calmer, Brown-specific layout and reduced text density
+- [x] UI simplification pass to remove low-value text and redundant elements
+- [x] Streamline focus selection and homepage CTA hierarchy for clarity
+- [x] Strip standardized footer blocks from lesson content
+- [x] Refine homepage progress card and timeline picker density
+- [x] Remove lesson Focus/Deliverable and Outcomes/Checklist panels from lesson pages
+- [x] Normalize lesson table spacing and borders
+- [x] Hide horizontal rules inside lesson content
+- [x] Fix in-lesson hash navigation to avoid scroll trap in nested containers
 - [x] Add TSDoc for functions/types and component intent comments
 - [x] Document local/preview workflows and gate auth/rate limiting by `APP_ENV`
 
@@ -254,7 +263,8 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Add lightweight badge awards (no streaks) based on lesson completion
 - [x] Persist focus selection in the database and surface it in the header picker
 - [x] Replace the standalone roadmap page with a persistent navigator (collapsible + resizable)
-- [x] Add a badges page linked from the global header
+- [x] Add a Gold Stars page linked from the global header
+- [x] Replace Start Here lesson 1 with in-app overview content (no external links)
 
 ### Phase 7.4 — Accessibility (WCAG AAA)
 - [x] Update color tokens for AAA contrast (text + non-text UI)

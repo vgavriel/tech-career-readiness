@@ -2,6 +2,7 @@ Implement the plan in docs/implementation-plan.md in order. Do not skip steps. A
 Walk me through the changes you made so I can keep track and review all technical decisions.
 
 Before any commit: Perform a Pre-Commit Review: Act as a senior engineer doing a pre-commit review. Identify bugs, edge cases, and cleanup suggestions.
+For any UI change, validate the update in Playwright against `localhost:3000` and report what was checked. If Playwright cannot run, say why.
 
 ## Branching and PR workflow
 - Create a new feature branch for each request before making changes (unless explicitly told to work on `main`).

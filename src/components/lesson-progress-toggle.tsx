@@ -22,10 +22,10 @@ export default function LessonProgressToggle({
   return (
     <button
       type="button"
-      className={`inline-flex min-h-11 items-center justify-center rounded-md px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] shadow-[var(--shadow-soft)] transition disabled:cursor-not-allowed disabled:opacity-60 ${
+      className={`inline-flex min-h-11 items-center justify-center rounded-full px-4 py-2 text-sm font-semibold shadow-[var(--shadow-soft)] transition disabled:cursor-not-allowed disabled:opacity-60 ${
         completed
           ? "border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-900)] hover:border-[color:var(--ink-900)]"
-          : "bg-[color:var(--accent-700)] text-[color:var(--wash-0)] hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
+          : "bg-[color:var(--accent-700)] text-[color:var(--wash-0)] hover:bg-[color:var(--ink-800)]"
       }`}
       disabled={disabled}
       onClick={() => setLessonCompletion(lessonSlug, !completed)}

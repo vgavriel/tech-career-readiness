@@ -249,6 +249,14 @@ const GOOGLE_DOCS_BANNER_PHRASES = [
 ];
 
 const normalizeBannerText = (text: string) => text.replace(/\s+/g, " ").trim();
+const normalizeContentText = (text: string) =>
+  normalizeBannerText(text).toLowerCase();
+
+const LESSON_FOOTER_PHRASES = [
+  "questions? reach out",
+  "author:",
+  "last updated",
+];
 
 const isExternalHref = (href: string | undefined) => {
   if (!href) {
@@ -325,6 +333,12 @@ const normalizeHeadingLevels = (root: Element) => {
   }
 };
 
+const boldenPrimaryHeadings = (root: Element) => {
+  for (const heading of Array.from(root.querySelectorAll("h1"))) {
+    heading.classList.add("doc-bold");
+  }
+};
+
 const stripEmptyAnchors = (root: Element) => {
   for (const anchor of Array.from(root.querySelectorAll("a"))) {
     if (anchor.hasAttribute("id") || anchor.hasAttribute("name")) {
@@ -357,6 +371,126 @@ const stripGoogleDocsBanner = (root: Element) => {
     if (firstText && firstText === secondText) {
       children[0].remove();
     }
+  }
+};
+
+const isDividerElement = (element: Element) => {
+  if (element.tagName === "HR") {
+    return true;
+  }
+
+  const text = normalizeBannerText(element.textContent ?? "");
+  if (!text) {
+    return false;
+  }
+
+  const stripped = text.replace(/[\s\-–—_•·.]+/g, "");
+  return stripped.length === 0;
+};
+
+const stripLessonFooter = (root: Element) => {
+  const blocks = Array.from(root.querySelectorAll("p, li, hr"));
+  if (blocks.length === 0) {
+    return;
+  }
+
+  const tailStartIndex = Math.max(0, blocks.length - 12);
+  const footerStart = blocks
+    .map((block, index) => {
+      const text = normalizeContentText(block.textContent ?? "");
+      if (
+        index >= tailStartIndex &&
+        text &&
+        LESSON_FOOTER_PHRASES.some((phrase) => text.includes(phrase))
+      ) {
+        return block;
+      }
+      return null;
+    })
+    .filter((block): block is Element => block !== null)[0];
+
+  if (!footerStart) {
+    return;
+  }
+
+  let start = footerStart;
+  while (start.previousElementSibling) {
+    const previous = start.previousElementSibling;
+    if (
+      isDividerElement(previous) ||
+      !hasMeaningfulText(previous.textContent)
+    ) {
+      start = previous;
+      continue;
+    }
+    break;
+  }
+
+  const parent = start.parentElement;
+  if (!parent) {
+    return;
+  }
+
+  let current: Element | null = start;
+  while (current) {
+    const next = current.nextElementSibling;
+    current.remove();
+    current = next;
+  }
+
+  let cleanup: Element | null = parent;
+  while (cleanup && cleanup !== root) {
+    if (hasMeaningfulText(cleanup.textContent)) {
+      break;
+    }
+    const next = cleanup.parentElement;
+    cleanup.remove();
+    cleanup = next;
+  }
+};
+
+const stripHorizontalRules = (root: Element) => {
+  for (const rule of Array.from(root.querySelectorAll("hr"))) {
+    rule.remove();
+  }
+};
+
+const trimLeadingWhitespaceNodes = (element: Element) => {
+  let node: ChildNode | null = element.firstChild;
+  while (node) {
+    const next = node.nextSibling;
+    if (node.nodeType === 3) {
+      if (!hasMeaningfulText(node.textContent)) {
+        node.remove();
+        node = next;
+        continue;
+      }
+      break;
+    }
+
+    if (node.nodeType === 1) {
+      const child = node as Element;
+      if (child.tagName === "BR") {
+        child.remove();
+        node = next;
+        continue;
+      }
+      const hasMedia = Boolean(child.querySelector("img, svg, video, iframe"));
+      if (!hasMeaningfulText(child.textContent) && !hasMedia) {
+        child.remove();
+        node = next;
+        continue;
+      }
+      break;
+    }
+
+    break;
+  }
+};
+
+const trimTableCellWhitespace = (root: Element) => {
+  for (const cell of Array.from(root.querySelectorAll("td, th"))) {
+    trimLeadingWhitespaceNodes(cell);
   }
 };
 
@@ -412,10 +546,14 @@ const extractLessonHtml = (rawHtml: string) => {
 
   removeLessonTitle(contentRoot);
   stripGoogleDocsBanner(contentRoot);
+  stripLessonFooter(contentRoot);
+  stripHorizontalRules(contentRoot);
+  trimTableCellWhitespace(contentRoot);
   applyDocClassStyles(contentRoot, classStyleMap);
   stripEmptyAnchors(contentRoot);
   removeEmptyHeadings(contentRoot);
   normalizeHeadingLevels(contentRoot);
+  boldenPrimaryHeadings(contentRoot);
 
   return contentRoot.innerHTML;
 };

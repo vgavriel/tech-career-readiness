@@ -27,6 +27,9 @@ type RoadmapProgressSummaryProps = {
   modules: RoadmapModule[];
   focusModules?: RoadmapModule[] | null;
   focusKey?: FocusKey | null;
+  showExtraCredit?: boolean;
+  showNextLesson?: boolean;
+  showSignIn?: boolean;
 };
 
 type ProgressSummary = {
@@ -114,6 +117,9 @@ export default function RoadmapProgressSummary({
   modules,
   focusModules,
   focusKey,
+  showExtraCredit = true,
+  showNextLesson = true,
+  showSignIn = true,
 }: RoadmapProgressSummaryProps) {
   const { completedLessonSlugs, isAuthenticated, isMerging, isReady } = useProgress();
   const completedSet = useMemo(
@@ -157,7 +163,8 @@ export default function RoadmapProgressSummary({
     : null;
   const activeSummary = focusSummary ?? coreSummary;
   const progressValue = Math.min(100, Math.max(0, coreSummary.progressPercent));
-  const ringRadius = 42;
+  const ringRadius = 44;
+  const ringStroke = 10;
   const ringCircumference = 2 * Math.PI * ringRadius;
   const ringOffset = ringCircumference * (1 - progressValue / 100);
 
@@ -167,19 +174,22 @@ export default function RoadmapProgressSummary({
   let ctaLabel = "Check back soon";
   if (primaryLesson) {
     if (activeSummary.allComplete) {
-      ctaLabel = "Review from the start";
+      ctaLabel = "Review course";
+    } else if (activeSummary.completedCount === 0) {
+      ctaLabel = "Start course";
     } else if (activeSummary.continueLesson) {
-      ctaLabel = "Continue where you left off";
+      ctaLabel = "Continue course";
     } else {
-      ctaLabel = "Start with lesson 1";
+      ctaLabel = "Start course";
     }
   }
+  const progressTitle = showExtraCredit ? "Core progress" : "Course Progress";
 
   return (
-    <div className="flex flex-col gap-6 rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-7 shadow-[var(--shadow-card)]">
-      <div className="flex flex-wrap items-center gap-4">
+    <div className="flex flex-col gap-5 rounded-[28px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
+      <div className="flex flex-wrap items-center gap-5">
         <div
-          className="relative h-24 w-24"
+          className="relative h-28 w-28"
           role="progressbar"
           aria-valuemin={0}
           aria-valuemax={100}
@@ -196,8 +206,8 @@ export default function RoadmapProgressSummary({
               cy="50"
               r={ringRadius}
               fill="none"
-              stroke="var(--wash-200)"
-              strokeWidth={8}
+              stroke="var(--ring-track)"
+              strokeWidth={ringStroke}
             />
             <circle
               cx="50"
@@ -205,44 +215,41 @@ export default function RoadmapProgressSummary({
               r={ringRadius}
               fill="none"
               stroke="var(--accent-700)"
-              strokeWidth={8}
+              strokeWidth={ringStroke}
               strokeDasharray={ringCircumference}
               strokeDashoffset={ringOffset}
               strokeLinecap="round"
             />
           </svg>
-          <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[color:var(--wash-0)] text-sm font-semibold text-[color:var(--ink-900)]">
+          <div className="absolute inset-3 flex items-center justify-center rounded-full bg-[color:var(--wash-0)] text-lg font-semibold text-[color:var(--ink-900)] shadow-[var(--shadow-soft)]">
             {coreSummary.progressPercent}%
           </div>
         </div>
         <div className="space-y-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
-            Core progress
+          <p className="text-base font-semibold text-[color:var(--ink-600)]">
+            {progressTitle}
           </p>
-          <p className="text-sm font-semibold text-[color:var(--ink-900)]">
+          <p className="text-lg font-semibold text-[color:var(--ink-900)]">
             {coreSummary.progressLabel}
-          </p>
-          <p className="text-xs text-[color:var(--ink-500)]">
-            {modules.length} modules - {coreSummary.totalLessons} core lessons
           </p>
         </div>
       </div>
 
       {focusSummary && focusOption ? (
         <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+          <p className="text-xs font-semibold text-[color:var(--ink-500)]">
             Focus: {focusOption.label}
           </p>
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-[color:var(--ink-900)]">
-            <span>{focusSummary.progressLabel}</span>
+            <span>Focus progress: {focusSummary.progressLabel}</span>
             <span>{focusSummary.progressPercent}%</span>
           </div>
         </div>
       ) : null}
 
-      {extraSummary.totalLessons > 0 ? (
+      {showExtraCredit && extraSummary.totalLessons > 0 ? (
         <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-500)]">
+          <p className="text-xs font-semibold text-[color:var(--ink-500)]">
             Extra credit
           </p>
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-[color:var(--ink-900)]">
@@ -255,13 +262,13 @@ export default function RoadmapProgressSummary({
       {primaryLesson ? (
         <Link
           href={`/lesson/${primaryLesson.slug}`}
-          className="no-underline inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[color:var(--accent-700)] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)] sm:w-auto"
+          className="no-underline inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[color:var(--accent-700)] px-5 py-2.5 text-md font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)] sm:w-auto"
         >
           {ctaLabel}
         </Link>
       ) : null}
 
-      {primaryLesson && activeSummary.continueLesson ? (
+      {showNextLesson && primaryLesson && activeSummary.continueLesson ? (
         <p className="text-xs text-[color:var(--ink-500)]">
           Up next: Lesson {activeSummary.continueLesson.moduleOrder}.
           {activeSummary.continueLesson.order} - {activeSummary.continueLesson.title}
@@ -274,9 +281,9 @@ export default function RoadmapProgressSummary({
         </p>
       ) : null}
 
-      {!isAuthenticated ? (
+      {!isAuthenticated && showSignIn ? (
         <SignInCta
-          className="inline-flex min-h-11 items-center px-3 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-700)]"
+          className="inline-flex min-h-11 items-center px-3 text-xs font-semibold text-[color:var(--accent-700)]"
         >
           Sign in to save progress
         </SignInCta>
