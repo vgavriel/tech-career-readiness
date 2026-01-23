@@ -277,11 +277,11 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Preserve lesson list indentation when sanitizing Google Docs HTML
 
 ### Phase 7.5 — Observability (lightweight)
-- [ ] Add request ID generation (middleware) and return `x-request-id` headers for server routes
-- [ ] Create a minimal structured logger wrapper with env-based log levels and default redaction for secrets/PII
-- [ ] Instrument key server paths (lesson-content fetch, progress updates, auth callbacks) with duration + cache hit/miss fields
-- [ ] Add client-side pageview telemetry via a minimal provider (e.g., Vercel Analytics) with a config flag to disable
-- [ ] Document log fields and sampling/retention guidance in `docs/observability.md`
+- [x] Add request ID generation (middleware) and return `x-request-id` headers for server routes
+- [x] Create a minimal structured logger wrapper with env-based log levels and default redaction for secrets/PII
+- [x] Instrument key server paths (lesson-content fetch, progress updates, auth callbacks) with duration + cache hit/miss fields
+- [x] Add client-side pageview telemetry via a minimal provider (e.g., Vercel Analytics) with a config flag to disable
+- [x] Document log fields and sampling/retention guidance in `docs/observability.md`
 
 ### Phase 8 — Deployment
 - [ ] Deploy to Vercel

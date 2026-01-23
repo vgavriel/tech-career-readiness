@@ -42,7 +42,7 @@ describe("Providers", () => {
     } satisfies Session;
 
     render(
-      <Providers session={session}>
+      <Providers session={session} analyticsEnabled={false}>
         <span>Child content</span>
       </Providers>
     );

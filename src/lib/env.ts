@@ -28,6 +28,9 @@ const envSchema = z.object({
   ADMIN_EMAILS: z.string().optional(),
   DEV_AUTH_EMAIL: z.string().optional(),
   DEV_AUTH_NAME: z.string().optional(),
+  LOG_LEVEL: z.string().optional(),
+  LOG_SAMPLE_RATE: z.string().optional(),
+  NEXT_PUBLIC_ANALYTICS_ENABLED: z.string().optional(),
 });
 
 export type AppEnv = z.infer<typeof appEnvSchema>;

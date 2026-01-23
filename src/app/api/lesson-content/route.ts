@@ -4,8 +4,10 @@ import { z } from "zod";
 import { fetchLessonContent } from "@/lib/lesson-content";
 import { getLessonDocLinkMap } from "@/lib/lesson-doc-link-map";
 import { getEnv } from "@/lib/env";
+import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { enforceRateLimit } from "@/lib/rate-limit";
+import { getRequestId } from "@/lib/request-id";
 
 export const runtime = "nodejs";
 
@@ -39,12 +41,27 @@ const lessonQuerySchema = z
  * GET /api/lesson-content: fetch sanitized lesson HTML by lesson id or slug.
  */
 export async function GET(request: Request) {
+  const requestId = getRequestId(request);
+  const startedAt = Date.now();
+  const logRequest = (
+    level: "info" | "warn" | "error",
+    details: Record<string, unknown>
+  ) => {
+    logger[level]("lesson_content.request", {
+      requestId,
+      route: "GET /api/lesson-content",
+      durationMs: Date.now() - startedAt,
+      ...details,
+    });
+  };
+
   const rateLimitResponse = await enforceRateLimit(
     request,
     "lesson-content",
     null
   );
   if (rateLimitResponse) {
+    logRequest("warn", { status: rateLimitResponse.status, reason: "rate_limited" });
     return rateLimitResponse;
   }
 
@@ -55,6 +72,7 @@ export async function GET(request: Request) {
     slug: searchParams.get("slug") ?? undefined,
   });
   if (!parsedQuery.success) {
+    logRequest("warn", { status: 400, reason: "invalid_query" });
     return NextResponse.json(
       { error: "Provide lessonId or slug." },
       { status: 400 }
@@ -95,6 +113,7 @@ export async function GET(request: Request) {
   }
 
   if (!lesson) {
+    logRequest("warn", { status: 404, lessonId, slug, reason: "lesson_not_found" });
     return NextResponse.json({ error: "Lesson not found." }, { status: 404 });
   }
 
@@ -103,9 +122,25 @@ export async function GET(request: Request) {
     const content = await fetchLessonContent(lesson, {
       bypassCache,
       docIdMap: lessonDocLinkMap,
+      logErrors: false,
+    });
+    logRequest("info", {
+      status: 200,
+      lessonId: lesson.id,
+      slug,
+      bypassCache,
+      cache: content.cached ? "hit" : "miss",
     });
     return NextResponse.json(content);
-  } catch {
+  } catch (error) {
+    logRequest("error", {
+      status: 502,
+      lessonId: lesson.id,
+      slug,
+      bypassCache,
+      cache: "miss",
+      error,
+    });
     return NextResponse.json(
       { error: "Failed to fetch lesson content." },
       { status: 502 }

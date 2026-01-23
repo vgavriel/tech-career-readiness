@@ -8,6 +8,7 @@ import {
 } from "@/lib/lesson-content-cache";
 import { LessonDocIdMap, rewriteLessonDocLinks } from "@/lib/lesson-doc-links";
 import { getEnv } from "@/lib/env";
+import { logger } from "@/lib/logger";
 
 const allowedLessonHosts = new Set(["docs.google.com", "drive.google.com"]);
 
@@ -660,9 +661,13 @@ const fetchLessonHtml = async (url: URL, maxRedirects = 3) => {
  */
 export async function fetchLessonContent(
   lesson: LessonSource,
-  options: { bypassCache?: boolean; docIdMap?: LessonDocIdMap } = {}
+  options: {
+    bypassCache?: boolean;
+    docIdMap?: LessonDocIdMap;
+    logErrors?: boolean;
+  } = {}
 ): Promise<LessonContentResult> {
-  const { bypassCache = false, docIdMap } = options;
+  const { bypassCache = false, docIdMap, logErrors = true } = options;
   const env = getEnv();
   const rewriteLinks = (html: string) =>
     docIdMap ? rewriteLessonDocLinks(html, docIdMap) : html;
@@ -719,11 +724,13 @@ export async function fetchLessonContent(
   try {
     return await fetchPromise;
   } catch (error) {
-    console.error("Failed to fetch lesson content.", {
-      lessonId: lesson.id,
-      publishedUrl: lesson.publishedUrl,
-      error,
-    });
+    if (logErrors) {
+      logger.error("lesson_content.fetch_failed", {
+        lessonId: lesson.id,
+        publishedUrl: lesson.publishedUrl,
+        error,
+      });
+    }
     throw error;
   } finally {
     if (!bypassCache) {

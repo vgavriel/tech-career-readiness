@@ -5,9 +5,11 @@ import { z } from "zod";
 import { getAuthenticatedUser } from "@/lib/auth-user";
 import { parseJsonBody } from "@/lib/api-helpers";
 import { withDbRetry } from "@/lib/db-retry";
+import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { enforceRateLimit } from "@/lib/rate-limit";
 import { enforceStateChangeSecurity } from "@/lib/request-guard";
+import { getRequestId } from "@/lib/request-id";
 
 export const runtime = "nodejs";
 
@@ -21,14 +23,30 @@ const progressMergeSchema = z
  * POST /api/progress/merge: merge guest progress into the user account.
  */
 export async function POST(request: Request) {
+  const requestId = getRequestId(request);
+  const startedAt = Date.now();
+  const logRequest = (
+    level: "info" | "warn" | "error",
+    details: Record<string, unknown>
+  ) => {
+    logger[level]("progress.merge", {
+      requestId,
+      route: "POST /api/progress/merge",
+      durationMs: Date.now() - startedAt,
+      ...details,
+    });
+  };
+
   const guardResponse = enforceStateChangeSecurity(request);
   if (guardResponse) {
+    logRequest("warn", { status: guardResponse.status, reason: "blocked" });
     return guardResponse;
   }
 
   const user = await getAuthenticatedUser();
 
   if (!user) {
+    logRequest("warn", { status: 401, reason: "unauthorized" });
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
 
@@ -38,6 +56,7 @@ export async function POST(request: Request) {
     user.id
   );
   if (rateLimitResponse) {
+    logRequest("warn", { status: rateLimitResponse.status, reason: "rate_limited" });
     return rateLimitResponse;
   }
 
@@ -45,6 +64,7 @@ export async function POST(request: Request) {
     maxBytes: 32_768,
   });
   if ("error" in parsedBody) {
+    logRequest("warn", { status: parsedBody.error.status, reason: "invalid_payload" });
     return parsedBody.error;
   }
 
@@ -53,6 +73,7 @@ export async function POST(request: Request) {
   );
 
   if (lessonSlugs.length === 0) {
+    logRequest("warn", { status: 400, reason: "no_valid_lessons" });
     return NextResponse.json({ error: "No valid lessons to merge." }, { status: 400 });
   }
 
@@ -69,6 +90,7 @@ export async function POST(request: Request) {
   const validLessonSlugSet = new Set(validLessonSlugs);
 
   if (validLessonIds.length === 0) {
+    logRequest("warn", { status: 400, reason: "no_valid_lessons" });
     return NextResponse.json({ error: "No valid lessons to merge." }, { status: 400 });
   }
 
@@ -108,6 +130,13 @@ export async function POST(request: Request) {
     (lessonSlug) => !validLessonSlugSet.has(lessonSlug)
   );
 
+  logRequest("info", {
+    status: 200,
+    requestedCount: lessonSlugs.length,
+    mergedCount: validLessonSlugs.length,
+    skippedCount: skippedLessonSlugs.length,
+    userId: user.id,
+  });
   return NextResponse.json({
     mergedLessonSlugs: validLessonSlugs,
     skippedLessonSlugs,
