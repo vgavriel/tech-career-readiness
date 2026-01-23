@@ -38,6 +38,7 @@ model Lesson {
   slug               String            @unique
   order              Int
   publishedUrl       String
+  googleDocId        String?           @unique
   estimatedMinutes   Int?
   objectivesMarkdown String?
   isArchived         Boolean           @default(false)

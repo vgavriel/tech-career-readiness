@@ -411,4 +411,32 @@ describe("fetchLessonContent", () => {
     expect(mail).not.toHaveAttribute("target");
     expect(mail).not.toHaveAttribute("rel");
   });
+
+  it("rewrites lesson doc links when a doc map is provided", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          '<p><a href="https://docs.google.com/document/d/doc-123/edit">Lesson</a></p>',
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson, {
+      docIdMap: new Map([["doc-123", "target-slug"]]),
+    });
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = result.html;
+
+    const link = wrapper.querySelector("a");
+    expect(link).not.toBeNull();
+    expect(link).toHaveAttribute("href", "/lesson/target-slug");
+    expect(link).not.toHaveAttribute("target");
+    expect(link).not.toHaveAttribute("rel");
+  });
 });
