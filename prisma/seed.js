@@ -394,6 +394,9 @@ async function main() {
       const publishedUrl =
         lessonData.publishedUrl ??
         `https://docs.google.com/document/d/e/${lessonData.slug}/pub`;
+      const googleDocId = Object.hasOwn(lessonData, "googleDocId")
+        ? lessonData.googleDocId ?? null
+        : undefined;
 
       const lessonBySlug = await prisma.lesson.findUnique({
         where: { slug: lessonSlug },
@@ -418,6 +421,7 @@ async function main() {
               moduleId: moduleRecord.id,
               publishedUrl,
               isArchived: false,
+              ...(googleDocId !== undefined ? { googleDocId } : {}),
             },
           })
         : await prisma.lesson.create({
@@ -428,6 +432,7 @@ async function main() {
               moduleId: moduleRecord.id,
               publishedUrl,
               isArchived: false,
+              ...(googleDocId !== undefined ? { googleDocId } : {}),
             },
           });
 

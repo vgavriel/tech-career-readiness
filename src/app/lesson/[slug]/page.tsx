@@ -7,6 +7,8 @@ import LessonProgressToggle from "@/components/lesson-progress-toggle";
 import NavigatorLayout from "@/components/navigator-layout";
 import { getLessonExample } from "@/lib/lesson-examples";
 import { fetchLessonContent } from "@/lib/lesson-content";
+import { rewriteLessonDocLinks } from "@/lib/lesson-doc-links";
+import { getLessonDocLinkMap } from "@/lib/lesson-doc-link-map";
 import { buildLessonRedirectPath, findLessonBySlug } from "@/lib/lesson-slug";
 import { getStaticLessonContent } from "@/lib/lesson-static-content";
 import { prisma } from "@/lib/prisma";
@@ -55,14 +57,15 @@ export default async function LessonPage({
     permanentRedirect(buildLessonRedirectPath(lesson.slug, rawSearchParams));
   }
 
-  const modules = await prisma.module.findMany({
-    orderBy: { order: "asc" },
-    select: {
-      id: true,
-      key: true,
-      title: true,
-      description: true,
-      order: true,
+  const [modules, lessonDocLinkMap] = await Promise.all([
+    prisma.module.findMany({
+      orderBy: { order: "asc" },
+      select: {
+        id: true,
+        key: true,
+        title: true,
+        description: true,
+        order: true,
         lessons: {
           where: { isArchived: false },
           orderBy: { order: "asc" },
@@ -71,11 +74,13 @@ export default async function LessonPage({
             slug: true,
             title: true,
             order: true,
-          estimatedMinutes: true,
+            estimatedMinutes: true,
+          },
         },
       },
-    },
-  });
+    }),
+    getLessonDocLinkMap(),
+  ]);
 
   const lessonExample = getLessonExample(lesson.slug);
   const staticLesson = getStaticLessonContent(lesson.slug);
@@ -84,6 +89,9 @@ export default async function LessonPage({
     staticLesson?.estimatedMinutes ??
     lessonExample?.estimatedMinutes;
   let contentHtml = staticLesson?.contentHtml ?? null;
+  let contentSource: "static" | "fetch" | "example" | null = contentHtml
+    ? "static"
+    : null;
   let showFallbackNotice = false;
   let showErrorState = false;
 
@@ -93,18 +101,31 @@ export default async function LessonPage({
     let contentError = false;
 
     try {
-      lessonContent = await fetchLessonContent({
-        id: lesson.id,
-        publishedUrl: lesson.publishedUrl,
-      });
+      lessonContent = await fetchLessonContent(
+        {
+          id: lesson.id,
+          publishedUrl: lesson.publishedUrl,
+        },
+        { docIdMap: lessonDocLinkMap }
+      );
     } catch {
       contentError = true;
     }
 
     const fallbackHtml = contentError ? lessonExample?.contentHtml ?? null : null;
     contentHtml = lessonContent?.html ?? fallbackHtml;
+    if (lessonContent?.html) {
+      contentSource = "fetch";
+    } else if (fallbackHtml) {
+      contentSource = "example";
+    } else {
+      contentSource = null;
+    }
     showFallbackNotice = Boolean(contentError && fallbackHtml);
     showErrorState = Boolean(contentError && !fallbackHtml);
+  }
+  if (contentHtml && contentSource !== "fetch") {
+    contentHtml = rewriteLessonDocLinks(contentHtml, lessonDocLinkMap);
   }
 
   return (

@@ -6,6 +6,7 @@ import {
   getLessonContentCache,
   setLessonContentCache,
 } from "@/lib/lesson-content-cache";
+import { LessonDocIdMap, rewriteLessonDocLinks } from "@/lib/lesson-doc-links";
 import { getEnv } from "@/lib/env";
 
 const allowedLessonHosts = new Set(["docs.google.com", "drive.google.com"]);
@@ -659,15 +660,25 @@ const fetchLessonHtml = async (url: URL, maxRedirects = 3) => {
  */
 export async function fetchLessonContent(
   lesson: LessonSource,
-  options: { bypassCache?: boolean } = {}
+  options: { bypassCache?: boolean; docIdMap?: LessonDocIdMap } = {}
 ): Promise<LessonContentResult> {
-  const { bypassCache = false } = options;
+  const { bypassCache = false, docIdMap } = options;
   const env = getEnv();
+  const rewriteLinks = (html: string) =>
+    docIdMap ? rewriteLessonDocLinks(html, docIdMap) : html;
 
   if (!bypassCache) {
     const cachedHtml = getLessonContentCache(lesson.id);
     if (cachedHtml) {
-      return { lessonId: lesson.id, html: cachedHtml, cached: true };
+      const rewrittenHtml = rewriteLinks(cachedHtml);
+      if (rewrittenHtml !== cachedHtml) {
+        setLessonContentCache(
+          lesson.id,
+          rewrittenHtml,
+          LESSON_CONTENT_CACHE_TTL_MS
+        );
+      }
+      return { lessonId: lesson.id, html: rewrittenHtml, cached: true };
     }
   }
 
@@ -681,7 +692,10 @@ export async function fetchLessonContent(
   const fetchPromise = (async () => {
     const mockHtml = env.LESSON_CONTENT_MOCK_HTML;
     if (mockHtml && (env.isLocal || env.isTest)) {
-      const sanitizedHtml = sanitizeHtml(mockHtml, sanitizeOptions);
+      const sanitizedHtml = sanitizeHtml(
+        rewriteLinks(mockHtml),
+        sanitizeOptions
+      );
       setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
       return { lessonId: lesson.id, html: sanitizedHtml, cached: false };
     }
@@ -689,7 +703,10 @@ export async function fetchLessonContent(
     const validatedUrl = assertAllowedLessonUrl(lesson.publishedUrl);
     const rawHtml = await fetchLessonHtml(validatedUrl);
     const extractedHtml = extractLessonHtml(rawHtml);
-    const sanitizedHtml = sanitizeHtml(extractedHtml, sanitizeOptions);
+    const sanitizedHtml = sanitizeHtml(
+      rewriteLinks(extractedHtml),
+      sanitizeOptions
+    );
     setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
 
     return { lessonId: lesson.id, html: sanitizedHtml, cached: false };

@@ -120,6 +120,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
   - slug (unique, stable + user-facing)
   - order (int)
   - publishedUrl (string)
+  - googleDocId (string, optional)
   - estimatedMinutes (int, optional)
   - objectivesMarkdown (string, optional)
   - isArchived (boolean, default false)
@@ -203,6 +204,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Fetch publishedUrl server-side
 - [x] Sanitize HTML
 - [x] Add in-memory cache with TTL
+- [x] Rewrite Google Doc edit links to internal lesson routes using stored doc IDs
 
 ### Phase 4 — Core pages (public browsing)
 - [x] Landing page (`/`)

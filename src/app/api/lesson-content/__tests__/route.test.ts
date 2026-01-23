@@ -11,8 +11,14 @@ const prismaMock = {
   },
 };
 
+const lessonDocLinkMapMock = vi.fn().mockResolvedValue(new Map());
+
 vi.mock("@/lib/prisma", () => ({
   prisma: prismaMock,
+}));
+
+vi.mock("@/lib/lesson-doc-link-map", () => ({
+  getLessonDocLinkMap: lessonDocLinkMapMock,
 }));
 
 /**
@@ -54,6 +60,8 @@ describe("GET /api/lesson-content", () => {
   beforeEach(() => {
     prismaMock.lesson.findFirst.mockReset();
     prismaMock.lessonSlugAlias.findUnique.mockReset();
+    lessonDocLinkMapMock.mockReset();
+    lessonDocLinkMapMock.mockResolvedValue(new Map());
     fetchMock.mockReset();
     vi.stubGlobal("fetch", fetchMock);
     clearLessonContentCache();

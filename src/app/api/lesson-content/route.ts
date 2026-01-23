@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { fetchLessonContent } from "@/lib/lesson-content";
+import { getLessonDocLinkMap } from "@/lib/lesson-doc-link-map";
 import { getEnv } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { enforceRateLimit } from "@/lib/rate-limit";
@@ -48,6 +49,7 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
+  const bypassCache = shouldBypassCache(searchParams);
   const parsedQuery = lessonQuerySchema.safeParse({
     lessonId: searchParams.get("lessonId") ?? undefined,
     slug: searchParams.get("slug") ?? undefined,
@@ -97,8 +99,10 @@ export async function GET(request: Request) {
   }
 
   try {
+    const lessonDocLinkMap = await getLessonDocLinkMap({ bypassCache });
     const content = await fetchLessonContent(lesson, {
-      bypassCache: shouldBypassCache(searchParams),
+      bypassCache,
+      docIdMap: lessonDocLinkMap,
     });
     return NextResponse.json(content);
   } catch {
