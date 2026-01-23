@@ -108,24 +108,9 @@ export default async function LessonPage({
         }
       >
         <div className="space-y-6">
-          <nav
-            aria-label="Breadcrumb"
-            className="flex flex-wrap items-center gap-2 text-xs text-[color:var(--ink-500)]"
-          >
-            <Link href="/" className="font-semibold text-[color:var(--ink-700)]">
-              Course
-            </Link>
-            <span>/</span>
-            <span>
-              Module {lesson.module?.order ?? "?"}:{lesson.module?.title
-                ? ` ${lesson.module.title}`
-                : ""}
-            </span>
-          </nav>
-
           <header className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-[color:var(--ink-600)]">
+              <div className="flex flex-wrap items-center gap-3 text-sm font-semibold text-[color:var(--ink-600)]">
                 <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2.5 py-0.5 text-[color:var(--ink-700)]">
                   Module {lesson.module?.order ?? "?"}
                 </span>

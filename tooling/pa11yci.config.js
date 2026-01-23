@@ -15,7 +15,7 @@ module.exports = {
   urls: [
     `${baseUrl}/`,
     `${baseUrl}/lesson/ace-interview-prep-timeline`,
-    `${baseUrl}/badges`,
+    `${baseUrl}/gold-stars`,
     `${baseUrl}/roles`,
   ],
 };

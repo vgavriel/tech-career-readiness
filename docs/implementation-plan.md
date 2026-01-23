@@ -85,8 +85,8 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - Navigator (left rail) with modules + lesson completion toggles
 - Open source doc in new tab (optional, uses publishedUrl)
 
-3) `/badges` (Badge awards)
-- Badge summary with earned/in-progress status
+3) `/gold-stars` (Gold Stars awards)
+- Gold Stars summary with earned/in-progress status
 
 4) `/roadmap` (Legacy redirect)
 - Redirects to the first lesson (navigator handles browsing)
@@ -263,7 +263,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Add lightweight badge awards (no streaks) based on lesson completion
 - [x] Persist focus selection in the database and surface it in the header picker
 - [x] Replace the standalone roadmap page with a persistent navigator (collapsible + resizable)
-- [x] Add a badges page linked from the global header
+- [x] Add a Gold Stars page linked from the global header
 
 ### Phase 7.4 — Accessibility (WCAG AAA)
 - [x] Update color tokens for AAA contrast (text + non-text UI)

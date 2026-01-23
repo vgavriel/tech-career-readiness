@@ -40,7 +40,7 @@ export default async function Home() {
       >
         <section className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
           <div className="space-y-6 animate-rise">
-            <h1 className="font-display text-4xl leading-[1.1] text-[color:var(--ink-900)] md:text-5xl lg:text-6xl">
+            <h1 className="font-display text-2xl leading-[1.1] text-[color:var(--ink-900)] md:text-3xl lg:text-5xl">
               Step-by-step prep for tech recruiting at Brown.
             </h1>
             <p className="max-w-2xl text-base text-[color:var(--ink-700)] md:text-lg">

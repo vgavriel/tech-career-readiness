@@ -64,7 +64,7 @@ export default function LessonNavigator({
     ? `Focus: ${
         FOCUS_OPTIONS.find((option) => option.key === focusKey)?.label ?? "Focus"
       }`
-    : "Curriculum";
+    : "Full curriculum";
 
   const { coreCompleted, coreTotal, extraCompleted, extraTotal } = useMemo(() => {
     const allLessons = visibleModules.flatMap((module) => module.lessons);
@@ -123,13 +123,13 @@ export default function LessonNavigator({
           id={buildLessonId(lesson.slug)}
         >
           <span className="text-sm font-semibold text-[color:var(--ink-900)]">
-            <span className={`text-xs font-semibold ${metaTextColor}`}>
+            <span className={`text-sm font-semibold ${metaTextColor}`}>
               {moduleOrder}.{lesson.order}
             </span>{" "}
             {lesson.title}
           </span>
           {options?.showExtraTag && isExtra ? (
-            <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2 py-0.5 text-[0.7rem] font-semibold text-[color:var(--ink-600)]">
+            <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2 py-0.5 text-sm font-semibold text-[color:var(--ink-600)]">
               Extra credit
             </span>
           ) : null}
@@ -184,13 +184,13 @@ export default function LessonNavigator({
               onClick={() => {
                 void setFocusKey(null);
               }}
-              className="min-h-10 rounded-full border border-[color:var(--line-soft)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]"
+              className="min-h-10 rounded-full border border-[color:var(--line-soft)] px-3 py-1 text-sm font-semibold text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]"
             >
               Clear focus
             </button>
           ) : null}
         </div>
-        <div className="grid gap-2 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-xs text-[color:var(--ink-600)]">
+        <div className="grid gap-2 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-sm text-[color:var(--ink-600)]">
           <div className="flex items-center justify-between">
             <span>Core progress</span>
             <span>{isReady ? `${coreCompleted} / ${coreTotal}` : "Loading"}</span>
@@ -243,9 +243,9 @@ export default function LessonNavigator({
                 className="group rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] shadow-[var(--shadow-soft)]"
               >
                 <summary className="summary-clean flex min-h-11 cursor-pointer items-center px-3 py-3">
-                  <div className="flex w-full items-center gap-3">
+                    <div className="flex w-full items-center gap-3">
                     <div>
-                      <p className="text-xs font-semibold text-[color:var(--ink-500)]">
+                      <p className="text-sm font-semibold text-[color:var(--ink-500)]">
                         Module {module.order}
                       </p>
                       <p className="mt-1 text-sm font-semibold text-[color:var(--ink-900)]">
@@ -272,7 +272,7 @@ export default function LessonNavigator({
                           </svg>
                         </span>
                       ) : null}
-                      <span className="shrink-0 whitespace-nowrap rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2.5 py-0.5 text-xs font-semibold text-[color:var(--ink-600)]">
+                      <span className="shrink-0 whitespace-nowrap rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2.5 py-0.5 text-sm font-semibold text-[color:var(--ink-600)]">
                         {isReady ? progressLabel : "Loading"}
                       </span>
                       <svg
@@ -305,7 +305,7 @@ export default function LessonNavigator({
                       open={isActiveExtra || coreLessons.length === 0}
                       className="extra-credit-details rounded-xl border border-dashed border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-2"
                     >
-                      <summary className="summary-clean flex min-h-11 cursor-pointer items-center justify-between gap-3 text-xs font-semibold text-[color:var(--ink-600)]">
+                      <summary className="summary-clean flex min-h-11 cursor-pointer items-center justify-between gap-3 text-sm font-semibold text-[color:var(--ink-600)]">
                         <span>Extra credit</span>
                         <span className="flex items-center gap-2 text-[color:var(--ink-500)]">
                           {isReady
@@ -341,13 +341,13 @@ export default function LessonNavigator({
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-xs text-[color:var(--ink-600)]">
+      <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-sm text-[color:var(--ink-600)]">
         {isAuthenticated
           ? "Progress syncs to your account."
           : "Progress is saved locally in browser."}
         {isMerging ? " Syncing guest progress..." : ""}
         {!isAuthenticated ? (
-          <SignInCta className="mt-3 inline-flex min-h-10 items-center rounded-full bg-[color:var(--accent-700)] text-[color:var(--wash-0)] hover:bg-[color:var(--ink-800)] px-3 text-xs font-semibold text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]">
+          <SignInCta className="mt-3 inline-flex min-h-10 items-center rounded-full bg-[color:var(--accent-700)] text-[color:var(--wash-0)] hover:bg-[color:var(--ink-800)] px-3 text-sm font-semibold text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]">
             Sign in to save to your account.
           </SignInCta>
         ) : null}

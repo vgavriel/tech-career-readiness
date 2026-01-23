@@ -38,16 +38,16 @@ export default function SiteHeader() {
             className="flex flex-wrap items-center gap-3 text-sm text-[color:var(--ink-600)]"
           >
             <Link
-              href="/badges"
+              href="/gold-stars"
               className="inline-flex min-h-11 items-center transition hover:text-[color:var(--ink-900)]"
             >
-              Badges
+              Gold Stars
             </Link>
             <Link
               href="/roles"
               className="inline-flex min-h-11 items-center transition hover:text-[color:var(--ink-900)]"
             >
-              Role library
+              Explore Tech Roles
             </Link>
             <a
               href="https://github.com/vgavriel/tech-career-readiness"
@@ -67,7 +67,7 @@ export default function SiteHeader() {
                 {session.user.name ?? session.user.email}
               </span>
               <button
-                className="min-h-11 rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 text-xs font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)]"
+                className="min-h-11 rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 text-sm font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)]"
                 onClick={() => signOut()}
                 type="button"
               >

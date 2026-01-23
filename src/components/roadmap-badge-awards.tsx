@@ -10,6 +10,32 @@ type RoadmapBadgeAwardsProps = {
   modules: RoadmapModule[];
 };
 
+type StarIconProps = {
+  variant: "filled" | "outline";
+  className?: string;
+};
+
+const StarIcon = ({ variant, className = "" }: StarIconProps) => {
+  const isFilled = variant === "filled";
+
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 24 24"
+      className={`h-4 w-4 ${className}`}
+    >
+      <path
+        d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.9 6.8 19.5l1-5.8-4.2-4.1 5.8-.8L12 3.5z"
+        fill={isFilled ? "currentColor" : "none"}
+        stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth={isFilled ? 1 : 1.5}
+      />
+    </svg>
+  );
+};
+
 export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps) {
   const { completedLessonSlugs } = useProgress();
   const badges = useMemo(
@@ -24,26 +50,33 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
   const earnedCount = badges.filter((badge) => badge.isEarned).length;
   const earnedBadges = sortedBadges.filter((badge) => badge.isEarned);
   const inProgressBadges = sortedBadges.filter((badge) => !badge.isEarned);
+  const totalLabel = badges.length === 1 ? "star" : "stars";
 
   return (
     <section className="rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="font-display text-2xl text-[color:var(--ink-900)]">
-            Momentum markers
+            Gold Stars
           </h2>
         </div>
         <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
-          {earnedCount} of {badges.length} earned
+          {earnedCount} of {badges.length} {totalLabel} earned
         </span>
       </div>
 
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-[color:var(--ink-800)]">
-              Earned
-            </p>
+            <div className="flex items-center gap-2">
+              <StarIcon
+                variant="filled"
+                className="text-[color:var(--accent-500)]"
+              />
+              <p className="text-sm font-semibold text-[color:var(--ink-800)]">
+                Earned
+              </p>
+            </div>
             <span className="text-xs text-[color:var(--ink-500)]">
               {earnedBadges.length}
             </span>
@@ -71,16 +104,22 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
             </div>
           ) : (
             <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4 text-sm text-[color:var(--ink-600)]">
-              Complete your first module to earn a badge.
+              Complete your first module to earn a gold star.
             </div>
           )}
         </div>
 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-[color:var(--ink-800)]">
-              In progress
-            </p>
+            <div className="flex items-center gap-2">
+              <StarIcon
+                variant="outline"
+                className="text-[color:var(--accent-500)]"
+              />
+              <p className="text-sm font-semibold text-[color:var(--ink-800)]">
+                In progress
+              </p>
+            </div>
             <span className="text-xs text-[color:var(--ink-500)]">
               {inProgressBadges.length}
             </span>

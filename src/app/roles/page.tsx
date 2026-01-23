@@ -72,9 +72,6 @@ export default async function RolesPage() {
 
         <section className="space-y-4">
           <div>
-            <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-              All roles
-            </p>
             <h2 className="mt-2 font-display text-2xl text-[color:var(--ink-900)] md:text-3xl">
               Role deep dives
             </h2>
