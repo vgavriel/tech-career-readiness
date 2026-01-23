@@ -63,6 +63,7 @@ describe("NavigatorLayout", () => {
     );
 
     const toggle = screen.getByRole("button", { name: /collapse navigator/i });
+    fireEvent.pointerDown(toggle);
     fireEvent.click(toggle);
 
     const separator = screen.getByRole("separator");
@@ -137,5 +138,74 @@ describe("NavigatorLayout", () => {
 
     const navigator = screen.getByLabelText("Lesson navigator");
     expect(navigator).toHaveAttribute("aria-hidden", "true");
+  });
+
+  it("scrolls to hash targets when clicking in-page links", () => {
+    const scrollToMock = vi.fn();
+    const originalScrollTo = HTMLElement.prototype.scrollTo;
+    Object.defineProperty(HTMLElement.prototype, "scrollTo", {
+      configurable: true,
+      value: scrollToMock,
+    });
+
+    try {
+      render(
+        <NavigatorLayout navigator={<div>Navigator</div>}>
+          <div>
+            <a href="#target">Jump to target</a>
+            <div id="target">Target section</div>
+          </div>
+        </NavigatorLayout>
+      );
+
+      const main = screen.getByRole("main");
+      const target = screen.getByText("Target section");
+
+      Object.defineProperty(main, "scrollTop", {
+        value: 0,
+        writable: true,
+      });
+      Object.defineProperty(main, "getBoundingClientRect", {
+        value: () => ({
+          top: 0,
+          bottom: 600,
+          left: 0,
+          right: 600,
+          width: 600,
+          height: 600,
+          x: 0,
+          y: 0,
+          toJSON: () => ({}),
+        }),
+      });
+      Object.defineProperty(target, "getBoundingClientRect", {
+        value: () => ({
+          top: 300,
+          bottom: 340,
+          left: 0,
+          right: 600,
+          width: 600,
+          height: 40,
+          x: 0,
+          y: 300,
+          toJSON: () => ({}),
+        }),
+      });
+
+      fireEvent.click(screen.getByRole("link", { name: /jump to target/i }));
+
+      expect(scrollToMock).toHaveBeenCalledWith(
+        expect.objectContaining({ top: 300, behavior: "auto" })
+      );
+    } finally {
+      if (originalScrollTo) {
+        Object.defineProperty(HTMLElement.prototype, "scrollTo", {
+          configurable: true,
+          value: originalScrollTo,
+        });
+      } else {
+        delete (HTMLElement.prototype as { scrollTo?: unknown }).scrollTo;
+      }
+    }
   });
 });

@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { devAuthDefaults } from "@/lib/dev-auth";
+
 const ORIGINAL_ENV = { ...process.env };
 
 vi.mock("next-auth/providers/google", () => ({
@@ -104,5 +106,32 @@ describe("authOptions", () => {
     await expect(importAuth()).rejects.toThrow(
       "Missing NEXTAUTH_SECRET environment variable."
     );
+  });
+
+  it("authorizes credential sign-in payloads in local", async () => {
+    process.env.APP_ENV = "local";
+    process.env.GOOGLE_CLIENT_ID = "client-id";
+    process.env.GOOGLE_CLIENT_SECRET = "client-secret";
+    process.env.NEXTAUTH_SECRET = "auth-secret";
+
+    const { authOptions } = await importAuth();
+    const provider = authOptions.providers?.[0] as {
+      authorize: (credentials?: Record<string, string>) => Promise<{
+        id: string;
+        email?: string;
+        name?: string;
+      }>;
+    };
+
+    const result = await provider.authorize({
+      email: "student@example.com",
+      name: "Student Name",
+    });
+
+    expect(result).toEqual({
+      id: devAuthDefaults.id,
+      email: "student@example.com",
+      name: "Student Name",
+    });
   });
 });
