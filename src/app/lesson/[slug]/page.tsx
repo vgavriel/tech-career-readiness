@@ -8,6 +8,7 @@ import NavigatorLayout from "@/components/navigator-layout";
 import { getLessonExample } from "@/lib/lesson-examples";
 import { fetchLessonContent } from "@/lib/lesson-content";
 import { buildLessonRedirectPath, findLessonBySlug } from "@/lib/lesson-slug";
+import { getStaticLessonContent } from "@/lib/lesson-static-content";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -77,24 +78,34 @@ export default async function LessonPage({
   });
 
   const lessonExample = getLessonExample(lesson.slug);
+  const staticLesson = getStaticLessonContent(lesson.slug);
   const estimatedMinutes =
-    lesson.estimatedMinutes ?? lessonExample?.estimatedMinutes;
-  let lessonContent: Awaited<ReturnType<typeof fetchLessonContent>> | null = null;
-  let contentError = false;
+    lesson.estimatedMinutes ??
+    staticLesson?.estimatedMinutes ??
+    lessonExample?.estimatedMinutes;
+  let contentHtml = staticLesson?.contentHtml ?? null;
+  let showFallbackNotice = false;
+  let showErrorState = false;
 
-  try {
-    lessonContent = await fetchLessonContent({
-      id: lesson.id,
-      publishedUrl: lesson.publishedUrl,
-    });
-  } catch {
-    contentError = true;
+  if (!contentHtml) {
+    let lessonContent: Awaited<ReturnType<typeof fetchLessonContent>> | null =
+      null;
+    let contentError = false;
+
+    try {
+      lessonContent = await fetchLessonContent({
+        id: lesson.id,
+        publishedUrl: lesson.publishedUrl,
+      });
+    } catch {
+      contentError = true;
+    }
+
+    const fallbackHtml = contentError ? lessonExample?.contentHtml ?? null : null;
+    contentHtml = lessonContent?.html ?? fallbackHtml;
+    showFallbackNotice = Boolean(contentError && fallbackHtml);
+    showErrorState = Boolean(contentError && !fallbackHtml);
   }
-
-  const fallbackHtml = contentError ? lessonExample?.contentHtml ?? null : null;
-  const contentHtml = lessonContent?.html ?? fallbackHtml;
-  const showFallbackNotice = Boolean(contentError && fallbackHtml);
-  const showErrorState = Boolean(contentError && !fallbackHtml);
 
   return (
     <div className="page-shell h-full overflow-hidden">
@@ -167,24 +178,6 @@ export default async function LessonPage({
               </div>
             ) : null}
           </section>
-
-          {lessonExample?.plan.length ? (
-            <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)]">
-              <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-                Action plan
-              </p>
-              <div className="mt-3 grid gap-3 text-sm text-[color:var(--ink-700)]">
-                {lessonExample.plan.map((step) => (
-                  <div key={step.title} className="space-y-1">
-                    <p className="font-semibold text-[color:var(--ink-900)]">
-                      {step.title}
-                    </p>
-                    <p>{step.detail}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : null}
         </div>
       </NavigatorLayout>
     </div>

@@ -264,6 +264,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Persist focus selection in the database and surface it in the header picker
 - [x] Replace the standalone roadmap page with a persistent navigator (collapsible + resizable)
 - [x] Add a Gold Stars page linked from the global header
+- [x] Replace Start Here lesson 1 with in-app overview content (no external links)
 
 ### Phase 7.4 — Accessibility (WCAG AAA)
 - [x] Update color tokens for AAA contrast (text + non-text UI)

@@ -50,23 +50,16 @@ export default async function RolesPage() {
               Explore Brown-specific tech roles.
             </h1>
             <p className="max-w-2xl text-base text-[color:var(--ink-700)] md:text-lg">
-              Short deep dives with Brown alumni links and course-to-role
-              context. These are extra credit and do not affect core progress.
+              Short deep dives with links to find Brown alumni. These are extra credit and do not affect core progress.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
                 href={`/lesson/${startLessonSlug}`}
-                className="no-underline inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-5 py-2.5 text-xs font-semibold text-[color:var(--ink-900)] transition hover:border-[color:var(--ink-800)] sm:w-auto"
+                className="no-underline inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-5 py-2.5 text-sm font-semibold text-[color:var(--ink-900)] transition hover:border-[color:var(--ink-800)] sm:w-auto"
               >
                 Back to course
               </Link>
             </div>
-          </div>
-          <div className="rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
-            <p className="text-sm text-[color:var(--ink-700)]">
-              Pick 2-3 roles, scan for skills and Brown-specific signals, then
-              use the insights to refine your focus.
-            </p>
           </div>
         </section>
 
