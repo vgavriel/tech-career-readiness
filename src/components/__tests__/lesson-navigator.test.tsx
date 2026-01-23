@@ -1,4 +1,5 @@
-import { render, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -10,7 +11,16 @@ const routerMocks = vi.hoisted(() => ({
 }));
 
 const focusMocks = vi.hoisted(() => ({
+  focusKey: null as string | null,
   setFocusKey: vi.fn(),
+}));
+
+const progressMocks = vi.hoisted(() => ({
+  isLessonCompleted: vi.fn(),
+  isReady: true,
+  isAuthenticated: true,
+  isMerging: false,
+  setLessonCompletion: vi.fn(),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -19,18 +29,18 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("@/components/focus-provider", () => ({
   useFocus: () => ({
-    focusKey: null,
+    focusKey: focusMocks.focusKey,
     setFocusKey: focusMocks.setFocusKey,
   }),
 }));
 
 vi.mock("@/components/progress-provider", () => ({
   useProgress: () => ({
-    isLessonCompleted: () => false,
-    isReady: true,
-    isAuthenticated: true,
-    isMerging: false,
-    setLessonCompletion: vi.fn(),
+    isLessonCompleted: progressMocks.isLessonCompleted,
+    isReady: progressMocks.isReady,
+    isAuthenticated: progressMocks.isAuthenticated,
+    isMerging: progressMocks.isMerging,
+    setLessonCompletion: progressMocks.setLessonCompletion,
   }),
 }));
 
@@ -68,6 +78,15 @@ const mockMatchMedia = (matches = false) => {
 describe("LessonNavigator", () => {
   beforeEach(() => {
     mockMatchMedia(false);
+    routerMocks.replace.mockReset();
+    focusMocks.setFocusKey.mockReset();
+    focusMocks.focusKey = null;
+    progressMocks.isLessonCompleted.mockReset();
+    progressMocks.isLessonCompleted.mockReturnValue(false);
+    progressMocks.setLessonCompletion.mockReset();
+    progressMocks.isReady = true;
+    progressMocks.isAuthenticated = true;
+    progressMocks.isMerging = false;
   });
 
   it("scrolls the navigator panel to the active lesson when it is out of view", async () => {
@@ -165,5 +184,141 @@ describe("LessonNavigator", () => {
         expect.objectContaining({ top: 220, behavior: "smooth" })
       );
     });
+  });
+
+  it("clears focus selection when prompted", async () => {
+    const user = userEvent.setup();
+    focusMocks.focusKey = "applying-soon";
+
+    const modules: RoadmapModule[] = [
+      {
+        id: "module-1",
+        key: "start-here",
+        title: "Start here",
+        description: null,
+        order: 1,
+        lessons: [
+          {
+            id: "lesson-1",
+            slug: "start-to-finish-roadmap",
+            title: "Start to finish",
+            order: 1,
+            estimatedMinutes: null,
+          },
+        ],
+      },
+    ];
+
+    render(
+      <LessonNavigator
+        modules={modules}
+        currentLessonSlug="start-to-finish-roadmap"
+        currentModuleKey="start-here"
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: /clear focus/i }));
+
+    expect(focusMocks.setFocusKey).toHaveBeenCalledWith(null);
+  });
+
+  it("redirects to the first visible lesson when the current module is filtered out", async () => {
+    focusMocks.focusKey = "offer-in-hand";
+
+    const modules: RoadmapModule[] = [
+      {
+        id: "module-1",
+        key: "start-here",
+        title: "Start here",
+        description: null,
+        order: 1,
+        lessons: [
+          {
+            id: "lesson-1",
+            slug: "start-here-lesson",
+            title: "Start here lesson",
+            order: 1,
+            estimatedMinutes: null,
+          },
+        ],
+      },
+      {
+        id: "module-2",
+        key: "offers",
+        title: "Offers",
+        description: null,
+        order: 2,
+        lessons: [
+          {
+            id: "lesson-2",
+            slug: "offers-lesson",
+            title: "Offers lesson",
+            order: 1,
+            estimatedMinutes: null,
+          },
+        ],
+      },
+    ];
+
+    render(
+      <LessonNavigator
+        modules={modules}
+        currentLessonSlug="start-here-lesson"
+        currentModuleKey="start-here"
+      />
+    );
+
+    await waitFor(() => {
+      expect(routerMocks.replace).toHaveBeenCalledWith("/lesson/offers-lesson");
+    });
+  });
+
+  it("renders extra credit lessons and toggles completion", async () => {
+    const user = userEvent.setup();
+
+    const modules: RoadmapModule[] = [
+      {
+        id: "module-1",
+        key: "start-here",
+        title: "Start here",
+        description: null,
+        order: 1,
+        lessons: [
+          {
+            id: "lesson-1",
+            slug: "start-to-finish-roadmap",
+            title: "Start to Finish Roadmap",
+            order: 1,
+            estimatedMinutes: null,
+          },
+          {
+            id: "lesson-2",
+            slug: "tech-career-stories",
+            title: "Tech Career Stories",
+            order: 2,
+            estimatedMinutes: null,
+          },
+        ],
+      },
+    ];
+
+    render(
+      <LessonNavigator
+        modules={modules}
+        currentLessonSlug="tech-career-stories"
+        currentModuleKey="start-here"
+      />
+    );
+
+    expect(screen.getAllByText(/extra credit/i).length).toBeGreaterThan(0);
+
+    await user.click(
+      screen.getByRole("button", { name: /mark tech career stories complete/i })
+    );
+
+    expect(progressMocks.setLessonCompletion).toHaveBeenCalledWith(
+      "tech-career-stories",
+      true
+    );
   });
 });
