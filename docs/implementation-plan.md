@@ -265,6 +265,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Add lightweight badge awards (no streaks) based on lesson completion
 - [x] Persist focus selection in the database and surface it in the header picker
 - [x] Replace the standalone roadmap page with a persistent navigator (collapsible + resizable)
+- [x] Auto-scroll the navigator to the active lesson on open
 - [x] Add a Gold Stars page linked from the global header
 - [x] Replace Start Here lesson 1 with in-app overview content (no external links)
 

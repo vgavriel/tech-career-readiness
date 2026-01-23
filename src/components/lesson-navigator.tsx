@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 import { useFocus } from "@/components/focus-provider";
@@ -35,6 +35,8 @@ export default function LessonNavigator({
     setLessonCompletion,
   } = useProgress();
   const router = useRouter();
+  const scrollPanelRef = useRef<HTMLDivElement | null>(null);
+  const lastScrollKeyRef = useRef<string | null>(null);
 
   const visibleModules = useMemo(
     () => orderModulesForFocus(modules, focusKey),
@@ -59,6 +61,51 @@ export default function LessonNavigator({
       router.replace(`/lesson/${firstLesson.slug}`);
     }
   }, [currentLessonSlug, focusKey, isCurrentModuleVisible, router, visibleModules]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !isCurrentModuleVisible) {
+      return;
+    }
+
+    const scrollPanel = scrollPanelRef.current;
+    if (!scrollPanel) {
+      return;
+    }
+
+    const scrollKey = `${currentLessonSlug}-${focusKey ?? "all"}`;
+    if (lastScrollKeyRef.current === scrollKey) {
+      return;
+    }
+
+    const target = document.getElementById(buildLessonId(currentLessonSlug));
+    if (!target) {
+      return;
+    }
+
+    const panelRect = scrollPanel.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const isVisible =
+      targetRect.top >= panelRect.top && targetRect.bottom <= panelRect.bottom;
+
+    if (!isVisible) {
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+      const nextTop =
+        targetRect.top -
+        panelRect.top +
+        scrollPanel.scrollTop -
+        panelRect.height / 2 +
+        targetRect.height / 2;
+
+      scrollPanel.scrollTo({
+        top: Math.max(0, nextTop),
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+      });
+    }
+
+    lastScrollKeyRef.current = scrollKey;
+  }, [currentLessonSlug, focusKey, isCurrentModuleVisible]);
 
   const focusLabel = focusKey
     ? `Focus: ${
@@ -202,7 +249,7 @@ export default function LessonNavigator({
         </div>
       </div>
 
-      <div className="scroll-panel flex-1 overflow-y-auto">
+      <div ref={scrollPanelRef} className="scroll-panel flex-1 overflow-y-auto">
         <div className="space-y-4">
           {visibleModules.map((module) => {
             const isActiveModule = module.key === currentModuleKey;
