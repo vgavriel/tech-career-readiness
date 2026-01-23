@@ -19,3 +19,4 @@ For any UI change, validate the update in Playwright against `localhost:3000` an
 - Keep tests deterministic: no real network/OAuth; use mocks, MSW, or Playwright routing.
 - Always state which tests were run or why they were not run.
 - If a change does not merit tests, explicitly justify.
+- When running e2e locally, set `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=mac15-arm64` and `PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers`.

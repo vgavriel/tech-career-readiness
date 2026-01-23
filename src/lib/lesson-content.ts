@@ -434,9 +434,9 @@ const stripLessonFooter = (root: Element) => {
 
   let current: Element | null = start;
   while (current) {
-    const next = current.nextElementSibling;
+    const nextSibling: Element | null = current.nextElementSibling;
     current.remove();
-    current = next;
+    current = nextSibling;
   }
 
   let cleanup: Element | null = parent;
@@ -444,9 +444,9 @@ const stripLessonFooter = (root: Element) => {
     if (hasMeaningfulText(cleanup.textContent)) {
       break;
     }
-    const next = cleanup.parentElement;
+    const nextParent: Element | null = cleanup.parentElement;
     cleanup.remove();
-    cleanup = next;
+    cleanup = nextParent;
   }
 };
 

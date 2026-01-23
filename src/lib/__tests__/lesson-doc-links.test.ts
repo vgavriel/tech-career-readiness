@@ -30,6 +30,14 @@ describe("extractGoogleDocIdFromUrl", () => {
     ).toBe("xyz456");
   });
 
+  it("unwraps Google redirect links", () => {
+    expect(
+      extractGoogleDocIdFromUrl(
+        "https://www.google.com/url?q=https://drive.google.com/open?id%3Dxyz456%26usp%3Ddrive_copy&sa=D"
+      )
+    ).toBe("xyz456");
+  });
+
   it("ignores published doc URLs", () => {
     expect(
       extractGoogleDocIdFromUrl(

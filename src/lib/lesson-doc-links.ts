@@ -37,36 +37,55 @@ const parseLessonDocLink = (
     return null;
   }
 
-  const trimmed = href.trim();
-  if (!trimmed) {
+  let currentHref = href.trim();
+  if (!currentHref) {
     return null;
   }
 
-  let url: URL;
-  try {
-    url = new URL(trimmed);
-  } catch {
-    return null;
-  }
+  const seen = new Set<string>();
 
-  const host = url.hostname.replace(/^www\./, "");
-  const segments = url.pathname.split("/").filter(Boolean);
-  let docId: string | null = null;
-
-  if (host === "docs.google.com") {
-    docId = extractDocIdFromSegments(segments, "document", new Set(["e"]));
-  } else if (host === "drive.google.com") {
-    docId = extractDocIdFromSegments(segments, "file");
-    if (!docId) {
-      docId = url.searchParams.get("id");
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    if (seen.has(currentHref)) {
+      return null;
     }
+    seen.add(currentHref);
+
+    let url: URL;
+    try {
+      url = new URL(currentHref);
+    } catch {
+      return null;
+    }
+
+    const host = url.hostname.replace(/^www\./, "");
+    if (host === "google.com" && url.pathname === "/url") {
+      const target = url.searchParams.get("q") ?? url.searchParams.get("url");
+      if (target && target !== currentHref) {
+        currentHref = target;
+        continue;
+      }
+    }
+
+    const segments = url.pathname.split("/").filter(Boolean);
+    let docId: string | null = null;
+
+    if (host === "docs.google.com") {
+      docId = extractDocIdFromSegments(segments, "document", new Set(["e"]));
+    } else if (host === "drive.google.com") {
+      docId = extractDocIdFromSegments(segments, "file");
+      if (!docId) {
+        docId = url.searchParams.get("id");
+      }
+    }
+
+    if (!docId) {
+      return null;
+    }
+
+    return { docId, hash: url.hash };
   }
 
-  if (!docId) {
-    return null;
-  }
-
-  return { docId, hash: url.hash };
+  return null;
 };
 
 export const extractGoogleDocIdFromUrl = (
