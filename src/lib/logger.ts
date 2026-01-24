@@ -168,3 +168,24 @@ export const logger = {
   warn: (message: string, fields?: LogFields) => emitLog("warn", message, fields),
   error: (message: string, fields?: LogFields) => emitLog("error", message, fields),
 };
+
+export type RequestLogLevel = Exclude<LogLevel, "debug">;
+export type RequestLogger = (level: RequestLogLevel, details?: LogFields) => void;
+
+export const createRequestLogger = (options: {
+  event: string;
+  route: string;
+  requestId: string;
+  startedAt?: number;
+}): RequestLogger => {
+  const startedAt = options.startedAt ?? Date.now();
+
+  return (level, details = {}) => {
+    logger[level](options.event, {
+      requestId: options.requestId,
+      route: options.route,
+      durationMs: Date.now() - startedAt,
+      ...details,
+    });
+  };
+};

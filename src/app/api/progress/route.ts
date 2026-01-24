@@ -5,7 +5,8 @@ import { z } from "zod";
 import { getAuthenticatedUser } from "@/lib/auth-user";
 import { parseJsonBody } from "@/lib/api-helpers";
 import { withDbRetry } from "@/lib/db-retry";
-import { logger } from "@/lib/logger";
+import { createRequestLogger } from "@/lib/logger";
+import { LOG_EVENT, LOG_REASON, LOG_ROUTE } from "@/lib/log-constants";
 import { prisma } from "@/lib/prisma";
 import { enforceRateLimit } from "@/lib/rate-limit";
 import { enforceStateChangeSecurity } from "@/lib/request-guard";
@@ -27,24 +28,17 @@ const progressUpdateSchema = z
  * GET /api/progress: return completed lesson ids for the current user.
  */
 export async function GET(request: Request) {
-  const requestId = getRequestId(request);
-  const startedAt = Date.now();
-  const logRequest = (
-    level: "info" | "warn" | "error",
-    details: Record<string, unknown>
-  ) => {
-    logger[level]("progress.read", {
-      requestId,
-      route: "GET /api/progress",
-      durationMs: Date.now() - startedAt,
-      ...details,
-    });
-  };
+  const requestId = getRequestId(request) ?? "unknown";
+  const logRequest = createRequestLogger({
+    event: LOG_EVENT.PROGRESS_READ,
+    route: LOG_ROUTE.PROGRESS_READ,
+    requestId,
+  });
 
   const user = await getAuthenticatedUser();
 
   if (!user) {
-    logRequest("warn", { status: 401, reason: "unauthorized" });
+    logRequest("warn", { status: 401, reason: LOG_REASON.UNAUTHORIZED });
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
 
@@ -54,7 +48,10 @@ export async function GET(request: Request) {
     user.id
   );
   if (rateLimitResponse) {
-    logRequest("warn", { status: rateLimitResponse.status, reason: "rate_limited" });
+    logRequest("warn", {
+      status: rateLimitResponse.status,
+      reason: LOG_REASON.RATE_LIMITED,
+    });
     return rateLimitResponse;
   }
 
@@ -87,30 +84,23 @@ export async function GET(request: Request) {
  * POST /api/progress: update completion state and record audit events.
  */
 export async function POST(request: Request) {
-  const requestId = getRequestId(request);
-  const startedAt = Date.now();
-  const logRequest = (
-    level: "info" | "warn" | "error",
-    details: Record<string, unknown>
-  ) => {
-    logger[level]("progress.write", {
-      requestId,
-      route: "POST /api/progress",
-      durationMs: Date.now() - startedAt,
-      ...details,
-    });
-  };
+  const requestId = getRequestId(request) ?? "unknown";
+  const logRequest = createRequestLogger({
+    event: LOG_EVENT.PROGRESS_WRITE,
+    route: LOG_ROUTE.PROGRESS_WRITE,
+    requestId,
+  });
 
   const guardResponse = enforceStateChangeSecurity(request);
   if (guardResponse) {
-    logRequest("warn", { status: guardResponse.status, reason: "blocked" });
+    logRequest("warn", { status: guardResponse.status, reason: LOG_REASON.BLOCKED });
     return guardResponse;
   }
 
   const user = await getAuthenticatedUser();
 
   if (!user) {
-    logRequest("warn", { status: 401, reason: "unauthorized" });
+    logRequest("warn", { status: 401, reason: LOG_REASON.UNAUTHORIZED });
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
 
@@ -120,13 +110,19 @@ export async function POST(request: Request) {
     user.id
   );
   if (rateLimitResponse) {
-    logRequest("warn", { status: rateLimitResponse.status, reason: "rate_limited" });
+    logRequest("warn", {
+      status: rateLimitResponse.status,
+      reason: LOG_REASON.RATE_LIMITED,
+    });
     return rateLimitResponse;
   }
 
   const parsedBody = await parseJsonBody(request, progressUpdateSchema);
   if ("error" in parsedBody) {
-    logRequest("warn", { status: parsedBody.error.status, reason: "invalid_payload" });
+    logRequest("warn", {
+      status: parsedBody.error.status,
+      reason: LOG_REASON.INVALID_PAYLOAD,
+    });
     return parsedBody.error;
   }
 
@@ -138,7 +134,11 @@ export async function POST(request: Request) {
   });
 
   if (!lesson) {
-    logRequest("warn", { status: 404, lessonSlug, reason: "lesson_not_found" });
+    logRequest("warn", {
+      status: 404,
+      lessonSlug,
+      reason: LOG_REASON.LESSON_NOT_FOUND,
+    });
     return NextResponse.json({ error: "Lesson not found." }, { status: 404 });
   }
 

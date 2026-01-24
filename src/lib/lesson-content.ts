@@ -9,6 +9,7 @@ import {
 import { LessonDocIdMap, rewriteLessonDocLinks } from "@/lib/lesson-doc-links";
 import { getEnv } from "@/lib/env";
 import { logger } from "@/lib/logger";
+import { LOG_EVENT } from "@/lib/log-constants";
 
 const allowedLessonHosts = new Set(["docs.google.com", "drive.google.com"]);
 
@@ -673,7 +674,7 @@ export async function fetchLessonContent(
     docIdMap ? rewriteLessonDocLinks(html, docIdMap) : html;
 
   if (!bypassCache) {
-    const cachedHtml = getLessonContentCache(lesson.id);
+    const cachedHtml = await getLessonContentCache(lesson.id);
     if (cachedHtml) {
       const rewrittenHtml = rewriteLinks(cachedHtml);
       if (rewrittenHtml !== cachedHtml) {
@@ -725,7 +726,7 @@ export async function fetchLessonContent(
     return await fetchPromise;
   } catch (error) {
     if (logErrors) {
-      logger.error("lesson_content.fetch_failed", {
+      logger.error(LOG_EVENT.LESSON_CONTENT_FETCH_FAILED, {
         lessonId: lesson.id,
         publishedUrl: lesson.publishedUrl,
         error,

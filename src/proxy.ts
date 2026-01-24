@@ -1,12 +1,14 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
+import { REQUEST_ID_HEADER } from "@/lib/request-id";
+
 const isProduction = process.env.NODE_ENV === "production";
 
 const buildContentSecurityPolicy = (nonce: string) => {
   const scriptSrc = ["'self'", `'nonce-${nonce}'`];
   const styleSrc = ["'self'", `'nonce-${nonce}'`];
-  const connectSrc = ["'self'"];
+  const connectSrc = ["'self'", "https://vitals.vercel-insights.com"];
 
   if (!isProduction) {
     scriptSrc.push("'unsafe-eval'");
@@ -27,7 +29,7 @@ const buildContentSecurityPolicy = (nonce: string) => {
     "upgrade-insecure-requests",
   ];
 
-  return directives.join("; ");
+  return directives.join("; ").replace(/\s{2,}/g, " ").trim();
 };
 
 const isHtmlRequest = (request: NextRequest) => {
@@ -36,25 +38,28 @@ const isHtmlRequest = (request: NextRequest) => {
 };
 
 const generateNonce = () => {
-  if (crypto.randomUUID) {
-    return crypto.randomUUID();
+  const uuid = crypto.randomUUID();
+  if (typeof Buffer !== "undefined") {
+    return Buffer.from(uuid).toString("base64");
   }
-
-  const bytes = new Uint8Array(16);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+  if (typeof btoa !== "undefined") {
+    return btoa(uuid);
+  }
+  return uuid;
 };
 
 export function proxy(request: NextRequest) {
-  if (!isHtmlRequest(request)) {
-    return NextResponse.next();
-  }
-
-  const nonce = generateNonce();
-  const csp = buildContentSecurityPolicy(nonce);
-
+  const requestId = request.headers.get(REQUEST_ID_HEADER)?.trim() || crypto.randomUUID();
   const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("content-security-policy", csp);
+  requestHeaders.set(REQUEST_ID_HEADER, requestId);
+
+  let csp: string | null = null;
+  if (isHtmlRequest(request)) {
+    const nonce = generateNonce();
+    csp = buildContentSecurityPolicy(nonce);
+    requestHeaders.set("x-nonce", nonce);
+    requestHeaders.set("Content-Security-Policy", csp);
+  }
 
   const response = NextResponse.next({
     request: {
@@ -62,7 +67,11 @@ export function proxy(request: NextRequest) {
     },
   });
 
-  response.headers.set("Content-Security-Policy", csp);
+  response.headers.set(REQUEST_ID_HEADER, requestId);
+  if (csp) {
+    response.headers.set("Content-Security-Policy", csp);
+  }
+
   return response;
 }
 

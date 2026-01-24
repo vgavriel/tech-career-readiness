@@ -14,6 +14,8 @@ export const metadata: Metadata = {
     "A self-paced roadmap for landing tech internships and early-career roles.",
 };
 
+export const dynamic = "force-dynamic";
+
 /**
  * Props for the root layout wrapper.
  */

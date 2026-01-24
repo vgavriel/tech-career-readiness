@@ -1,7 +1,8 @@
 import NextAuth from "next-auth";
 
 import { authOptions } from "@/lib/auth";
-import { logger } from "@/lib/logger";
+import { createRequestLogger } from "@/lib/logger";
+import { LOG_EVENT, LOG_ROUTE } from "@/lib/log-constants";
 import { getRequestId } from "@/lib/request-id";
 
 /**
@@ -9,35 +10,37 @@ import { getRequestId } from "@/lib/request-id";
  */
 const handler = NextAuth(authOptions);
 
-const logAuthRequest = async (request: Request) => {
-  const requestId = getRequestId(request);
-  const startedAt = Date.now();
-  const { pathname } = new URL(request.url);
-  const segments = pathname.split("/").filter(Boolean);
-  const action = segments[2] ?? "unknown";
-  const provider = segments[3];
+type AuthRouteContext = {
+  params: Promise<{ nextauth?: string[] }> | { nextauth?: string[] };
+};
+
+const logAuthRequest = async (request: Request, context: AuthRouteContext) => {
+  const requestId = getRequestId(request) ?? "unknown";
+  const params = await context.params;
+  const segments = params?.nextauth ?? [];
+  const action = segments[0] ?? "unknown";
+  const provider = segments[1];
+  const logRequest = createRequestLogger({
+    event: LOG_EVENT.AUTH_REQUEST,
+    route: LOG_ROUTE.AUTH,
+    requestId,
+  });
 
   try {
-    const response = await handler(request);
-    logger.info("auth.request", {
-      requestId,
-      route: "api/auth",
+    const response = await handler(request, context);
+    logRequest("info", {
       action,
       provider,
       method: request.method,
       status: response.status,
-      durationMs: Date.now() - startedAt,
     });
     return response;
   } catch (error) {
-    logger.error("auth.request", {
-      requestId,
-      route: "api/auth",
+    logRequest("error", {
       action,
       provider,
       method: request.method,
       status: 500,
-      durationMs: Date.now() - startedAt,
       error,
     });
     throw error;

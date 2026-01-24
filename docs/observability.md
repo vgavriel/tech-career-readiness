@@ -1,7 +1,7 @@
 # Observability
 
 ## Request IDs
-- Middleware assigns `x-request-id` to all `/api` routes and returns the same value on the response.
+- Proxy assigns `x-request-id` to matched routes (HTML + API) and returns the same value on the response.
 - If a request already includes `x-request-id`, it is preserved and propagated downstream.
 
 ## Structured logging

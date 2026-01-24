@@ -17,6 +17,7 @@ vi.mock("@/lib/logger", () => ({
     error: vi.fn(),
     debug: vi.fn(),
   },
+  createRequestLogger: () => vi.fn(),
 }));
 
 describe("NextAuth route handlers", () => {
@@ -31,16 +32,21 @@ describe("NextAuth route handlers", () => {
     const getRequest = new Request("https://example.com/api/auth/signin", {
       method: "GET",
     });
-    const postRequest = new Request("https://example.com/api/auth/callback/google", {
-      method: "POST",
-    });
+    const postRequest = new Request(
+      "https://example.com/api/auth/callback/google",
+      {
+        method: "POST",
+      }
+    );
+    const getContext = { params: { nextauth: ["signin"] } };
+    const postContext = { params: { nextauth: ["callback", "google"] } };
 
     nextAuthMocks.handler.mockResolvedValue(new Response(null, { status: 200 }));
 
-    await route.GET(getRequest);
-    await route.POST(postRequest);
+    await route.GET(getRequest, getContext);
+    await route.POST(postRequest, postContext);
 
-    expect(nextAuthMocks.handler).toHaveBeenCalledWith(getRequest);
-    expect(nextAuthMocks.handler).toHaveBeenCalledWith(postRequest);
+    expect(nextAuthMocks.handler).toHaveBeenCalledWith(getRequest, getContext);
+    expect(nextAuthMocks.handler).toHaveBeenCalledWith(postRequest, postContext);
   });
 });

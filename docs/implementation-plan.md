@@ -228,7 +228,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Document admin bootstrap via `ADMIN_EMAILS` (preview/test only; prod via DB flag)
 
 ### Phase 5.6 — CSP nonces/hashes (deferred)
-- [ ] Replace `unsafe-inline` styles/scripts with CSP nonces/hashes once lesson HTML is finalized
+- [x] Replace `unsafe-inline` styles/scripts with CSP nonces/hashes once lesson HTML is finalized
 
 ### Phase 6 — Schema reset + slug aliases
 - [x] Implement alias lookup in lesson route
@@ -277,17 +277,27 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Preserve lesson list indentation when sanitizing Google Docs HTML
 
 ### Phase 7.5 — Observability (lightweight)
-- [x] Add request ID generation (middleware) and return `x-request-id` headers for server routes
+- [x] Add request ID generation (proxy) and return `x-request-id` headers for server routes
 - [x] Create a minimal structured logger wrapper with env-based log levels and default redaction for secrets/PII
 - [x] Instrument key server paths (lesson-content fetch, progress updates, auth callbacks) with duration + cache hit/miss fields
 - [x] Add client-side pageview telemetry via a minimal provider (e.g., Vercel Analytics) with a config flag to disable
 - [x] Document log fields and sampling/retention guidance in `docs/observability.md`
+
+### Phase 7.6 — Lesson content scaling
+- [x] Add a shared Redis-backed cache for sanitized lesson HTML across instances
+- [x] Keep in-memory caching as a local fallback for lesson content fetches
+- [x] Reuse the shared cache for API responses and server-rendered lessons
 
 ### Phase 8 — Deployment
 - [ ] Deploy to Vercel
 - [ ] Configure env vars
 - [ ] Smoke-test public browsing, auth, progress, and continue flow
 - [ ] Pre-production cleanup: simplify seed logic, run fresh migration/seed against a reset preview DB
+
+### Phase 9 — Long-term content scalability (post-MVP)
+- [ ] Persist sanitized lesson HTML in storage with versioning
+- [ ] Add background refresh jobs (cron/QStash) to keep snapshots warm
+- [ ] Provide cache invalidation + fallback to last-known-good content
 
 ## Environment variables
 - APP_ENV (local, preview, production, test)
@@ -312,6 +322,5 @@ Source of truth for modules, focuses, progress categories, and gamification:
 ## Optional enhancements (post-MVP)
 - Search lessons by keyword (title and optionally HTML text)
 - Lightweight feedback button per lesson
-- Better caching (Redis) and background refresh
 - Table of contents generation from doc headings
 - Support for multiple different courses
