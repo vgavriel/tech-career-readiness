@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { type Session, getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
@@ -47,6 +47,18 @@ const toAuthenticatedUser = (user: DbUser): AuthenticatedUser => ({
   focusKey: normalizeFocusKey(user.focusKey),
 });
 
+const isUniqueConstraintError = (error: unknown): error is { code: string } => {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  if (!("code" in error)) {
+    return false;
+  }
+
+  return (error as { code?: unknown }).code === "P2002";
+};
+
 /**
  * Fetch or create the signed-in user and return the normalized profile data.
  */
@@ -92,10 +104,7 @@ export async function getAuthenticatedUser(
       });
       return toAuthenticatedUser(created);
     } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2002"
-      ) {
+      if (isUniqueConstraintError(error)) {
         const fallbackUser = await prisma.user.findUnique({
           where: { email: normalizedEmail },
           select: userSelect,
