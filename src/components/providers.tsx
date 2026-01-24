@@ -1,5 +1,6 @@
 "use client";
 
+import { Analytics } from "@vercel/analytics/react";
 import type { Session } from "next-auth";
 import type { ReactNode } from "react";
 import { SessionProvider } from "next-auth/react";
@@ -15,6 +16,7 @@ type ProvidersProps = {
   children: ReactNode;
   session: Session | null;
   initialFocusKey?: FocusKey | null;
+  analyticsEnabled?: boolean;
 };
 
 /**
@@ -28,11 +30,15 @@ export default function Providers({
   children,
   session,
   initialFocusKey = null,
+  analyticsEnabled = false,
 }: ProvidersProps) {
   return (
     <SessionProvider session={session}>
       <FocusProvider initialFocusKey={initialFocusKey}>
-        <ProgressProvider>{children}</ProgressProvider>
+        <ProgressProvider>
+          {children}
+          {analyticsEnabled ? <Analytics /> : null}
+        </ProgressProvider>
       </FocusProvider>
     </SessionProvider>
   );
