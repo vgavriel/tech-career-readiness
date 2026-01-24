@@ -36,7 +36,7 @@ export default function FocusPicker({ className }: FocusPickerProps) {
             id={selectId}
             value={focusKey ?? ""}
             onChange={handleChange}
-            aria-label="Timeline"
+            aria-label="Focus"
             className="min-h-11 w-full appearance-none rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-2.5 pr-11 text-[0.95rem] font-semibold text-[color:var(--ink-900)] shadow-[var(--shadow-soft)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--focus-ring)]"
           >
             <option value="">

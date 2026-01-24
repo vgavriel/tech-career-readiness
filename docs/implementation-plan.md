@@ -268,6 +268,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Auto-scroll the navigator to the active lesson on open
 - [x] Add a Gold Stars page linked from the global header
 - [x] Replace Start Here lesson 1 with in-app overview content (no external links)
+- [x] Add estimated reading time metadata for every lesson
 
 ### Phase 7.4 — Accessibility (WCAG AAA)
 - [x] Update color tokens for AAA contrast (text + non-text UI)

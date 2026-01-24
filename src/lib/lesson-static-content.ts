@@ -33,7 +33,7 @@ const staticLessonContent = new Map<string, StaticLessonContent>([
     "start-to-finish-roadmap",
     {
       slug: "start-to-finish-roadmap",
-      estimatedMinutes: 12,
+      estimatedMinutes: 3,
       contentHtml: startToFinishContent,
     },
   ],
