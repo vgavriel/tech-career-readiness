@@ -2,7 +2,7 @@ import RoadmapBadgeAwards from "@/components/roadmap-badge-awards";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+export const revalidate = 60 * 60;
 
 /**
  * Render the Gold Stars overview for earned and in-progress milestones.

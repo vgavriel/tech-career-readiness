@@ -1,12 +1,10 @@
-import Link from "next/link";
-
 import RoleLibraryList from "@/components/role-library-list";
+import RolesBackToCourse from "@/components/roles-back-to-course";
 import { ROLE_DEEP_DIVE_LESSON_SLUGS } from "@/lib/lesson-classification";
-import { getLessonExample } from "@/lib/lesson-examples";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+export const revalidate = 60 * 60;
 
 /**
  * Render the role library with all role deep dives.
@@ -15,21 +13,40 @@ export const dynamic = "force-dynamic";
  * Pulls curated role deep dives from the lesson catalog and preserves ordering.
  */
 export default async function RolesPage() {
-  const startLessonSlug =
-    getLessonExample("start-to-finish-roadmap")?.slug ??
-    "start-to-finish-roadmap";
-
-  const lessons = await prisma.lesson.findMany({
-    where: {
-      slug: { in: ROLE_DEEP_DIVE_LESSON_SLUGS },
-      isArchived: false,
-    },
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-    },
-  });
+  const [lessons, modules] = await Promise.all([
+    prisma.lesson.findMany({
+      where: {
+        slug: { in: ROLE_DEEP_DIVE_LESSON_SLUGS },
+        isArchived: false,
+      },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+      },
+    }),
+    prisma.module.findMany({
+      orderBy: { order: "asc" },
+      select: {
+        id: true,
+        key: true,
+        title: true,
+        description: true,
+        order: true,
+        lessons: {
+          where: { isArchived: false },
+          orderBy: { order: "asc" },
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            order: true,
+            estimatedMinutes: true,
+          },
+        },
+      },
+    }),
+  ]);
 
   const lessonsBySlug = new Map(lessons.map((lesson) => [lesson.slug, lesson]));
   const orderedLessons = ROLE_DEEP_DIVE_LESSON_SLUGS.flatMap((slug) => {
@@ -53,12 +70,7 @@ export default async function RolesPage() {
               Short deep dives with links to find Brown alumni. These are extra credit and do not affect core progress.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link
-                href={`/lesson/${startLessonSlug}`}
-                className="no-underline inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-5 py-2.5 text-sm font-semibold text-[color:var(--ink-900)] transition hover:border-[color:var(--ink-800)] sm:w-auto"
-              >
-                Back to course
-              </Link>
+              <RolesBackToCourse modules={modules} />
             </div>
           </div>
         </section>

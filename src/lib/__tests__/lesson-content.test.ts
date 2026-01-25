@@ -211,6 +211,9 @@ describe("fetchLessonContent", () => {
     expect(cells[0].firstElementChild?.textContent?.trim()).toBe("First");
     expect(cells[1].firstElementChild?.tagName).toBe("UL");
     expect(cells[2].firstElementChild?.textContent?.trim()).toBe("Third");
+    for (const cell of Array.from(cells)) {
+      expect(cell.getAttribute("valign")).toBe("top");
+    }
 
     const emptyParagraphs = Array.from(wrapper.querySelectorAll("td p")).filter(
       (paragraph) =>

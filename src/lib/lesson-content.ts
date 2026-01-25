@@ -133,6 +133,11 @@ const stripInlineStyle = (
   return nextAttribs;
 };
 
+const addTableCellAttributes = (attribs: sanitizeHtml.Attributes) => ({
+  ...stripInlineStyle(attribs),
+  valign: "top",
+});
+
 const extractDocClassStyleMap = (document: Document) => {
   const styleNodes = Array.from(document.querySelectorAll("style"));
   const map = new Map<string, Set<string>>();
@@ -214,8 +219,8 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
     tbody: ["class"],
     tfoot: ["class"],
     tr: ["class"],
-    th: ["class", "colspan", "rowspan", "scope", "width", "height"],
-    td: ["class", "colspan", "rowspan", "width", "height"],
+    th: ["class", "colspan", "rowspan", "scope", "width", "height", "valign"],
+    td: ["class", "colspan", "rowspan", "width", "height", "valign"],
     colgroup: ["class", "span", "width"],
     col: ["class", "span", "width"],
   },
@@ -239,6 +244,14 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
       }
       return { tagName, attribs: nextAttribs };
     },
+    td: (tagName, attribs) => ({
+      tagName,
+      attribs: addTableCellAttributes(attribs),
+    }),
+    th: (tagName, attribs) => ({
+      tagName,
+      attribs: addTableCellAttributes(attribs),
+    }),
     "*": (tagName, attribs) => ({
       tagName,
       attribs: stripInlineStyle(attribs),
