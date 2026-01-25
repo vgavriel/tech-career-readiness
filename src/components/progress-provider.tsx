@@ -27,7 +27,13 @@ type ProgressContextValue = {
   isReady: boolean;
   isAuthenticated: boolean;
   isMerging: boolean;
-  setLessonCompletion: (lessonSlug: string, completed: boolean) => Promise<void>;
+  progressError: ProgressError | null;
+  clearProgressError: () => void;
+  setLessonCompletion: (
+    lessonSlug: string,
+    completed: boolean,
+    source?: ProgressErrorSource
+  ) => Promise<void>;
   refreshProgress: () => Promise<void>;
 };
 
@@ -41,6 +47,13 @@ type ProgressMap = Record<string, string>;
  */
 type ProgressProviderProps = {
   children: React.ReactNode;
+};
+
+type ProgressErrorSource = "toggle" | "navigator";
+
+type ProgressError = {
+  message: string;
+  source: ProgressErrorSource;
 };
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
@@ -104,6 +117,7 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
   const [progressMap, setProgressMap] = useState<ProgressMap>({});
   const [isReady, setIsReady] = useState(false);
   const [isMerging, setIsMerging] = useState(false);
+  const [progressError, setProgressError] = useState<ProgressError | null>(null);
   const mergeAttemptedFor = useRef<string | null>(null);
 
   const isAuthenticated = status === "authenticated";
@@ -123,6 +137,7 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
     try {
       const userProgress = await fetchUserProgress();
       setProgressMap(userProgress);
+      setProgressError(null);
     } catch (error) {
       console.error(error);
       const fallback = readGuestProgress();
@@ -162,12 +177,22 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
     }
   }, [loadUserProgress]);
 
+  const clearProgressError = useCallback(() => {
+    setProgressError(null);
+  }, []);
+
   const setLessonCompletion = useCallback(
-    async (lessonSlug: string, completed: boolean) => {
+    async (
+      lessonSlug: string,
+      completed: boolean,
+      source: ProgressErrorSource = "toggle"
+    ) => {
       const trimmedLessonSlug = lessonSlug.trim();
       if (!trimmedLessonSlug) {
         return;
       }
+
+      setProgressError(null);
 
       if (isAuthenticated) {
         try {
@@ -194,12 +219,18 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
             }
             return updated;
           });
+          setProgressError(null);
         } catch (error) {
           console.error(error);
+          setProgressError({
+            message: "We couldn't save your progress. Please try again.",
+            source,
+          });
         }
       } else {
         const updated = updateGuestProgress(trimmedLessonSlug, completed);
         setProgressMap(updated.completed);
+        setProgressError(null);
       }
     },
     [isAuthenticated]
@@ -242,6 +273,8 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
       isReady,
       isAuthenticated,
       isMerging,
+      progressError,
+      clearProgressError,
       setLessonCompletion,
       refreshProgress,
     }),
@@ -251,6 +284,8 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
       isReady,
       isAuthenticated,
       isMerging,
+      progressError,
+      clearProgressError,
       setLessonCompletion,
       refreshProgress,
     ]

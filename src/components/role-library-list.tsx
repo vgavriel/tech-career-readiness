@@ -16,6 +16,7 @@ type RoleLibraryListProps = {
 
 export default function RoleLibraryList({ lessons }: RoleLibraryListProps) {
   const { isLessonCompleted, isReady } = useProgress();
+  const isLoading = !isReady;
 
   if (lessons.length === 0) {
     return (
@@ -26,9 +27,29 @@ export default function RoleLibraryList({ lessons }: RoleLibraryListProps) {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
+    <div
+      className="grid gap-4 md:grid-cols-2"
+      aria-busy={isLoading}
+      aria-live="polite"
+    >
       {lessons.map((lesson) => {
         const isCompleted = isReady && isLessonCompleted(lesson.slug);
+        const showLoading = isLoading;
+        const statusLabel = showLoading
+          ? "Loading progress"
+          : isCompleted
+            ? "Completed"
+            : "Extra credit";
+        const statusStyles = showLoading
+          ? "border-[color:var(--line-soft)] bg-[color:var(--wash-50)] text-[color:var(--ink-600)]"
+          : isCompleted
+            ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
+            : "border-[color:var(--line-soft)] bg-[color:var(--wash-50)] text-[color:var(--ink-700)]";
+        const iconStyles = showLoading
+          ? "border-[color:var(--line-soft)] bg-[color:var(--wash-50)] text-[color:var(--ink-500)]"
+          : isCompleted
+            ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
+            : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)]";
 
         return (
           <Link
@@ -40,11 +61,7 @@ export default function RoleLibraryList({ lessons }: RoleLibraryListProps) {
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span
-                    className={`flex h-5 w-5 items-center justify-center rounded-full border text-[color:var(--ink-500)] ${
-                      isCompleted
-                        ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
-                        : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)]"
-                    }`}
+                    className={`flex h-5 w-5 items-center justify-center rounded-full border ${iconStyles}`}
                   >
                     {isCompleted ? (
                       <>
@@ -64,6 +81,8 @@ export default function RoleLibraryList({ lessons }: RoleLibraryListProps) {
                           />
                         </svg>
                       </>
+                    ) : showLoading ? (
+                      <span className="sr-only">Loading role progress</span>
                     ) : (
                       <span className="sr-only">Incomplete role deep dive</span>
                     )}
@@ -71,13 +90,9 @@ export default function RoleLibraryList({ lessons }: RoleLibraryListProps) {
                   <span className="sr-only">Role deep dive</span>
                 </div>
                 <span
-                  className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
-                    isCompleted
-                      ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
-                      : "border-[color:var(--line-soft)] bg-[color:var(--wash-50)] text-[color:var(--ink-700)]"
-                  }`}
+                  className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${statusStyles}`}
                 >
-                  {isCompleted ? "Completed" : "Extra credit"}
+                  {statusLabel}
                 </span>
               </div>
               <span className="font-display text-lg text-[color:var(--ink-900)] transition group-hover:text-[color:var(--accent-700)]">

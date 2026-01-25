@@ -32,6 +32,8 @@ export default function LessonNavigator({
     isReady,
     isAuthenticated,
     isMerging,
+    progressError,
+    clearProgressError,
     setLessonCompletion,
   } = useProgress();
   const router = useRouter();
@@ -195,7 +197,9 @@ export default function LessonNavigator({
               : `Mark ${lesson.title} complete`
           }
           disabled={isDisabled}
-          onClick={() => void setLessonCompletion(lesson.slug, !isCompleted)}
+          onClick={() =>
+            void setLessonCompletion(lesson.slug, !isCompleted, "navigator")
+          }
         >
           {isCompleted ? (
             <svg
@@ -399,6 +403,23 @@ export default function LessonNavigator({
           </SignInCta>
         ) : null}
       </div>
+      {progressError?.source === "navigator" ? (
+        <div
+          className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-xs text-[color:var(--ink-700)]"
+          role="status"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span>{progressError.message}</span>
+            <button
+              type="button"
+              onClick={clearProgressError}
+              className="text-[color:var(--ink-900)] underline underline-offset-2"
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

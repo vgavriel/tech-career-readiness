@@ -37,10 +37,10 @@ const StarIcon = ({ variant, className = "" }: StarIconProps) => {
 };
 
 export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps) {
-  const { completedLessonSlugs } = useProgress();
+  const { completedLessonSlugs, isReady } = useProgress();
   const badges = useMemo(
-    () => buildBadgeStatuses(modules, completedLessonSlugs),
-    [modules, completedLessonSlugs]
+    () => (isReady ? buildBadgeStatuses(modules, completedLessonSlugs) : []),
+    [completedLessonSlugs, isReady, modules]
   );
   const sortedBadges = useMemo(() => {
     const earned = badges.filter((badge) => badge.isEarned);
@@ -51,6 +51,32 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
   const earnedBadges = sortedBadges.filter((badge) => badge.isEarned);
   const inProgressBadges = sortedBadges.filter((badge) => !badge.isEarned);
   const totalLabel = badges.length === 1 ? "star" : "stars";
+
+  if (!isReady) {
+    return (
+      <section className="rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="font-display text-2xl text-[color:var(--ink-900)]">
+              Gold Stars
+            </h2>
+          </div>
+          <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
+            Loading progress...
+          </span>
+        </div>
+
+        <div className="mt-5 grid gap-5 lg:grid-cols-2">
+          <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4 text-sm text-[color:var(--ink-600)]">
+            Loading earned stars...
+          </div>
+          <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4 text-sm text-[color:var(--ink-600)]">
+            Loading stars in progress...
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">

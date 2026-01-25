@@ -14,6 +14,7 @@ module.exports = {
   },
   urls: [
     `${baseUrl}/`,
+    `${baseUrl}/#focus-picker`,
     `${baseUrl}/lesson/ace-interview-prep-timeline`,
     `${baseUrl}/gold-stars`,
     `${baseUrl}/roles`,
