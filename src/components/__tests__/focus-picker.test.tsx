@@ -27,7 +27,7 @@ describe("FocusPicker", () => {
 
     const user = userEvent.setup();
     await user.selectOptions(
-      screen.getByLabelText(/timeline/i),
+      screen.getByLabelText(/focus/i),
       "just-starting"
     );
 
