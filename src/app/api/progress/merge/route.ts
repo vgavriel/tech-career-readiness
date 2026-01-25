@@ -3,10 +3,12 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getAuthenticatedUser } from "@/lib/auth-user";
-import { parseJsonBody, unauthorizedResponse } from "@/lib/api-helpers";
+import { errorResponse, parseJsonBody, unauthorizedResponse } from "@/lib/api-helpers";
 import { withDbRetry } from "@/lib/db-retry";
+import { ERROR_MESSAGE, HTTP_STATUS } from "@/lib/http-constants";
 import { createRequestLogger } from "@/lib/logger";
 import { LOG_EVENT, LOG_REASON, LOG_ROUTE } from "@/lib/log-constants";
+import { PROGRESS_MERGE_MAX_BODY_BYTES, PROGRESS_MERGE_MAX_LESSONS } from "@/lib/limits";
 import { prisma } from "@/lib/prisma";
 import { enforceRateLimit, RATE_LIMIT_BUCKET } from "@/lib/rate-limit";
 import { enforceStateChangeSecurity } from "@/lib/request-guard";
@@ -16,7 +18,7 @@ export const runtime = "nodejs";
 
 const progressMergeSchema = z
   .object({
-    lessonSlugs: z.array(z.string()).min(1).max(200),
+    lessonSlugs: z.array(z.string()).min(1).max(PROGRESS_MERGE_MAX_LESSONS),
   })
   .strict();
 
@@ -40,7 +42,10 @@ export async function POST(request: Request) {
   const user = await getAuthenticatedUser();
 
   if (!user) {
-    logRequest("warn", { status: 401, reason: LOG_REASON.UNAUTHORIZED });
+    logRequest("warn", {
+      status: HTTP_STATUS.UNAUTHORIZED,
+      reason: LOG_REASON.UNAUTHORIZED,
+    });
     return unauthorizedResponse();
   }
 
@@ -58,7 +63,7 @@ export async function POST(request: Request) {
   }
 
   const parsedBody = await parseJsonBody(request, progressMergeSchema, {
-    maxBytes: 32_768,
+    maxBytes: PROGRESS_MERGE_MAX_BODY_BYTES,
   });
   if ("error" in parsedBody) {
     logRequest("warn", {
@@ -73,8 +78,14 @@ export async function POST(request: Request) {
   );
 
   if (lessonSlugs.length === 0) {
-    logRequest("warn", { status: 400, reason: LOG_REASON.NO_VALID_LESSONS });
-    return NextResponse.json({ error: "No valid lessons to merge." }, { status: 400 });
+    logRequest("warn", {
+      status: HTTP_STATUS.BAD_REQUEST,
+      reason: LOG_REASON.NO_VALID_LESSONS,
+    });
+    return errorResponse(
+      ERROR_MESSAGE.NO_VALID_LESSONS,
+      HTTP_STATUS.BAD_REQUEST
+    );
   }
 
   const lessons = await prisma.lesson.findMany({
@@ -90,8 +101,14 @@ export async function POST(request: Request) {
   const validLessonSlugSet = new Set(validLessonSlugs);
 
   if (validLessonIds.length === 0) {
-    logRequest("warn", { status: 400, reason: LOG_REASON.NO_VALID_LESSONS });
-    return NextResponse.json({ error: "No valid lessons to merge." }, { status: 400 });
+    logRequest("warn", {
+      status: HTTP_STATUS.BAD_REQUEST,
+      reason: LOG_REASON.NO_VALID_LESSONS,
+    });
+    return errorResponse(
+      ERROR_MESSAGE.NO_VALID_LESSONS,
+      HTTP_STATUS.BAD_REQUEST
+    );
   }
 
   const now = new Date();
@@ -131,7 +148,7 @@ export async function POST(request: Request) {
   );
 
   logRequest("info", {
-    status: 200,
+    status: HTTP_STATUS.OK,
     requestedCount: lessonSlugs.length,
     mergedCount: validLessonSlugs.length,
     skippedCount: skippedLessonSlugs.length,
