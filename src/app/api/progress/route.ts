@@ -3,14 +3,14 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getAuthenticatedUser } from "@/lib/auth-user";
-import { parseJsonBody } from "@/lib/api-helpers";
+import { parseJsonBody, unauthorizedResponse } from "@/lib/api-helpers";
 import { withDbRetry } from "@/lib/db-retry";
 import { createRequestLogger } from "@/lib/logger";
 import { LOG_EVENT, LOG_REASON, LOG_ROUTE } from "@/lib/log-constants";
 import { prisma } from "@/lib/prisma";
-import { enforceRateLimit } from "@/lib/rate-limit";
+import { enforceRateLimit, RATE_LIMIT_BUCKET } from "@/lib/rate-limit";
 import { enforceStateChangeSecurity } from "@/lib/request-guard";
-import { getRequestId } from "@/lib/request-id";
+import { resolveRequestId } from "@/lib/request-id";
 
 export const runtime = "nodejs";
 
@@ -28,7 +28,7 @@ const progressUpdateSchema = z
  * GET /api/progress: return completed lesson ids for the current user.
  */
 export async function GET(request: Request) {
-  const requestId = getRequestId(request) ?? "unknown";
+  const requestId = resolveRequestId(request);
   const logRequest = createRequestLogger({
     event: LOG_EVENT.PROGRESS_READ,
     route: LOG_ROUTE.PROGRESS_READ,
@@ -39,12 +39,12 @@ export async function GET(request: Request) {
 
   if (!user) {
     logRequest("warn", { status: 401, reason: LOG_REASON.UNAUTHORIZED });
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    return unauthorizedResponse();
   }
 
   const rateLimitResponse = await enforceRateLimit(
     request,
-    "progress-read",
+    RATE_LIMIT_BUCKET.PROGRESS_READ,
     user.id
   );
   if (rateLimitResponse) {
@@ -84,7 +84,7 @@ export async function GET(request: Request) {
  * POST /api/progress: update completion state and record audit events.
  */
 export async function POST(request: Request) {
-  const requestId = getRequestId(request) ?? "unknown";
+  const requestId = resolveRequestId(request);
   const logRequest = createRequestLogger({
     event: LOG_EVENT.PROGRESS_WRITE,
     route: LOG_ROUTE.PROGRESS_WRITE,
@@ -101,12 +101,12 @@ export async function POST(request: Request) {
 
   if (!user) {
     logRequest("warn", { status: 401, reason: LOG_REASON.UNAUTHORIZED });
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    return unauthorizedResponse();
   }
 
   const rateLimitResponse = await enforceRateLimit(
     request,
-    "progress-write",
+    RATE_LIMIT_BUCKET.PROGRESS_WRITE,
     user.id
   );
   if (rateLimitResponse) {

@@ -7,8 +7,8 @@ import { getEnv } from "@/lib/env";
 import { createRequestLogger } from "@/lib/logger";
 import { LOG_CACHE, LOG_EVENT, LOG_REASON, LOG_ROUTE } from "@/lib/log-constants";
 import { prisma } from "@/lib/prisma";
-import { enforceRateLimit } from "@/lib/rate-limit";
-import { getRequestId } from "@/lib/request-id";
+import { enforceRateLimit, RATE_LIMIT_BUCKET } from "@/lib/rate-limit";
+import { resolveRequestId } from "@/lib/request-id";
 
 export const runtime = "nodejs";
 
@@ -42,7 +42,7 @@ const lessonQuerySchema = z
  * GET /api/lesson-content: fetch sanitized lesson HTML by lesson id or slug.
  */
 export async function GET(request: Request) {
-  const requestId = getRequestId(request) ?? "unknown";
+  const requestId = resolveRequestId(request);
   const logRequest = createRequestLogger({
     event: LOG_EVENT.LESSON_CONTENT_REQUEST,
     route: LOG_ROUTE.LESSON_CONTENT,
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
 
   const rateLimitResponse = await enforceRateLimit(
     request,
-    "lesson-content",
+    RATE_LIMIT_BUCKET.LESSON_CONTENT,
     null
   );
   if (rateLimitResponse) {

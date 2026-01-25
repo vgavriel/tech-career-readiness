@@ -17,39 +17,43 @@ const redis = shouldRateLimit ? Redis.fromEnv() : null;
 /**
  * Named rate-limit buckets used across API routes.
  */
-type RateLimitBucket =
-  | "focus-read"
-  | "focus-write"
-  | "progress-read"
-  | "progress-write"
-  | "progress-merge"
-  | "lesson-content";
+export const RATE_LIMIT_BUCKET = {
+  FOCUS_READ: "focus-read",
+  FOCUS_WRITE: "focus-write",
+  PROGRESS_READ: "progress-read",
+  PROGRESS_WRITE: "progress-write",
+  PROGRESS_MERGE: "progress-merge",
+  LESSON_CONTENT: "lesson-content",
+} as const;
+
+export type RateLimitBucket =
+  (typeof RATE_LIMIT_BUCKET)[keyof typeof RATE_LIMIT_BUCKET];
 
 const limiterConfigs: Record<
   RateLimitBucket,
   { prefix: string; limiter: ReturnType<typeof Ratelimit.slidingWindow> }
 > = {
-  "focus-read": {
+  [RATE_LIMIT_BUCKET.FOCUS_READ]: {
     prefix: "ratelimit:focus-read",
     limiter: Ratelimit.slidingWindow(60, "1 m"),
   },
-  "focus-write": {
+  [RATE_LIMIT_BUCKET.FOCUS_WRITE]: {
     prefix: "ratelimit:focus-write",
     limiter: Ratelimit.slidingWindow(30, "1 m"),
   },
-  "progress-read": {
+  [RATE_LIMIT_BUCKET.PROGRESS_READ]: {
     prefix: "ratelimit:progress-read",
     limiter: Ratelimit.slidingWindow(60, "1 m"),
   },
-  "progress-write": {
+  [RATE_LIMIT_BUCKET.PROGRESS_WRITE]: {
     prefix: "ratelimit:progress-write",
     limiter: Ratelimit.slidingWindow(30, "1 m"),
   },
-  "progress-merge": {
+  [RATE_LIMIT_BUCKET.PROGRESS_MERGE]: {
     prefix: "ratelimit:progress-merge",
     limiter: Ratelimit.slidingWindow(10, "1 m"),
   },
-  "lesson-content": {
+  [RATE_LIMIT_BUCKET.LESSON_CONTENT]: {
     prefix: "ratelimit:lesson-content",
     limiter: Ratelimit.slidingWindow(30, "1 m"),
   },

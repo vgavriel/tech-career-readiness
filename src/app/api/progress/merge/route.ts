@@ -3,14 +3,14 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getAuthenticatedUser } from "@/lib/auth-user";
-import { parseJsonBody } from "@/lib/api-helpers";
+import { parseJsonBody, unauthorizedResponse } from "@/lib/api-helpers";
 import { withDbRetry } from "@/lib/db-retry";
 import { createRequestLogger } from "@/lib/logger";
 import { LOG_EVENT, LOG_REASON, LOG_ROUTE } from "@/lib/log-constants";
 import { prisma } from "@/lib/prisma";
-import { enforceRateLimit } from "@/lib/rate-limit";
+import { enforceRateLimit, RATE_LIMIT_BUCKET } from "@/lib/rate-limit";
 import { enforceStateChangeSecurity } from "@/lib/request-guard";
-import { getRequestId } from "@/lib/request-id";
+import { resolveRequestId } from "@/lib/request-id";
 
 export const runtime = "nodejs";
 
@@ -24,7 +24,7 @@ const progressMergeSchema = z
  * POST /api/progress/merge: merge guest progress into the user account.
  */
 export async function POST(request: Request) {
-  const requestId = getRequestId(request) ?? "unknown";
+  const requestId = resolveRequestId(request);
   const logRequest = createRequestLogger({
     event: LOG_EVENT.PROGRESS_MERGE,
     route: LOG_ROUTE.PROGRESS_MERGE,
@@ -41,12 +41,12 @@ export async function POST(request: Request) {
 
   if (!user) {
     logRequest("warn", { status: 401, reason: LOG_REASON.UNAUTHORIZED });
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    return unauthorizedResponse();
   }
 
   const rateLimitResponse = await enforceRateLimit(
     request,
-    "progress-merge",
+    RATE_LIMIT_BUCKET.PROGRESS_MERGE,
     user.id
   );
   if (rateLimitResponse) {

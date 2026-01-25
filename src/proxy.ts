@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { REQUEST_ID_HEADER } from "@/lib/request-id";
+import { REQUEST_ID_HEADER, resolveRequestId } from "@/lib/request-id";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -49,7 +49,7 @@ const generateNonce = () => {
 };
 
 export function proxy(request: NextRequest) {
-  const requestId = request.headers.get(REQUEST_ID_HEADER)?.trim() || crypto.randomUUID();
+  const requestId = resolveRequestId(request, crypto.randomUUID());
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set(REQUEST_ID_HEADER, requestId);
 

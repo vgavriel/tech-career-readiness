@@ -60,3 +60,9 @@ export const parseJsonBody = async <T>(
 
   return { data: result.data };
 };
+
+/**
+ * Standard unauthorized response payload.
+ */
+export const unauthorizedResponse = () =>
+  NextResponse.json({ error: "Unauthorized." }, { status: 401 });

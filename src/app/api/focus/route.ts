@@ -2,12 +2,15 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getAuthenticatedUser } from "@/lib/auth-user";
-import { parseJsonBody } from "@/lib/api-helpers";
+import { parseJsonBody, unauthorizedResponse } from "@/lib/api-helpers";
 import { withDbRetry } from "@/lib/db-retry";
 import { normalizeFocusKey } from "@/lib/focus-options";
+import { createRequestLogger } from "@/lib/logger";
+import { LOG_EVENT, LOG_REASON, LOG_ROUTE } from "@/lib/log-constants";
 import { prisma } from "@/lib/prisma";
-import { enforceRateLimit } from "@/lib/rate-limit";
+import { enforceRateLimit, RATE_LIMIT_BUCKET } from "@/lib/rate-limit";
 import { enforceStateChangeSecurity } from "@/lib/request-guard";
+import { resolveRequestId } from "@/lib/request-id";
 
 export const runtime = "nodejs";
 
@@ -21,21 +24,38 @@ const focusUpdateSchema = z
  * GET /api/focus: return the stored focus key for the current user.
  */
 export async function GET(request: Request) {
+  const requestId = resolveRequestId(request);
+  const logRequest = createRequestLogger({
+    event: LOG_EVENT.FOCUS_READ,
+    route: LOG_ROUTE.FOCUS_READ,
+    requestId,
+  });
+
   const user = await getAuthenticatedUser();
 
   if (!user) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    logRequest("warn", { status: 401, reason: LOG_REASON.UNAUTHORIZED });
+    return unauthorizedResponse();
   }
 
   const rateLimitResponse = await enforceRateLimit(
     request,
-    "focus-read",
+    RATE_LIMIT_BUCKET.FOCUS_READ,
     user.id
   );
   if (rateLimitResponse) {
+    logRequest("warn", {
+      status: rateLimitResponse.status,
+      reason: LOG_REASON.RATE_LIMITED,
+    });
     return rateLimitResponse;
   }
 
+  logRequest("info", {
+    status: 200,
+    focusKey: user.focusKey ?? null,
+    userId: user.id,
+  });
   return NextResponse.json({ focusKey: user.focusKey ?? null });
 }
 
@@ -43,33 +63,51 @@ export async function GET(request: Request) {
  * POST /api/focus: update the current user's focus key.
  */
 export async function POST(request: Request) {
+  const requestId = resolveRequestId(request);
+  const logRequest = createRequestLogger({
+    event: LOG_EVENT.FOCUS_WRITE,
+    route: LOG_ROUTE.FOCUS_WRITE,
+    requestId,
+  });
+
   const guardResponse = enforceStateChangeSecurity(request);
   if (guardResponse) {
+    logRequest("warn", { status: guardResponse.status, reason: LOG_REASON.BLOCKED });
     return guardResponse;
   }
 
   const user = await getAuthenticatedUser();
 
   if (!user) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    logRequest("warn", { status: 401, reason: LOG_REASON.UNAUTHORIZED });
+    return unauthorizedResponse();
   }
 
   const rateLimitResponse = await enforceRateLimit(
     request,
-    "focus-write",
+    RATE_LIMIT_BUCKET.FOCUS_WRITE,
     user.id
   );
   if (rateLimitResponse) {
+    logRequest("warn", {
+      status: rateLimitResponse.status,
+      reason: LOG_REASON.RATE_LIMITED,
+    });
     return rateLimitResponse;
   }
 
   const parsedBody = await parseJsonBody(request, focusUpdateSchema);
   if ("error" in parsedBody) {
+    logRequest("warn", {
+      status: parsedBody.error.status,
+      reason: LOG_REASON.INVALID_PAYLOAD,
+    });
     return parsedBody.error;
   }
 
   const normalized = normalizeFocusKey(parsedBody.data.focusKey);
   if (parsedBody.data.focusKey && !normalized) {
+    logRequest("warn", { status: 400, reason: LOG_REASON.INVALID_FOCUS_KEY });
     return NextResponse.json({ error: "Invalid focus key." }, { status: 400 });
   }
 
@@ -80,5 +118,10 @@ export async function POST(request: Request) {
     })
   );
 
+  logRequest("info", {
+    status: 200,
+    focusKey: updatedUser.focusKey ?? null,
+    userId: user.id,
+  });
   return NextResponse.json({ focusKey: updatedUser.focusKey ?? null });
 }

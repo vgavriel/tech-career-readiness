@@ -3,7 +3,7 @@ import NextAuth from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { createRequestLogger } from "@/lib/logger";
 import { LOG_EVENT, LOG_ROUTE } from "@/lib/log-constants";
-import { getRequestId } from "@/lib/request-id";
+import { resolveRequestId } from "@/lib/request-id";
 
 /**
  * Create a shared NextAuth handler for GET and POST routes.
@@ -15,7 +15,7 @@ type AuthRouteContext = {
 };
 
 const logAuthRequest = async (request: Request, context: AuthRouteContext) => {
-  const requestId = getRequestId(request) ?? "unknown";
+  const requestId = resolveRequestId(request);
   const params = await context.params;
   const segments = params?.nextauth ?? [];
   const action = segments[0] ?? "unknown";

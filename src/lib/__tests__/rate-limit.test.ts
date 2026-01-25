@@ -58,10 +58,10 @@ describe("enforceRateLimit", () => {
   it("skips rate limiting outside preview/prod", async () => {
     process.env.APP_ENV = "local";
 
-    const { enforceRateLimit } = await importRateLimit();
+    const { enforceRateLimit, RATE_LIMIT_BUCKET } = await importRateLimit();
     const response = await enforceRateLimit(
       new Request("http://localhost"),
-      "lesson-content"
+      RATE_LIMIT_BUCKET.LESSON_CONTENT
     );
 
     expect(response).toBeNull();
@@ -75,11 +75,15 @@ describe("enforceRateLimit", () => {
     process.env.UPSTASH_REDIS_REST_TOKEN = "token";
     mocks.limitMock.mockResolvedValue({ success: true, reset: Date.now() + 1000 });
 
-    const { enforceRateLimit } = await importRateLimit();
+    const { enforceRateLimit, RATE_LIMIT_BUCKET } = await importRateLimit();
     const request = new Request("http://localhost");
 
-    await enforceRateLimit(request, "progress-read", "  user-1  ");
-    await enforceRateLimit(request, "progress-read", "user-1");
+    await enforceRateLimit(
+      request,
+      RATE_LIMIT_BUCKET.PROGRESS_READ,
+      "  user-1  "
+    );
+    await enforceRateLimit(request, RATE_LIMIT_BUCKET.PROGRESS_READ, "user-1");
 
     expect(mocks.fromEnvMock).toHaveBeenCalledTimes(1);
     expect(mocks.constructorMock).toHaveBeenCalledTimes(1);
@@ -94,14 +98,17 @@ describe("enforceRateLimit", () => {
     const nowSpy = vi.spyOn(Date, "now").mockReturnValue(0);
     mocks.limitMock.mockResolvedValue({ success: false, reset: 1500 });
 
-    const { enforceRateLimit } = await importRateLimit();
+    const { enforceRateLimit, RATE_LIMIT_BUCKET } = await importRateLimit();
     const request = new Request("http://localhost", {
       headers: {
         "x-forwarded-for": "1.2.3.4, 5.6.7.8",
       },
     });
 
-    const response = await enforceRateLimit(request, "lesson-content");
+    const response = await enforceRateLimit(
+      request,
+      RATE_LIMIT_BUCKET.LESSON_CONTENT
+    );
 
     expect(mocks.limitMock).toHaveBeenCalledWith("1.2.3.4");
     expect(response?.status).toBe(429);
