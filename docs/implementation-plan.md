@@ -225,7 +225,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Tighten lesson sanitization (style allowlist + rel enforcement) and add fetch timeouts/in-flight caching
 - [x] Add `User.isAdmin` flag + admin analytics page
 - [x] Record `LessonProgressEvent` entries for every toggle
-- [x] Document admin bootstrap via `ADMIN_EMAILS` (preview/test only; prod via DB flag)
+- [x] Document admin bootstrap via `ADMIN_EMAILS` (local/preview/test only; prod via DB flag)
 
 ### Phase 5.6 — CSP nonces/hashes (deferred)
 - [x] Replace `unsafe-inline` styles/scripts with CSP nonces/hashes once lesson HTML is finalized

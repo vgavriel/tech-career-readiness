@@ -46,8 +46,8 @@ export const parseJsonBody = async <T>(
   if (bodyByteLength > maxBytes) {
     return {
       error: errorResponse(
-        ERROR_MESSAGE.PAYLOAD_TOO_LARGE,
-        StatusCodes.PAYLOAD_TOO_LARGE
+        ERROR_MESSAGE.REQUEST_TOO_LONG,
+        StatusCodes.REQUEST_TOO_LONG
       ),
     };
   }

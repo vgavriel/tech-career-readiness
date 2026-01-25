@@ -147,6 +147,27 @@ describe("getAuthenticatedUser", () => {
     expect(result?.isAdmin).toBe(true);
   });
 
+  it("promotes admin when allowlist matches in local env", async () => {
+    process.env.ADMIN_EMAILS = baseUser.email;
+    getEnvMock.mockReturnValue(makeEnv({ isLocal: true }));
+    prismaMock.user.findUnique.mockResolvedValue(baseUser);
+    prismaMock.user.update.mockResolvedValue({
+      ...baseUser,
+      isAdmin: true,
+    });
+
+    const { getAuthenticatedUser } = await getModule();
+    const result = await getAuthenticatedUser(makeSession());
+
+    expect(prismaMock.user.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: baseUser.id },
+        data: { isAdmin: true },
+      })
+    );
+    expect(result?.isAdmin).toBe(true);
+  });
+
   it("updates profile fields when they change", async () => {
     prismaMock.user.findUnique.mockResolvedValue({
       ...baseUser,

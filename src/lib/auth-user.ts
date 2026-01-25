@@ -77,7 +77,7 @@ export async function getAuthenticatedUser(
   }
 
   const normalizedEmail = email.toLowerCase();
-  const allowAdminBootstrap = env.isPreview || env.isTest;
+  const allowAdminBootstrap = env.isLocal || env.isPreview || env.isTest;
   const adminEmails = allowAdminBootstrap
     ? normalizeEmailList(process.env.ADMIN_EMAILS)
     : [];
