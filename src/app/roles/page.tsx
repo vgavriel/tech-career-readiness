@@ -1,10 +1,8 @@
 import RoleLibraryList from "@/components/role-library-list";
 import RolesBackToCourse from "@/components/roles-back-to-course";
 import { ROLE_DEEP_DIVE_LESSON_SLUGS } from "@/lib/lesson-classification";
-import { prisma } from "@/lib/prisma";
+import { getRoadmapModules } from "@/lib/roadmap-modules";
 
-export const runtime = "nodejs";
-export const revalidate = 60 * 60;
 
 /**
  * Render the role library with all role deep dives.
@@ -13,42 +11,15 @@ export const revalidate = 60 * 60;
  * Pulls curated role deep dives from the lesson catalog and preserves ordering.
  */
 export default async function RolesPage() {
-  const [lessons, modules] = await Promise.all([
-    prisma.lesson.findMany({
-      where: {
-        slug: { in: ROLE_DEEP_DIVE_LESSON_SLUGS },
-        isArchived: false,
-      },
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-      },
-    }),
-    prisma.module.findMany({
-      orderBy: { order: "asc" },
-      select: {
-        id: true,
-        key: true,
-        title: true,
-        description: true,
-        order: true,
-        lessons: {
-          where: { isArchived: false },
-          orderBy: { order: "asc" },
-          select: {
-            id: true,
-            slug: true,
-            title: true,
-            order: true,
-            estimatedMinutes: true,
-          },
-        },
-      },
-    }),
-  ]);
-
-  const lessonsBySlug = new Map(lessons.map((lesson) => [lesson.slug, lesson]));
+  const modules = await getRoadmapModules();
+  const lessonsBySlug = new Map(
+    modules.flatMap((module) =>
+      module.lessons.map((lesson) => [
+        lesson.slug,
+        { id: lesson.id, slug: lesson.slug, title: lesson.title },
+      ])
+    )
+  );
   const orderedLessons = ROLE_DEEP_DIVE_LESSON_SLUGS.flatMap((slug) => {
     const lesson = lessonsBySlug.get(slug);
     return lesson ? [lesson] : [];

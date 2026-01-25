@@ -1,5 +1,12 @@
 import type { PrismaClient } from "@prisma/client";
-import { afterAll, beforeAll, beforeEach } from "vitest";
+import { afterAll, beforeAll, beforeEach, vi } from "vitest";
+
+vi.mock("next/cache", () => ({
+  cacheLife: () => {},
+  cacheTag: () => {},
+  revalidateTag: () => {},
+  updateTag: () => {},
+}));
 
 process.env.GOOGLE_CLIENT_ID ??= "test-google-client-id";
 process.env.GOOGLE_CLIENT_SECRET ??= "test-google-client-secret";

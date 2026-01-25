@@ -3,8 +3,6 @@ import { notFound, redirect } from "next/navigation";
 import { getAuthenticatedUser } from "@/lib/auth-user";
 import { prisma } from "@/lib/prisma";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 /**
  * Format timestamps for the admin analytics UI.

@@ -15,7 +15,6 @@ import { enforceRateLimit, RATE_LIMIT_BUCKET } from "@/lib/rate-limit";
 import { enforceStateChangeSecurity } from "@/lib/request-guard";
 import { resolveRequestId } from "@/lib/request-id";
 
-export const runtime = "nodejs";
 
 const progressMergeSchema = z
   .object({

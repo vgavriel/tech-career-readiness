@@ -45,6 +45,8 @@ Additional app configuration:
 - App code lives in `src/app`.
 - Prisma schema lives in `prisma/schema.prisma`.
 - Seeding uses the Postgres adapter (`@prisma/adapter-pg`) and `pg`.
+- Architecture decisions (cacheComponents + Suspense app shell) live in
+  `docs/architecture.md`.
 
 ## Testing
 See `docs/testing-strategy.md` for the unit, integration, and end-to-end test plan.

@@ -16,6 +16,13 @@ vi.mock("next-auth/react", async (importOriginal) => {
   };
 });
 
+vi.mock("next/cache", () => ({
+  cacheLife: () => {},
+  cacheTag: () => {},
+  revalidateTag: () => {},
+  updateTag: () => {},
+}));
+
 vi.mock("next/font/google", () => ({
   Sora: () => ({ variable: "--font-body" }),
   Fraunces: () => ({ variable: "--font-display" }),

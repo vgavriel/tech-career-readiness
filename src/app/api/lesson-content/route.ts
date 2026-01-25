@@ -13,7 +13,6 @@ import { prisma } from "@/lib/prisma";
 import { enforceRateLimit, RATE_LIMIT_BUCKET } from "@/lib/rate-limit";
 import { resolveRequestId } from "@/lib/request-id";
 
-export const runtime = "nodejs";
 
 /**
  * Interpret truthy query flags from string values.

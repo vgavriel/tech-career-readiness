@@ -11,10 +11,8 @@ import { rewriteLessonDocLinks } from "@/lib/lesson-doc-links";
 import { getLessonDocLinkMap } from "@/lib/lesson-doc-link-map";
 import { buildLessonRedirectPath, findLessonBySlug } from "@/lib/lesson-slug";
 import { getStaticLessonContent } from "@/lib/lesson-static-content";
-import { prisma } from "@/lib/prisma";
+import { getRoadmapModules } from "@/lib/roadmap-modules";
 
-export const runtime = "nodejs";
-export const revalidate = 60 * 60;
 
 /**
  * Route params supplied by the App Router.
@@ -58,27 +56,7 @@ export default async function LessonPage({
   }
 
   const [modules, lessonDocLinkMap] = await Promise.all([
-    prisma.module.findMany({
-      orderBy: { order: "asc" },
-      select: {
-        id: true,
-        key: true,
-        title: true,
-        description: true,
-        order: true,
-        lessons: {
-          where: { isArchived: false },
-          orderBy: { order: "asc" },
-          select: {
-            id: true,
-            slug: true,
-            title: true,
-            order: true,
-            estimatedMinutes: true,
-          },
-        },
-      },
-    }),
+    getRoadmapModules(),
     getLessonDocLinkMap(),
   ]);
 
