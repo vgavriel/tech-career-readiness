@@ -43,8 +43,8 @@ export default async function GoldStarsPage() {
           </h1>
           <p className="max-w-2xl text-base text-[color:var(--ink-700)] md:text-lg">
             Earn gold stars by completing core lessons and optional extra credit.
-            Track earned and in-progress milestones as you move toward internships
-            and roles.
+            Track earned and in-progress milestones as you improve your readiness
+            towards careers in Tech.
           </p>
         </section>
 
