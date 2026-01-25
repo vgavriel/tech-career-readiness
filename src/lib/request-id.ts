@@ -1,5 +1,8 @@
-export const REQUEST_ID_HEADER = "x-request-id";
-export const UNKNOWN_REQUEST_ID = "unknown";
+import { HTTP_HEADER } from "@/lib/http-constants";
+import { UNKNOWN_VALUE } from "@/lib/values";
+
+export const REQUEST_ID_HEADER = HTTP_HEADER.REQUEST_ID;
+export const UNKNOWN_REQUEST_ID = UNKNOWN_VALUE;
 
 /**
  * Read the request id if present and non-empty.

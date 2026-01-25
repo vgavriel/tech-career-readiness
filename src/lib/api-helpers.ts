@@ -1,12 +1,17 @@
-import { type ZodSchema } from "zod";
 import { NextResponse } from "next/server";
+import { type ZodSchema } from "zod";
+
+import { ERROR_MESSAGE, HTTP_HEADER, HTTP_STATUS } from "@/lib/http-constants";
+import { DEFAULT_MAX_JSON_BODY_BYTES } from "@/lib/limits";
 
 /**
  * Result of parsing a JSON body with validation.
  */
 type ParsedBodyResult<T> = { data: T } | { error: NextResponse };
 
-const DEFAULT_MAX_BODY_BYTES = 16_384;
+type ErrorResponseOptions = {
+  headers?: HeadersInit;
+};
 
 /**
  * Parse and validate a JSON request body with size enforcement.
@@ -21,7 +26,7 @@ export const parseJsonBody = async <T>(
     options.maxBytes ??
     (Number.isFinite(envMaxBytes) && envMaxBytes > 0
       ? envMaxBytes
-      : DEFAULT_MAX_BODY_BYTES);
+      : DEFAULT_MAX_JSON_BODY_BYTES);
 
   let rawBody: string;
 
@@ -29,14 +34,20 @@ export const parseJsonBody = async <T>(
     rawBody = await request.text();
   } catch {
     return {
-      error: NextResponse.json({ error: "Invalid JSON body." }, { status: 400 }),
+      error: errorResponse(
+        ERROR_MESSAGE.INVALID_JSON_BODY,
+        HTTP_STATUS.BAD_REQUEST
+      ),
     };
   }
 
   const bodyByteLength = Buffer.byteLength(rawBody, "utf8");
   if (bodyByteLength > maxBytes) {
     return {
-      error: NextResponse.json({ error: "Payload too large." }, { status: 413 }),
+      error: errorResponse(
+        ERROR_MESSAGE.PAYLOAD_TOO_LARGE,
+        HTTP_STATUS.PAYLOAD_TOO_LARGE
+      ),
     };
   }
 
@@ -46,7 +57,10 @@ export const parseJsonBody = async <T>(
       parsedBody = JSON.parse(rawBody);
     } catch {
       return {
-        error: NextResponse.json({ error: "Invalid JSON body." }, { status: 400 }),
+        error: errorResponse(
+          ERROR_MESSAGE.INVALID_JSON_BODY,
+          HTTP_STATUS.BAD_REQUEST
+        ),
       };
     }
   }
@@ -54,7 +68,10 @@ export const parseJsonBody = async <T>(
   const result = schema.safeParse(parsedBody);
   if (!result.success) {
     return {
-      error: NextResponse.json({ error: "Invalid payload." }, { status: 400 }),
+      error: errorResponse(
+        ERROR_MESSAGE.INVALID_PAYLOAD,
+        HTTP_STATUS.BAD_REQUEST
+      ),
     };
   }
 
@@ -64,5 +81,18 @@ export const parseJsonBody = async <T>(
 /**
  * Standard unauthorized response payload.
  */
+export const errorResponse = (
+  message: string,
+  status: number,
+  options: ErrorResponseOptions = {}
+) => NextResponse.json({ error: message }, { status, headers: options.headers });
+
 export const unauthorizedResponse = () =>
-  NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  errorResponse(ERROR_MESSAGE.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
+
+export const tooManyRequestsResponse = (retryAfterSeconds: number) =>
+  errorResponse(ERROR_MESSAGE.TOO_MANY_REQUESTS, HTTP_STATUS.TOO_MANY_REQUESTS, {
+    headers: {
+      [HTTP_HEADER.RETRY_AFTER]: retryAfterSeconds.toString(),
+    },
+  });

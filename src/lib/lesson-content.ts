@@ -1,6 +1,7 @@
 import { JSDOM, VirtualConsole } from "jsdom";
 import sanitizeHtml from "sanitize-html";
 
+import { ERROR_MESSAGE } from "@/lib/http-constants";
 import {
   LESSON_CONTENT_CACHE_TTL_MS,
   getLessonContentCache,
@@ -648,7 +649,7 @@ const fetchLessonHtml = async (url: URL, maxRedirects = 3) => {
     }
 
     if (!response.ok) {
-      throw new Error("Failed to fetch lesson content.");
+      throw new Error(ERROR_MESSAGE.LESSON_CONTENT_FETCH_FAILED);
     }
 
     return response.text();

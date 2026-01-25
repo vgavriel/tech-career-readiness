@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
+import { HTTP_HEADER } from "@/lib/http-constants";
 import { REQUEST_ID_HEADER, resolveRequestId } from "@/lib/request-id";
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -33,7 +34,7 @@ const buildContentSecurityPolicy = (nonce: string) => {
 };
 
 const isHtmlRequest = (request: NextRequest) => {
-  const accept = request.headers.get("accept");
+  const accept = request.headers.get(HTTP_HEADER.ACCEPT);
   return accept?.includes("text/html");
 };
 
@@ -57,8 +58,8 @@ export function proxy(request: NextRequest) {
   if (isHtmlRequest(request)) {
     const nonce = generateNonce();
     csp = buildContentSecurityPolicy(nonce);
-    requestHeaders.set("x-nonce", nonce);
-    requestHeaders.set("Content-Security-Policy", csp);
+    requestHeaders.set(HTTP_HEADER.NONCE, nonce);
+    requestHeaders.set(HTTP_HEADER.CONTENT_SECURITY_POLICY, csp);
   }
 
   const response = NextResponse.next({
@@ -69,7 +70,7 @@ export function proxy(request: NextRequest) {
 
   response.headers.set(REQUEST_ID_HEADER, requestId);
   if (csp) {
-    response.headers.set("Content-Security-Policy", csp);
+    response.headers.set(HTTP_HEADER.CONTENT_SECURITY_POLICY, csp);
   }
 
   return response;

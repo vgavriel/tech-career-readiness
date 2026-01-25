@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { errorResponse } from "@/lib/api-helpers";
+import { ERROR_MESSAGE, HTTP_HEADER, HTTP_STATUS } from "@/lib/http-constants";
 
 const STATE_CHANGING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
@@ -51,16 +52,16 @@ export const enforceStateChangeSecurity = (request: Request) => {
     return null;
   }
 
-  const contentType = request.headers.get("content-type") ?? "";
+  const contentType = request.headers.get(HTTP_HEADER.CONTENT_TYPE) ?? "";
   if (!contentType.toLowerCase().includes("application/json")) {
-    return NextResponse.json(
-      { error: "Unsupported content type." },
-      { status: 415 }
+    return errorResponse(
+      ERROR_MESSAGE.UNSUPPORTED_MEDIA_TYPE,
+      HTTP_STATUS.UNSUPPORTED_MEDIA_TYPE
     );
   }
 
-  const originHeader = request.headers.get("origin");
-  const refererHeader = request.headers.get("referer");
+  const originHeader = request.headers.get(HTTP_HEADER.ORIGIN);
+  const refererHeader = request.headers.get(HTTP_HEADER.REFERER);
   const origin = originHeader
     ? normalizeOrigin(originHeader)
     : refererHeader
@@ -68,12 +69,15 @@ export const enforceStateChangeSecurity = (request: Request) => {
       : null;
 
   if (!origin) {
-    return NextResponse.json({ error: "Origin required." }, { status: 403 });
+    return errorResponse(
+      ERROR_MESSAGE.ORIGIN_REQUIRED,
+      HTTP_STATUS.FORBIDDEN
+    );
   }
 
   const allowedOrigins = buildAllowedOrigins(request);
   if (!allowedOrigins.has(origin)) {
-    return NextResponse.json({ error: "Invalid origin." }, { status: 403 });
+    return errorResponse(ERROR_MESSAGE.INVALID_ORIGIN, HTTP_STATUS.FORBIDDEN);
   }
 
   return null;
