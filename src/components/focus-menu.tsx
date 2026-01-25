@@ -61,7 +61,7 @@ export default function FocusMenu() {
         aria-controls="focus-menu-panel"
       >
         <span>
-          {activeOption ? `Focus: ${activeOption.label}` : "Timeline"}
+          {activeOption ? `Focus: ${activeOption.label}` : "Focus"}
         </span>
         <svg
           aria-hidden="true"
@@ -83,7 +83,7 @@ export default function FocusMenu() {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <p className="text-sm text-[color:var(--ink-700)]">
-                Filter by timeline.
+                Filter by focus.
               </p>
             </div>
             {isUpdating ? (

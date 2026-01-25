@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
+import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
+import { errorResponse } from "@/lib/api-helpers";
 import { fetchLessonContent } from "@/lib/lesson-content";
 import { getLessonDocLinkMap } from "@/lib/lesson-doc-link-map";
 import { getEnv } from "@/lib/env";
+import { ERROR_MESSAGE } from "@/lib/http-constants";
 import { createRequestLogger } from "@/lib/logger";
 import { LOG_CACHE, LOG_EVENT, LOG_REASON, LOG_ROUTE } from "@/lib/log-constants";
 import { prisma } from "@/lib/prisma";
-import { enforceRateLimit } from "@/lib/rate-limit";
-import { getRequestId } from "@/lib/request-id";
+import { enforceRateLimit, RATE_LIMIT_BUCKET } from "@/lib/rate-limit";
+import { resolveRequestId } from "@/lib/request-id";
 
 export const runtime = "nodejs";
 
@@ -35,14 +38,14 @@ const lessonQuerySchema = z
     slug: z.string().trim().min(1).optional(),
   })
   .refine((data) => Boolean(data.lessonId || data.slug), {
-    message: "Provide lessonId or slug.",
+    message: ERROR_MESSAGE.MISSING_LESSON_IDENTIFIER,
   });
 
 /**
  * GET /api/lesson-content: fetch sanitized lesson HTML by lesson id or slug.
  */
 export async function GET(request: Request) {
-  const requestId = getRequestId(request) ?? "unknown";
+  const requestId = resolveRequestId(request);
   const logRequest = createRequestLogger({
     event: LOG_EVENT.LESSON_CONTENT_REQUEST,
     route: LOG_ROUTE.LESSON_CONTENT,
@@ -51,7 +54,7 @@ export async function GET(request: Request) {
 
   const rateLimitResponse = await enforceRateLimit(
     request,
-    "lesson-content",
+    RATE_LIMIT_BUCKET.LESSON_CONTENT,
     null
   );
   if (rateLimitResponse) {
@@ -69,10 +72,13 @@ export async function GET(request: Request) {
     slug: searchParams.get("slug") ?? undefined,
   });
   if (!parsedQuery.success) {
-    logRequest("warn", { status: 400, reason: LOG_REASON.INVALID_QUERY });
-    return NextResponse.json(
-      { error: "Provide lessonId or slug." },
-      { status: 400 }
+    logRequest("warn", {
+      status: StatusCodes.BAD_REQUEST,
+      reason: LOG_REASON.INVALID_QUERY,
+    });
+    return errorResponse(
+      ERROR_MESSAGE.MISSING_LESSON_IDENTIFIER,
+      StatusCodes.BAD_REQUEST
     );
   }
 
@@ -111,12 +117,12 @@ export async function GET(request: Request) {
 
   if (!lesson) {
     logRequest("warn", {
-      status: 404,
+      status: StatusCodes.NOT_FOUND,
       lessonId,
       slug,
       reason: LOG_REASON.LESSON_NOT_FOUND,
     });
-    return NextResponse.json({ error: "Lesson not found." }, { status: 404 });
+    return errorResponse(ERROR_MESSAGE.LESSON_NOT_FOUND, StatusCodes.NOT_FOUND);
   }
 
   try {
@@ -127,7 +133,7 @@ export async function GET(request: Request) {
       logErrors: false,
     });
     logRequest("info", {
-      status: 200,
+      status: StatusCodes.OK,
       lessonId: lesson.id,
       slug,
       bypassCache,
@@ -136,16 +142,16 @@ export async function GET(request: Request) {
     return NextResponse.json(content);
   } catch (error) {
     logRequest("error", {
-      status: 502,
+      status: StatusCodes.BAD_GATEWAY,
       lessonId: lesson.id,
       slug,
       bypassCache,
       cache: LOG_CACHE.MISS,
       error,
     });
-    return NextResponse.json(
-      { error: "Failed to fetch lesson content." },
-      { status: 502 }
+    return errorResponse(
+      ERROR_MESSAGE.LESSON_CONTENT_FETCH_FAILED,
+      StatusCodes.BAD_GATEWAY
     );
   }
 }

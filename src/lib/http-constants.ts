@@ -1,0 +1,30 @@
+export const HTTP_HEADER = {
+  ACCEPT: "accept",
+  CONTENT_TYPE: "content-type",
+  ORIGIN: "origin",
+  REFERER: "referer",
+  REQUEST_ID: "x-request-id",
+  NONCE: "x-nonce",
+  CONTENT_SECURITY_POLICY: "Content-Security-Policy",
+  X_FORWARDED_FOR: "x-forwarded-for",
+  X_REAL_IP: "x-real-ip",
+  X_VERCEL_FORWARDED_FOR: "x-vercel-forwarded-for",
+  X_CLIENT_IP: "x-client-ip",
+  RETRY_AFTER: "Retry-After",
+} as const;
+
+export const ERROR_MESSAGE = {
+  INVALID_JSON_BODY: "Invalid JSON body.",
+  PAYLOAD_TOO_LARGE: "Payload too large.",
+  INVALID_PAYLOAD: "Invalid payload.",
+  UNAUTHORIZED: "Unauthorized.",
+  UNSUPPORTED_MEDIA_TYPE: "Unsupported content type.",
+  ORIGIN_REQUIRED: "Origin required.",
+  INVALID_ORIGIN: "Invalid origin.",
+  INVALID_FOCUS_KEY: "Invalid focus key.",
+  LESSON_NOT_FOUND: "Lesson not found.",
+  NO_VALID_LESSONS: "No valid lessons to merge.",
+  TOO_MANY_REQUESTS: "Too many requests.",
+  LESSON_CONTENT_FETCH_FAILED: "Failed to fetch lesson content.",
+  MISSING_LESSON_IDENTIFIER: "Provide lessonId or slug.",
+} as const;
