@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 
 import { authOptions } from "@/lib/auth";
-import { HTTP_STATUS } from "@/lib/http-constants";
+import { StatusCodes } from "http-status-codes";
 import { createRequestLogger } from "@/lib/logger";
 import { LOG_EVENT, LOG_ROUTE } from "@/lib/log-constants";
 import { resolveRequestId } from "@/lib/request-id";
@@ -42,7 +42,7 @@ const logAuthRequest = async (request: Request, context: AuthRouteContext) => {
       action,
       provider,
       method: request.method,
-      status: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      status: StatusCodes.INTERNAL_SERVER_ERROR,
       error,
     });
     throw error;

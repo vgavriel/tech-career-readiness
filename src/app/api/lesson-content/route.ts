@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
+import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 import { errorResponse } from "@/lib/api-helpers";
 import { fetchLessonContent } from "@/lib/lesson-content";
 import { getLessonDocLinkMap } from "@/lib/lesson-doc-link-map";
 import { getEnv } from "@/lib/env";
-import { ERROR_MESSAGE, HTTP_STATUS } from "@/lib/http-constants";
+import { ERROR_MESSAGE } from "@/lib/http-constants";
 import { createRequestLogger } from "@/lib/logger";
 import { LOG_CACHE, LOG_EVENT, LOG_REASON, LOG_ROUTE } from "@/lib/log-constants";
 import { prisma } from "@/lib/prisma";
@@ -72,12 +73,12 @@ export async function GET(request: Request) {
   });
   if (!parsedQuery.success) {
     logRequest("warn", {
-      status: HTTP_STATUS.BAD_REQUEST,
+      status: StatusCodes.BAD_REQUEST,
       reason: LOG_REASON.INVALID_QUERY,
     });
     return errorResponse(
       ERROR_MESSAGE.MISSING_LESSON_IDENTIFIER,
-      HTTP_STATUS.BAD_REQUEST
+      StatusCodes.BAD_REQUEST
     );
   }
 
@@ -116,12 +117,12 @@ export async function GET(request: Request) {
 
   if (!lesson) {
     logRequest("warn", {
-      status: HTTP_STATUS.NOT_FOUND,
+      status: StatusCodes.NOT_FOUND,
       lessonId,
       slug,
       reason: LOG_REASON.LESSON_NOT_FOUND,
     });
-    return errorResponse(ERROR_MESSAGE.LESSON_NOT_FOUND, HTTP_STATUS.NOT_FOUND);
+    return errorResponse(ERROR_MESSAGE.LESSON_NOT_FOUND, StatusCodes.NOT_FOUND);
   }
 
   try {
@@ -132,7 +133,7 @@ export async function GET(request: Request) {
       logErrors: false,
     });
     logRequest("info", {
-      status: HTTP_STATUS.OK,
+      status: StatusCodes.OK,
       lessonId: lesson.id,
       slug,
       bypassCache,
@@ -141,7 +142,7 @@ export async function GET(request: Request) {
     return NextResponse.json(content);
   } catch (error) {
     logRequest("error", {
-      status: HTTP_STATUS.BAD_GATEWAY,
+      status: StatusCodes.BAD_GATEWAY,
       lessonId: lesson.id,
       slug,
       bypassCache,
@@ -150,7 +151,7 @@ export async function GET(request: Request) {
     });
     return errorResponse(
       ERROR_MESSAGE.LESSON_CONTENT_FETCH_FAILED,
-      HTTP_STATUS.BAD_GATEWAY
+      StatusCodes.BAD_GATEWAY
     );
   }
 }

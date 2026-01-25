@@ -1,11 +1,12 @@
 import { LessonProgressAction } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 import { getAuthenticatedUser } from "@/lib/auth-user";
 import { errorResponse, parseJsonBody, unauthorizedResponse } from "@/lib/api-helpers";
 import { withDbRetry } from "@/lib/db-retry";
-import { ERROR_MESSAGE, HTTP_STATUS } from "@/lib/http-constants";
+import { ERROR_MESSAGE } from "@/lib/http-constants";
 import { createRequestLogger } from "@/lib/logger";
 import { LOG_EVENT, LOG_REASON, LOG_ROUTE } from "@/lib/log-constants";
 import { PROGRESS_MERGE_MAX_BODY_BYTES, PROGRESS_MERGE_MAX_LESSONS } from "@/lib/limits";
@@ -43,7 +44,7 @@ export async function POST(request: Request) {
 
   if (!user) {
     logRequest("warn", {
-      status: HTTP_STATUS.UNAUTHORIZED,
+      status: StatusCodes.UNAUTHORIZED,
       reason: LOG_REASON.UNAUTHORIZED,
     });
     return unauthorizedResponse();
@@ -79,12 +80,12 @@ export async function POST(request: Request) {
 
   if (lessonSlugs.length === 0) {
     logRequest("warn", {
-      status: HTTP_STATUS.BAD_REQUEST,
+      status: StatusCodes.BAD_REQUEST,
       reason: LOG_REASON.NO_VALID_LESSONS,
     });
     return errorResponse(
       ERROR_MESSAGE.NO_VALID_LESSONS,
-      HTTP_STATUS.BAD_REQUEST
+      StatusCodes.BAD_REQUEST
     );
   }
 
@@ -102,12 +103,12 @@ export async function POST(request: Request) {
 
   if (validLessonIds.length === 0) {
     logRequest("warn", {
-      status: HTTP_STATUS.BAD_REQUEST,
+      status: StatusCodes.BAD_REQUEST,
       reason: LOG_REASON.NO_VALID_LESSONS,
     });
     return errorResponse(
       ERROR_MESSAGE.NO_VALID_LESSONS,
-      HTTP_STATUS.BAD_REQUEST
+      StatusCodes.BAD_REQUEST
     );
   }
 
@@ -148,7 +149,7 @@ export async function POST(request: Request) {
   );
 
   logRequest("info", {
-    status: HTTP_STATUS.OK,
+    status: StatusCodes.OK,
     requestedCount: lessonSlugs.length,
     mergedCount: validLessonSlugs.length,
     skippedCount: skippedLessonSlugs.length,

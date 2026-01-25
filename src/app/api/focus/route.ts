@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
+import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 import { getAuthenticatedUser } from "@/lib/auth-user";
 import { errorResponse, parseJsonBody, unauthorizedResponse } from "@/lib/api-helpers";
 import { withDbRetry } from "@/lib/db-retry";
 import { normalizeFocusKey } from "@/lib/focus-options";
-import { ERROR_MESSAGE, HTTP_STATUS } from "@/lib/http-constants";
+import { ERROR_MESSAGE } from "@/lib/http-constants";
 import { createRequestLogger } from "@/lib/logger";
 import { LOG_EVENT, LOG_REASON, LOG_ROUTE } from "@/lib/log-constants";
 import { prisma } from "@/lib/prisma";
@@ -36,7 +37,7 @@ export async function GET(request: Request) {
 
   if (!user) {
     logRequest("warn", {
-      status: HTTP_STATUS.UNAUTHORIZED,
+      status: StatusCodes.UNAUTHORIZED,
       reason: LOG_REASON.UNAUTHORIZED,
     });
     return unauthorizedResponse();
@@ -56,7 +57,7 @@ export async function GET(request: Request) {
   }
 
   logRequest("info", {
-    status: HTTP_STATUS.OK,
+    status: StatusCodes.OK,
     focusKey: user.focusKey ?? null,
     userId: user.id,
   });
@@ -84,7 +85,7 @@ export async function POST(request: Request) {
 
   if (!user) {
     logRequest("warn", {
-      status: HTTP_STATUS.UNAUTHORIZED,
+      status: StatusCodes.UNAUTHORIZED,
       reason: LOG_REASON.UNAUTHORIZED,
     });
     return unauthorizedResponse();
@@ -115,10 +116,10 @@ export async function POST(request: Request) {
   const normalized = normalizeFocusKey(parsedBody.data.focusKey);
   if (parsedBody.data.focusKey && !normalized) {
     logRequest("warn", {
-      status: HTTP_STATUS.BAD_REQUEST,
+      status: StatusCodes.BAD_REQUEST,
       reason: LOG_REASON.INVALID_FOCUS_KEY,
     });
-    return errorResponse(ERROR_MESSAGE.INVALID_FOCUS_KEY, HTTP_STATUS.BAD_REQUEST);
+    return errorResponse(ERROR_MESSAGE.INVALID_FOCUS_KEY, StatusCodes.BAD_REQUEST);
   }
 
   const updatedUser = await withDbRetry(() =>
@@ -129,7 +130,7 @@ export async function POST(request: Request) {
   );
 
   logRequest("info", {
-    status: HTTP_STATUS.OK,
+    status: StatusCodes.OK,
     focusKey: updatedUser.focusKey ?? null,
     userId: user.id,
   });

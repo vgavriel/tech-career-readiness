@@ -1,5 +1,7 @@
+import { StatusCodes } from "http-status-codes";
+
 import { errorResponse } from "@/lib/api-helpers";
-import { ERROR_MESSAGE, HTTP_HEADER, HTTP_STATUS } from "@/lib/http-constants";
+import { ERROR_MESSAGE, HTTP_HEADER } from "@/lib/http-constants";
 
 const STATE_CHANGING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
@@ -56,7 +58,7 @@ export const enforceStateChangeSecurity = (request: Request) => {
   if (!contentType.toLowerCase().includes("application/json")) {
     return errorResponse(
       ERROR_MESSAGE.UNSUPPORTED_MEDIA_TYPE,
-      HTTP_STATUS.UNSUPPORTED_MEDIA_TYPE
+      StatusCodes.UNSUPPORTED_MEDIA_TYPE
     );
   }
 
@@ -71,13 +73,13 @@ export const enforceStateChangeSecurity = (request: Request) => {
   if (!origin) {
     return errorResponse(
       ERROR_MESSAGE.ORIGIN_REQUIRED,
-      HTTP_STATUS.FORBIDDEN
+      StatusCodes.FORBIDDEN
     );
   }
 
   const allowedOrigins = buildAllowedOrigins(request);
   if (!allowedOrigins.has(origin)) {
-    return errorResponse(ERROR_MESSAGE.INVALID_ORIGIN, HTTP_STATUS.FORBIDDEN);
+    return errorResponse(ERROR_MESSAGE.INVALID_ORIGIN, StatusCodes.FORBIDDEN);
   }
 
   return null;
