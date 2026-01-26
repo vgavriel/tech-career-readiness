@@ -14,9 +14,13 @@ if (!connectionString) {
   throw new Error("DATABASE_URL is required to seed the database.");
 }
 
-const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+const createSeedClient = () => {
+  const pool = new Pool({ connectionString });
+  const adapter = new PrismaPg(pool);
+  const prisma = new PrismaClient({ adapter });
+
+  return { prisma, pool };
+};
 
 const modules = [
   {
@@ -464,7 +468,7 @@ const modules = [
   },
 ];
 
-async function main() {
+async function seedDatabase(prisma) {
   for (const moduleData of modules) {
     const moduleRecord = await prisma.module.upsert({
       where: { key: moduleData.key },
@@ -564,15 +568,25 @@ async function main() {
   }
 }
 
-async function shutdown() {
-  await prisma.$disconnect();
-  await pool.end();
+async function runSeed() {
+  const { prisma, pool } = createSeedClient();
+  try {
+    await seedDatabase(prisma);
+  } finally {
+    await prisma.$disconnect();
+    await pool.end();
+  }
 }
 
-main()
-  .then(shutdown)
-  .catch(async (error) => {
+if (require.main === module) {
+  runSeed().catch((error) => {
     console.error(error);
-    await shutdown();
     process.exit(1);
   });
+}
+
+module.exports = {
+  createSeedClient,
+  seedDatabase,
+  runSeed,
+};

@@ -710,6 +710,7 @@ export async function fetchLessonContent(
   }
 
   const fetchPromise = (async () => {
+    const validatedUrl = assertAllowedLessonUrl(lesson.publishedUrl);
     const mockHtml = env.LESSON_CONTENT_MOCK_HTML;
     if (mockHtml && (env.isLocal || env.isTest)) {
       const sanitizedHtml = sanitizeHtml(
@@ -719,8 +720,6 @@ export async function fetchLessonContent(
       setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
       return { lessonId: lesson.id, html: sanitizedHtml, cached: false };
     }
-
-    const validatedUrl = assertAllowedLessonUrl(lesson.publishedUrl);
     const rawHtml = await fetchLessonHtml(validatedUrl);
     const extractedHtml = extractLessonHtml(rawHtml);
     const sanitizedHtml = sanitizeHtml(

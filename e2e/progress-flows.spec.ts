@@ -21,7 +21,11 @@ const resetToIncomplete = async (page) => {
 };
 
 const signInDevUser = async (page) => {
-  await page.getByRole("button", { name: /sign in/i }).first().click();
+  const signInButton = page.getByRole("button", {
+    name: /sign in \(dev\)/i,
+  });
+  await expect(signInButton.first()).toBeVisible({ timeout: 15000 });
+  await signInButton.first().click();
   await expect(page.getByText(/signed in as:/i)).toBeVisible({ timeout: 15000 });
 };
 
