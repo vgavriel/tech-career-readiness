@@ -253,6 +253,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Fix in-lesson hash navigation to avoid scroll trap in nested containers
 - [x] Add TSDoc for functions/types and component intent comments
 - [x] Document local/preview workflows and gate auth/rate limiting by `APP_ENV`
+- [x] Expand automated test coverage for auth/progress flows, admin gating, and caching guardrails
 
 ### Phase 7.2 — Curriculum UX + focuses
 - [x] Add landing quick picker that routes to curated focuses (and store selection)

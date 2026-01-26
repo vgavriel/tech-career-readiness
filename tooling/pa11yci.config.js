@@ -14,9 +14,27 @@ module.exports = {
   },
   urls: [
     `${baseUrl}/`,
-    `${baseUrl}/#focus-picker`,
+    {
+      url: `${baseUrl}/#focus-picker`,
+      actions: [
+        "wait for element #focus-picker select to be visible",
+        "set field #focus-picker select to just-starting",
+      ],
+    },
     `${baseUrl}/lesson/ace-interview-prep-timeline`,
-    `${baseUrl}/gold-stars`,
-    `${baseUrl}/roles`,
+    {
+      url: `${baseUrl}/gold-stars`,
+      actions: [
+        'click element button[aria-controls="focus-menu-panel"]',
+        "wait for element #focus-menu-panel to be visible",
+      ],
+    },
+    {
+      url: `${baseUrl}/roles`,
+      actions: [
+        'click element button[aria-controls="focus-menu-panel"]',
+        "wait for element #focus-menu-panel to be visible",
+      ],
+    },
   ],
 };

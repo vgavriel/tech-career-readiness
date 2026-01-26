@@ -82,7 +82,9 @@ describe("SiteHeader", () => {
     render(<SiteHeader />);
     await waitFor(() => expect(authMocks.getProviders).toHaveBeenCalled());
 
-    expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
+    expect(
+      screen.getByText(/signed in as: ada lovelace/i)
+    ).toBeInTheDocument();
 
     const signOutButton = screen.getByRole("button", { name: /sign out/i });
     const user = userEvent.setup();
