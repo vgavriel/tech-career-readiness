@@ -5,7 +5,11 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
 import { useFocus } from "@/components/focus-provider";
 import { FOCUS_OPTIONS, type FocusKey } from "@/lib/focus-options";
 
-export default function FocusMenu() {
+type FocusMenuProps = {
+  inlinePanel?: boolean;
+};
+
+export default function FocusMenu({ inlinePanel = false }: FocusMenuProps) {
   const { focusKey, isUpdating, setFocusKey } = useFocus();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -68,18 +72,27 @@ export default function FocusMenu() {
     closeMenu(true);
   };
 
+  const panelClassName = inlinePanel
+    ? "mt-3 w-full rounded-2xl border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-4 shadow-[var(--shadow-card)]"
+    : "absolute right-0 z-20 mt-3 w-[min(420px,92vw)] max-h-[70vh] overflow-y-auto rounded-2xl border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-4 shadow-[var(--shadow-card)] lg:overflow-visible lg:max-h-none";
+
   return (
-    <div ref={menuRef} className="relative">
+    <div
+      ref={menuRef}
+      className={`relative w-full ${inlinePanel ? "" : "lg:w-auto"}`}
+    >
       <button
         type="button"
         onClick={() => setIsOpen((open) => !open)}
         ref={toggleRef}
-        className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-2 text-sm font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)]"
+        className={`inline-flex min-h-11 w-full min-w-0 items-center justify-between gap-2 rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-2 text-sm font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)] ${
+          inlinePanel ? "" : "lg:w-auto"
+        }`}
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-controls="focus-menu-panel"
       >
-        <span>
+        <span className="truncate">
           {activeOption ? `Focus: ${activeOption.label}` : "Focus"}
         </span>
         <svg
@@ -97,7 +110,7 @@ export default function FocusMenu() {
       {isOpen ? (
         <div
           id="focus-menu-panel"
-          className="absolute right-0 z-20 mt-3 w-[min(420px,92vw)] rounded-2xl border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-4 shadow-[var(--shadow-card)]"
+          className={panelClassName}
           role="region"
           aria-label="Focus options"
         >
@@ -158,7 +171,7 @@ export default function FocusMenu() {
                 <span
                   id={clearTooltipId}
                   role="tooltip"
-                  className="pointer-events-none absolute right-0 top-0 z-10 -translate-y-full whitespace-nowrap rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)] opacity-0 shadow-[var(--shadow-soft)] transition group-hover:opacity-100"
+                  className="pointer-events-none absolute left-1/2 top-0 z-10 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)] opacity-0 shadow-[var(--shadow-soft)] transition group-hover:opacity-100"
                 >
                   No focus selected.
                 </span>
