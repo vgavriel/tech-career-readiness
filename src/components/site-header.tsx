@@ -15,19 +15,18 @@ import { buildSignInOptions, useAuthProvider } from "@/hooks/use-auth-provider";
  * Surfaces navigation branding and triggers auth flows based on session state;
  * no local state.
  */
-export default function SiteHeader() {
+type SiteHeaderInnerProps = {
+  pathname: string;
+};
+
+function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
   const { data: session } = useSession();
   const authProvider = useAuthProvider();
   const signInOptions = buildSignInOptions(authProvider.id);
-  const pathname = usePathname();
   const showFocusMenu = pathname !== "/";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const toggleRef = useRef<HTMLButtonElement | null>(null);
-
-  useEffect(() => {
-    setIsMenuOpen(false);
-  }, [pathname]);
 
   useEffect(() => {
     if (!isMenuOpen) {
@@ -216,4 +215,9 @@ export default function SiteHeader() {
       </div>
     </header>
   );
+}
+
+export default function SiteHeader() {
+  const pathname = usePathname();
+  return <SiteHeaderInner key={pathname} pathname={pathname} />;
 }

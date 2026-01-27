@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
-import { errorResponse, parseJsonBody } from "@/lib/api-helpers";
+import { parseJsonBody } from "@/lib/api-helpers";
 import { createRequestLogger } from "@/lib/logger";
 import { LOG_EVENT, LOG_REASON, LOG_ROUTE } from "@/lib/log-constants";
 import { enforceRateLimit, RATE_LIMIT_BUCKET } from "@/lib/rate-limit";

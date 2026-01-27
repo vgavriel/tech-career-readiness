@@ -4,8 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const setupReport = async () => {
   vi.resetModules();
-  const module = await import("@/lib/client-error");
-  return module.reportClientError;
+  const clientModule = await import("@/lib/client-error");
+  return clientModule.reportClientError;
 };
 
 describe("reportClientError", () => {

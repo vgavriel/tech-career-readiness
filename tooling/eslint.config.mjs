@@ -17,7 +17,7 @@ const eslintConfig = [
     ],
   },
   {
-    files: ["prisma/seed.js"],
+    files: ["prisma/seed.js", "prisma/seed-runner.js", "prisma/seed.testdata.js"],
     rules: {
       "@typescript-eslint/no-require-imports": "off",
     },
