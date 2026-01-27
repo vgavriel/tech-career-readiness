@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { buildBadgeStatuses } from "@/lib/badges";
 import type { RoadmapModule } from "@/components/roadmap-module-list";
+import { buildBadgeStatuses } from "@/lib/badges";
 
 const makeLesson = (slug: string, order: number) => ({
   id: slug,
@@ -85,10 +85,8 @@ const modules: RoadmapModule[] = [
   },
 ];
 
-const findBadge = (
-  badges: ReturnType<typeof buildBadgeStatuses>,
-  key: string
-) => badges.find((badge) => badge.key === key);
+const findBadge = (badges: ReturnType<typeof buildBadgeStatuses>, key: string) =>
+  badges.find((badge) => badge.key === key);
 
 describe("buildBadgeStatuses", () => {
   it("awards the explorer badge when core + role deep dive requirements are met", () => {

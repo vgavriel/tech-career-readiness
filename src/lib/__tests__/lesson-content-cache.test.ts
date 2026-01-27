@@ -14,18 +14,20 @@ vi.mock("@upstash/redis", () => ({
   },
 }));
 
+const mutableEnv = process.env as Record<string, string | undefined>;
+
 const resetEnv = () => {
-  for (const key of Object.keys(process.env)) {
+  for (const key of Object.keys(mutableEnv)) {
     if (!(key in ORIGINAL_ENV)) {
-      delete process.env[key];
+      delete mutableEnv[key];
     }
   }
-  Object.assign(process.env, ORIGINAL_ENV);
+  Object.assign(mutableEnv, ORIGINAL_ENV);
 };
 
 const importCache = async () => {
   vi.resetModules();
-  return import("@/lib/lesson-content-cache");
+  return import("@/lib/lesson-content/cache");
 };
 
 beforeEach(() => {
@@ -46,9 +48,7 @@ describe("lesson-content-cache", () => {
 
     setLessonContentCache("lesson-1", "<p>Cached</p>", 1000, 0);
 
-    await expect(getLessonContentCache("lesson-1", 500)).resolves.toBe(
-      "<p>Cached</p>"
-    );
+    await expect(getLessonContentCache("lesson-1", 500)).resolves.toBe("<p>Cached</p>");
     await expect(getLessonContentCache("lesson-1", 2000)).resolves.toBeNull();
 
     clearLessonContentCache();
@@ -56,10 +56,10 @@ describe("lesson-content-cache", () => {
   });
 
   it("uses Redis in production when configured", async () => {
-    process.env.NODE_ENV = "production";
-    process.env.APP_ENV = "production";
-    process.env.UPSTASH_REDIS_REST_URL = "https://example.upstash.io";
-    process.env.UPSTASH_REDIS_REST_TOKEN = "token";
+    mutableEnv.NODE_ENV = "production";
+    mutableEnv.APP_ENV = "production";
+    mutableEnv.UPSTASH_REDIS_REST_URL = "https://example.upstash.io";
+    mutableEnv.UPSTASH_REDIS_REST_TOKEN = "token";
 
     redisMocks.fromEnv.mockReturnValue({
       get: redisMocks.get,
@@ -70,9 +70,7 @@ describe("lesson-content-cache", () => {
 
     const { getLessonContentCache, setLessonContentCache } = await importCache();
 
-    await expect(getLessonContentCache("lesson-2", 0)).resolves.toBe(
-      "<p>Redis</p>"
-    );
+    await expect(getLessonContentCache("lesson-2", 0)).resolves.toBe("<p>Redis</p>");
     expect(redisMocks.fromEnv).toHaveBeenCalledTimes(1);
     expect(redisMocks.get).toHaveBeenCalledWith("lesson-content:v3:lesson-2");
 

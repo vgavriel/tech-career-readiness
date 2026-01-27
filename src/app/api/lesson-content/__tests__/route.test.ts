@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { clearLessonContentCache } from "@/lib/lesson-content-cache";
+import { clearLessonContentCache } from "@/lib/lesson-content/cache";
 
 const prismaMock = {
   lesson: {
@@ -32,8 +32,7 @@ const getRoute = async () => {
 /**
  * Create a Request for the lesson content route with query parameters.
  */
-const makeRequest = (query = "") =>
-  new Request(`http://localhost/api/lesson-content${query}`);
+const makeRequest = (query = "") => new Request(`http://localhost/api/lesson-content${query}`);
 
 describe("GET /api/lesson-content", () => {
   const fetchMock = vi.fn();
@@ -43,17 +42,19 @@ describe("GET /api/lesson-content", () => {
    * Restore NODE_ENV to its original value for test isolation.
    */
   const restoreNodeEnv = () => {
+    const env = process.env as Record<string, string | undefined>;
     if (originalNodeEnv === undefined) {
-      delete process.env.NODE_ENV;
+      delete env.NODE_ENV;
     } else {
-      process.env.NODE_ENV = originalNodeEnv;
+      env.NODE_ENV = originalNodeEnv;
     }
   };
   const restoreAppEnv = () => {
+    const env = process.env as Record<string, string | undefined>;
     if (originalAppEnv === undefined) {
-      delete process.env.APP_ENV;
+      delete env.APP_ENV;
     } else {
-      process.env.APP_ENV = originalAppEnv;
+      env.APP_ENV = originalAppEnv;
     }
   };
 

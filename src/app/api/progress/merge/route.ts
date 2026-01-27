@@ -1,20 +1,19 @@
 import { LessonProgressAction } from "@prisma/client";
-import { NextResponse } from "next/server";
 import { StatusCodes } from "http-status-codes";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { getAuthenticatedUser } from "@/lib/auth-user";
 import { errorResponse, parseJsonBody, unauthorizedResponse } from "@/lib/api-helpers";
+import { getAuthenticatedUser } from "@/lib/auth-user";
 import { withDbRetry } from "@/lib/db-retry";
 import { ERROR_MESSAGE } from "@/lib/http-constants";
-import { createRequestLogger } from "@/lib/logger";
-import { LOG_EVENT, LOG_REASON, LOG_ROUTE } from "@/lib/log-constants";
 import { PROGRESS_MERGE_MAX_BODY_BYTES, PROGRESS_MERGE_MAX_LESSONS } from "@/lib/limits";
+import { LOG_EVENT, LOG_REASON, LOG_ROUTE } from "@/lib/log-constants";
+import { createRequestLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { enforceRateLimit, RATE_LIMIT_BUCKET } from "@/lib/rate-limit";
 import { enforceStateChangeSecurity } from "@/lib/request-guard";
 import { resolveRequestId } from "@/lib/request-id";
-
 
 const progressMergeSchema = z
   .object({
@@ -82,10 +81,7 @@ export async function POST(request: Request) {
       status: StatusCodes.BAD_REQUEST,
       reason: LOG_REASON.NO_VALID_LESSONS,
     });
-    return errorResponse(
-      ERROR_MESSAGE.NO_VALID_LESSONS,
-      StatusCodes.BAD_REQUEST
-    );
+    return errorResponse(ERROR_MESSAGE.NO_VALID_LESSONS, StatusCodes.BAD_REQUEST);
   }
 
   const lessons = await prisma.lesson.findMany({
@@ -105,10 +101,7 @@ export async function POST(request: Request) {
       status: StatusCodes.BAD_REQUEST,
       reason: LOG_REASON.NO_VALID_LESSONS,
     });
-    return errorResponse(
-      ERROR_MESSAGE.NO_VALID_LESSONS,
-      StatusCodes.BAD_REQUEST
-    );
+    return errorResponse(ERROR_MESSAGE.NO_VALID_LESSONS, StatusCodes.BAD_REQUEST);
   }
 
   const now = new Date();

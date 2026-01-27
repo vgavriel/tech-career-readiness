@@ -5,14 +5,13 @@ import LessonContent from "@/components/lesson-content";
 import LessonNavigator from "@/components/lesson-navigator";
 import LessonProgressToggle from "@/components/lesson-progress-toggle";
 import NavigatorLayout from "@/components/navigator-layout";
-import { getLessonExample } from "@/lib/lesson-examples";
 import { fetchLessonContent } from "@/lib/lesson-content";
-import { rewriteLessonDocLinks } from "@/lib/lesson-doc-links";
 import { getLessonDocLinkMap } from "@/lib/lesson-doc-link-map";
+import { rewriteLessonDocLinks } from "@/lib/lesson-doc-links";
+import { getLessonExample } from "@/lib/lesson-examples";
 import { buildLessonRedirectPath, findLessonBySlug } from "@/lib/lesson-slug";
 import { getStaticLessonContent } from "@/lib/lesson-static-content";
 import { getRoadmapModules } from "@/lib/roadmap-modules";
-
 
 /**
  * Route params supplied by the App Router.
@@ -29,10 +28,7 @@ type LessonPageProps = {
  * Fetches lesson data/content on the server and handles content errors while
  * composing navigation and progress UI.
  */
-export default async function LessonPage({
-  params,
-  searchParams,
-}: LessonPageProps) {
+export default async function LessonPage({ params, searchParams }: LessonPageProps) {
   const { slug } = await params;
   const rawSearchParams = searchParams ? await searchParams : undefined;
   const { lesson, isAlias } = await findLessonBySlug(slug);
@@ -43,9 +39,7 @@ export default async function LessonPage({
 
   if (lesson.isArchived) {
     if (lesson.supersededBy && !lesson.supersededBy.isArchived) {
-      permanentRedirect(
-        buildLessonRedirectPath(lesson.supersededBy.slug, rawSearchParams)
-      );
+      permanentRedirect(buildLessonRedirectPath(lesson.supersededBy.slug, rawSearchParams));
     }
 
     notFound();
@@ -63,19 +57,14 @@ export default async function LessonPage({
   const lessonExample = getLessonExample(lesson.slug);
   const staticLesson = getStaticLessonContent(lesson.slug);
   const estimatedMinutes =
-    lesson.estimatedMinutes ??
-    staticLesson?.estimatedMinutes ??
-    lessonExample?.estimatedMinutes;
+    lesson.estimatedMinutes ?? staticLesson?.estimatedMinutes ?? lessonExample?.estimatedMinutes;
   let contentHtml = staticLesson?.contentHtml ?? null;
-  let contentSource: "static" | "fetch" | "example" | null = contentHtml
-    ? "static"
-    : null;
+  let contentSource: "static" | "fetch" | "example" | null = contentHtml ? "static" : null;
   let showFallbackNotice = false;
   let showErrorState = false;
 
   if (!contentHtml) {
-    let lessonContent: Awaited<ReturnType<typeof fetchLessonContent>> | null =
-      null;
+    let lessonContent: Awaited<ReturnType<typeof fetchLessonContent>> | null = null;
     let contentError = false;
 
     try {
@@ -90,7 +79,7 @@ export default async function LessonPage({
       contentError = true;
     }
 
-    const fallbackHtml = contentError ? lessonExample?.contentHtml ?? null : null;
+    const fallbackHtml = contentError ? (lessonExample?.contentHtml ?? null) : null;
     contentHtml = lessonContent?.html ?? fallbackHtml;
     if (lessonContent?.html) {
       contentSource = "fetch";
@@ -133,21 +122,18 @@ export default async function LessonPage({
                   </span>
                 ) : null}
               </div>
-              <LessonProgressToggle
-                lessonSlug={lesson.slug}
-              />
+              <LessonProgressToggle lessonSlug={lesson.slug} />
             </div>
             <h1 className="font-display mt-5 text-3xl text-[color:var(--ink-900)] md:text-4xl lg:text-5xl">
               {lesson.title}
             </h1>
-
           </header>
 
           <section className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
             {showFallbackNotice ? (
               <div className="mt-3 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-sm text-[color:var(--ink-700)]">
-                The live document is still syncing. Showing a full sample lesson
-                below in the meantime.
+                The live document is still syncing. Showing a full sample lesson below in the
+                meantime.
               </div>
             ) : null}
             {showErrorState ? (

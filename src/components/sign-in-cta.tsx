@@ -1,7 +1,7 @@
 "use client";
 
-import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { signIn } from "next-auth/react";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 import { buildSignInOptions, useAuthProvider } from "@/hooks/use-auth-provider";
 
@@ -29,11 +29,7 @@ export default function SignInCta({
   const options = buildSignInOptions(providerId, callbackUrl);
 
   return (
-    <button
-      {...props}
-      type={type}
-      onClick={() => signIn(providerId, options)}
-    >
+    <button {...props} type={type} onClick={() => signIn(providerId, options)}>
       {children}
     </button>
   );

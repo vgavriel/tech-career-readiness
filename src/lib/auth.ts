@@ -1,6 +1,6 @@
 import type { NextAuthOptions } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 
 import { devAuthDefaults } from "@/lib/dev-auth";
 import { getEnv, requireEnv } from "@/lib/env";

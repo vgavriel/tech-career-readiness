@@ -6,10 +6,7 @@ import { useMemo } from "react";
 import { useFocus } from "@/components/focus-provider";
 import { useProgress } from "@/components/progress-provider";
 import { orderModulesForFocus } from "@/lib/focus-order";
-import {
-  type ProgressSummaryModule,
-  buildProgressSummaries,
-} from "@/lib/progress-summary";
+import { buildProgressSummaries, type ProgressSummaryModule } from "@/lib/progress-summary";
 
 type RolesBackToCourseProps = {
   modules: ProgressSummaryModule[];
@@ -35,8 +32,7 @@ export default function RolesBackToCourse({ modules }: RolesBackToCourseProps) {
     [completedLessonSlugs, focusKey, focusModules, isReady, modules]
   );
 
-  const primaryLesson =
-    activeSummary.continueLesson ?? activeSummary.firstLesson;
+  const primaryLesson = activeSummary.continueLesson ?? activeSummary.firstLesson;
 
   if (!primaryLesson) {
     return null;

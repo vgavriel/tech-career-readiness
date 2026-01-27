@@ -9,7 +9,7 @@ import { isExtraCreditLesson } from "@/lib/lesson-classification";
 /**
  * Lesson metadata required for the roadmap listing.
  */
-export type RoadmapLesson = {
+type RoadmapLesson = {
   id: string;
   slug: string;
   title: string;
@@ -44,10 +44,7 @@ type RoadmapModuleListProps = {
  * Presents ordered modules/lessons and reflects completion from progress
  * context; no side effects.
  */
-export default function RoadmapModuleList({
-  modules,
-  focusKey = null,
-}: RoadmapModuleListProps) {
+export default function RoadmapModuleList({ modules, focusKey = null }: RoadmapModuleListProps) {
   const { isLessonCompleted, isReady } = useProgress();
   const focusQuery = focusKey ? `?${FOCUS_QUERY_PARAM}=${focusKey}` : "";
 
@@ -62,22 +59,16 @@ export default function RoadmapModuleList({
   return (
     <div className="space-y-12">
       {modules.map((module) => {
-        const coreLessons = module.lessons.filter(
-          (lesson) => !isExtraCreditLesson(lesson)
-        );
-        const extraLessons = module.lessons.filter((lesson) =>
-          isExtraCreditLesson(lesson)
-        );
+        const coreLessons = module.lessons.filter((lesson) => !isExtraCreditLesson(lesson));
+        const extraLessons = module.lessons.filter((lesson) => isExtraCreditLesson(lesson));
         const hasCore = coreLessons.length > 0;
         const hasExtra = extraLessons.length > 0;
         const coreCompleted = coreLessons.reduce(
-          (count, lesson) =>
-            count + (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
+          (count, lesson) => count + (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
           0
         );
         const extraCompleted = extraLessons.reduce(
-          (count, lesson) =>
-            count + (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
+          (count, lesson) => count + (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
           0
         );
 
@@ -110,11 +101,7 @@ export default function RoadmapModuleList({
                             stroke="currentColor"
                             strokeWidth={3}
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M5 13l4 4L19 7"
-                            />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                           </svg>
                         </>
                       ) : (
@@ -164,9 +151,7 @@ export default function RoadmapModuleList({
                   )}
                   {hasExtra ? (
                     <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
-                      {hasCore
-                        ? `+${extraLessons.length} extra`
-                        : `${extraLessons.length} lessons`}
+                      {hasCore ? `+${extraLessons.length} extra` : `${extraLessons.length} lessons`}
                     </span>
                   ) : null}
                 </div>
@@ -212,11 +197,7 @@ export default function RoadmapModuleList({
                             stroke="currentColor"
                             strokeWidth={2}
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M6 9l6 6 6-6"
-                            />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
                           </svg>
                         </span>
                       </summary>

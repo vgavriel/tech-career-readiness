@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
 import { StatusCodes } from "http-status-codes";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { parseJsonBody } from "@/lib/api-helpers";
-import { createRequestLogger } from "@/lib/logger";
 import { LOG_EVENT, LOG_REASON, LOG_ROUTE } from "@/lib/log-constants";
+import { createRequestLogger } from "@/lib/logger";
 import { enforceRateLimit, RATE_LIMIT_BUCKET } from "@/lib/rate-limit";
 import { enforceStateChangeSecurity } from "@/lib/request-guard";
 import { resolveRequestId } from "@/lib/request-id";
@@ -40,11 +40,7 @@ export async function POST(request: Request) {
     return guardResponse;
   }
 
-  const rateLimitResponse = await enforceRateLimit(
-    request,
-    RATE_LIMIT_BUCKET.CLIENT_ERROR,
-    null
-  );
+  const rateLimitResponse = await enforceRateLimit(request, RATE_LIMIT_BUCKET.CLIENT_ERROR, null);
   if (rateLimitResponse) {
     logRequest("warn", {
       status: rateLimitResponse.status,

@@ -1,13 +1,13 @@
 "use client";
 
 import {
+  type KeyboardEvent as ReactKeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
-  type PointerEvent as ReactPointerEvent,
-  type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 
 type NavigatorLayoutProps = {
@@ -30,13 +30,9 @@ const GRID_TEMPLATE_BY_WIDTH: Record<(typeof WIDTH_STEPS)[number], string> = {
 };
 const COLLAPSED_GRID_CLASS = "grid-cols-[0px_12px_minmax(0,1fr)]";
 
-const clamp = (value: number, min: number, max: number) =>
-  Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
-export default function NavigatorLayout({
-  navigator,
-  children,
-}: NavigatorLayoutProps) {
+export default function NavigatorLayout({ navigator, children }: NavigatorLayoutProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mainRef = useRef<HTMLElement | null>(null);
   const [navigatorWidth, setNavigatorWidth] = useState<(typeof WIDTH_STEPS)[number]>(26);
@@ -79,39 +75,42 @@ export default function NavigatorLayout({
     return () => media.removeEventListener("change", handleChange);
   }, []);
 
-  const handlePointerDown = useCallback((event: ReactPointerEvent) => {
-    if (isMobile || !containerRef.current) {
-      return;
-    }
-
-    event.preventDefault();
-    setIsDragging(true);
-
-    const handlePointerMove = (moveEvent: PointerEvent) => {
-      if (!containerRef.current) {
+  const handlePointerDown = useCallback(
+    (event: ReactPointerEvent) => {
+      if (isMobile || !containerRef.current) {
         return;
       }
 
-      const rect = containerRef.current.getBoundingClientRect();
-      const nextPercent = ((moveEvent.clientX - rect.left) / rect.width) * 100;
-      const clamped = clamp(nextPercent, MIN_WIDTH, MAX_WIDTH);
-      const closest = WIDTH_STEPS.reduce((best, candidate) =>
-        Math.abs(candidate - clamped) < Math.abs(best - clamped) ? candidate : best
-      );
+      event.preventDefault();
+      setIsDragging(true);
 
-      setNavigatorWidth(closest);
-      setIsCollapsed(false);
-    };
+      const handlePointerMove = (moveEvent: PointerEvent) => {
+        if (!containerRef.current) {
+          return;
+        }
 
-    const handlePointerUp = () => {
-      setIsDragging(false);
-      window.removeEventListener("pointermove", handlePointerMove);
-      window.removeEventListener("pointerup", handlePointerUp);
-    };
+        const rect = containerRef.current.getBoundingClientRect();
+        const nextPercent = ((moveEvent.clientX - rect.left) / rect.width) * 100;
+        const clamped = clamp(nextPercent, MIN_WIDTH, MAX_WIDTH);
+        const closest = WIDTH_STEPS.reduce((best, candidate) =>
+          Math.abs(candidate - clamped) < Math.abs(best - clamped) ? candidate : best
+        );
 
-    window.addEventListener("pointermove", handlePointerMove);
-    window.addEventListener("pointerup", handlePointerUp);
-  }, [isMobile]);
+        setNavigatorWidth(closest);
+        setIsCollapsed(false);
+      };
+
+      const handlePointerUp = () => {
+        setIsDragging(false);
+        window.removeEventListener("pointermove", handlePointerMove);
+        window.removeEventListener("pointerup", handlePointerUp);
+      };
+
+      window.addEventListener("pointermove", handlePointerMove);
+      window.addEventListener("pointerup", handlePointerUp);
+    },
+    [isMobile]
+  );
 
   const handleResizeKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLDivElement>) => {
@@ -162,17 +161,12 @@ export default function NavigatorLayout({
     [isCollapsed, isMobile, navigatorWidth]
   );
 
-  const gridClass = useMemo(
-    () => {
-      if (isMobile) {
-        return "grid-cols-1";
-      }
-      return isCollapsed
-        ? COLLAPSED_GRID_CLASS
-        : GRID_TEMPLATE_BY_WIDTH[navigatorWidth];
-    },
-    [isCollapsed, isMobile, navigatorWidth]
-  );
+  const gridClass = useMemo(() => {
+    if (isMobile) {
+      return "grid-cols-1";
+    }
+    return isCollapsed ? COLLAPSED_GRID_CLASS : GRID_TEMPLATE_BY_WIDTH[navigatorWidth];
+  }, [isCollapsed, isMobile, navigatorWidth]);
   const showMobileOverlay = isMobile && !isCollapsed;
 
   const normalizeHash = useCallback((hash: string) => {
@@ -280,19 +274,13 @@ export default function NavigatorLayout({
         >
           <svg
             aria-hidden="true"
-            className={`h-3.5 w-3.5 transition ${
-              isCollapsed ? "rotate-180" : ""
-            }`}
+            className={`h-3.5 w-3.5 transition ${isCollapsed ? "rotate-180" : ""}`}
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             strokeWidth={2}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15 6l-6 6 6 6"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 6l-6 6 6 6" />
           </svg>
         </button>
       ) : null}
@@ -310,9 +298,7 @@ export default function NavigatorLayout({
         className={`min-h-0 overflow-hidden rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] shadow-[var(--shadow-card)] ${
           isMobile
             ? `absolute inset-y-0 left-0 z-30 h-full w-[min(92vw,360px)] transform transition-transform duration-200 ${
-                isCollapsed
-                  ? "-translate-x-full pointer-events-none"
-                  : "translate-x-0"
+                isCollapsed ? "-translate-x-full pointer-events-none" : "translate-x-0"
               }`
             : `h-full transition-[width] duration-200 ${
                 isCollapsed ? "pointer-events-none opacity-0" : "opacity-100"
@@ -340,11 +326,7 @@ export default function NavigatorLayout({
                   stroke="currentColor"
                   strokeWidth={2}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 6l12 12M18 6l-12 12"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6l-12 12" />
                 </svg>
               </button>
             </div>
@@ -367,9 +349,7 @@ export default function NavigatorLayout({
           aria-valuemax={MAX_WIDTH}
           aria-valuenow={isCollapsed ? 0 : navigatorWidth}
           aria-valuetext={
-            isCollapsed
-              ? "Navigator collapsed"
-              : `Navigator width ${navigatorWidth}%`
+            isCollapsed ? "Navigator collapsed" : `Navigator width ${navigatorWidth}%`
           }
           onKeyDown={handleResizeKeyDown}
         >
@@ -386,19 +366,13 @@ export default function NavigatorLayout({
           >
             <svg
               aria-hidden="true"
-              className={`h-3.5 w-3.5 transition ${
-                isCollapsed ? "rotate-180" : ""
-              }`}
+              className={`h-3.5 w-3.5 transition ${isCollapsed ? "rotate-180" : ""}`}
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth={2}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15 6l-6 6 6 6"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 6l-6 6 6 6" />
             </svg>
           </button>
         </div>

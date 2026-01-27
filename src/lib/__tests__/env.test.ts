@@ -1,17 +1,18 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 const ORIGINAL_ENV = { ...process.env };
+const mutableEnv = process.env as Record<string, string | undefined>;
 
 /**
  * Restore process.env to its original snapshot for isolation.
  */
 const resetEnv = () => {
-  for (const key of Object.keys(process.env)) {
+  for (const key of Object.keys(mutableEnv)) {
     if (!(key in ORIGINAL_ENV)) {
-      delete process.env[key];
+      delete mutableEnv[key];
     }
   }
-  Object.assign(process.env, ORIGINAL_ENV);
+  Object.assign(mutableEnv, ORIGINAL_ENV);
 };
 
 /**
@@ -28,8 +29,8 @@ afterEach(() => {
 
 describe("env helpers", () => {
   it("uses APP_ENV when set and exposes flags", async () => {
-    process.env.APP_ENV = "preview";
-    process.env.NODE_ENV = "development";
+    mutableEnv.APP_ENV = "preview";
+    mutableEnv.NODE_ENV = "development";
 
     const { getEnv } = await importEnv();
     const env = getEnv();
@@ -42,8 +43,8 @@ describe("env helpers", () => {
   });
 
   it("falls back to production when NODE_ENV is production", async () => {
-    delete process.env.APP_ENV;
-    process.env.NODE_ENV = "production";
+    delete mutableEnv.APP_ENV;
+    mutableEnv.NODE_ENV = "production";
 
     const { getEnv } = await importEnv();
     const env = getEnv();
@@ -53,8 +54,8 @@ describe("env helpers", () => {
   });
 
   it("falls back to test when NODE_ENV is test", async () => {
-    delete process.env.APP_ENV;
-    process.env.NODE_ENV = "test";
+    delete mutableEnv.APP_ENV;
+    mutableEnv.NODE_ENV = "test";
 
     const { getEnv } = await importEnv();
     const env = getEnv();
@@ -64,8 +65,8 @@ describe("env helpers", () => {
   });
 
   it("falls back to local for non-test, non-production NODE_ENV", async () => {
-    delete process.env.APP_ENV;
-    process.env.NODE_ENV = "development";
+    delete mutableEnv.APP_ENV;
+    mutableEnv.NODE_ENV = "development";
 
     const { getEnv } = await importEnv();
     const env = getEnv();
@@ -75,7 +76,7 @@ describe("env helpers", () => {
   });
 
   it("throws on an invalid APP_ENV value", async () => {
-    process.env.APP_ENV = "invalid";
+    mutableEnv.APP_ENV = "invalid";
 
     const { getEnv } = await importEnv();
 
@@ -97,13 +98,13 @@ describe("env helpers", () => {
   });
 
   it("caches env when not in test mode", async () => {
-    process.env.APP_ENV = "local";
-    process.env.NODE_ENV = "development";
+    mutableEnv.APP_ENV = "local";
+    mutableEnv.NODE_ENV = "development";
 
     const { getEnv } = await importEnv();
     const first = getEnv();
 
-    process.env.APP_ENV = "preview";
+    mutableEnv.APP_ENV = "preview";
     const second = getEnv();
 
     expect(first.appEnv).toBe("local");
@@ -111,13 +112,13 @@ describe("env helpers", () => {
   });
 
   it("skips caching when APP_ENV is test", async () => {
-    process.env.APP_ENV = "test";
-    process.env.NODE_ENV = "development";
+    mutableEnv.APP_ENV = "test";
+    mutableEnv.NODE_ENV = "development";
 
     const { getEnv } = await importEnv();
     const first = getEnv();
 
-    process.env.APP_ENV = "local";
+    mutableEnv.APP_ENV = "local";
     const second = getEnv();
 
     expect(first.appEnv).toBe("test");
@@ -125,13 +126,13 @@ describe("env helpers", () => {
   });
 
   it("skips caching when NODE_ENV is test", async () => {
-    process.env.APP_ENV = "local";
-    process.env.NODE_ENV = "test";
+    mutableEnv.APP_ENV = "local";
+    mutableEnv.NODE_ENV = "test";
 
     const { getEnv } = await importEnv();
     const first = getEnv();
 
-    process.env.APP_ENV = "preview";
+    mutableEnv.APP_ENV = "preview";
     const second = getEnv();
 
     expect(first.appEnv).toBe("local");

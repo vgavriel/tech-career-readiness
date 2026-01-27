@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { clearLessonContentCache } from "@/lib/lesson-content-cache";
+import { clearLessonContentCache } from "@/lib/lesson-content/cache";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -14,8 +14,7 @@ const getRoute = async () => {
 /**
  * Create a Request for the lesson content route with query parameters.
  */
-const makeRequest = (query = "") =>
-  new Request(`http://localhost/api/lesson-content${query}`);
+const makeRequest = (query = "") => new Request(`http://localhost/api/lesson-content${query}`);
 
 describe("integration: GET /api/lesson-content", () => {
   beforeEach(() => {

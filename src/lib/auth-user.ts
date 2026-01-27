@@ -1,5 +1,5 @@
 import type { Prisma } from "@prisma/client";
-import { type Session, getServerSession } from "next-auth";
+import { getServerSession, type Session } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { getEnv } from "@/lib/env";
@@ -67,9 +67,7 @@ export async function getAuthenticatedUser(
 ): Promise<AuthenticatedUser | null> {
   const env = getEnv();
   const session =
-    sessionOverride !== undefined
-      ? sessionOverride
-      : await getServerSession(authOptions);
+    sessionOverride !== undefined ? sessionOverride : await getServerSession(authOptions);
   const email = session?.user?.email;
 
   if (!email) {
@@ -78,9 +76,7 @@ export async function getAuthenticatedUser(
 
   const normalizedEmail = email.toLowerCase();
   const allowAdminBootstrap = env.isLocal || env.isPreview || env.isTest;
-  const adminEmails = allowAdminBootstrap
-    ? normalizeEmailList(process.env.ADMIN_EMAILS)
-    : [];
+  const adminEmails = allowAdminBootstrap ? normalizeEmailList(process.env.ADMIN_EMAILS) : [];
   const shouldBeAdmin = allowAdminBootstrap && adminEmails.includes(normalizedEmail);
 
   const sessionName = session.user?.name ?? undefined;

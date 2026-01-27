@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import {
   createContext,
   useCallback,
@@ -9,7 +10,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { useSession } from "next-auth/react";
 
 import {
   clearGuestProgress,
@@ -182,11 +182,7 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
   }, []);
 
   const setLessonCompletion = useCallback(
-    async (
-      lessonSlug: string,
-      completed: boolean,
-      source: ProgressErrorSource = "toggle"
-    ) => {
+    async (lessonSlug: string, completed: boolean, source: ProgressErrorSource = "toggle") => {
       const trimmedLessonSlug = lessonSlug.trim();
       if (!trimmedLessonSlug) {
         return;
@@ -212,8 +208,7 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
           setProgressMap((previous) => {
             const updated = { ...previous };
             if (completed) {
-              updated[trimmedLessonSlug] =
-                updated[trimmedLessonSlug] ?? "completed";
+              updated[trimmedLessonSlug] = updated[trimmedLessonSlug] ?? "completed";
             } else {
               delete updated[trimmedLessonSlug];
             }
@@ -261,10 +256,7 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
     void handleMerge();
   }, [handleMerge, isAuthenticated, loadGuestProgress, session?.user?.email, status]);
 
-  const completedLessonSlugs = useMemo(
-    () => Object.keys(progressMap),
-    [progressMap]
-  );
+  const completedLessonSlugs = useMemo(() => Object.keys(progressMap), [progressMap]);
 
   const value = useMemo<ProgressContextValue>(
     () => ({

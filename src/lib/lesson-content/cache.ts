@@ -18,8 +18,7 @@ const LESSON_CONTENT_CACHE_PREFIX = `lesson-content:v${LESSON_CONTENT_CACHE_VERS
 
 let redisClient: Redis | null | undefined;
 
-const buildCacheKey = (lessonId: string) =>
-  `${LESSON_CONTENT_CACHE_PREFIX}:${lessonId}`;
+const buildCacheKey = (lessonId: string) => `${LESSON_CONTENT_CACHE_PREFIX}:${lessonId}`;
 
 const getRedisClient = () => {
   if (redisClient !== undefined) {
@@ -44,10 +43,7 @@ const getRedisClient = () => {
 /**
  * Return cached lesson HTML if present and not expired.
  */
-export const getLessonContentCache = async (
-  lessonId: string,
-  now = Date.now()
-) => {
+export const getLessonContentCache = async (lessonId: string, now = Date.now()) => {
   const cacheKey = buildCacheKey(lessonId);
   const entry = lessonContentCache.get(cacheKey);
   if (entry) {

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -31,14 +31,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("next/link", () => ({
-  default: ({
-    href,
-    children,
-    ...props
-  }: {
-    href: string;
-    children: ReactNode;
-  }) => (
+  default: ({ href, children, ...props }: { href: string; children: ReactNode }) => (
     <a href={href} {...props}>
       {children}
     </a>
@@ -77,6 +70,20 @@ describe("SiteHeader", () => {
 
     expect(authMocks.signIn).toHaveBeenCalledWith("google", undefined);
     expect(authMocks.signOut).not.toHaveBeenCalled();
+
+    const menuButton = screen.getByRole("button", { name: /menu/i });
+    await user.click(menuButton);
+    const menuPanel = document.querySelector<HTMLElement>("#mobile-menu-panel");
+    expect(menuPanel).toBeInTheDocument();
+    if (!menuPanel) {
+      throw new Error("Expected mobile menu panel to be present.");
+    }
+
+    const mobileSignIn = within(menuPanel).getByRole("button", {
+      name: /sign in with google/i,
+    });
+    await user.click(mobileSignIn);
+    expect(authMocks.signIn).toHaveBeenCalledTimes(2);
   });
 
   it("renders user info and sign-out when authenticated", async () => {
@@ -91,15 +98,27 @@ describe("SiteHeader", () => {
     render(<SiteHeader />);
     await waitFor(() => expect(authMocks.getProviders).toHaveBeenCalled());
 
-    expect(
-      screen.getByText(/signed in as: ada lovelace/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/signed in as: ada lovelace/i)).toBeInTheDocument();
 
     const signOutButton = screen.getByRole("button", { name: /sign out/i });
     const user = userEvent.setup();
     await user.click(signOutButton);
 
     expect(authMocks.signOut).toHaveBeenCalled();
+
+    const menuButton = screen.getByRole("button", { name: /menu/i });
+    await user.click(menuButton);
+    const menuPanel = document.querySelector<HTMLElement>("#mobile-menu-panel");
+    expect(menuPanel).toBeInTheDocument();
+    if (!menuPanel) {
+      throw new Error("Expected mobile menu panel to be present.");
+    }
+
+    const mobileSignOut = within(menuPanel).getByRole("button", {
+      name: /sign out/i,
+    });
+    await user.click(mobileSignOut);
+    expect(authMocks.signOut).toHaveBeenCalledTimes(2);
   });
 
   it("shows focus menu and closes the mobile menu on escape", async () => {
@@ -120,6 +139,29 @@ describe("SiteHeader", () => {
     expect(document.querySelector("#mobile-menu-panel")).toBeInTheDocument();
 
     window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    await waitFor(() =>
+      expect(document.querySelector("#mobile-menu-panel")).not.toBeInTheDocument()
+    );
+  });
+
+  it("closes the mobile menu when clicking outside", async () => {
+    authMocks.useSession.mockReturnValue({
+      data: null,
+      status: "unauthenticated",
+    });
+    navMocks.usePathname.mockReturnValue("/lesson/start-to-finish-roadmap");
+
+    render(<SiteHeader />);
+    await waitFor(() => expect(authMocks.getProviders).toHaveBeenCalled());
+
+    const user = userEvent.setup();
+    const menuButton = screen.getByRole("button", { name: /menu/i });
+    await user.click(menuButton);
+    expect(document.querySelector("#mobile-menu-panel")).toBeInTheDocument();
+
+    const event = new MouseEvent("pointerdown", { bubbles: true });
+    document.body.dispatchEvent(event);
+
     await waitFor(() =>
       expect(document.querySelector("#mobile-menu-panel")).not.toBeInTheDocument()
     );

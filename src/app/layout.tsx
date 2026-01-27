@@ -1,13 +1,13 @@
+import "./globals.css";
+
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import AppShell from "@/components/app-shell";
-import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Tech Career Readiness",
-  description:
-    "A self-paced roadmap for landing tech internships and early-career roles.",
+  description: "A self-paced roadmap for landing tech internships and early-career roles.",
 };
 
 /**

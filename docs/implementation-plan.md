@@ -1,14 +1,19 @@
 # Implementation Plan: Start to Finish (Self-Paced Tech Recruiting Roadmap)
 
 ## Product goal
+
 Build a public self-paced online course web app that teaches an end-to-end roadmap to landing a tech internship or job. The app differentiates itself with a clear curriculum path, guided experience, quick navigation, and per-user progress tracking with “Continue where you left off.”
 
 ## Curriculum plan
+
 Source of truth for modules, focuses, progress categories, and gamification:
+
 - `docs/curriculum-plan.md`
 
 ## MVP scope
+
 ### In scope
+
 - Public browsing of course curriculum and lessons without authentication
 - Google Sign-In for saving progress state
 - Guest progress stored in localStorage with merge into account on sign-in
@@ -22,6 +27,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - Simple caching for lesson content fetching
 
 ### Out of scope
+
 - Quizzes, grading, certificates
 - Discussion boards
 - Admin dashboards
@@ -30,6 +36,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - Embedding Google Docs via iframe
 
 ## Recommended tech stack
+
 - Next.js (App Router) + TypeScript
 - Auth.js (NextAuth) with Google provider
 - Postgres (Neon)
@@ -38,7 +45,9 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - Vercel hosting
 
 ## High-level architecture
+
 ### Content rendering strategy (no iframe)
+
 - Store each lesson’s published Google Doc URL in the database.
 - Server-side route fetches HTML from the published URL.
 - Sanitize HTML to prevent unsafe markup.
@@ -46,57 +55,70 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - Client renders sanitized HTML inside the lesson layout.
 
 ### Auth strategy
+
 - App is public for reading.
 - Google Sign-In is used only to attach progress to a user.
 - When logged out, users can read everything but see “Sign in to save progress.”
 
 ## Core user flows (MVP)
+
 ### Public browsing flow
-1) User lands on homepage.
-2) User uses the quick picker or chooses a focus from the header.
-3) User browses modules and lessons (core + extra credit) via the navigator.
-4) User opens a lesson and reads content.
+
+1. User lands on homepage.
+2. User uses the quick picker or chooses a focus from the header.
+3. User browses modules and lessons (core + extra credit) via the navigator.
+4. User opens a lesson and reads content.
 
 ### Progress tracking flow (authenticated)
-1) User clicks “Sign in with Google.”
-2) User returns to any lesson (navigator stays visible).
-3) If guest progress exists, prompt to merge and apply it to the user account.
-3) User marks lessons complete or incomplete.
-4) Progress persists across sessions.
-5) User clicks “Continue” to jump to the next incomplete lesson.
+
+1. User clicks “Sign in with Google.”
+2. User returns to any lesson (navigator stays visible).
+3. If guest progress exists, prompt to merge and apply it to the user account.
+4. User marks lessons complete or incomplete.
+5. Progress persists across sessions.
+6. User clicks “Continue” to jump to the next incomplete lesson.
 
 ### Progress tracking flow (guest)
-1) User browses lessons via the navigator and toggles completion.
-2) Progress is stored in localStorage.
-3) User sees UI guidance that sign-in saves progress across devices.
+
+1. User browses lessons via the navigator and toggles completion.
+2. Progress is stored in localStorage.
+3. User sees UI guidance that sign-in saves progress across devices.
 
 ## App pages (MVP)
-1) `/` (Landing)
+
+1. `/` (Landing)
+
 - Title and short description
 - CTA: “Start the course”
 - CTA: “Sign in to save progress”
 - Quick picker for urgency focuses + “Explore roles” entry
 - Optional: small “How this course works” block
 
-2) `/lesson/[lessonSlugOrId]` (Lesson detail)
+2. `/lesson/[lessonSlugOrId]` (Lesson detail)
+
 - Title
 - Optional: lesson objectives and “What success looks like”
 - Render lesson content from publishedUrl (sanitized HTML)
 - Navigator (left rail) with modules + lesson completion toggles
 - Open source doc in new tab (optional, uses publishedUrl)
 
-3) `/gold-stars` (Gold Stars awards)
+3. `/gold-stars` (Gold Stars awards)
+
 - Gold Stars summary with earned/in-progress status
 
-4) `/roadmap` (Legacy redirect)
+4. `/roadmap` (Legacy redirect)
+
 - Redirects to the first lesson (navigator handles browsing)
 
-5) `/account` (Optional, can be minimal)
+5. `/account` (Optional, can be minimal)
+
 - User profile basics
 - Sign out
 
 ## Data model (Prisma)
+
 ### Models
+
 - User
   - id (string or uuid)
   - email (unique, lowercase/citext)
@@ -148,11 +170,13 @@ Source of truth for modules, focuses, progress categories, and gamification:
   - indexes on (userId, createdAt) and (lessonId, createdAt)
 
 ### Notes
+
 - Store curriculum structure in DB for ordering, navigation, and progress calculations.
 - Use stable module keys for focus ordering and badge progress.
 - Use stable lesson slugs; store legacy slugs in LessonSlugAlias to support redirects.
 
 ## Seed data
+
 - Use a seed script to populate:
   - 9 modules aligned to `docs/curriculum-plan.md`
   - Lessons per module for core + extra credit content
@@ -161,12 +185,14 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - Seed should use stable module keys as identity and insert lesson slug aliases on slug changes.
 
 ## Auth + progress
+
 - Configure Google OAuth with Auth.js (NextAuth).
 - When logged out: show “Sign in to save progress.”
 - When logged in: show checkmarks, completion toggles, and “Continue” UI.
 - When logging in with guest progress: prompt to merge local progress into the account.
 
 ## Caching + sanitization
+
 - Cache sanitized HTML by lessonId with a TTL (30–120 minutes).
 - Provide a dev-only cache bypass (query param).
 - Use a sanitizer library compatible with Node to strip scripts/unsafe attributes.
@@ -174,32 +200,38 @@ Source of truth for modules, focuses, progress categories, and gamification:
 ## Incremental implementation steps (checklist)
 
 ### Phase 1 — Project foundation
+
 - [x] Create Next.js App Router project with TypeScript
 - [x] Add TailwindCSS
 - [x] Add Prisma and configure Neon Postgres connection
 
 ### Phase 2 — Continuous integration
+
 - [x] Add CI pipeline to run lint + unit tests on every PR
 - [x] Add integration tests job once APIs exist (Phase 3+)
 - [x] Add E2E tests job once core pages exist (Phase 4+)
 - [x] Add accessibility checks with pa11y (WCAG AAA) in CI and local scripts
 
 ### Phase 3 — Curriculum planning (Brown-specific)
+
 - [x] Create `docs/curriculum-plan.md` with modules, focuses, progress categories, and gamification
 - [x] Link curriculum plan from this doc and update MVP scope for quick picker + extra credit progress
 
 ### Phase 4 — Database modeling + curriculum seed
+
 - [x] Implement Prisma schema with User, Module (key), Lesson (slug), LessonSlugAlias, LessonProgress, LessonProgressEvent
 - [x] Run initial migration
 - [x] Add seed script (modules + lessons + placeholder URLs)
 - [x] Update seed data to match `docs/curriculum-plan.md` modules and lessons
 
 ### Phase 5 — Auth (Google OAuth)
+
 - [x] Configure Auth.js (NextAuth) with Google provider
 - [x] Add auth routes for App Router
 - [x] Add basic auth UI in global header
 
 ### Phase 6 — Content fetching + sanitization
+
 - [x] Add `/api/lesson-content` route
 - [x] Fetch publishedUrl server-side
 - [x] Sanitize HTML
@@ -207,17 +239,20 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Rewrite Google Doc edit links to internal lesson routes using stored doc IDs
 
 ### Phase 7 — Core pages (public browsing)
+
 - [x] Landing page (`/`)
 - [x] Lesson page (`/lesson/[slug]`) with content rendering + navigator rail
 - [x] Roadmap redirect (`/roadmap`) to the first lesson
 
 ### Phase 8 — Progress tracking
+
 - [x] Add progress API routes (complete/incomplete)
 - [x] Lesson completion toggle UI
 - [x] Navigator progress UI + core/extra credit summary
 - [x] Store guest progress in localStorage and merge on sign-in
 
 ### Phase 9 — Security hardening + admin analytics
+
 - [x] Add security headers + static CSP (allow inline styles for now)
 - [x] Add Upstash rate limiting for API routes
 - [x] Enforce request size limits and Zod validation for API inputs
@@ -228,9 +263,11 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Document admin bootstrap via `ADMIN_EMAILS` (local/preview/test only; prod via DB flag)
 
 ### Phase 10 — CSP nonces/hashes (deferred)
+
 - [x] Replace `unsafe-inline` styles/scripts with CSP nonces/hashes once lesson HTML is finalized
 
 ### Phase 11 — Schema reset + slug aliases
+
 - [x] Implement alias lookup in lesson route
 - [x] Redirect old slugs to canonical slug
 - [x] Remove duplicate lesson key/id handling (slug-only progress)
@@ -239,6 +276,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Regenerate baseline migration for the reset schema
 
 ### Phase 12 — Quality pass + polish
+
 - [x] Error handling for missing lessons/content fetch failures
 - [x] Confirm public access to curriculum and lessons
 - [x] UI polish for readability and CTAs
@@ -254,8 +292,14 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Add TSDoc for functions/types and component intent comments
 - [x] Document local/preview workflows and gate auth/rate limiting by `APP_ENV`
 - [x] Expand automated test coverage for auth/progress flows, admin gating, and caching guardrails
+- [x] Add dedicated `typecheck` script and wire into CI
+- [x] Enforce formatting with Prettier + lint-staged + Husky
+- [x] Harden lint rules for import order, unused module exports, and client/server boundaries
+- [x] Modularize lesson content utilities for fetch/sanitize/images/cache concerns
+- [x] Document engineering standards + architectural rules in `docs/engineering-standards.md`
 
 ### Phase 13 — Curriculum UX + focuses
+
 - [x] Add landing quick picker that routes to curated focuses (and store selection)
 - [x] Support focus filtering/ordering on the roadmap (core lessons in focus order)
 - [x] Show focus progress alongside overall core progress
@@ -272,6 +316,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Add estimated reading time metadata for every lesson
 
 ### Phase 14 — Accessibility (WCAG AAA)
+
 - [x] Update color tokens for AAA contrast (text + non-text UI)
 - [x] Add skip link, focus-visible styles, and reduced-motion handling
 - [x] Increase interactive target sizes and add keyboard resizing for the navigator
@@ -279,6 +324,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Preserve lesson list indentation when sanitizing Google Docs HTML
 
 ### Phase 15 — Observability (lightweight)
+
 - [x] Add request ID generation (proxy) and return `x-request-id` headers for server routes
 - [x] Create a minimal structured logger wrapper with env-based log levels and default redaction for secrets/PII
 - [x] Instrument key server paths (lesson-content fetch, progress updates, auth callbacks) with duration + cache hit/miss fields
@@ -288,6 +334,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Draft full production observability plan (`docs/observability-plan.md`)
 
 ### Phase 16 — Lesson content scaling
+
 - [x] Add a shared Redis-backed cache for sanitized lesson HTML across instances
 - [x] Keep in-memory caching as a local fallback for lesson content fetches
 - [x] Reuse the shared cache for API responses and server-rendered lessons
@@ -295,17 +342,20 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [ ] Revisit caching strategy using Vercel CDN/Data Cache (edge caching, revalidation) to reduce origin load on lesson content
 
 ### Phase 17 — Deployment
+
 - [ ] Deploy to Vercel
 - [ ] Configure env vars
 - [ ] Smoke-test public browsing, auth, progress, and continue flow
 - [ ] Pre-production cleanup: simplify seed logic, run fresh migration/seed against a reset preview DB
 
 ### Phase 18 — Long-term content scalability (post-MVP)
+
 - [ ] Persist sanitized lesson HTML in storage with versioning
 - [ ] Add background refresh jobs (cron/QStash) to keep snapshots warm
 - [ ] Provide cache invalidation + fallback to last-known-good content
 
 ## Environment variables
+
 - APP_ENV (local, preview, production, test)
 - DATABASE_URL
 - NEXTAUTH_URL
@@ -314,9 +364,11 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - GOOGLE_CLIENT_SECRET
 
 ## Prisma configuration
+
 - Prisma 7 uses `prisma.config.ts` for datasource and seed configuration.
 
 ## Acceptance criteria
+
 - Any visitor can browse lessons via the navigator (and `/roadmap` redirects to the first lesson).
 - Guests can track lesson completion locally and optionally merge on sign-in.
 - Lesson content loads from publishedUrl and renders in-app without iframe.
@@ -326,6 +378,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - Focus selection persists to the user account and is visible in the header.
 
 ## Optional enhancements (post-MVP)
+
 - Search lessons by keyword (title and optionally HTML text)
 - Lightweight feedback button per lesson
 - Table of contents generation from doc headings

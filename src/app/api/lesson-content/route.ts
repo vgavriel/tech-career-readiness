@@ -1,19 +1,18 @@
-import { NextResponse } from "next/server";
 import { StatusCodes } from "http-status-codes";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { errorResponse } from "@/lib/api-helpers";
-import { fetchLessonContent } from "@/lib/lesson-content";
-import { LESSON_CONTENT_CACHE_TTL_MS } from "@/lib/lesson-content-cache";
-import { getLessonDocLinkMap } from "@/lib/lesson-doc-link-map";
 import { getEnv } from "@/lib/env";
 import { ERROR_MESSAGE } from "@/lib/http-constants";
-import { createRequestLogger } from "@/lib/logger";
+import { fetchLessonContent } from "@/lib/lesson-content";
+import { LESSON_CONTENT_CACHE_TTL_MS } from "@/lib/lesson-content/cache";
+import { getLessonDocLinkMap } from "@/lib/lesson-doc-link-map";
 import { LOG_CACHE, LOG_EVENT, LOG_REASON, LOG_ROUTE } from "@/lib/log-constants";
+import { createRequestLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { enforceRateLimit, RATE_LIMIT_BUCKET } from "@/lib/rate-limit";
 import { resolveRequestId } from "@/lib/request-id";
-
 
 /**
  * Interpret truthy query flags from string values.
@@ -55,11 +54,7 @@ export async function GET(request: Request) {
     requestId,
   });
 
-  const rateLimitResponse = await enforceRateLimit(
-    request,
-    RATE_LIMIT_BUCKET.LESSON_CONTENT,
-    null
-  );
+  const rateLimitResponse = await enforceRateLimit(request, RATE_LIMIT_BUCKET.LESSON_CONTENT, null);
   if (rateLimitResponse) {
     rateLimitResponse.headers.set("Cache-Control", "no-store");
     logRequest("warn", {
@@ -80,19 +75,15 @@ export async function GET(request: Request) {
       status: StatusCodes.BAD_REQUEST,
       reason: LOG_REASON.INVALID_QUERY,
     });
-    return errorResponse(
-      ERROR_MESSAGE.MISSING_LESSON_IDENTIFIER,
-      StatusCodes.BAD_REQUEST,
-      { headers: NO_STORE_HEADERS }
-    );
+    return errorResponse(ERROR_MESSAGE.MISSING_LESSON_IDENTIFIER, StatusCodes.BAD_REQUEST, {
+      headers: NO_STORE_HEADERS,
+    });
   }
 
   const { lessonId, slug } = parsedQuery.data;
 
   let lesson = await prisma.lesson.findFirst({
-    where: lessonId
-      ? { id: lessonId, isArchived: false }
-      : { slug: slug ?? "", isArchived: false },
+    where: lessonId ? { id: lessonId, isArchived: false } : { slug: slug ?? "", isArchived: false },
     select: {
       id: true,
       publishedUrl: true,
@@ -162,10 +153,8 @@ export async function GET(request: Request) {
       cache: LOG_CACHE.MISS,
       error,
     });
-    return errorResponse(
-      ERROR_MESSAGE.LESSON_CONTENT_FETCH_FAILED,
-      StatusCodes.BAD_GATEWAY,
-      { headers: NO_STORE_HEADERS }
-    );
+    return errorResponse(ERROR_MESSAGE.LESSON_CONTENT_FETCH_FAILED, StatusCodes.BAD_GATEWAY, {
+      headers: NO_STORE_HEADERS,
+    });
   }
 }

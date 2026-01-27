@@ -2,8 +2,8 @@
 
 import { useMemo } from "react";
 
-import type { RoadmapModule } from "@/components/roadmap-module-list";
 import { useProgress } from "@/components/progress-provider";
+import type { RoadmapModule } from "@/components/roadmap-module-list";
 import { buildBadgeStatuses } from "@/lib/badges";
 
 type RoadmapBadgeAwardsProps = {
@@ -57,9 +57,7 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
       <section className="rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="font-display text-2xl text-[color:var(--ink-900)]">
-              Gold Stars
-            </h2>
+            <h2 className="font-display text-2xl text-[color:var(--ink-900)]">Gold Stars</h2>
           </div>
           <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
             Loading progress...
@@ -82,9 +80,7 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
     <section className="rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-display text-2xl text-[color:var(--ink-900)]">
-            Gold Stars
-          </h2>
+          <h2 className="font-display text-2xl text-[color:var(--ink-900)]">Gold Stars</h2>
         </div>
         <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
           {earnedCount} of {badges.length} {totalLabel} earned
@@ -95,17 +91,10 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <StarIcon
-                variant="filled"
-                className="text-[color:var(--accent-500)]"
-              />
-              <p className="text-sm font-semibold text-[color:var(--ink-800)]">
-                Earned
-              </p>
+              <StarIcon variant="filled" className="text-[color:var(--accent-500)]" />
+              <p className="text-sm font-semibold text-[color:var(--ink-800)]">Earned</p>
             </div>
-            <span className="text-xs text-[color:var(--ink-500)]">
-              {earnedBadges.length}
-            </span>
+            <span className="text-xs text-[color:var(--ink-500)]">{earnedBadges.length}</span>
           </div>
           {earnedBadges.length ? (
             <div className="grid gap-3">
@@ -122,9 +111,7 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
                       {badge.description}
                     </p>
                   </div>
-                  <p className="text-xs text-[color:var(--ink-500)]">
-                    {badge.progressLabel}
-                  </p>
+                  <p className="text-xs text-[color:var(--ink-500)]">{badge.progressLabel}</p>
                 </div>
               ))}
             </div>
@@ -138,17 +125,10 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <StarIcon
-                variant="outline"
-                className="text-[color:var(--accent-500)]"
-              />
-              <p className="text-sm font-semibold text-[color:var(--ink-800)]">
-                In progress
-              </p>
+              <StarIcon variant="outline" className="text-[color:var(--accent-500)]" />
+              <p className="text-sm font-semibold text-[color:var(--ink-800)]">In progress</p>
             </div>
-            <span className="text-xs text-[color:var(--ink-500)]">
-              {inProgressBadges.length}
-            </span>
+            <span className="text-xs text-[color:var(--ink-500)]">{inProgressBadges.length}</span>
           </div>
           <div className="grid gap-3">
             {inProgressBadges.map((badge) => (
@@ -157,16 +137,12 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
                 className="flex flex-col gap-2 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 shadow-[var(--shadow-soft)]"
               >
                 <div className="space-y-1">
-                  <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-                    {badge.title}
-                  </p>
+                  <p className="text-xs font-semibold text-[color:var(--ink-500)]">{badge.title}</p>
                   <p className="text-sm font-semibold text-[color:var(--ink-900)]">
                     {badge.description}
                   </p>
                 </div>
-                <p className="text-xs text-[color:var(--ink-500)]">
-                  {badge.progressLabel}
-                </p>
+                <p className="text-xs text-[color:var(--ink-500)]">{badge.progressLabel}</p>
               </div>
             ))}
           </div>

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { clearLessonContentCache } from "@/lib/lesson-content-cache";
 import { fetchLessonContent } from "@/lib/lesson-content";
+import { clearLessonContentCache } from "@/lib/lesson-content/cache";
 
 const ORIGINAL_ENV = { ...process.env };
 
@@ -113,9 +113,7 @@ describe("fetchLessonContent", () => {
     process.env.APP_ENV = "preview";
     fetchMock.mockResolvedValueOnce(new Response("oops", { status: 500 }));
 
-    await expect(fetchLessonContent(lesson)).rejects.toThrow(
-      "Failed to fetch lesson content."
-    );
+    await expect(fetchLessonContent(lesson)).rejects.toThrow("Failed to fetch lesson content.");
   });
 
   it("throws after too many redirects", async () => {
@@ -125,8 +123,7 @@ describe("fetchLessonContent", () => {
         new Response(null, {
           status: 302,
           headers: {
-            location:
-              "https://docs.google.com/document/d/e/redirected/pub",
+            location: "https://docs.google.com/document/d/e/redirected/pub",
           },
         })
       )
@@ -263,8 +260,7 @@ describe("fetchLessonContent", () => {
 
     const emptyParagraphs = Array.from(wrapper.querySelectorAll("td p")).filter(
       (paragraph) =>
-        !paragraph.textContent ||
-        paragraph.textContent.replace(/[\s\u00a0]/g, "") === ""
+        !paragraph.textContent || paragraph.textContent.replace(/[\s\u00a0]/g, "") === ""
     );
     expect(emptyParagraphs).toHaveLength(0);
     expect(wrapper.querySelectorAll("td br")).toHaveLength(0);

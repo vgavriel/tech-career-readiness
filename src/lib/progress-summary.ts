@@ -1,5 +1,5 @@
-import { isExtraCreditLesson } from "@/lib/lesson-classification";
 import type { FocusKey } from "@/lib/focus-options";
+import { isExtraCreditLesson } from "@/lib/lesson-classification";
 
 export type ProgressSummaryLesson = {
   id: string;
@@ -43,9 +43,7 @@ export type ProgressSummaryInput = {
 /**
  * Build ordered lessons from module data for progress calculations.
  */
-export const buildOrderedLessons = (
-  modules: ProgressSummaryModule[]
-): ProgressSummaryLesson[] =>
+export const buildOrderedLessons = (modules: ProgressSummaryModule[]): ProgressSummaryLesson[] =>
   modules.flatMap((module) =>
     module.lessons.map((lesson) => ({
       id: lesson.id,
@@ -81,9 +79,7 @@ export const buildProgressSummaryFromLessons = (
     (count, lesson) => count + (completedSet.has(lesson.slug) ? 1 : 0),
     0
   );
-  const continueLesson = orderedLessons.find(
-    (lesson) => !completedSet.has(lesson.slug)
-  );
+  const continueLesson = orderedLessons.find((lesson) => !completedSet.has(lesson.slug));
   const firstLesson = orderedLessons[0];
   const allComplete = isReady && totalLessons > 0 && completedCount >= totalLessons;
   const progressPercent =
@@ -114,27 +110,14 @@ export const buildProgressSummaries = ({
   const completedSet = new Set(completedLessonSlugs);
   const orderedLessons = buildOrderedLessons(modules);
   const { coreLessons, extraLessons } = splitLessonsByCredit(orderedLessons);
-  const coreSummary = buildProgressSummaryFromLessons(
-    coreLessons,
-    completedSet,
-    isReady
-  );
-  const extraSummary = buildProgressSummaryFromLessons(
-    extraLessons,
-    completedSet,
-    isReady
-  );
+  const coreSummary = buildProgressSummaryFromLessons(coreLessons, completedSet, isReady);
+  const extraSummary = buildProgressSummaryFromLessons(extraLessons, completedSet, isReady);
   let focusSummary: ProgressSummary | null = null;
 
   if (focusKey && focusModules && focusModules.length > 0) {
     const focusLessons = buildOrderedLessons(focusModules);
-    const { coreLessons: focusCoreLessons } =
-      splitLessonsByCredit(focusLessons);
-    const summary = buildProgressSummaryFromLessons(
-      focusCoreLessons,
-      completedSet,
-      isReady
-    );
+    const { coreLessons: focusCoreLessons } = splitLessonsByCredit(focusLessons);
+    const summary = buildProgressSummaryFromLessons(focusCoreLessons, completedSet, isReady);
     focusSummary = summary.totalLessons === 0 ? null : summary;
   }
 

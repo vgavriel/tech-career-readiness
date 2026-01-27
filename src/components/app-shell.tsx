@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
 import { getServerSession } from "next-auth";
+import type { ReactNode } from "react";
 
 import Providers from "@/components/providers";
 import SiteHeader from "@/components/site-header";
@@ -24,8 +24,7 @@ export default async function AppShell({ children }: AppShellProps) {
   const env = getEnv();
   const analyticsFlag = env.NEXT_PUBLIC_ANALYTICS_ENABLED?.toLowerCase();
   const analyticsEnabled =
-    analyticsFlag === "true" ||
-    (analyticsFlag !== "false" && (env.isPreview || env.isProduction));
+    analyticsFlag === "true" || (analyticsFlag !== "false" && (env.isPreview || env.isProduction));
 
   return (
     <Providers

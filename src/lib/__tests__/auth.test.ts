@@ -81,9 +81,7 @@ describe("authOptions", () => {
     process.env.GOOGLE_CLIENT_SECRET = "client-secret";
     process.env.NEXTAUTH_SECRET = "auth-secret";
 
-    await expect(importAuth()).rejects.toThrow(
-      "Missing GOOGLE_CLIENT_ID environment variable."
-    );
+    await expect(importAuth()).rejects.toThrow("Missing GOOGLE_CLIENT_ID environment variable.");
   });
 
   it("throws when GOOGLE_CLIENT_SECRET is missing in preview", async () => {
@@ -103,9 +101,7 @@ describe("authOptions", () => {
     process.env.GOOGLE_CLIENT_SECRET = "client-secret";
     delete process.env.NEXTAUTH_SECRET;
 
-    await expect(importAuth()).rejects.toThrow(
-      "Missing NEXTAUTH_SECRET environment variable."
-    );
+    await expect(importAuth()).rejects.toThrow("Missing NEXTAUTH_SECRET environment variable.");
   });
 
   it("authorizes credential sign-in payloads in local", async () => {
@@ -115,7 +111,7 @@ describe("authOptions", () => {
     process.env.NEXTAUTH_SECRET = "auth-secret";
 
     const { authOptions } = await importAuth();
-    const provider = authOptions.providers?.[0] as {
+    const provider = authOptions.providers?.[0] as unknown as {
       authorize: (credentials?: Record<string, string>) => Promise<{
         id: string;
         email?: string;

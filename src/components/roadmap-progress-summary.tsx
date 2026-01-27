@@ -6,10 +6,7 @@ import { useMemo } from "react";
 import { useProgress } from "@/components/progress-provider";
 import SignInCta from "@/components/sign-in-cta";
 import { FOCUS_OPTIONS, type FocusKey } from "@/lib/focus-options";
-import {
-  type ProgressSummaryModule,
-  buildProgressSummaries,
-} from "@/lib/progress-summary";
+import { buildProgressSummaries, type ProgressSummaryModule } from "@/lib/progress-summary";
 
 /**
  * Props for the roadmap progress summary card.
@@ -51,7 +48,7 @@ export default function RoadmapProgressSummary({
     [completedLessonSlugs, focusKey, focusModules, isReady, modules]
   );
   const focusOption = focusKey
-    ? FOCUS_OPTIONS.find((option) => option.key === focusKey) ?? null
+    ? (FOCUS_OPTIONS.find((option) => option.key === focusKey) ?? null)
     : null;
   const progressValue = Math.min(100, Math.max(0, coreSummary.progressPercent));
   const ringRadius = 44;
@@ -59,8 +56,7 @@ export default function RoadmapProgressSummary({
   const ringCircumference = 2 * Math.PI * ringRadius;
   const ringOffset = ringCircumference * (1 - progressValue / 100);
 
-  const primaryLesson =
-    activeSummary.continueLesson ?? activeSummary.firstLesson;
+  const primaryLesson = activeSummary.continueLesson ?? activeSummary.firstLesson;
 
   let ctaLabel = "Check back soon";
   if (primaryLesson) {
@@ -87,11 +83,7 @@ export default function RoadmapProgressSummary({
           aria-valuenow={progressValue}
           aria-valuetext={coreSummary.progressLabel}
         >
-          <svg
-            className="h-full w-full -rotate-90"
-            viewBox="0 0 100 100"
-            aria-hidden="true"
-          >
+          <svg className="h-full w-full -rotate-90" viewBox="0 0 100 100" aria-hidden="true">
             <circle
               cx="50"
               cy="50"
@@ -117,9 +109,7 @@ export default function RoadmapProgressSummary({
           </div>
         </div>
         <div className="space-y-1">
-          <p className="text-base font-semibold text-[color:var(--ink-600)]">
-            {progressTitle}
-          </p>
+          <p className="text-base font-semibold text-[color:var(--ink-600)]">{progressTitle}</p>
           <p className="text-lg font-semibold text-[color:var(--ink-900)]">
             {coreSummary.progressLabel}
           </p>
@@ -140,9 +130,7 @@ export default function RoadmapProgressSummary({
 
       {showExtraCredit && extraSummary.totalLessons > 0 ? (
         <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4">
-          <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-            Extra credit
-          </p>
+          <p className="text-xs font-semibold text-[color:var(--ink-500)]">Extra credit</p>
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-[color:var(--ink-900)]">
             <span>{extraSummary.progressLabel}</span>
             <span>{extraSummary.progressPercent}%</span>
@@ -167,15 +155,11 @@ export default function RoadmapProgressSummary({
       ) : null}
 
       {isMerging ? (
-        <p className="text-xs text-[color:var(--ink-500)]">
-          Syncing guest progress...
-        </p>
+        <p className="text-xs text-[color:var(--ink-500)]">Syncing guest progress...</p>
       ) : null}
 
       {!isAuthenticated && showSignIn ? (
-        <SignInCta
-          className="inline-flex min-h-11 items-center px-3 text-xs font-semibold text-[color:var(--accent-700)]"
-        >
+        <SignInCta className="inline-flex min-h-11 items-center px-3 text-xs font-semibold text-[color:var(--accent-700)]">
           Sign in to save progress
         </SignInCta>
       ) : null}

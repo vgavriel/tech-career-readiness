@@ -1,0 +1,6 @@
+if [ -w .git ]; then
+  npx lint-staged
+else
+  echo "Skipping lint-staged (cannot write to .git). Running full lint."
+  npm run lint
+fi

@@ -1,4 +1,4 @@
-import { normalizeFocusKey, type FocusKey } from "@/lib/focus-options";
+import { type FocusKey, normalizeFocusKey } from "@/lib/focus-options";
 
 type FocusModule = {
   key: string;
@@ -21,18 +21,11 @@ export const FOCUS_MODULE_ORDER: Record<FocusKey, string[]> = {
     "applications",
     "interviews",
   ],
-  "interviewing-soon": [
-    "start-here",
-    "research-companies",
-    "applications",
-    "interviews",
-  ],
+  "interviewing-soon": ["start-here", "research-companies", "applications", "interviews"],
   "offer-in-hand": ["offers", "internship-success"],
 };
 
-export const getFocusKeyFromParam = (
-  param: string | string[] | undefined
-): FocusKey | null => {
+export const getFocusKeyFromParam = (param: string | string[] | undefined): FocusKey | null => {
   if (!param) {
     return null;
   }
@@ -61,14 +54,10 @@ export const orderModulesForFocus = <T extends FocusModule>(
     return modules;
   }
 
-  const canSortByOrder = filtered.every(
-    (module) => typeof module.order === "number"
-  );
+  const canSortByOrder = filtered.every((module) => typeof module.order === "number");
   if (!canSortByOrder) {
     return filtered;
   }
 
-  return [...filtered].sort(
-    (left, right) => (left.order ?? 0) - (right.order ?? 0)
-  );
+  return [...filtered].sort((left, right) => (left.order ?? 0) - (right.order ?? 0));
 };

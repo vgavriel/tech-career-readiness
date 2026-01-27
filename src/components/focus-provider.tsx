@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import {
   createContext,
   useCallback,
@@ -9,9 +10,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { useSession } from "next-auth/react";
 
-import { normalizeFocusKey, type FocusKey } from "@/lib/focus-options";
+import { type FocusKey, normalizeFocusKey } from "@/lib/focus-options";
 
 type FocusContextValue = {
   focusKey: FocusKey | null;
@@ -56,14 +56,9 @@ const updateFocusSelection = async (focusKey: FocusKey | null) => {
   return normalizeFocusKey(body.focusKey);
 };
 
-export function FocusProvider({
-  initialFocusKey = null,
-  children,
-}: FocusProviderProps) {
+export function FocusProvider({ initialFocusKey = null, children }: FocusProviderProps) {
   const { data: session, status } = useSession();
-  const [focusKey, setFocusKeyState] = useState<FocusKey | null>(
-    initialFocusKey
-  );
+  const [focusKey, setFocusKeyState] = useState<FocusKey | null>(initialFocusKey);
   const [isReady, setIsReady] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const focusRef = useRef<FocusKey | null>(initialFocusKey);

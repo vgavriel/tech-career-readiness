@@ -1,9 +1,9 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import type { Session } from "next-auth";
 import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import Providers from "@/components/providers";
+import type { Session } from "@/lib/auth-types";
 import { reportClientError } from "@/lib/client-error";
 
 const sessionTracker = vi.hoisted(() => ({
@@ -26,13 +26,7 @@ vi.mock("@/lib/client-error", () => ({
 }));
 
 vi.mock("next-auth/react", () => ({
-  SessionProvider: ({
-    session,
-    children,
-  }: {
-    session: Session | null;
-    children: ReactNode;
-  }) => {
+  SessionProvider: ({ session, children }: { session: Session | null; children: ReactNode }) => {
     sessionTracker.received = session;
     return <div data-testid="session-provider">{children}</div>;
   },
@@ -77,8 +71,10 @@ describe("Providers", () => {
       })
     );
 
-    const rejectionEvent = new Event("unhandledrejection") as PromiseRejectionEvent;
-    (rejectionEvent as PromiseRejectionEvent).reason = new Error("Nope");
+    const rejectionEvent = new PromiseRejectionEvent("unhandledrejection", {
+      promise: Promise.resolve(),
+      reason: new Error("Nope"),
+    });
     window.dispatchEvent(rejectionEvent);
 
     await waitFor(() => {

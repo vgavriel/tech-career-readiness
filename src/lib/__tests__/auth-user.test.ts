@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Session } from "next-auth";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const prismaMock = {
   user: {
@@ -191,9 +191,7 @@ describe("getAuthenticatedUser", () => {
   });
 
   it("handles unique constraint races when creating users", async () => {
-    prismaMock.user.findUnique
-      .mockResolvedValueOnce(null)
-      .mockResolvedValueOnce(baseUser);
+    prismaMock.user.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce(baseUser);
     prismaMock.user.create.mockRejectedValue({ code: "P2002" });
 
     const { getAuthenticatedUser } = await getModule();

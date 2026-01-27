@@ -1,13 +1,13 @@
 "use client";
 
 import { Analytics } from "@vercel/analytics/react";
-import type { Session } from "next-auth";
+import { SessionProvider } from "next-auth/react";
 import type { ReactNode } from "react";
 import { useEffect } from "react";
-import { SessionProvider } from "next-auth/react";
 
 import { FocusProvider } from "@/components/focus-provider";
 import { ProgressProvider } from "@/components/progress-provider";
+import type { Session } from "@/lib/auth-types";
 import { reportClientError } from "@/lib/client-error";
 import type { FocusKey } from "@/lib/focus-options";
 
@@ -48,8 +48,7 @@ export default function Providers({
 
     const handleRejection = (event: PromiseRejectionEvent) => {
       const reason = event.reason;
-      const error =
-        reason instanceof Error ? reason : new Error(String(reason ?? "Unknown"));
+      const error = reason instanceof Error ? reason : new Error(String(reason ?? "Unknown"));
       reportClientError({
         message: error.message || "Unhandled promise rejection",
         name: error.name,
