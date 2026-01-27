@@ -133,16 +133,87 @@ const stripInlineStyle = (
   return nextAttribs;
 };
 
-const addTableCellAttributes = (attribs: sanitizeHtml.Attributes) => ({
-  ...stripInlineStyle(attribs),
-  valign: "top",
-});
+const ALLOWED_IMAGE_HOSTS = [
+  "docs.google.com",
+  "googleusercontent.com",
+  "gstatic.com",
+];
 
-const extractDocClassStyleMap = (document: Document) => {
-  const styleNodes = Array.from(document.querySelectorAll("style"));
-  const map = new Map<string, Set<string>>();
+const isAllowedImageHost = (hostname: string) =>
+  ALLOWED_IMAGE_HOSTS.some((host) =>
+    hostname === host ? true : hostname.endsWith(`.${host}`)
+  );
+
+const isAllowedImageSrc = (src: string | undefined) => {
+  if (!src) {
+    return false;
+  }
+
+  const trimmed = src.trim();
+  if (!trimmed) {
+    return false;
+  }
+
+  const normalized = trimmed.startsWith("//") ? `https:${trimmed}` : trimmed;
+
+  try {
+    const url = new URL(normalized);
+    if (url.protocol !== "https:") {
+      return false;
+    }
+    return isAllowedImageHost(url.hostname);
+  } catch {
+    return false;
+  }
+};
+
+const extractCssLengthValue = (style: string | undefined, property: string) => {
+  if (!style) {
+    return undefined;
+  }
+  const regex = new RegExp(`${property}\\s*:\\s*([^;]+)`, "i");
+  const match = style.match(regex);
+  if (!match) {
+    return undefined;
+  }
+  const value = parseCssLength(match[1].trim());
+  return value === null ? undefined : Math.round(value);
+};
+
+const extractBackgroundImage = (style: string | undefined) => {
+  if (!style) {
+    return undefined;
+  }
+  const match = style.match(
+    /background(?:-image)?\s*:\s*[^;]*url\(['"]?([^'")]+)['"]?\)/i
+  );
+  if (match?.[1]) {
+    return match[1];
+  }
+  const fallback = style.match(/url\(['"]?([^'")]+)['"]?\)/i);
+  return fallback?.[1];
+};
+
+type BackgroundImageStyle = {
+  src: string;
+  width?: number;
+  height?: number;
+};
+
+type DocStyleMaps = {
+  classStyleMap: Map<string, Set<string>>;
+  backgroundImageMap: Map<string, BackgroundImageStyle>;
+  styleNodes: HTMLStyleElement[];
+};
+
+const extractDocStyleMaps = (document: Document): DocStyleMaps => {
+  const styleNodes = Array.from(
+    document.querySelectorAll<HTMLStyleElement>("style")
+  );
+  const classStyleMap = new Map<string, Set<string>>();
+  const backgroundImageMap = new Map<string, BackgroundImageStyle>();
   if (styleNodes.length === 0) {
-    return map;
+    return { classStyleMap, backgroundImageMap, styleNodes };
   }
 
   const cssText = styleNodes
@@ -154,28 +225,45 @@ const extractDocClassStyleMap = (document: Document) => {
     const selectors = match[1].split(",");
     const declarations = match[2];
     const docClasses = extractDocStyleClasses(declarations);
+    const backgroundImage = extractBackgroundImage(declarations);
+    const width = extractCssLengthValue(declarations, "width");
+    const height = extractCssLengthValue(declarations, "height");
+    const allowedBackground =
+      backgroundImage && isAllowedImageSrc(backgroundImage)
+        ? backgroundImage
+        : null;
     if (docClasses.length === 0) {
-      continue;
+      if (!allowedBackground) {
+        continue;
+      }
     }
 
     for (const selector of selectors) {
       const classMatches = selector.matchAll(/\.([a-zA-Z0-9_-]+)/g);
       for (const classMatch of classMatches) {
         const className = classMatch[1];
-        let existing = map.get(className);
-        if (!existing) {
-          existing = new Set<string>();
-          map.set(className, existing);
+        if (docClasses.length > 0) {
+          let existing = classStyleMap.get(className);
+          if (!existing) {
+            existing = new Set<string>();
+            classStyleMap.set(className, existing);
+          }
+          for (const docClass of docClasses) {
+            existing.add(docClass);
+          }
         }
-        for (const docClass of docClasses) {
-          existing.add(docClass);
+        if (allowedBackground) {
+          backgroundImageMap.set(className, {
+            src: allowedBackground,
+            width,
+            height,
+          });
         }
       }
     }
   }
 
-  styleNodes.forEach((node) => node.remove());
-  return map;
+  return { classStyleMap, backgroundImageMap, styleNodes };
 };
 
 const applyDocClassStyles = (
@@ -206,12 +294,112 @@ const applyDocClassStyles = (
   }
 };
 
+const parseComputedLength = (value: string | null | undefined) => {
+  if (!value) {
+    return undefined;
+  }
+  const parsed = parseCssLength(value);
+  return parsed === null ? undefined : Math.round(parsed);
+};
+
+const applyBackgroundImages = (
+  root: Element,
+  backgroundImageMap: Map<string, BackgroundImageStyle>
+) => {
+  if (backgroundImageMap.size === 0) {
+    if (!root.ownerDocument?.defaultView) {
+      return;
+    }
+  }
+
+  const defaultView = root.ownerDocument?.defaultView;
+  const elements = [root, ...Array.from(root.querySelectorAll("*"))];
+
+  for (const element of elements) {
+    if (element.tagName === "IMG") {
+      continue;
+    }
+
+    const contentText = (element.textContent ?? "").replace(/\s+/g, "");
+    if (contentText.length > 0) {
+      continue;
+    }
+
+    let matchedStyle: BackgroundImageStyle | null = null;
+    for (const className of Array.from(element.classList)) {
+      const candidate = backgroundImageMap.get(className);
+      if (candidate) {
+        matchedStyle = candidate;
+        break;
+      }
+    }
+
+    if (defaultView) {
+      const computedStyle = defaultView.getComputedStyle(element);
+      const computedBackground = extractBackgroundImage(
+        computedStyle.backgroundImage
+      );
+      if (!matchedStyle && computedBackground) {
+        if (isAllowedImageSrc(computedBackground)) {
+          matchedStyle = {
+            src: computedBackground,
+            width: parseComputedLength(computedStyle.width),
+            height: parseComputedLength(computedStyle.height),
+          };
+        }
+      } else if (matchedStyle) {
+        matchedStyle = {
+          ...matchedStyle,
+          width: matchedStyle.width ?? parseComputedLength(computedStyle.width),
+          height:
+            matchedStyle.height ?? parseComputedLength(computedStyle.height),
+        };
+      }
+    }
+
+    if (!matchedStyle) {
+      continue;
+    }
+
+    const img = element.ownerDocument?.createElement("img");
+    if (!img) {
+      continue;
+    }
+
+    img.setAttribute("src", matchedStyle.src);
+    img.setAttribute("alt", "");
+    img.setAttribute("loading", "lazy");
+    img.setAttribute("decoding", "async");
+    img.setAttribute("referrerpolicy", "no-referrer");
+    if (matchedStyle.width) {
+      img.setAttribute("width", matchedStyle.width.toString());
+    }
+    if (matchedStyle.height) {
+      img.setAttribute("height", matchedStyle.height.toString());
+    }
+
+    element.replaceWith(img);
+  }
+};
+
+const stripStyleNodes = (styleNodes: HTMLStyleElement[]) => {
+  for (const node of styleNodes) {
+    node.remove();
+  }
+};
+
+const addTableCellAttributes = (attribs: sanitizeHtml.Attributes) => ({
+  ...stripInlineStyle(attribs),
+  valign: "top",
+});
+
 const sanitizeOptions: sanitizeHtml.IOptions = {
-  allowedTags: sanitizeHtml.defaults.allowedTags,
+  allowedTags: [...sanitizeHtml.defaults.allowedTags, "img"],
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,
     "*": ["class", "id"],
     a: ["href", "name", "target", "rel"],
+    img: ["src", "alt", "title", "width", "height", "loading", "decoding", "referrerpolicy"],
     ol: ["class", "start"],
     li: ["class", "value"],
     table: ["class", "border", "cellpadding", "cellspacing", "width"],
@@ -243,6 +431,55 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
         delete nextAttribs.rel;
       }
       return { tagName, attribs: nextAttribs };
+    },
+    img: (tagName, attribs) => {
+      const nextAttribs: sanitizeHtml.Attributes = { ...attribs };
+      const src = nextAttribs.src;
+      if (!isAllowedImageSrc(src)) {
+        return { tagName: "span", attribs: {}, text: "" };
+      }
+
+      const width = extractCssLengthValue(nextAttribs.style, "width");
+      const height = extractCssLengthValue(nextAttribs.style, "height");
+      if (width && !nextAttribs.width) {
+        nextAttribs.width = width.toString();
+      }
+      if (height && !nextAttribs.height) {
+        nextAttribs.height = height.toString();
+      }
+      if (!nextAttribs.alt) {
+        nextAttribs.alt = "";
+      }
+      nextAttribs.loading = nextAttribs.loading ?? "lazy";
+      nextAttribs.decoding = nextAttribs.decoding ?? "async";
+      nextAttribs.referrerpolicy = nextAttribs.referrerpolicy ?? "no-referrer";
+      delete nextAttribs.style;
+
+      return { tagName, attribs: nextAttribs };
+    },
+    span: (tagName, attribs) => {
+      const nextAttribs: sanitizeHtml.Attributes = { ...attribs };
+      const background = extractBackgroundImage(nextAttribs.style);
+      if (!background || !isAllowedImageSrc(background)) {
+        return { tagName, attribs: stripInlineStyle(nextAttribs) };
+      }
+
+      const width = extractCssLengthValue(nextAttribs.style, "width");
+      const height = extractCssLengthValue(nextAttribs.style, "height");
+      const imgAttribs: sanitizeHtml.Attributes = {
+        src: background,
+        alt: "",
+        loading: "lazy",
+        decoding: "async",
+        referrerpolicy: "no-referrer",
+      };
+      if (width) {
+        imgAttribs.width = width.toString();
+      }
+      if (height) {
+        imgAttribs.height = height.toString();
+      }
+      return { tagName: "img", attribs: imgAttribs };
     },
     td: (tagName, attribs) => ({
       tagName,
@@ -550,7 +787,8 @@ const extractLessonHtml = (rawHtml: string) => {
   const virtualConsole = new VirtualConsole();
   const dom = new JSDOM(rawHtml, { virtualConsole });
   const document = dom.window.document;
-  const classStyleMap = extractDocClassStyleMap(document);
+  const { classStyleMap, backgroundImageMap, styleNodes } =
+    extractDocStyleMaps(document);
 
   const contentRoot =
     document.querySelector("#contents") ??
@@ -567,6 +805,8 @@ const extractLessonHtml = (rawHtml: string) => {
   stripHorizontalRules(contentRoot);
   trimTableCellWhitespace(contentRoot);
   applyDocClassStyles(contentRoot, classStyleMap);
+  applyBackgroundImages(contentRoot, backgroundImageMap);
+  stripStyleNodes(styleNodes);
   stripEmptyAnchors(contentRoot);
   removeEmptyHeadings(contentRoot);
   normalizeHeadingLevels(contentRoot);

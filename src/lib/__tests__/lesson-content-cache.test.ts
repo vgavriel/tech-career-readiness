@@ -74,7 +74,7 @@ describe("lesson-content-cache", () => {
       "<p>Redis</p>"
     );
     expect(redisMocks.fromEnv).toHaveBeenCalledTimes(1);
-    expect(redisMocks.get).toHaveBeenCalledWith("lesson-content:v2:lesson-2");
+    expect(redisMocks.get).toHaveBeenCalledWith("lesson-content:v3:lesson-2");
 
     setLessonContentCache("lesson-2", "<p>Fresh</p>", 1000, 0);
     expect(redisMocks.set).toHaveBeenCalled();

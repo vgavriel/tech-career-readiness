@@ -13,7 +13,7 @@ type LessonContentCacheEntry = {
 const lessonContentCache = new Map<string, LessonContentCacheEntry>();
 
 export const LESSON_CONTENT_CACHE_TTL_MS = 60 * 60 * 1000;
-const LESSON_CONTENT_CACHE_VERSION = 2;
+const LESSON_CONTENT_CACHE_VERSION = 3;
 const LESSON_CONTENT_CACHE_PREFIX = `lesson-content:v${LESSON_CONTENT_CACHE_VERSION}`;
 
 let redisClient: Redis | null | undefined;
@@ -48,12 +48,13 @@ export const getLessonContentCache = async (
   lessonId: string,
   now = Date.now()
 ) => {
-  const entry = lessonContentCache.get(lessonId);
+  const cacheKey = buildCacheKey(lessonId);
+  const entry = lessonContentCache.get(cacheKey);
   if (entry) {
     if (entry.expiresAt > now) {
       return entry.html;
     }
-    lessonContentCache.delete(lessonId);
+    lessonContentCache.delete(cacheKey);
   }
 
   const redis = getRedisClient();
@@ -64,7 +65,7 @@ export const getLessonContentCache = async (
   try {
     const cached = await redis.get<string>(buildCacheKey(lessonId));
     if (typeof cached === "string") {
-      lessonContentCache.set(lessonId, {
+      lessonContentCache.set(cacheKey, {
         html: cached,
         expiresAt: now + LESSON_CONTENT_CACHE_TTL_MS,
       });
@@ -86,7 +87,8 @@ export const setLessonContentCache = (
   ttlMs = LESSON_CONTENT_CACHE_TTL_MS,
   now = Date.now()
 ) => {
-  lessonContentCache.set(lessonId, {
+  const cacheKey = buildCacheKey(lessonId);
+  lessonContentCache.set(cacheKey, {
     html,
     expiresAt: now + ttlMs,
   });

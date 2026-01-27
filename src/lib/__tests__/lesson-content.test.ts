@@ -63,6 +63,52 @@ describe("fetchLessonContent", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("preserves allowed images and drops untrusted ones", async () => {
+    process.env.APP_ENV = "local";
+    process.env.LESSON_CONTENT_MOCK_HTML = [
+      '<img src="https://lh3.googleusercontent.com/abc" style="width: 120px; height: 240px;" />',
+      '<img src="https://example.com/evil.png" />',
+      '<span style="background-image:url(https://lh4.googleusercontent.com/def); width: 300px; height: 400px;"></span>',
+    ].join("");
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain("lh3.googleusercontent.com/abc");
+    expect(result.html).toContain('width="120"');
+    expect(result.html).toContain('height="240"');
+    expect(result.html).not.toContain("example.com/evil.png");
+    expect(result.html).toContain("lh4.googleusercontent.com/def");
+  });
+
+  it("converts background image classes into images", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><head>",
+          "<style>",
+          ".c1{background-image:url('https://lh3.googleusercontent.com/classy'); width:120pt; height:60pt;}",
+          ".c2{background-image:url('https://example.com/evil.png'); width:120pt; height:60pt;}",
+          "</style>",
+          "</head><body>",
+          '<div id="contents">',
+          '<span class="c1"></span>',
+          '<span class="c2"></span>',
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain("lh3.googleusercontent.com/classy");
+    expect(result.html).toContain('width="160"');
+    expect(result.html).toContain('height="80"');
+    expect(result.html).not.toContain("example.com/evil.png");
+  });
+
   it("throws when the upstream response is not ok", async () => {
     process.env.APP_ENV = "preview";
     fetchMock.mockResolvedValueOnce(new Response("oops", { status: 500 }));
