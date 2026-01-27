@@ -1,9 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import type { Session } from "next-auth";
 import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import Providers from "@/components/providers";
+import { reportClientError } from "@/lib/client-error";
 
 const sessionTracker = vi.hoisted(() => ({
   received: null as Session | null,
@@ -18,6 +19,10 @@ vi.mock("@/components/progress-provider", () => ({
     progressTracker.rendered = true;
     return <div data-testid="progress-provider">{children}</div>;
   },
+}));
+
+vi.mock("@/lib/client-error", () => ({
+  reportClientError: vi.fn(),
 }));
 
 vi.mock("next-auth/react", () => ({
@@ -52,5 +57,38 @@ describe("Providers", () => {
     expect(screen.getByText("Child content")).toBeInTheDocument();
     expect(sessionTracker.received).toEqual(session);
     expect(progressTracker.rendered).toBe(true);
+  });
+
+  it("reports window errors and unhandled rejections", async () => {
+    render(
+      <Providers session={null} analyticsEnabled={false}>
+        <span>Child content</span>
+      </Providers>
+    );
+
+    const error = new Error("Boom");
+    window.dispatchEvent(
+      new ErrorEvent("error", {
+        message: "Boom",
+        error,
+        filename: "app.tsx",
+        lineno: 12,
+        colno: 4,
+      })
+    );
+
+    const rejectionEvent = new Event("unhandledrejection") as PromiseRejectionEvent;
+    (rejectionEvent as PromiseRejectionEvent).reason = new Error("Nope");
+    window.dispatchEvent(rejectionEvent);
+
+    await waitFor(() => {
+      expect(reportClientError).toHaveBeenCalled();
+    });
+    expect(reportClientError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: "Boom",
+        source: "app.tsx",
+      })
+    );
   });
 });

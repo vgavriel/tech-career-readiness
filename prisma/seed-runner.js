@@ -1,5 +1,5 @@
 const seedModule =
-  process.env.APP_ENV === "test" ? "./seed.test" : "./seed";
+  process.env.APP_ENV === "test" ? "./seed.testdata" : "./seed";
 
 const { runSeed } = require(seedModule);
 

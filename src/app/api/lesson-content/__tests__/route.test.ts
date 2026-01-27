@@ -161,6 +161,23 @@ describe("GET /api/lesson-content", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
+  it("sets CDN cache headers in production", async () => {
+    process.env.APP_ENV = "production";
+    prismaMock.lesson.findFirst.mockResolvedValue({
+      id: "lesson-5",
+      publishedUrl: "https://docs.google.com/document/d/e/lesson-5/pub",
+    });
+    fetchMock.mockResolvedValueOnce(new Response("<p>Cached</p>", { status: 200 }));
+
+    const GET = await getRoute();
+    const response = await GET(makeRequest("?slug=lesson-5"));
+
+    expect(response.status).toBe(200);
+    const cacheControl = response.headers.get("Cache-Control");
+    expect(cacheControl).toContain("s-maxage=3600");
+    expect(cacheControl).toContain("stale-while-revalidate=");
+  });
+
   it("allows cache bypass in local mode", async () => {
     process.env.APP_ENV = "local";
     prismaMock.lesson.findFirst.mockResolvedValue({

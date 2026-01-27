@@ -19,6 +19,7 @@ const redis = shouldRateLimit ? Redis.fromEnv() : null;
  * Named rate-limit buckets used across API routes.
  */
 export const RATE_LIMIT_BUCKET = {
+  CLIENT_ERROR: "client-error",
   FOCUS_READ: "focus-read",
   FOCUS_WRITE: "focus-write",
   PROGRESS_READ: "progress-read",
@@ -32,6 +33,7 @@ export type RateLimitBucket =
 
 const RATE_LIMIT_WINDOW = "1 m";
 const RATE_LIMIT_LIMITS: Record<RateLimitBucket, number> = {
+  [RATE_LIMIT_BUCKET.CLIENT_ERROR]: 30,
   [RATE_LIMIT_BUCKET.FOCUS_READ]: 60,
   [RATE_LIMIT_BUCKET.FOCUS_WRITE]: 30,
   [RATE_LIMIT_BUCKET.PROGRESS_READ]: 60,
@@ -41,6 +43,7 @@ const RATE_LIMIT_LIMITS: Record<RateLimitBucket, number> = {
 };
 
 const RATE_LIMIT_PREFIXES: Record<RateLimitBucket, string> = {
+  [RATE_LIMIT_BUCKET.CLIENT_ERROR]: "ratelimit:client-error",
   [RATE_LIMIT_BUCKET.FOCUS_READ]: "ratelimit:focus-read",
   [RATE_LIMIT_BUCKET.FOCUS_WRITE]: "ratelimit:focus-write",
   [RATE_LIMIT_BUCKET.PROGRESS_READ]: "ratelimit:progress-read",
@@ -55,6 +58,13 @@ const limiterConfigs: Record<
   RateLimitBucket,
   { prefix: string; limiter: ReturnType<typeof Ratelimit.slidingWindow> }
 > = {
+  [RATE_LIMIT_BUCKET.CLIENT_ERROR]: {
+    prefix: RATE_LIMIT_PREFIXES[RATE_LIMIT_BUCKET.CLIENT_ERROR],
+    limiter: Ratelimit.slidingWindow(
+      RATE_LIMIT_LIMITS[RATE_LIMIT_BUCKET.CLIENT_ERROR],
+      RATE_LIMIT_WINDOW
+    ),
+  },
   [RATE_LIMIT_BUCKET.FOCUS_READ]: {
     prefix: RATE_LIMIT_PREFIXES[RATE_LIMIT_BUCKET.FOCUS_READ],
     limiter: Ratelimit.slidingWindow(

@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { errorResponse } from "@/lib/api-helpers";
 import { fetchLessonContent } from "@/lib/lesson-content";
+import { LESSON_CONTENT_CACHE_TTL_MS } from "@/lib/lesson-content-cache";
 import { getLessonDocLinkMap } from "@/lib/lesson-doc-link-map";
 import { getEnv } from "@/lib/env";
 import { ERROR_MESSAGE } from "@/lib/http-constants";
@@ -22,14 +23,16 @@ const isTruthy = (value: string | null) => value === "1" || value === "true";
 /**
  * Determine whether to bypass cache in development requests.
  */
-const shouldBypassCache = (searchParams: URLSearchParams) => {
-  const env = getEnv();
-  if (!env.isLocal) {
-    return false;
-  }
+const shouldBypassCache = (searchParams: URLSearchParams, env: ReturnType<typeof getEnv>) =>
+  env.isLocal && isTruthy(searchParams.get("bypassCache"));
 
-  return isTruthy(searchParams.get("bypassCache"));
+const buildCacheControl = () => {
+  const maxAgeSeconds = Math.max(1, Math.floor(LESSON_CONTENT_CACHE_TTL_MS / 1000));
+  const staleSeconds = Math.max(60, Math.floor(maxAgeSeconds / 6));
+  return `public, s-maxage=${maxAgeSeconds}, stale-while-revalidate=${staleSeconds}`;
 };
+
+const NO_STORE_HEADERS = { "Cache-Control": "no-store" };
 
 const lessonQuerySchema = z
   .object({
@@ -44,6 +47,7 @@ const lessonQuerySchema = z
  * GET /api/lesson-content: fetch sanitized lesson HTML by lesson id or slug.
  */
 export async function GET(request: Request) {
+  const env = getEnv();
   const requestId = resolveRequestId(request);
   const logRequest = createRequestLogger({
     event: LOG_EVENT.LESSON_CONTENT_REQUEST,
@@ -57,6 +61,7 @@ export async function GET(request: Request) {
     null
   );
   if (rateLimitResponse) {
+    rateLimitResponse.headers.set("Cache-Control", "no-store");
     logRequest("warn", {
       status: rateLimitResponse.status,
       reason: LOG_REASON.RATE_LIMITED,
@@ -65,7 +70,7 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const bypassCache = shouldBypassCache(searchParams);
+  const bypassCache = shouldBypassCache(searchParams, env);
   const parsedQuery = lessonQuerySchema.safeParse({
     lessonId: searchParams.get("lessonId") ?? undefined,
     slug: searchParams.get("slug") ?? undefined,
@@ -77,7 +82,8 @@ export async function GET(request: Request) {
     });
     return errorResponse(
       ERROR_MESSAGE.MISSING_LESSON_IDENTIFIER,
-      StatusCodes.BAD_REQUEST
+      StatusCodes.BAD_REQUEST,
+      { headers: NO_STORE_HEADERS }
     );
   }
 
@@ -121,7 +127,9 @@ export async function GET(request: Request) {
       slug,
       reason: LOG_REASON.LESSON_NOT_FOUND,
     });
-    return errorResponse(ERROR_MESSAGE.LESSON_NOT_FOUND, StatusCodes.NOT_FOUND);
+    return errorResponse(ERROR_MESSAGE.LESSON_NOT_FOUND, StatusCodes.NOT_FOUND, {
+      headers: NO_STORE_HEADERS,
+    });
   }
 
   try {
@@ -138,7 +146,13 @@ export async function GET(request: Request) {
       bypassCache,
       cache: content.cached ? LOG_CACHE.HIT : LOG_CACHE.MISS,
     });
-    return NextResponse.json(content);
+    const response = NextResponse.json(content);
+    if (env.isPreview || env.isProduction) {
+      response.headers.set("Cache-Control", buildCacheControl());
+    } else {
+      response.headers.set("Cache-Control", "no-store");
+    }
+    return response;
   } catch (error) {
     logRequest("error", {
       status: StatusCodes.BAD_GATEWAY,
@@ -150,7 +164,8 @@ export async function GET(request: Request) {
     });
     return errorResponse(
       ERROR_MESSAGE.LESSON_CONTENT_FETCH_FAILED,
-      StatusCodes.BAD_GATEWAY
+      StatusCodes.BAD_GATEWAY,
+      { headers: NO_STORE_HEADERS }
     );
   }
 }

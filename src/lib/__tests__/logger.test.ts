@@ -83,4 +83,42 @@ describe("logger", () => {
     expect(infoSpy).not.toHaveBeenCalled();
     expect(warnSpy).toHaveBeenCalledTimes(1);
   });
+
+  it("logs debug entries and redacts arrays", async () => {
+    process.env.LOG_LEVEL = "debug";
+
+    const { logger } = await importLogger();
+    const debugSpy = vi.spyOn(console, "debug").mockImplementation(() => {});
+
+    logger.debug("test.debug", {
+      entries: [{ token: "secret-token" }],
+    });
+
+    expect(debugSpy).toHaveBeenCalledTimes(1);
+    const payload = JSON.parse(String(debugSpy.mock.calls[0][0]));
+    expect(payload.entries[0].token).toBe("[REDACTED]");
+  });
+
+  it("creates request-scoped loggers", async () => {
+    process.env.LOG_LEVEL = "info";
+
+    const { createRequestLogger } = await importLogger();
+    const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {});
+
+    const logRequest = createRequestLogger({
+      event: "test.request",
+      route: "GET /test",
+      requestId: "req-1",
+      startedAt: 100,
+    });
+    vi.spyOn(Date, "now").mockReturnValue(150);
+
+    logRequest("info", { status: 200 });
+
+    expect(infoSpy).toHaveBeenCalledTimes(1);
+    const payload = JSON.parse(String(infoSpy.mock.calls[0][0]));
+    expect(payload.requestId).toBe("req-1");
+    expect(payload.durationMs).toBe(50);
+    expect(payload.status).toBe(200);
+  });
 });

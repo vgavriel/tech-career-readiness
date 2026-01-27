@@ -173,51 +173,51 @@ Source of truth for modules, focuses, progress categories, and gamification:
 
 ## Incremental implementation steps (checklist)
 
-### Phase 0 — Project foundation
+### Phase 1 — Project foundation
 - [x] Create Next.js App Router project with TypeScript
 - [x] Add TailwindCSS
 - [x] Add Prisma and configure Neon Postgres connection
 
-### Phase 0.5 — Continuous integration
+### Phase 2 — Continuous integration
 - [x] Add CI pipeline to run lint + unit tests on every PR
 - [x] Add integration tests job once APIs exist (Phase 3+)
 - [x] Add E2E tests job once core pages exist (Phase 4+)
 - [x] Add accessibility checks with pa11y (WCAG AAA) in CI and local scripts
 
-### Phase 0.9 — Curriculum planning (Brown-specific)
+### Phase 3 — Curriculum planning (Brown-specific)
 - [x] Create `docs/curriculum-plan.md` with modules, focuses, progress categories, and gamification
 - [x] Link curriculum plan from this doc and update MVP scope for quick picker + extra credit progress
 
-### Phase 1 — Database modeling + curriculum seed
+### Phase 4 — Database modeling + curriculum seed
 - [x] Implement Prisma schema with User, Module (key), Lesson (slug), LessonSlugAlias, LessonProgress, LessonProgressEvent
 - [x] Run initial migration
 - [x] Add seed script (modules + lessons + placeholder URLs)
 - [x] Update seed data to match `docs/curriculum-plan.md` modules and lessons
 
-### Phase 2 — Auth (Google OAuth)
+### Phase 5 — Auth (Google OAuth)
 - [x] Configure Auth.js (NextAuth) with Google provider
 - [x] Add auth routes for App Router
 - [x] Add basic auth UI in global header
 
-### Phase 3 — Content fetching + sanitization
+### Phase 6 — Content fetching + sanitization
 - [x] Add `/api/lesson-content` route
 - [x] Fetch publishedUrl server-side
 - [x] Sanitize HTML
 - [x] Add in-memory cache with TTL
 - [x] Rewrite Google Doc edit links to internal lesson routes using stored doc IDs
 
-### Phase 4 — Core pages (public browsing)
+### Phase 7 — Core pages (public browsing)
 - [x] Landing page (`/`)
 - [x] Lesson page (`/lesson/[slug]`) with content rendering + navigator rail
 - [x] Roadmap redirect (`/roadmap`) to the first lesson
 
-### Phase 5 — Progress tracking
+### Phase 8 — Progress tracking
 - [x] Add progress API routes (complete/incomplete)
 - [x] Lesson completion toggle UI
 - [x] Navigator progress UI + core/extra credit summary
 - [x] Store guest progress in localStorage and merge on sign-in
 
-### Phase 5.5 — Security hardening + admin analytics
+### Phase 9 — Security hardening + admin analytics
 - [x] Add security headers + static CSP (allow inline styles for now)
 - [x] Add Upstash rate limiting for API routes
 - [x] Enforce request size limits and Zod validation for API inputs
@@ -227,10 +227,10 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Record `LessonProgressEvent` entries for every toggle
 - [x] Document admin bootstrap via `ADMIN_EMAILS` (local/preview/test only; prod via DB flag)
 
-### Phase 5.6 — CSP nonces/hashes (deferred)
+### Phase 10 — CSP nonces/hashes (deferred)
 - [x] Replace `unsafe-inline` styles/scripts with CSP nonces/hashes once lesson HTML is finalized
 
-### Phase 6 — Schema reset + slug aliases
+### Phase 11 — Schema reset + slug aliases
 - [x] Implement alias lookup in lesson route
 - [x] Redirect old slugs to canonical slug
 - [x] Remove duplicate lesson key/id handling (slug-only progress)
@@ -238,7 +238,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Normalize user emails and add progress indexes
 - [x] Regenerate baseline migration for the reset schema
 
-### Phase 7 — Quality pass + polish
+### Phase 12 — Quality pass + polish
 - [x] Error handling for missing lessons/content fetch failures
 - [x] Confirm public access to curriculum and lessons
 - [x] UI polish for readability and CTAs
@@ -255,7 +255,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Document local/preview workflows and gate auth/rate limiting by `APP_ENV`
 - [x] Expand automated test coverage for auth/progress flows, admin gating, and caching guardrails
 
-### Phase 7.2 — Curriculum UX + focuses
+### Phase 13 — Curriculum UX + focuses
 - [x] Add landing quick picker that routes to curated focuses (and store selection)
 - [x] Support focus filtering/ordering on the roadmap (core lessons in focus order)
 - [x] Show focus progress alongside overall core progress
@@ -271,32 +271,36 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Replace Start Here lesson 1 with in-app overview content (no external links)
 - [x] Add estimated reading time metadata for every lesson
 
-### Phase 7.4 — Accessibility (WCAG AAA)
+### Phase 14 — Accessibility (WCAG AAA)
 - [x] Update color tokens for AAA contrast (text + non-text UI)
 - [x] Add skip link, focus-visible styles, and reduced-motion handling
 - [x] Increase interactive target sizes and add keyboard resizing for the navigator
 - [x] Reinforce link affordances and progress visuals for non-text contrast
 - [x] Preserve lesson list indentation when sanitizing Google Docs HTML
 
-### Phase 7.5 — Observability (lightweight)
+### Phase 15 — Observability (lightweight)
 - [x] Add request ID generation (proxy) and return `x-request-id` headers for server routes
 - [x] Create a minimal structured logger wrapper with env-based log levels and default redaction for secrets/PII
 - [x] Instrument key server paths (lesson-content fetch, progress updates, auth callbacks) with duration + cache hit/miss fields
+- [x] Add global error boundaries and client error capture endpoint
 - [x] Add client-side pageview telemetry via a minimal provider (e.g., Vercel Analytics) with a config flag to disable
 - [x] Document log fields and sampling/retention guidance in `docs/observability.md`
+- [x] Draft full production observability plan (`docs/observability-plan.md`)
 
-### Phase 7.6 — Lesson content scaling
+### Phase 16 — Lesson content scaling
 - [x] Add a shared Redis-backed cache for sanitized lesson HTML across instances
 - [x] Keep in-memory caching as a local fallback for lesson content fetches
 - [x] Reuse the shared cache for API responses and server-rendered lessons
+- [x] Add CDN cache headers for lesson content API responses (s-maxage + SWR)
+- [ ] Revisit caching strategy using Vercel CDN/Data Cache (edge caching, revalidation) to reduce origin load on lesson content
 
-### Phase 8 — Deployment
+### Phase 17 — Deployment
 - [ ] Deploy to Vercel
 - [ ] Configure env vars
 - [ ] Smoke-test public browsing, auth, progress, and continue flow
 - [ ] Pre-production cleanup: simplify seed logic, run fresh migration/seed against a reset preview DB
 
-### Phase 9 — Long-term content scalability (post-MVP)
+### Phase 18 — Long-term content scalability (post-MVP)
 - [ ] Persist sanitized lesson HTML in storage with versioning
 - [ ] Add background refresh jobs (cron/QStash) to keep snapshots warm
 - [ ] Provide cache invalidation + fallback to last-known-good content

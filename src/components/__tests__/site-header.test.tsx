@@ -11,6 +11,9 @@ const authMocks = vi.hoisted(() => ({
   useSession: vi.fn(),
   getProviders: vi.fn(),
 }));
+const navMocks = vi.hoisted(() => ({
+  usePathname: vi.fn(),
+}));
 
 vi.mock("next-auth/react", () => ({
   signIn: (...args: unknown[]) => authMocks.signIn(...args),
@@ -21,6 +24,10 @@ vi.mock("next-auth/react", () => ({
 
 vi.mock("@/components/focus-menu", () => ({
   default: () => <div>Focus menu</div>,
+}));
+
+vi.mock("next/navigation", () => ({
+  usePathname: () => navMocks.usePathname(),
 }));
 
 vi.mock("next/link", () => ({
@@ -44,9 +51,11 @@ describe("SiteHeader", () => {
     authMocks.signOut.mockReset();
     authMocks.useSession.mockReset();
     authMocks.getProviders.mockReset();
+    navMocks.usePathname.mockReset();
     authMocks.getProviders.mockResolvedValue({
       google: { id: "google", name: "Google" },
     });
+    navMocks.usePathname.mockReturnValue("/");
   });
 
   it("renders sign-in when unauthenticated", async () => {
@@ -91,5 +100,28 @@ describe("SiteHeader", () => {
     await user.click(signOutButton);
 
     expect(authMocks.signOut).toHaveBeenCalled();
+  });
+
+  it("shows focus menu and closes the mobile menu on escape", async () => {
+    authMocks.useSession.mockReturnValue({
+      data: null,
+      status: "unauthenticated",
+    });
+    navMocks.usePathname.mockReturnValue("/lesson/start-to-finish-roadmap");
+
+    render(<SiteHeader />);
+    await waitFor(() => expect(authMocks.getProviders).toHaveBeenCalled());
+
+    expect(screen.getAllByText("Focus menu").length).toBeGreaterThan(0);
+
+    const menuButton = screen.getByRole("button", { name: /menu/i });
+    const user = userEvent.setup();
+    await user.click(menuButton);
+    expect(document.querySelector("#mobile-menu-panel")).toBeInTheDocument();
+
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    await waitFor(() =>
+      expect(document.querySelector("#mobile-menu-panel")).not.toBeInTheDocument()
+    );
   });
 });

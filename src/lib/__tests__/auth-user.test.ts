@@ -189,4 +189,18 @@ describe("getAuthenticatedUser", () => {
     );
     expect(result?.name).toBe(baseUser.name);
   });
+
+  it("handles unique constraint races when creating users", async () => {
+    prismaMock.user.findUnique
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(baseUser);
+    prismaMock.user.create.mockRejectedValue({ code: "P2002" });
+
+    const { getAuthenticatedUser } = await getModule();
+    const result = await getAuthenticatedUser(makeSession());
+
+    expect(prismaMock.user.create).toHaveBeenCalled();
+    expect(prismaMock.user.findUnique).toHaveBeenCalledTimes(2);
+    expect(result?.email).toBe(baseUser.email);
+  });
 });
