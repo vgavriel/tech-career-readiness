@@ -88,8 +88,12 @@ body {
   background-image:
     linear-gradient(rgba(78, 54, 41, 0.025) 1px, transparent 1px),
     linear-gradient(90deg, rgba(78, 54, 41, 0.025) 1px, transparent 1px);
-  background-size: 64px 64px, 64px 64px;
-  background-position: 0 0, 0 0;
+  background-size:
+    64px 64px,
+    64px 64px;
+  background-position:
+    0 0,
+    0 0;
   background-repeat: repeat, repeat;
   opacity: 0.08;
   pointer-events: none;
@@ -175,8 +179,12 @@ body {
 
 @media (max-width: 768px) {
   .page-shell::before {
-    background-size: 44px 44px, 44px 44px;
-    background-position: 0 0, 0 0;
+    background-size:
+      44px 44px,
+      44px 44px;
+    background-position:
+      0 0,
+      0 0;
   }
 }
 
@@ -239,7 +247,6 @@ body {
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
 }
-
 
 .lesson-content ul,
 .lesson-content ol {
@@ -386,11 +393,41 @@ body {
     font-size: 1rem;
   }
 
-
   .lesson-content table {
     display: block;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    border: 0;
+    background: transparent;
+  }
+
+  .lesson-content thead,
+  .lesson-content tbody,
+  .lesson-content tr {
+    display: block !important;
+    width: 100%;
+  }
+
+  .lesson-content tr {
+    border: 1px solid var(--line-soft);
+    border-radius: 1rem;
+    background: var(--wash-0);
+    overflow: hidden;
+  }
+
+  .lesson-content tr + tr {
+    margin-top: 0.75rem;
+  }
+
+  .lesson-content th,
+  .lesson-content td {
+    display: block !important;
+    width: 100%;
+    border-right: 0;
+    border-bottom: 1px solid var(--line-soft);
+    padding: 0.85rem 1rem;
+  }
+
+  .lesson-content tr > :last-child {
+    border-bottom: 0;
   }
 }
 
