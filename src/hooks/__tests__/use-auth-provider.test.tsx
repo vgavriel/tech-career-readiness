@@ -20,10 +20,11 @@ const asProviders = (providers: Record<string, ClientSafeProvider>): ProvidersRe
   providers as ProvidersResponse;
 
 const ProviderStatus = () => {
-  const provider = useAuthProvider();
+  const { provider, isReady } = useAuthProvider();
   return (
     <div data-testid="provider">
-      {provider.id}:{provider.label}:{provider.isDev ? "dev" : "prod"}
+      {isReady ? "ready" : "loading"}:{provider.id}:{provider.label}:
+      {provider.isDev ? "dev" : "prod"}
     </div>
   );
 };
@@ -41,7 +42,9 @@ describe("useAuthProvider", () => {
     render(<ProviderStatus />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("provider").textContent).toBe("google:Sign in with Google:prod");
+      expect(screen.getByTestId("provider").textContent).toBe(
+        "ready:google:Sign in with Google:prod"
+      );
     });
   });
 
@@ -59,7 +62,9 @@ describe("useAuthProvider", () => {
     render(<ProviderStatus />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("provider").textContent).toBe("credentials:Sign in (dev):dev");
+      expect(screen.getByTestId("provider").textContent).toBe(
+        "ready:credentials:Sign in (dev):dev"
+      );
     });
   });
 
@@ -73,7 +78,9 @@ describe("useAuthProvider", () => {
     render(<ProviderStatus />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("provider").textContent).toBe("github:Sign in with GitHub:prod");
+      expect(screen.getByTestId("provider").textContent).toBe(
+        "ready:github:Sign in with GitHub:prod"
+      );
     });
   });
 
@@ -84,7 +91,9 @@ describe("useAuthProvider", () => {
 
     await waitFor(() => {
       expect(getProvidersMock).toHaveBeenCalled();
-      expect(screen.getByTestId("provider").textContent).toBe("google:Sign in with Google:prod");
+      expect(screen.getByTestId("provider").textContent).toBe(
+        "ready:google:Sign in with Google:prod"
+      );
     });
   });
 });

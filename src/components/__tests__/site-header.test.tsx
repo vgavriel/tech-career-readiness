@@ -39,15 +39,23 @@ vi.mock("next/link", () => ({
 }));
 
 describe("SiteHeader", () => {
+  let resolveProviders:
+    | ((providers: Record<string, { id: string; name?: string }>) => void)
+    | null = null;
+
   beforeEach(() => {
     authMocks.signIn.mockReset();
     authMocks.signOut.mockReset();
     authMocks.useSession.mockReset();
     authMocks.getProviders.mockReset();
     navMocks.usePathname.mockReset();
-    authMocks.getProviders.mockResolvedValue({
-      google: { id: "google", name: "Google" },
-    });
+    resolveProviders = null;
+    authMocks.getProviders.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveProviders = resolve;
+        })
+    );
     navMocks.usePathname.mockReturnValue("/");
   });
 
@@ -63,7 +71,9 @@ describe("SiteHeader", () => {
     const signInButton = screen.getByRole("button", {
       name: /sign in with google/i,
     });
-    expect(signInButton).toBeInTheDocument();
+    expect(signInButton).toBeDisabled();
+    resolveProviders?.({ google: { id: "google", name: "Google" } });
+    await waitFor(() => expect(signInButton).toBeEnabled());
 
     const user = userEvent.setup();
     await user.click(signInButton);
@@ -82,6 +92,7 @@ describe("SiteHeader", () => {
     const mobileSignIn = within(menuPanel).getByRole("button", {
       name: /sign in with google/i,
     });
+    await waitFor(() => expect(mobileSignIn).toBeEnabled());
     await user.click(mobileSignIn);
     expect(authMocks.signIn).toHaveBeenCalledTimes(2);
   });
@@ -97,6 +108,7 @@ describe("SiteHeader", () => {
 
     render(<SiteHeader />);
     await waitFor(() => expect(authMocks.getProviders).toHaveBeenCalled());
+    resolveProviders?.({ google: { id: "google", name: "Google" } });
 
     expect(screen.getByText(/signed in as: ada lovelace/i)).toBeInTheDocument();
 
@@ -130,6 +142,7 @@ describe("SiteHeader", () => {
 
     render(<SiteHeader />);
     await waitFor(() => expect(authMocks.getProviders).toHaveBeenCalled());
+    resolveProviders?.({ google: { id: "google", name: "Google" } });
 
     expect(screen.getAllByText("Focus menu").length).toBeGreaterThan(0);
 
@@ -153,6 +166,7 @@ describe("SiteHeader", () => {
 
     render(<SiteHeader />);
     await waitFor(() => expect(authMocks.getProviders).toHaveBeenCalled());
+    resolveProviders?.({ google: { id: "google", name: "Google" } });
 
     const user = userEvent.setup();
     const menuButton = screen.getByRole("button", { name: /menu/i });

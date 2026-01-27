@@ -22,14 +22,22 @@ export default function SignInCta({
   provider,
   callbackUrl,
   type = "button",
+  disabled,
   ...props
 }: SignInCtaProps) {
-  const authProvider = useAuthProvider();
+  const { provider: authProvider, isReady } = useAuthProvider();
   const providerId = provider ?? authProvider.id;
   const options = buildSignInOptions(providerId, callbackUrl);
+  const isDisabled = Boolean(disabled) || !isReady;
 
   return (
-    <button {...props} type={type} onClick={() => signIn(providerId, options)}>
+    <button
+      {...props}
+      type={type}
+      disabled={isDisabled}
+      aria-busy={!isReady}
+      onClick={() => signIn(providerId, options)}
+    >
       {children}
     </button>
   );

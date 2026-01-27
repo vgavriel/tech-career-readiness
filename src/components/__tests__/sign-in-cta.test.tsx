@@ -16,19 +16,31 @@ vi.mock("next-auth/react", () => ({
 }));
 
 describe("SignInCta", () => {
+  let resolveProviders:
+    | ((providers: Record<string, { id: string; name?: string }>) => void)
+    | null = null;
+
   beforeEach(() => {
     authMocks.signIn.mockReset();
     authMocks.getProviders.mockReset();
-    authMocks.getProviders.mockResolvedValue({
-      google: { id: "google", name: "Google" },
-    });
+    resolveProviders = null;
+    authMocks.getProviders.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveProviders = resolve;
+        })
+    );
   });
 
   it("calls signIn with the default provider", async () => {
     render(<SignInCta>Sign in</SignInCta>);
 
     await waitFor(() => expect(authMocks.getProviders).toHaveBeenCalled());
-    await userEvent.click(screen.getByRole("button", { name: /sign in/i }));
+    const button = screen.getByRole("button", { name: /sign in/i });
+    expect(button).toBeDisabled();
+    resolveProviders?.({ google: { id: "google", name: "Google" } });
+    await waitFor(() => expect(button).toBeEnabled());
+    await userEvent.click(button);
 
     expect(authMocks.signIn).toHaveBeenCalledWith("google", undefined);
   });
@@ -37,7 +49,11 @@ describe("SignInCta", () => {
     render(<SignInCta callbackUrl="/lesson/intro">Sign in</SignInCta>);
 
     await waitFor(() => expect(authMocks.getProviders).toHaveBeenCalled());
-    await userEvent.click(screen.getByRole("button", { name: /sign in/i }));
+    const button = screen.getByRole("button", { name: /sign in/i });
+    expect(button).toBeDisabled();
+    resolveProviders?.({ google: { id: "google", name: "Google" } });
+    await waitFor(() => expect(button).toBeEnabled());
+    await userEvent.click(button);
 
     expect(authMocks.signIn).toHaveBeenCalledWith("google", {
       callbackUrl: "/lesson/intro",
@@ -45,14 +61,14 @@ describe("SignInCta", () => {
   });
 
   it("uses credentials provider when available", async () => {
-    authMocks.getProviders.mockResolvedValue({
-      credentials: { id: "credentials", name: "Dev Login" },
-    });
-
     render(<SignInCta>Sign in</SignInCta>);
 
     await waitFor(() => expect(authMocks.getProviders).toHaveBeenCalled());
-    await userEvent.click(screen.getByRole("button", { name: /sign in/i }));
+    const button = screen.getByRole("button", { name: /sign in/i });
+    expect(button).toBeDisabled();
+    resolveProviders?.({ credentials: { id: "credentials", name: "Dev Login" } });
+    await waitFor(() => expect(button).toBeEnabled());
+    await userEvent.click(button);
 
     expect(authMocks.signIn).toHaveBeenCalledWith("credentials", {
       email: devAuthDefaults.email,

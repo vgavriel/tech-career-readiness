@@ -21,7 +21,7 @@ type SiteHeaderInnerProps = {
 
 function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
   const { data: session } = useSession();
-  const authProvider = useAuthProvider();
+  const { provider: authProvider, isReady } = useAuthProvider();
   const signInOptions = buildSignInOptions(authProvider.id);
   const showFocusMenu = pathname !== "/";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -35,10 +35,7 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
 
     const handlePointerDown = (event: PointerEvent) => {
       const target = event.target as Node | null;
-      if (
-        menuRef.current?.contains(target) ||
-        toggleRef.current?.contains(target)
-      ) {
+      if (menuRef.current?.contains(target) || toggleRef.current?.contains(target)) {
         return;
       }
       setIsMenuOpen(false);
@@ -114,9 +111,11 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
                 </>
               ) : (
                 <button
-                  className="min-h-11 whitespace-nowrap rounded-full bg-[color:var(--accent-700)] px-4 text-xs font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)]"
+                  className="min-h-11 whitespace-nowrap rounded-full bg-[color:var(--accent-700)] px-4 text-xs font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)] disabled:cursor-not-allowed disabled:opacity-60"
                   onClick={() => signIn(authProvider.id, signInOptions)}
                   type="button"
+                  disabled={!isReady}
+                  aria-busy={!isReady}
                 >
                   {authProvider.label}
                 </button>
@@ -133,19 +132,13 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
               Menu
               <svg
                 aria-hidden="true"
-                className={`h-3.5 w-3.5 transition ${
-                  isMenuOpen ? "rotate-180" : ""
-                }`}
+                className={`h-3.5 w-3.5 transition ${isMenuOpen ? "rotate-180" : ""}`}
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={2}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 9l6 6 6-6"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
               </svg>
             </button>
           </div>
@@ -202,9 +195,11 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
                 </div>
               ) : (
                 <button
-                  className="min-h-10 w-full whitespace-nowrap rounded-full bg-[color:var(--accent-700)] px-4 text-sm font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)]"
+                  className="min-h-10 w-full whitespace-nowrap rounded-full bg-[color:var(--accent-700)] px-4 text-sm font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)] disabled:cursor-not-allowed disabled:opacity-60"
                   onClick={() => signIn(authProvider.id, signInOptions)}
                   type="button"
+                  disabled={!isReady}
+                  aria-busy={!isReady}
                 >
                   {authProvider.label}
                 </button>

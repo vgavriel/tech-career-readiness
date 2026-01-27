@@ -5,6 +5,7 @@ const signInDevUser = async (page: Page) => {
     name: /sign in \(dev\)/i,
   });
   await expect(signInButton.first()).toBeVisible({ timeout: 15000 });
+  await expect(signInButton.first()).toBeEnabled({ timeout: 15000 });
   await signInButton.first().click();
   await expect(page.getByText(/signed in as:/i)).toBeVisible({ timeout: 15000 });
 };

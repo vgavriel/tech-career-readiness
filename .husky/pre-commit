@@ -1,6 +1,8 @@
 if [ -w .git ]; then
   npx lint-staged
+  npm run typecheck
 else
   echo "Skipping lint-staged (cannot write to .git). Running full lint."
   npm run lint
+  npm run typecheck
 fi
