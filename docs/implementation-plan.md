@@ -339,7 +339,6 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Keep in-memory caching as a local fallback for lesson content fetches
 - [x] Reuse the shared cache for API responses and server-rendered lessons
 - [x] Add CDN cache headers for lesson content API responses (s-maxage + SWR)
-- [ ] Revisit caching strategy using Vercel CDN/Data Cache (edge caching, revalidation) to reduce origin load on lesson content
 
 ### Phase 17 — Deployment
 
