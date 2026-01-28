@@ -25,6 +25,7 @@ const userSelect = {
   image: true,
   isAdmin: true,
   focusKey: true,
+  sessionVersion: true,
 } satisfies Prisma.UserSelect;
 
 type DbUser = Prisma.UserGetPayload<{ select: typeof userSelect }>;
@@ -69,6 +70,8 @@ export async function getAuthenticatedUser(
   const session =
     sessionOverride !== undefined ? sessionOverride : await getServerSession(authOptions);
   const email = session?.user?.email;
+  const sessionVersion =
+    typeof session?.user?.sessionVersion === "number" ? session.user.sessionVersion : 0;
 
   if (!email) {
     return null;
@@ -111,6 +114,10 @@ export async function getAuthenticatedUser(
       }
       throw error;
     }
+  }
+
+  if (existingUser.sessionVersion !== sessionVersion) {
+    return null;
   }
 
   const updateData: Prisma.UserUpdateInput = {};

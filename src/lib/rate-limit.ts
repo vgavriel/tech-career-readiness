@@ -4,6 +4,7 @@ import { Redis } from "@upstash/redis";
 import { tooManyRequestsResponse } from "@/lib/api-helpers";
 import { getEnv, requireEnv } from "@/lib/env";
 import { HTTP_HEADER } from "@/lib/http-constants";
+import { logger } from "@/lib/logger";
 
 const env = getEnv();
 const shouldRateLimit = env.isPreview || env.isProduction;
@@ -28,8 +29,7 @@ export const RATE_LIMIT_BUCKET = {
   LESSON_CONTENT: "lesson-content",
 } as const;
 
-export type RateLimitBucket =
-  (typeof RATE_LIMIT_BUCKET)[keyof typeof RATE_LIMIT_BUCKET];
+export type RateLimitBucket = (typeof RATE_LIMIT_BUCKET)[keyof typeof RATE_LIMIT_BUCKET];
 
 const RATE_LIMIT_WINDOW = "1 m";
 const RATE_LIMIT_LIMITS: Record<RateLimitBucket, number> = {
@@ -110,6 +110,7 @@ const limiterConfigs: Record<
 };
 
 const limiterCache = new Map<RateLimitBucket, Ratelimit>();
+const missingIpWarnings = new Set<RateLimitBucket>();
 
 /**
  * Lazily create and cache a rate limiter per bucket.
@@ -170,17 +171,24 @@ export const enforceRateLimit = async (
     return null;
   }
 
-  const key = identifier?.trim() || getClientIp(request) || RATE_LIMIT_ANONYMOUS_KEY;
+  const trimmedIdentifier = identifier?.trim();
+  const clientIp = trimmedIdentifier ? null : getClientIp(request);
+  if (!trimmedIdentifier && !clientIp && !missingIpWarnings.has(bucket)) {
+    missingIpWarnings.add(bucket);
+    logger.warn("rate_limit.client_ip_missing", {
+      bucket,
+      note: "Rate limiting relies on client IP; missing IP will use a shared anonymous key and may trigger spikes.",
+    });
+  }
+
+  const key = trimmedIdentifier || clientIp || RATE_LIMIT_ANONYMOUS_KEY;
   const result = await limiter.limit(key);
 
   if (result.success) {
     return null;
   }
 
-  const retryAfterSeconds = Math.max(
-    1,
-    Math.ceil((result.reset - Date.now()) / 1000)
-  );
+  const retryAfterSeconds = Math.max(1, Math.ceil((result.reset - Date.now()) / 1000));
 
   return tooManyRequestsResponse(retryAfterSeconds);
 };

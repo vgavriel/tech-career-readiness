@@ -1,16 +1,6 @@
 "use client";
 
-export type ClientErrorPayload = {
-  message: string;
-  name?: string;
-  stack?: string;
-  url?: string;
-  source?: string;
-  lineno?: number;
-  colno?: number;
-  componentStack?: string;
-  userAgent?: string;
-};
+import type { ClientErrorPayload } from "@/lib/client-error-shared";
 
 const RECENT_ERRORS = new Map<string, number>();
 const RECENT_TTL_MS = 5_000;
@@ -26,14 +16,7 @@ const truncateValue = (value: string | undefined, max = 2_000) => {
 };
 
 const buildSignature = (payload: ClientErrorPayload) =>
-  [
-    payload.message,
-    payload.name,
-    payload.stack,
-    payload.source,
-    payload.lineno,
-    payload.colno,
-  ]
+  [payload.message, payload.name, payload.stack, payload.source, payload.lineno, payload.colno]
     .filter(Boolean)
     .join("|");
 

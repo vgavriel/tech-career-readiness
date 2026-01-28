@@ -13,4 +13,4 @@ ensure_env_file "$ENV_FILE" "$ENV_EXAMPLE"
 
 write_env_value "$ENV_FILE" "APP_ENV" "preview"
 
-echo "Preview environment file ready. Update values in .env.preview before running dev:preview."
+echo "Preview environment file ready. If you haven't already, update values in .env.preview before running dev:preview."

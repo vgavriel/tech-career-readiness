@@ -29,6 +29,7 @@ const baseUser = {
   image: "avatar",
   isAdmin: false,
   focusKey: "just-starting",
+  sessionVersion: 0,
 };
 
 const baseEnv = {
@@ -53,6 +54,7 @@ const makeSession = (overrides: Partial<Session> = {}): Session =>
       email: baseUser.email,
       name: baseUser.name,
       image: baseUser.image,
+      sessionVersion: baseUser.sessionVersion,
     },
     ...overrides,
   }) as Session;
@@ -200,5 +202,27 @@ describe("getAuthenticatedUser", () => {
     expect(prismaMock.user.create).toHaveBeenCalled();
     expect(prismaMock.user.findUnique).toHaveBeenCalledTimes(2);
     expect(result?.email).toBe(baseUser.email);
+  });
+
+  it("returns null when the session version is stale", async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      ...baseUser,
+      sessionVersion: 2,
+    });
+
+    const { getAuthenticatedUser } = await getModule();
+    const result = await getAuthenticatedUser(
+      makeSession({
+        user: {
+          email: baseUser.email,
+          name: baseUser.name,
+          image: baseUser.image,
+          sessionVersion: 1,
+        },
+      })
+    );
+
+    expect(result).toBeNull();
+    expect(prismaMock.user.update).not.toHaveBeenCalled();
   });
 });

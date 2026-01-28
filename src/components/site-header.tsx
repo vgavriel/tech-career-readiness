@@ -91,6 +91,12 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
               >
                 About
               </a>
+              <Link
+                href="/privacy"
+                className="inline-flex min-h-11 items-center whitespace-nowrap transition hover:text-[color:var(--ink-900)]"
+              >
+                Privacy Policy
+              </Link>
             </nav>
           </div>
           <div className="flex items-center gap-2">
@@ -110,15 +116,24 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
                   </button>
                 </>
               ) : (
-                <button
-                  className="min-h-11 whitespace-nowrap rounded-full bg-[color:var(--accent-700)] px-4 text-xs font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)] disabled:cursor-not-allowed disabled:opacity-60"
-                  onClick={() => signIn(authProvider.id, signInOptions)}
-                  type="button"
-                  disabled={!isReady}
-                  aria-busy={!isReady}
-                >
-                  {authProvider.label}
-                </button>
+                <div className="flex flex-col items-end gap-1">
+                  <button
+                    className="min-h-11 whitespace-nowrap rounded-full bg-[color:var(--accent-700)] px-4 text-xs font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)] disabled:cursor-not-allowed disabled:opacity-60"
+                    onClick={() => signIn(authProvider.id, signInOptions)}
+                    type="button"
+                    disabled={!isReady}
+                    aria-busy={!isReady}
+                  >
+                    {authProvider.label}
+                  </button>
+                  <p className="text-[10px] leading-snug text-[color:var(--ink-500)] text-right">
+                    By signing in, you agree to our{" "}
+                    <Link href="/privacy" className="underline underline-offset-2">
+                      Privacy Policy
+                    </Link>
+                    .
+                  </p>
+                </div>
               )}
             </div>
             <button
@@ -170,6 +185,12 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
               >
                 About
               </a>
+              <Link
+                href="/privacy"
+                className="inline-flex items-center justify-between rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-2 font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)] whitespace-nowrap"
+              >
+                Privacy Policy
+              </Link>
             </nav>
             {showFocusMenu ? (
               <div className="grid gap-3 border-t border-[color:var(--line-soft)] pt-4">
@@ -194,15 +215,24 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
                   </button>
                 </div>
               ) : (
-                <button
-                  className="min-h-10 w-full whitespace-nowrap rounded-full bg-[color:var(--accent-700)] px-4 text-sm font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)] disabled:cursor-not-allowed disabled:opacity-60"
-                  onClick={() => signIn(authProvider.id, signInOptions)}
-                  type="button"
-                  disabled={!isReady}
-                  aria-busy={!isReady}
-                >
-                  {authProvider.label}
-                </button>
+                <div className="grid gap-2">
+                  <button
+                    className="min-h-10 w-full whitespace-nowrap rounded-full bg-[color:var(--accent-700)] px-4 text-sm font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)] disabled:cursor-not-allowed disabled:opacity-60"
+                    onClick={() => signIn(authProvider.id, signInOptions)}
+                    type="button"
+                    disabled={!isReady}
+                    aria-busy={!isReady}
+                  >
+                    {authProvider.label}
+                  </button>
+                  <p className="text-[11px] leading-snug text-[color:var(--ink-500)]">
+                    By signing in, you agree to our{" "}
+                    <Link href="/privacy" className="underline underline-offset-2">
+                      Privacy Policy
+                    </Link>
+                    .
+                  </p>
+                </div>
               )}
             </div>
           </div>

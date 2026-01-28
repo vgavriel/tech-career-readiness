@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { parseJsonBody } from "@/lib/api-helpers";
+import { scrubClientError } from "@/lib/client-error-scrub";
 import { LOG_EVENT, LOG_REASON, LOG_ROUTE } from "@/lib/log-constants";
 import { createRequestLogger } from "@/lib/logger";
 import { enforceRateLimit, RATE_LIMIT_BUCKET } from "@/lib/rate-limit";
@@ -58,9 +59,11 @@ export async function POST(request: Request) {
     return parsedBody.error;
   }
 
+  const scrubbedError = await scrubClientError(parsedBody.data);
+
   logRequest("error", {
     status: StatusCodes.OK,
-    error: parsedBody.data,
+    error: scrubbedError,
   });
 
   return NextResponse.json({ ok: true }, { status: StatusCodes.OK });
