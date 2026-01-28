@@ -73,7 +73,8 @@ Where it lives:
 ## Tradeoffs and constraints
 
 - CSRF protection depends on a tight origin allowlist.
-- External images can still leak privacy if allowed by sanitization rules.
+- Lesson images still load from allowlisted Google hosts; if you need to avoid
+  any third-party image requests, add an image proxy.
 
 ## Related docs
 
