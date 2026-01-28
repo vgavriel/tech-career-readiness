@@ -3,7 +3,6 @@ import RolesBackToCourse from "@/components/roles-back-to-course";
 import { ROLE_DEEP_DIVE_LESSON_SLUGS } from "@/lib/lesson-classification";
 import { getRoadmapModules } from "@/lib/roadmap-modules";
 
-
 /**
  * Render the role library with all role deep dives.
  *
@@ -35,10 +34,11 @@ export default async function RolesPage() {
         <section className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
           <div className="space-y-5">
             <h1 className="font-display text-4xl text-[color:var(--ink-900)] md:text-5xl">
-              Explore Brown-specific tech roles.
+              Explore a variety of Tech roles with Brown-specific context.
             </h1>
             <p className="max-w-2xl text-base text-[color:var(--ink-700)] md:text-lg">
-              Short deep dives with links to find Brown alumni. These are extra credit and do not affect core progress.
+              Short deep dives with links to find Brown alumni. These are extra credit and do not
+              affect core progress.
             </p>
             <div className="flex flex-wrap gap-4">
               <RolesBackToCourse modules={modules} />
