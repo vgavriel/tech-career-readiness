@@ -79,7 +79,7 @@ Additional configuration:
 
 ## Testing
 
-See [Testing Strategy](`docs/testing.md) for the full plan.
+See [Testing Strategy](docs/testing.md) for the full plan.
 
 Local integration + E2E quickstart (requires Docker):
 
