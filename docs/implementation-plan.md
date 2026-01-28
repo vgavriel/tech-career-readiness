@@ -346,7 +346,8 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [ ] Deploy to Vercel
 - [ ] Configure env vars
 - [ ] Smoke-test public browsing, auth, progress, and continue flow
-- [ ] Pre-production cleanup: simplify seed logic, run fresh migration/seed against a reset preview DB
+- [x] Pre-production cleanup: simplify seed logic
+- [ ] Pre-production cleanup: run fresh migration/seed against a reset preview DB
 
 ### Phase 18 — Long-term content scalability (post-MVP)
 

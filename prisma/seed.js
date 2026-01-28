@@ -533,8 +533,10 @@ async function seedDatabase(prisma) {
 
     for (const lessonData of moduleData.lessons) {
       const lessonSlug = getLessonSlug(lessonData);
-      const publishedUrl =
-        lessonData.publishedUrl ?? `https://docs.google.com/document/d/e/${lessonData.slug}/pub`;
+      const publishedUrl = lessonData.publishedUrl;
+      if (!publishedUrl) {
+        throw new Error(`Missing publishedUrl for lesson: ${lessonSlug}`);
+      }
       const googleDocId = Object.hasOwn(lessonData, "googleDocId")
         ? (lessonData.googleDocId ?? null)
         : undefined;
