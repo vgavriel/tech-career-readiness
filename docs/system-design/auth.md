@@ -7,7 +7,7 @@ progress data to a user; all course content is readable when logged out.
 
 There are two runtime modes:
 
-- **Local/Test**: credentials provider for a one-click dev login.
+- **Local/Test**: Simple credentials provider for a one-click dev login.
 - **Preview/Production**: Google OAuth only.
 
 ## Why it exists

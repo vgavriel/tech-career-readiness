@@ -1,11 +1,49 @@
 [![E2E](https://github.com/vgavriel/tech-career-readiness/actions/workflows/e2e.yml/badge.svg?branch=main)](https://github.com/vgavriel/tech-career-readiness/actions/workflows/e2e.yml)
-[![A11y (WCAG AAA)](https://github.com/vgavriel/tech-career-readiness/actions/workflows/a11y.yml/badge.svg?branch=main)](https://github.com/vgavriel/tech-career-readiness/actions/workflows/a11y.yml) [WCAG AAA](https://www.w3.org/WAI/WCAG21/Understanding/conformance)
+[![A11y (WCAG AAA)](https://github.com/vgavriel/tech-career-readiness/actions/workflows/a11y.yml/badge.svg?branch=main)](https://github.com/vgavriel/tech-career-readiness/actions/workflows/a11y.yml)
 
-Tech Career Readiness is a self-paced learning app for college students. It's built with Next.js, Prisma, and Postgres.
+# Tech Career Readiness
 
-## Getting started
+Tech Career Readiness is a self-paced learning app built for college students.
+The app itself is intentionally simple; the **engineering scaffolding** around
+it is not. This repo is written for students who want to see how production
+systems are designed and why those choices matter.
+
+If you've completed an introductory CS sequence, you should be able to follow
+along. Each document explains **what a system does**, **why it exists**, and
+**where the code lives**.
+
+## Start here (student-friendly)
+
+- [System design guide](docs/system-design/README.md)
+- [Architecture overview](docs/architecture.md)
+- [Implementation plan](docs/implementation-plan.md)
+
+## WCAG accessibility explainer
+
+We run automated checks against **WCAG AAA**. If you're new to accessibility,
+this explainer is a good starting point:
+https://www.w3.org/WAI/WCAG21/Understanding/conformance
+
+## System design map
+
+These docs are intentionally thorough and cross-linked:
+
+- [Auth and identity](docs/system-design/auth.md)
+- [Data model](docs/system-design/data-model.md)
+- [Content pipeline (Google Docs → HTML)](docs/system-design/content-pipeline.md)
+- [Caching strategy](docs/system-design/caching.md)
+- [Progress tracking and guest merge](docs/system-design/progress.md)
+- [Security and abuse prevention](docs/system-design/security.md)
+- [Observability and error reporting](docs/system-design/observability.md)
+- [Testing strategy and tooling](docs/system-design/testing.md)
+- [Frontend UX and accessibility](docs/system-design/frontend-ux.md)
+- [Operations, environments, and tooling](docs/system-design/operations.md)
+- [Privacy and licensing](docs/system-design/privacy-legal.md)
+
+## Quickstart
 
 ### Local (recommended)
+
 ```bash
 npm install
 npm run dev:local
@@ -15,6 +53,7 @@ This uses a tmpfs-backed Postgres container, dev credentials auth, and no-op
 rate limiting. It will create `.env.local` from `.env.example` if needed.
 
 ### Preview-like (real services)
+
 ```bash
 npm install
 npm run env:preview
@@ -24,45 +63,37 @@ npm run dev:preview
 
 See `docs/environments.md` for the full workflow.
 
-### Environment variables and secrets
+## Environment variables (short version)
+
 - `APP_ENV` controls behavior (`local`, `preview`, `production`, `test`).
 - Local dev uses `.env.local` (auto-loaded by Next.js).
 - Preview dev uses `.env.preview` (loaded by `npm run dev:preview`).
-- We do not use `.env` in this repo; avoid adding one to keep resolution
-  unambiguous.
-- Prod: set variables in your hosting provider or secret manager; do not ship
-  env files.
-- Keep secrets out of client code and never commit real values. Only commit
-  `.env.example` (local template) and `.env.preview.example` (preview template).
+- Only commit `.env.example` and `.env.preview.example`.
+- Never commit real secrets.
 
-Additional app configuration:
-- `ADMIN_EMAILS` (comma-separated) to bootstrap admin access in local/preview/test
-  only. In production, set `User.isAdmin` directly in the database.
+Additional configuration:
+
+- `ADMIN_EMAILS` (comma-separated) to bootstrap admin access in local/preview/test.
 - `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` for rate limiting.
-- `MAX_JSON_BODY_BYTES` (optional) to adjust JSON payload size limits.
-
-## Notes
-- App code lives in `src/app`.
-- Prisma schema lives in `prisma/schema.prisma`.
-- Seeding uses the Postgres adapter (`@prisma/adapter-pg`) and `pg`.
-- Architecture decisions (cacheComponents + Suspense app shell) live in
-  `docs/architecture.md`.
+- `MAX_JSON_BODY_BYTES` (optional) for JSON payload limits.
 
 ## Testing
-See `docs/testing-strategy.md` for the unit, integration, and end-to-end test plan.
+
+See `docs/testing-strategy.md` for the full plan.
 
 Local integration + E2E quickstart (requires Docker):
+
 ```bash
 npm run test:integration:local
 npm run test:e2e:local
 ```
-Ensure your Docker daemon is running (Docker Desktop, Colima, OrbStack, or
-Rancher Desktop) before running these commands.
+
 If port `5434` is already in use, set `TEST_DB_PORT` to a free port.
 
-For CI or a custom test database, set `DATABASE_URL` and run
-`npm run test:integration`.
+## Key code locations
 
-## References
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Prisma Documentation](https://www.prisma.io/docs)
+- App routes: `src/app`
+- Shared UI: `src/components`
+- Server/lib logic: `src/lib`
+- Prisma schema: `prisma/schema.prisma`
+- Tests: `src/**/__tests__`
