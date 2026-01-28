@@ -45,6 +45,11 @@ describe("guest progress storage", () => {
       removeItem: () => {
         throw new Error("blocked");
       },
+      clear: () => {
+        throw new Error("blocked");
+      },
+      key: () => null,
+      length: 0,
     } as Storage;
 
     Object.defineProperty(window, "localStorage", {

@@ -1,15 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef } from "react";
 
 import { useFocus } from "@/components/focus-provider";
 import { useProgress } from "@/components/progress-provider";
 import type { RoadmapModule } from "@/components/roadmap-module-list";
 import SignInCta from "@/components/sign-in-cta";
-import { orderModulesForFocus } from "@/lib/focus-order";
 import { FOCUS_OPTIONS } from "@/lib/focus-options";
+import { orderModulesForFocus } from "@/lib/focus-order";
 import { isExtraCreditLesson } from "@/lib/lesson-classification";
 
 type LessonNavigatorProps = {
@@ -32,6 +32,8 @@ export default function LessonNavigator({
     isReady,
     isAuthenticated,
     isMerging,
+    progressError,
+    clearProgressError,
     setLessonCompletion,
   } = useProgress();
   const router = useRouter();
@@ -84,13 +86,10 @@ export default function LessonNavigator({
 
     const panelRect = scrollPanel.getBoundingClientRect();
     const targetRect = target.getBoundingClientRect();
-    const isVisible =
-      targetRect.top >= panelRect.top && targetRect.bottom <= panelRect.bottom;
+    const isVisible = targetRect.top >= panelRect.top && targetRect.bottom <= panelRect.bottom;
 
     if (!isVisible) {
-      const prefersReducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-      ).matches;
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const nextTop =
         targetRect.top -
         panelRect.top +
@@ -108,9 +107,7 @@ export default function LessonNavigator({
   }, [currentLessonSlug, focusKey, isCurrentModuleVisible]);
 
   const focusLabel = focusKey
-    ? `Focus: ${
-        FOCUS_OPTIONS.find((option) => option.key === focusKey)?.label ?? "Focus"
-      }`
+    ? `Focus: ${FOCUS_OPTIONS.find((option) => option.key === focusKey)?.label ?? "Focus"}`
     : "Full curriculum";
 
   const { coreCompleted, coreTotal, extraCompleted, extraTotal } = useMemo(() => {
@@ -150,9 +147,7 @@ export default function LessonNavigator({
     const isCompleted = isReady && isLessonCompleted(lesson.slug);
     const isExtra = isExtraCreditLesson(lesson);
     const isDisabled = !isReady || isMerging;
-    const metaTextColor = isActive
-      ? "text-[color:var(--ink-700)]"
-      : "text-[color:var(--ink-600)]";
+    const metaTextColor = isActive ? "text-[color:var(--ink-700)]" : "text-[color:var(--ink-600)]";
 
     return (
       <div
@@ -190,12 +185,10 @@ export default function LessonNavigator({
           }`}
           aria-pressed={isCompleted}
           aria-label={
-            isCompleted
-              ? `Mark ${lesson.title} incomplete`
-              : `Mark ${lesson.title} complete`
+            isCompleted ? `Mark ${lesson.title} incomplete` : `Mark ${lesson.title} complete`
           }
           disabled={isDisabled}
-          onClick={() => void setLessonCompletion(lesson.slug, !isCompleted)}
+          onClick={() => void setLessonCompletion(lesson.slug, !isCompleted, "navigator")}
         >
           {isCompleted ? (
             <svg
@@ -206,11 +199,7 @@ export default function LessonNavigator({
               stroke="currentColor"
               strokeWidth={3}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 13l4 4L19 7"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           ) : null}
         </button>
@@ -222,9 +211,7 @@ export default function LessonNavigator({
     <div className="flex h-full flex-col gap-4 px-4 pb-4 pt-5">
       <div className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm font-semibold text-[color:var(--ink-900)]">
-            {focusLabel}
-          </p>
+          <p className="text-sm font-semibold text-[color:var(--ink-900)]">{focusLabel}</p>
           {focusKey ? (
             <button
               type="button"
@@ -253,35 +240,23 @@ export default function LessonNavigator({
         <div className="space-y-4">
           {visibleModules.map((module) => {
             const isActiveModule = module.key === currentModuleKey;
-            const coreLessons = module.lessons.filter(
-              (lesson) => !isExtraCreditLesson(lesson)
-            );
-            const extraLessons = module.lessons.filter((lesson) =>
-              isExtraCreditLesson(lesson)
-            );
+            const coreLessons = module.lessons.filter((lesson) => !isExtraCreditLesson(lesson));
+            const extraLessons = module.lessons.filter((lesson) => isExtraCreditLesson(lesson));
             const coreCompletedCount = coreLessons.reduce(
-              (count, lesson) =>
-                count +
-                (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
+              (count, lesson) => count + (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
               0
             );
             const extraCompletedCount = extraLessons.reduce(
-              (count, lesson) =>
-                count +
-                (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
+              (count, lesson) => count + (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
               0
             );
             const isModuleComplete =
-              isReady && coreLessons.length > 0
-                ? coreCompletedCount === coreLessons.length
-                : false;
+              isReady && coreLessons.length > 0 ? coreCompletedCount === coreLessons.length : false;
             const progressLabel =
               coreLessons.length > 0
                 ? `${coreCompletedCount}/${coreLessons.length} core`
                 : `${extraCompletedCount}/${extraLessons.length} extra`;
-            const isActiveExtra = extraLessons.some(
-              (lesson) => lesson.slug === currentLessonSlug
-            );
+            const isActiveExtra = extraLessons.some((lesson) => lesson.slug === currentLessonSlug);
 
             return (
               <details
@@ -290,7 +265,7 @@ export default function LessonNavigator({
                 className="group rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] shadow-[var(--shadow-soft)]"
               >
                 <summary className="summary-clean flex min-h-11 cursor-pointer items-center px-3 py-3">
-                    <div className="flex w-full items-center gap-3">
+                  <div className="flex w-full items-center gap-3">
                     <div>
                       <p className="text-sm font-semibold text-[color:var(--ink-500)]">
                         Module {module.order}
@@ -311,11 +286,7 @@ export default function LessonNavigator({
                             stroke="currentColor"
                             strokeWidth={3}
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M5 13l4 4L19 7"
-                            />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                           </svg>
                         </span>
                       ) : null}
@@ -330,11 +301,7 @@ export default function LessonNavigator({
                         stroke="currentColor"
                         strokeWidth={2}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M6 9l6 6 6-6"
-                        />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
                       </svg>
                     </div>
                   </div>
@@ -342,9 +309,7 @@ export default function LessonNavigator({
                 <div className="space-y-3 px-3 pb-3">
                   {coreLessons.length ? (
                     <div className="space-y-2">
-                      {coreLessons.map((lesson) =>
-                        renderLessonRow(lesson, module.order)
-                      )}
+                      {coreLessons.map((lesson) => renderLessonRow(lesson, module.order))}
                     </div>
                   ) : null}
                   {extraLessons.length ? (
@@ -355,9 +320,7 @@ export default function LessonNavigator({
                       <summary className="summary-clean flex min-h-11 cursor-pointer items-center justify-between gap-3 text-sm font-semibold text-[color:var(--ink-600)]">
                         <span>Extra credit</span>
                         <span className="flex items-center gap-2 text-[color:var(--ink-500)]">
-                          {isReady
-                            ? `${extraCompletedCount} / ${extraLessons.length}`
-                            : "Loading"}
+                          {isReady ? `${extraCompletedCount} / ${extraLessons.length}` : "Loading"}
                           <svg
                             aria-hidden="true"
                             className="h-4 w-4 transition"
@@ -366,18 +329,12 @@ export default function LessonNavigator({
                             stroke="currentColor"
                             strokeWidth={2}
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M6 9l6 6 6-6"
-                            />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
                           </svg>
                         </span>
                       </summary>
                       <div className="mt-2 space-y-2 pb-2">
-                        {extraLessons.map((lesson) =>
-                          renderLessonRow(lesson, module.order)
-                        )}
+                        {extraLessons.map((lesson) => renderLessonRow(lesson, module.order))}
                       </div>
                     </details>
                   ) : null}
@@ -399,6 +356,23 @@ export default function LessonNavigator({
           </SignInCta>
         ) : null}
       </div>
+      {progressError?.source === "navigator" ? (
+        <div
+          className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-sm text-[color:var(--ink-700)]"
+          role="status"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span>{progressError.message}</span>
+            <button
+              type="button"
+              onClick={clearProgressError}
+              className="text-[color:var(--ink-900)] underline underline-offset-2"
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

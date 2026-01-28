@@ -9,7 +9,7 @@ import { isExtraCreditLesson } from "@/lib/lesson-classification";
 /**
  * Lesson metadata required for the roadmap listing.
  */
-export type RoadmapLesson = {
+type RoadmapLesson = {
   id: string;
   slug: string;
   title: string;
@@ -44,10 +44,7 @@ type RoadmapModuleListProps = {
  * Presents ordered modules/lessons and reflects completion from progress
  * context; no side effects.
  */
-export default function RoadmapModuleList({
-  modules,
-  focusKey = null,
-}: RoadmapModuleListProps) {
+export default function RoadmapModuleList({ modules, focusKey = null }: RoadmapModuleListProps) {
   const { isLessonCompleted, isReady } = useProgress();
   const focusQuery = focusKey ? `?${FOCUS_QUERY_PARAM}=${focusKey}` : "";
 
@@ -62,22 +59,16 @@ export default function RoadmapModuleList({
   return (
     <div className="space-y-12">
       {modules.map((module) => {
-        const coreLessons = module.lessons.filter(
-          (lesson) => !isExtraCreditLesson(lesson)
-        );
-        const extraLessons = module.lessons.filter((lesson) =>
-          isExtraCreditLesson(lesson)
-        );
+        const coreLessons = module.lessons.filter((lesson) => !isExtraCreditLesson(lesson));
+        const extraLessons = module.lessons.filter((lesson) => isExtraCreditLesson(lesson));
         const hasCore = coreLessons.length > 0;
         const hasExtra = extraLessons.length > 0;
         const coreCompleted = coreLessons.reduce(
-          (count, lesson) =>
-            count + (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
+          (count, lesson) => count + (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
           0
         );
         const extraCompleted = extraLessons.reduce(
-          (count, lesson) =>
-            count + (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
+          (count, lesson) => count + (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
           0
         );
 
@@ -110,18 +101,14 @@ export default function RoadmapModuleList({
                             stroke="currentColor"
                             strokeWidth={3}
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M5 13l4 4L19 7"
-                            />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                           </svg>
                         </>
                       ) : (
                         <span className="sr-only">Incomplete lesson</span>
                       )}
                     </span>
-                    <span className="text-xs font-semibold text-[color:var(--ink-500)]">
+                    <span className="text-sm font-semibold text-[color:var(--ink-500)]">
                       {module.order}.{lesson.order}
                     </span>
                     <Link
@@ -132,7 +119,7 @@ export default function RoadmapModuleList({
                     </Link>
                   </div>
                   {lesson.estimatedMinutes ? (
-                    <span className="self-start text-xs font-semibold text-[color:var(--ink-500)] sm:self-auto">
+                    <span className="self-start text-sm font-semibold text-[color:var(--ink-500)] sm:self-auto">
                       {lesson.estimatedMinutes} min
                     </span>
                   ) : null}
@@ -150,23 +137,21 @@ export default function RoadmapModuleList({
             <div className="relative space-y-6">
               <div className="space-y-3">
                 <div className="flex flex-wrap items-center gap-3">
-                  <p className="text-xs font-semibold text-[color:var(--ink-500)]">
+                  <p className="text-sm font-semibold text-[color:var(--ink-500)]">
                     Module {module.order}
                   </p>
                   {hasCore ? (
-                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
+                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-sm font-semibold text-[color:var(--ink-700)]">
                       {coreLessons.length} core
                     </span>
                   ) : (
-                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
+                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-sm font-semibold text-[color:var(--ink-700)]">
                       Extra credit only
                     </span>
                   )}
                   {hasExtra ? (
-                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
-                      {hasCore
-                        ? `+${extraLessons.length} extra`
-                        : `${extraLessons.length} lessons`}
+                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-sm font-semibold text-[color:var(--ink-700)]">
+                      {hasCore ? `+${extraLessons.length} extra` : `${extraLessons.length} lessons`}
                     </span>
                   ) : null}
                 </div>
@@ -183,7 +168,7 @@ export default function RoadmapModuleList({
               <div className="space-y-4">
                 {hasCore ? (
                   <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
-                    <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-semibold text-[color:var(--ink-500)]">
+                    <div className="flex flex-wrap items-center justify-between gap-3 text-sm font-semibold text-[color:var(--ink-500)]">
                       <span>Core lessons</span>
                       <span>
                         {isReady
@@ -198,7 +183,7 @@ export default function RoadmapModuleList({
                 {hasExtra ? (
                   hasCore ? (
                     <details className="group rounded-2xl border border-dashed border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5">
-                      <summary className="summary-clean flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-xs font-semibold text-[color:var(--ink-500)]">
+                      <summary className="summary-clean flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-[color:var(--ink-500)]">
                         <span>Extra credit (optional)</span>
                         <span className="flex items-center gap-2 text-[color:var(--ink-500)]">
                           {isReady
@@ -212,11 +197,7 @@ export default function RoadmapModuleList({
                             stroke="currentColor"
                             strokeWidth={2}
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M6 9l6 6 6-6"
-                            />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
                           </svg>
                         </span>
                       </summary>
@@ -224,7 +205,7 @@ export default function RoadmapModuleList({
                     </details>
                   ) : (
                     <div className="rounded-2xl border border-dashed border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
-                      <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-semibold text-[color:var(--ink-500)]">
+                      <div className="flex flex-wrap items-center justify-between gap-3 text-sm font-semibold text-[color:var(--ink-500)]">
                         <span>Extra credit lessons</span>
                         <span>
                           {isReady

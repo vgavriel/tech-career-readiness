@@ -36,7 +36,7 @@ See `docs/environments.md` for the full workflow.
   `.env.example` (local template) and `.env.preview.example` (preview template).
 
 Additional app configuration:
-- `ADMIN_EMAILS` (comma-separated) to bootstrap admin access in preview/test
+- `ADMIN_EMAILS` (comma-separated) to bootstrap admin access in local/preview/test
   only. In production, set `User.isAdmin` directly in the database.
 - `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` for rate limiting.
 - `MAX_JSON_BODY_BYTES` (optional) to adjust JSON payload size limits.
@@ -45,6 +45,8 @@ Additional app configuration:
 - App code lives in `src/app`.
 - Prisma schema lives in `prisma/schema.prisma`.
 - Seeding uses the Postgres adapter (`@prisma/adapter-pg`) and `pg`.
+- Architecture decisions (cacheComponents + Suspense app shell) live in
+  `docs/architecture.md`.
 
 ## Testing
 See `docs/testing-strategy.md` for the unit, integration, and end-to-end test plan.

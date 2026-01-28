@@ -1,4 +1,5 @@
 import "@testing-library/jest-dom/vitest";
+
 import { cleanup } from "@testing-library/react";
 import { afterEach, vi } from "vitest";
 
@@ -15,6 +16,13 @@ vi.mock("next-auth/react", async (importOriginal) => {
     }),
   };
 });
+
+vi.mock("next/cache", () => ({
+  cacheLife: () => {},
+  cacheTag: () => {},
+  revalidateTag: () => {},
+  updateTag: () => {},
+}));
 
 vi.mock("next/font/google", () => ({
   Sora: () => ({ variable: "--font-body" }),

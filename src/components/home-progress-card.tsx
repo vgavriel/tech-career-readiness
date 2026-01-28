@@ -3,8 +3,8 @@
 import { useMemo } from "react";
 
 import { useFocus } from "@/components/focus-provider";
-import RoadmapProgressSummary from "@/components/roadmap-progress-summary";
 import type { RoadmapModule } from "@/components/roadmap-module-list";
+import RoadmapProgressSummary from "@/components/roadmap-progress-summary";
 import { orderModulesForFocus } from "@/lib/focus-order";
 
 type HomeProgressCardProps = {

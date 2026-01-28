@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import { StatusCodes } from "http-status-codes";
+import { NextResponse } from "next/server";
 import { type ZodSchema } from "zod";
 
 import { ERROR_MESSAGE, HTTP_HEADER } from "@/lib/http-constants";
@@ -25,9 +25,7 @@ export const parseJsonBody = async <T>(
   const envMaxBytes = Number(process.env.MAX_JSON_BODY_BYTES);
   const maxBytes =
     options.maxBytes ??
-    (Number.isFinite(envMaxBytes) && envMaxBytes > 0
-      ? envMaxBytes
-      : DEFAULT_MAX_JSON_BODY_BYTES);
+    (Number.isFinite(envMaxBytes) && envMaxBytes > 0 ? envMaxBytes : DEFAULT_MAX_JSON_BODY_BYTES);
 
   let rawBody: string;
 
@@ -35,20 +33,14 @@ export const parseJsonBody = async <T>(
     rawBody = await request.text();
   } catch {
     return {
-      error: errorResponse(
-        ERROR_MESSAGE.INVALID_JSON_BODY,
-        StatusCodes.BAD_REQUEST
-      ),
+      error: errorResponse(ERROR_MESSAGE.INVALID_JSON_BODY, StatusCodes.BAD_REQUEST),
     };
   }
 
   const bodyByteLength = Buffer.byteLength(rawBody, "utf8");
   if (bodyByteLength > maxBytes) {
     return {
-      error: errorResponse(
-        ERROR_MESSAGE.PAYLOAD_TOO_LARGE,
-        StatusCodes.PAYLOAD_TOO_LARGE
-      ),
+      error: errorResponse(ERROR_MESSAGE.REQUEST_TOO_LONG, StatusCodes.REQUEST_TOO_LONG),
     };
   }
 
@@ -58,10 +50,7 @@ export const parseJsonBody = async <T>(
       parsedBody = JSON.parse(rawBody);
     } catch {
       return {
-        error: errorResponse(
-          ERROR_MESSAGE.INVALID_JSON_BODY,
-          StatusCodes.BAD_REQUEST
-        ),
+        error: errorResponse(ERROR_MESSAGE.INVALID_JSON_BODY, StatusCodes.BAD_REQUEST),
       };
     }
   }
@@ -69,10 +58,7 @@ export const parseJsonBody = async <T>(
   const result = schema.safeParse(parsedBody);
   if (!result.success) {
     return {
-      error: errorResponse(
-        ERROR_MESSAGE.INVALID_PAYLOAD,
-        StatusCodes.BAD_REQUEST
-      ),
+      error: errorResponse(ERROR_MESSAGE.INVALID_PAYLOAD, StatusCodes.BAD_REQUEST),
     };
   }
 

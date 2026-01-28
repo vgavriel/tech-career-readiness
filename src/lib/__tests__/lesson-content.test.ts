@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { clearLessonContentCache } from "@/lib/lesson-content-cache";
 import { fetchLessonContent } from "@/lib/lesson-content";
+import { clearLessonContentCache } from "@/lib/lesson-content/cache";
 
 const ORIGINAL_ENV = { ...process.env };
 
@@ -63,13 +63,57 @@ describe("fetchLessonContent", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("preserves allowed images and drops untrusted ones", async () => {
+    process.env.APP_ENV = "local";
+    process.env.LESSON_CONTENT_MOCK_HTML = [
+      '<img src="https://lh3.googleusercontent.com/abc" style="width: 120px; height: 240px;" />',
+      '<img src="https://example.com/evil.png" />',
+      '<span style="background-image:url(https://lh4.googleusercontent.com/def); width: 300px; height: 400px;"></span>',
+    ].join("");
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain("lh3.googleusercontent.com/abc");
+    expect(result.html).toContain('width="120"');
+    expect(result.html).toContain('height="240"');
+    expect(result.html).not.toContain("example.com/evil.png");
+    expect(result.html).toContain("lh4.googleusercontent.com/def");
+  });
+
+  it("converts background image classes into images", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><head>",
+          "<style>",
+          ".c1{background-image:url('https://lh3.googleusercontent.com/classy'); width:120pt; height:60pt;}",
+          ".c2{background-image:url('https://example.com/evil.png'); width:120pt; height:60pt;}",
+          "</style>",
+          "</head><body>",
+          '<div id="contents">',
+          '<span class="c1"></span>',
+          '<span class="c2"></span>',
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain("lh3.googleusercontent.com/classy");
+    expect(result.html).toContain('width="160"');
+    expect(result.html).toContain('height="80"');
+    expect(result.html).not.toContain("example.com/evil.png");
+  });
+
   it("throws when the upstream response is not ok", async () => {
     process.env.APP_ENV = "preview";
     fetchMock.mockResolvedValueOnce(new Response("oops", { status: 500 }));
 
-    await expect(fetchLessonContent(lesson)).rejects.toThrow(
-      "Failed to fetch lesson content."
-    );
+    await expect(fetchLessonContent(lesson)).rejects.toThrow("Failed to fetch lesson content.");
   });
 
   it("throws after too many redirects", async () => {
@@ -79,8 +123,7 @@ describe("fetchLessonContent", () => {
         new Response(null, {
           status: 302,
           headers: {
-            location:
-              "https://docs.google.com/document/d/e/redirected/pub",
+            location: "https://docs.google.com/document/d/e/redirected/pub",
           },
         })
       )
@@ -211,11 +254,13 @@ describe("fetchLessonContent", () => {
     expect(cells[0].firstElementChild?.textContent?.trim()).toBe("First");
     expect(cells[1].firstElementChild?.tagName).toBe("UL");
     expect(cells[2].firstElementChild?.textContent?.trim()).toBe("Third");
+    for (const cell of Array.from(cells)) {
+      expect(cell.getAttribute("valign")).toBe("top");
+    }
 
     const emptyParagraphs = Array.from(wrapper.querySelectorAll("td p")).filter(
       (paragraph) =>
-        !paragraph.textContent ||
-        paragraph.textContent.replace(/[\s\u00a0]/g, "") === ""
+        !paragraph.textContent || paragraph.textContent.replace(/[\s\u00a0]/g, "") === ""
     );
     expect(emptyParagraphs).toHaveLength(0);
     expect(wrapper.querySelectorAll("td br")).toHaveLength(0);

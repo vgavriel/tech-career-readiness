@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint --config tooling/eslint.config.mjs",
+    "lint:fix": "eslint --config tooling/eslint.config.mjs --fix",
     "test": "vitest --config tooling/vitest.config.ts",
     "test:unit": "vitest run --config tooling/vitest.config.ts",
     "test:coverage": "vitest run --config tooling/vitest.config.ts --coverage",
@@ -17,6 +18,9 @@
     "test:a11y": "bash scripts/run-a11y-ci.sh",
     "test:a11y:local": "pa11y-ci --config tooling/pa11yci.config.js",
     "test:all:local": "npm run test:unit && npm run test:integration:local && npm run test:e2e:local",
+    "typecheck": "bash scripts/typecheck.sh",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "env:local": "bash scripts/dev-setup.sh --env-only",
     "env:preview": "bash scripts/env-preview.sh",
     "dev:setup": "bash scripts/dev-setup.sh",
@@ -24,6 +28,7 @@
     "dev:preview": "bash scripts/dev-preview.sh",
     "dev:preview:setup": "bash scripts/dev-preview-setup.sh",
     "postinstall": "bash scripts/postinstall.sh",
+    "prepare": "husky",
     "clean": "rm -rf .next test-results"
   },
   "dependencies": {
@@ -57,13 +62,28 @@
     "autoprefixer": "^10.4.23",
     "eslint": "^9",
     "eslint-config-next": "^16.1.2",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "husky": "^9.1.7",
     "jsdom": "^27.4.0",
+    "lint-staged": "^15.5.2",
     "pa11y": "^9.0.1",
     "pa11y-ci": "^4.0.1",
     "postcss": "^8.5.6",
+    "prettier": "^3.5.2",
     "prisma": "^7.2.0",
     "tailwindcss": "^4.1.18",
     "typescript": "^5",
     "vitest": "^4.0.17"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,md,css,json}": [
+      "prettier --write"
+    ],
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --config tooling/eslint.config.mjs --fix"
+    ]
   }
 }

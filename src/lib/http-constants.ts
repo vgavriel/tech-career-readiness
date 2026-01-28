@@ -15,7 +15,7 @@ export const HTTP_HEADER = {
 
 export const ERROR_MESSAGE = {
   INVALID_JSON_BODY: "Invalid JSON body.",
-  PAYLOAD_TOO_LARGE: "Payload too large.",
+  REQUEST_TOO_LONG: "Request too long.",
   INVALID_PAYLOAD: "Invalid payload.",
   UNAUTHORIZED: "Unauthorized.",
   UNSUPPORTED_MEDIA_TYPE: "Unsupported content type.",

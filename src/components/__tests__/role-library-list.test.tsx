@@ -1,15 +1,20 @@
 import { render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import RoleLibraryList, {
   type RoleLibraryLesson,
 } from "@/components/role-library-list";
 
+const progressMocks = vi.hoisted(() => ({
+  isLessonCompleted: vi.fn(),
+  isReady: true,
+}));
+
 vi.mock("@/components/progress-provider", () => ({
   useProgress: () => ({
-    isLessonCompleted: (slug: string) => slug === "learn-about-ai-engineering",
-    isReady: true,
+    isLessonCompleted: progressMocks.isLessonCompleted,
+    isReady: progressMocks.isReady,
   }),
 }));
 
@@ -29,6 +34,14 @@ vi.mock("next/link", () => ({
 }));
 
 describe("RoleLibraryList", () => {
+  beforeEach(() => {
+    progressMocks.isLessonCompleted.mockReset();
+    progressMocks.isLessonCompleted.mockImplementation(
+      (slug: string) => slug === "learn-about-ai-engineering"
+    );
+    progressMocks.isReady = true;
+  });
+
   it("renders role deep dive lessons with completion states", () => {
     const lessons: RoleLibraryLesson[] = [
       {
@@ -53,6 +66,24 @@ describe("RoleLibraryList", () => {
     ).toHaveAttribute("href", "/lesson/learn-about-backend-engineering");
     expect(screen.getByText(/^completed$/i)).toBeInTheDocument();
     expect(screen.getByText(/extra credit/i)).toBeInTheDocument();
+  });
+
+  it("shows loading states before progress is ready", () => {
+    progressMocks.isReady = false;
+
+    const lessons: RoleLibraryLesson[] = [
+      {
+        id: "lesson-1",
+        slug: "learn-about-ai-engineering",
+        title: "Learn about AI Engineering",
+      },
+    ];
+
+    render(<RoleLibraryList lessons={lessons} />);
+
+    expect(screen.getByText(/loading progress/i)).toBeInTheDocument();
+    expect(screen.queryByText(/^completed$/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/extra credit/i)).not.toBeInTheDocument();
   });
 
   it("renders a fallback when no lessons are available", () => {

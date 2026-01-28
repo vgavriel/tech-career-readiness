@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { clearLessonContentCache } from "@/lib/lesson-content-cache";
+import { clearLessonContentCache } from "@/lib/lesson-content/cache";
 
 const prismaMock = {
   lesson: {
@@ -32,8 +32,7 @@ const getRoute = async () => {
 /**
  * Create a Request for the lesson content route with query parameters.
  */
-const makeRequest = (query = "") =>
-  new Request(`http://localhost/api/lesson-content${query}`);
+const makeRequest = (query = "") => new Request(`http://localhost/api/lesson-content${query}`);
 
 describe("GET /api/lesson-content", () => {
   const fetchMock = vi.fn();
@@ -43,17 +42,19 @@ describe("GET /api/lesson-content", () => {
    * Restore NODE_ENV to its original value for test isolation.
    */
   const restoreNodeEnv = () => {
+    const env = process.env as Record<string, string | undefined>;
     if (originalNodeEnv === undefined) {
-      delete process.env.NODE_ENV;
+      delete env.NODE_ENV;
     } else {
-      process.env.NODE_ENV = originalNodeEnv;
+      env.NODE_ENV = originalNodeEnv;
     }
   };
   const restoreAppEnv = () => {
+    const env = process.env as Record<string, string | undefined>;
     if (originalAppEnv === undefined) {
-      delete process.env.APP_ENV;
+      delete env.APP_ENV;
     } else {
-      process.env.APP_ENV = originalAppEnv;
+      env.APP_ENV = originalAppEnv;
     }
   };
 
@@ -159,6 +160,23 @@ describe("GET /api/lesson-content", () => {
 
     expect(cachedBody.cached).toBe(true);
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("sets CDN cache headers in production", async () => {
+    process.env.APP_ENV = "production";
+    prismaMock.lesson.findFirst.mockResolvedValue({
+      id: "lesson-5",
+      publishedUrl: "https://docs.google.com/document/d/e/lesson-5/pub",
+    });
+    fetchMock.mockResolvedValueOnce(new Response("<p>Cached</p>", { status: 200 }));
+
+    const GET = await getRoute();
+    const response = await GET(makeRequest("?slug=lesson-5"));
+
+    expect(response.status).toBe(200);
+    const cacheControl = response.headers.get("Cache-Control");
+    expect(cacheControl).toContain("s-maxage=3600");
+    expect(cacheControl).toContain("stale-while-revalidate=");
   });
 
   it("allows cache bypass in local mode", async () => {

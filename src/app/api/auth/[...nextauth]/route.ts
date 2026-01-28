@@ -1,9 +1,9 @@
+import { StatusCodes } from "http-status-codes";
 import NextAuth from "next-auth";
 
 import { authOptions } from "@/lib/auth";
-import { StatusCodes } from "http-status-codes";
-import { createRequestLogger } from "@/lib/logger";
 import { LOG_EVENT, LOG_ROUTE } from "@/lib/log-constants";
+import { createRequestLogger } from "@/lib/logger";
 import { resolveRequestId } from "@/lib/request-id";
 import { UNKNOWN_VALUE } from "@/lib/values";
 

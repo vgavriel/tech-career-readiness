@@ -37,6 +37,7 @@ if (isProduction) {
 }
 
 const nextConfig: NextConfig = {
+  cacheComponents: true,
   /**
    * Attach security headers to all routes.
    */

@@ -1,6 +1,6 @@
 import FocusPicker from "@/components/focus-picker";
 import HomeProgressCard from "@/components/home-progress-card";
-import { prisma } from "@/lib/prisma";
+import { getRoadmapModules } from "@/lib/roadmap-modules";
 
 /**
  * Renders the marketing landing page with the primary CTAs and highlights.
@@ -9,27 +9,7 @@ import { prisma } from "@/lib/prisma";
  * Provides a concise entry point for new visitors; no state or side effects.
  */
 export default async function Home() {
-  const modules = await prisma.module.findMany({
-    orderBy: { order: "asc" },
-    select: {
-      id: true,
-      key: true,
-      title: true,
-      description: true,
-      order: true,
-      lessons: {
-        where: { isArchived: false },
-        orderBy: { order: "asc" },
-        select: {
-          id: true,
-          slug: true,
-          title: true,
-          order: true,
-          estimatedMinutes: true,
-        },
-      },
-    },
-  });
+  const modules = await getRoadmapModules();
 
   return (
     <div className="page-shell min-h-screen overflow-hidden">

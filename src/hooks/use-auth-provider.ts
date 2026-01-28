@@ -11,6 +11,11 @@ type AuthProvider = {
   isDev: boolean;
 };
 
+type AuthProviderState = {
+  provider: AuthProvider;
+  isReady: boolean;
+};
+
 const googleProvider: AuthProvider = {
   id: "google",
   label: "Sign in with Google",
@@ -46,7 +51,10 @@ const resolveProvider = (
 };
 
 export const useAuthProvider = () => {
-  const [provider, setProvider] = useState<AuthProvider>(googleProvider);
+  const [state, setState] = useState<AuthProviderState>({
+    provider: googleProvider,
+    isReady: false,
+  });
 
   useEffect(() => {
     let isActive = true;
@@ -55,11 +63,17 @@ export const useAuthProvider = () => {
         if (!isActive) {
           return;
         }
-        setProvider(resolveProvider(providers ?? undefined));
+        setState({
+          provider: resolveProvider(providers ?? undefined),
+          isReady: true,
+        });
       })
       .catch(() => {
         if (isActive) {
-          setProvider(googleProvider);
+          setState({
+            provider: googleProvider,
+            isReady: true,
+          });
         }
       });
 
@@ -68,13 +82,10 @@ export const useAuthProvider = () => {
     };
   }, []);
 
-  return provider;
+  return state;
 };
 
-export const buildSignInOptions = (
-  providerId: string,
-  callbackUrl?: string
-) => {
+export const buildSignInOptions = (providerId: string, callbackUrl?: string) => {
   const options: Record<string, string> = {};
 
   if (callbackUrl) {

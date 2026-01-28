@@ -2,8 +2,8 @@ import { render, screen, within } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import RoadmapProgressSummary from "@/components/roadmap-progress-summary";
 import type { RoadmapModule } from "@/components/roadmap-module-list";
+import RoadmapProgressSummary from "@/components/roadmap-progress-summary";
 
 const progressMocks = vi.hoisted(() => ({
   useProgress: vi.fn(),
@@ -14,14 +14,7 @@ vi.mock("@/components/progress-provider", () => ({
 }));
 
 vi.mock("next/link", () => ({
-  default: ({
-    href,
-    children,
-    ...props
-  }: {
-    href: string;
-    children: ReactNode;
-  }) => (
+  default: ({ href, children, ...props }: { href: string; children: ReactNode }) => (
     <a href={href} {...props}>
       {children}
     </a>
@@ -96,12 +89,11 @@ describe("RoadmapProgressSummary", () => {
     render(<RoadmapProgressSummary modules={modules} />);
 
     expect(screen.getByText(/50%/i)).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: /continue course/i })
-    ).toHaveAttribute("href", "/lesson/next");
-    expect(
-      screen.getByRole("button", { name: /sign in to save progress/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /continue course/i })).toHaveAttribute(
+      "href",
+      "/lesson/next"
+    );
+    expect(screen.getByRole("button", { name: /sign in to save progress/i })).toBeInTheDocument();
   });
 
   it("shows a review action when all lessons are complete", () => {
@@ -114,9 +106,10 @@ describe("RoadmapProgressSummary", () => {
 
     render(<RoadmapProgressSummary modules={modules} />);
 
-    expect(
-      screen.getByRole("link", { name: /review course/i })
-    ).toHaveAttribute("href", "/lesson/intro");
+    expect(screen.getByRole("link", { name: /review course/i })).toHaveAttribute(
+      "href",
+      "/lesson/intro"
+    );
     expect(
       screen.queryByRole("button", { name: /sign in to save progress/i })
     ).not.toBeInTheDocument();
@@ -131,11 +124,7 @@ describe("RoadmapProgressSummary", () => {
     });
 
     render(
-      <RoadmapProgressSummary
-        modules={modules}
-        focusModules={modules}
-        focusKey="applying-soon"
-      />
+      <RoadmapProgressSummary modules={modules} focusModules={modules} focusKey="applying-soon" />
     );
 
     const focusSection = screen.getByText(/focus: applying soon/i).parentElement;
@@ -144,9 +133,7 @@ describe("RoadmapProgressSummary", () => {
       return;
     }
 
-    expect(
-      within(focusSection).getByText(/1 of 2 complete/i)
-    ).toBeInTheDocument();
+    expect(within(focusSection).getByText(/1 of 2 complete/i)).toBeInTheDocument();
   });
 
   it("shows extra credit progress separately from core progress", () => {
@@ -167,9 +154,7 @@ describe("RoadmapProgressSummary", () => {
       return;
     }
 
-    expect(
-      within(extraCreditSection).getByText(/1 of 1 complete/i)
-    ).toBeInTheDocument();
+    expect(within(extraCreditSection).getByText(/1 of 1 complete/i)).toBeInTheDocument();
     expect(within(extraCreditSection).getByText(/100%/i)).toBeInTheDocument();
   });
 });

@@ -1,9 +1,10 @@
-import { render, screen } from "@testing-library/react";
-import type { Session } from "next-auth";
+import { render, screen, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import Providers from "@/components/providers";
+import type { Session } from "@/lib/auth-types";
+import { reportClientError } from "@/lib/client-error";
 
 const sessionTracker = vi.hoisted(() => ({
   received: null as Session | null,
@@ -20,14 +21,12 @@ vi.mock("@/components/progress-provider", () => ({
   },
 }));
 
+vi.mock("@/lib/client-error", () => ({
+  reportClientError: vi.fn(),
+}));
+
 vi.mock("next-auth/react", () => ({
-  SessionProvider: ({
-    session,
-    children,
-  }: {
-    session: Session | null;
-    children: ReactNode;
-  }) => {
+  SessionProvider: ({ session, children }: { session: Session | null; children: ReactNode }) => {
     sessionTracker.received = session;
     return <div data-testid="session-provider">{children}</div>;
   },
@@ -52,5 +51,40 @@ describe("Providers", () => {
     expect(screen.getByText("Child content")).toBeInTheDocument();
     expect(sessionTracker.received).toEqual(session);
     expect(progressTracker.rendered).toBe(true);
+  });
+
+  it("reports window errors and unhandled rejections", async () => {
+    render(
+      <Providers session={null} analyticsEnabled={false}>
+        <span>Child content</span>
+      </Providers>
+    );
+
+    const error = new Error("Boom");
+    window.dispatchEvent(
+      new ErrorEvent("error", {
+        message: "Boom",
+        error,
+        filename: "app.tsx",
+        lineno: 12,
+        colno: 4,
+      })
+    );
+
+    const rejectionEvent = new PromiseRejectionEvent("unhandledrejection", {
+      promise: Promise.resolve(),
+      reason: new Error("Nope"),
+    });
+    window.dispatchEvent(rejectionEvent);
+
+    await waitFor(() => {
+      expect(reportClientError).toHaveBeenCalled();
+    });
+    expect(reportClientError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: "Boom",
+        source: "app.tsx",
+      })
+    );
   });
 });

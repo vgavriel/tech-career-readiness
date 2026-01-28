@@ -20,6 +20,8 @@ const progressMocks = vi.hoisted(() => ({
   isReady: true,
   isAuthenticated: true,
   isMerging: false,
+  progressError: null as { message: string; source: string } | null,
+  clearProgressError: vi.fn(),
   setLessonCompletion: vi.fn(),
 }));
 
@@ -40,6 +42,8 @@ vi.mock("@/components/progress-provider", () => ({
     isReady: progressMocks.isReady,
     isAuthenticated: progressMocks.isAuthenticated,
     isMerging: progressMocks.isMerging,
+    progressError: progressMocks.progressError,
+    clearProgressError: progressMocks.clearProgressError,
     setLessonCompletion: progressMocks.setLessonCompletion,
   }),
 }));
@@ -87,6 +91,8 @@ describe("LessonNavigator", () => {
     progressMocks.isReady = true;
     progressMocks.isAuthenticated = true;
     progressMocks.isMerging = false;
+    progressMocks.progressError = null;
+    progressMocks.clearProgressError.mockReset();
   });
 
   it("scrolls the navigator panel to the active lesson when it is out of view", async () => {
@@ -318,7 +324,8 @@ describe("LessonNavigator", () => {
 
     expect(progressMocks.setLessonCompletion).toHaveBeenCalledWith(
       "tech-career-stories",
-      true
+      true,
+      "navigator"
     );
   });
 });

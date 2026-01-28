@@ -131,13 +131,15 @@ describe("NavigatorLayout", () => {
       </NavigatorLayout>
     );
 
-    const separator = screen.getByRole("separator");
     await waitFor(() => {
-      expect(separator).toHaveAttribute("aria-valuenow", "0");
+      expect(screen.queryByRole("separator")).toBeNull();
     });
 
     const navigator = screen.getByLabelText("Lesson navigator");
     expect(navigator).toHaveAttribute("aria-hidden", "true");
+    expect(
+      screen.getByRole("button", { name: /open navigator/i })
+    ).toBeInTheDocument();
   });
 
   it("scrolls to hash targets when clicking in-page links", () => {

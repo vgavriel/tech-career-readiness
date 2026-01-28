@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { PROGRESS_MERGE_MAX_BODY_BYTES, PROGRESS_MERGE_MAX_LESSONS } from "@/lib/limits";
 import { prisma } from "@/lib/prisma";
 
 const authMocks = vi.hoisted(() => ({
@@ -33,6 +34,20 @@ const makeJsonRequest = (
     method: "POST",
     headers: { "Content-Type": "application/json", Origin: origin },
     body: JSON.stringify(body),
+  });
+};
+
+const makeRawJsonRequest = (
+  url: string,
+  body: string,
+  options: { origin?: string } = {}
+) => {
+  const { origin = new URL(url).origin } = options;
+
+  return new Request(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Origin: origin },
+    body,
   });
 };
 
@@ -97,6 +112,61 @@ describe("integration: /api/progress", () => {
     );
 
     expect(response.status).toBe(400);
+  });
+
+  it("rejects malformed JSON payloads", async () => {
+    authMocks.getServerSession.mockResolvedValue({
+      user: {
+        email: "progress-bad-json@example.com",
+        name: "Bad JSON",
+        image: null,
+      },
+    });
+
+    const { POST } = await getProgressRoute();
+    const response = await POST(
+      makeRawJsonRequest(
+        "http://localhost/api/progress",
+        "{bad-json"
+      )
+    );
+
+    expect(response.status).toBe(400);
+  });
+
+  it("rejects payloads that exceed the body limit", async () => {
+    authMocks.getServerSession.mockResolvedValue({
+      user: {
+        email: "progress-too-large@example.com",
+        name: "Too Large",
+        image: null,
+      },
+    });
+
+    const originalMaxBytes = process.env.MAX_JSON_BODY_BYTES;
+    process.env.MAX_JSON_BODY_BYTES = "20";
+
+    try {
+      const { POST } = await getProgressRoute();
+      const response = await POST(
+        makeRawJsonRequest(
+          "http://localhost/api/progress",
+          JSON.stringify({
+            lessonSlug: "start-to-finish-roadmap",
+            completed: true,
+            padding: "this payload is too large",
+          })
+        )
+      );
+
+      expect(response.status).toBe(413);
+    } finally {
+      if (originalMaxBytes === undefined) {
+        delete process.env.MAX_JSON_BODY_BYTES;
+      } else {
+        process.env.MAX_JSON_BODY_BYTES = originalMaxBytes;
+      }
+    }
   });
 
   it("marks a lesson complete and incomplete", async () => {
@@ -225,6 +295,57 @@ describe("integration: /api/progress", () => {
 });
 
 describe("integration: /api/progress/merge", () => {
+  it("rejects payloads with too many lesson slugs", async () => {
+    authMocks.getServerSession.mockResolvedValue({
+      user: {
+        email: "progress-merge-limit@example.com",
+        name: "Merge Limit",
+        image: null,
+      },
+    });
+
+    const lessonSlugs = Array.from(
+      { length: PROGRESS_MERGE_MAX_LESSONS + 1 },
+      (_, index) => `lesson-${index}`
+    );
+
+    const { POST } = await getMergeRoute();
+
+    const response = await POST(
+      makeJsonRequest("http://localhost/api/progress/merge", {
+        lessonSlugs,
+      })
+    );
+
+    expect(response.status).toBe(400);
+  });
+
+  it("rejects payloads that exceed the body size limit", async () => {
+    authMocks.getServerSession.mockResolvedValue({
+      user: {
+        email: "progress-merge-size@example.com",
+        name: "Merge Size",
+        image: null,
+      },
+    });
+
+    const oversizedPayload = JSON.stringify({
+      lessonSlugs: ["start-to-finish-roadmap"],
+      padding: "x".repeat(PROGRESS_MERGE_MAX_BODY_BYTES + 100),
+    });
+
+    const { POST } = await getMergeRoute();
+
+    const response = await POST(
+      makeRawJsonRequest(
+        "http://localhost/api/progress/merge",
+        oversizedPayload
+      )
+    );
+
+    expect(response.status).toBe(413);
+  });
+
   it("merges guest progress entries", async () => {
     authMocks.getServerSession.mockResolvedValue({
       user: {

@@ -4,106 +4,20 @@ import Link from "next/link";
 import { useMemo } from "react";
 
 import { useProgress } from "@/components/progress-provider";
-import type { RoadmapModule } from "@/components/roadmap-module-list";
 import SignInCta from "@/components/sign-in-cta";
 import { FOCUS_OPTIONS, type FocusKey } from "@/lib/focus-options";
-import { isExtraCreditLesson } from "@/lib/lesson-classification";
-
-/**
- * Flattened lesson metadata used for progress ordering.
- */
-type OrderedLesson = {
-  id: string;
-  slug: string;
-  title: string;
-  order: number;
-  moduleOrder: number;
-};
+import { buildProgressSummaries, type ProgressSummaryModule } from "@/lib/progress-summary";
 
 /**
  * Props for the roadmap progress summary card.
  */
 type RoadmapProgressSummaryProps = {
-  modules: RoadmapModule[];
-  focusModules?: RoadmapModule[] | null;
+  modules: ProgressSummaryModule[];
+  focusModules?: ProgressSummaryModule[] | null;
   focusKey?: FocusKey | null;
   showExtraCredit?: boolean;
   showNextLesson?: boolean;
   showSignIn?: boolean;
-};
-
-type ProgressSummary = {
-  orderedLessons: OrderedLesson[];
-  totalLessons: number;
-  completedCount: number;
-  progressPercent: number;
-  continueLesson?: OrderedLesson;
-  firstLesson?: OrderedLesson;
-  allComplete: boolean;
-  progressLabel: string;
-};
-
-/**
- * Build ordered lessons from module data for progress calculations.
- */
-const buildOrderedLessons = (modules: RoadmapModule[]): OrderedLesson[] =>
-  modules.flatMap((module) =>
-    module.lessons.map((lesson) => ({
-      id: lesson.id,
-      slug: lesson.slug,
-      title: lesson.title,
-      order: lesson.order,
-      moduleOrder: module.order,
-    }))
-  );
-
-const buildProgressSummaryFromLessons = (
-  orderedLessons: OrderedLesson[],
-  completedSet: Set<string>,
-  isReady: boolean
-): ProgressSummary => {
-  const totalLessons = orderedLessons.length;
-  const completedCount = orderedLessons.reduce(
-    (count, lesson) =>
-      count + (completedSet.has(lesson.slug) ? 1 : 0),
-    0
-  );
-  const continueLesson = orderedLessons.find(
-    (lesson) => !completedSet.has(lesson.slug)
-  );
-  const firstLesson = orderedLessons[0];
-  const allComplete = isReady && totalLessons > 0 && completedCount >= totalLessons;
-  const progressPercent =
-    totalLessons === 0 ? 0 : Math.round((completedCount / totalLessons) * 100);
-  const progressLabel = isReady
-    ? `${completedCount} of ${totalLessons} complete`
-    : "Loading progress...";
-
-  return {
-    orderedLessons,
-    totalLessons,
-    completedCount,
-    progressPercent,
-    continueLesson,
-    firstLesson,
-    allComplete,
-    progressLabel,
-  };
-};
-
-const splitLessonsByCredit = (lessons: OrderedLesson[]) => {
-  const coreLessons: OrderedLesson[] = [];
-  const extraLessons: OrderedLesson[] = [];
-
-  for (const lesson of lessons) {
-    if (isExtraCreditLesson(lesson)) {
-      extraLessons.push(lesson);
-    } else {
-      coreLessons.push(lesson);
-    }
-  }
-
-  return { coreLessons, extraLessons };
 };
 
 /**
@@ -122,54 +36,27 @@ export default function RoadmapProgressSummary({
   showSignIn = true,
 }: RoadmapProgressSummaryProps) {
   const { completedLessonSlugs, isAuthenticated, isMerging, isReady } = useProgress();
-  const completedSet = useMemo(
-    () => new Set(completedLessonSlugs),
-    [completedLessonSlugs]
+  const { coreSummary, extraSummary, focusSummary, activeSummary } = useMemo(
+    () =>
+      buildProgressSummaries({
+        modules,
+        completedLessonSlugs,
+        isReady,
+        focusKey,
+        focusModules,
+      }),
+    [completedLessonSlugs, focusKey, focusModules, isReady, modules]
   );
-  const orderedLessons = useMemo(() => buildOrderedLessons(modules), [modules]);
-  const { coreLessons, extraLessons } = useMemo(
-    () => splitLessonsByCredit(orderedLessons),
-    [orderedLessons]
-  );
-  const coreSummary = useMemo(
-    () => buildProgressSummaryFromLessons(coreLessons, completedSet, isReady),
-    [coreLessons, completedSet, isReady]
-  );
-  const extraSummary = useMemo(
-    () => buildProgressSummaryFromLessons(extraLessons, completedSet, isReady),
-    [extraLessons, completedSet, isReady]
-  );
-  const focusSummary = useMemo(() => {
-    if (!focusKey || !focusModules || focusModules.length === 0) {
-      return null;
-    }
-
-    const focusLessons = buildOrderedLessons(focusModules);
-    const { coreLessons: focusCoreLessons } =
-      splitLessonsByCredit(focusLessons);
-    const summary = buildProgressSummaryFromLessons(
-      focusCoreLessons,
-      completedSet,
-      isReady
-    );
-    if (summary.totalLessons === 0) {
-      return null;
-    }
-
-    return summary;
-  }, [completedSet, focusKey, focusModules, isReady]);
   const focusOption = focusKey
-    ? FOCUS_OPTIONS.find((option) => option.key === focusKey) ?? null
+    ? (FOCUS_OPTIONS.find((option) => option.key === focusKey) ?? null)
     : null;
-  const activeSummary = focusSummary ?? coreSummary;
   const progressValue = Math.min(100, Math.max(0, coreSummary.progressPercent));
   const ringRadius = 44;
   const ringStroke = 10;
   const ringCircumference = 2 * Math.PI * ringRadius;
   const ringOffset = ringCircumference * (1 - progressValue / 100);
 
-  const primaryLesson =
-    activeSummary.continueLesson ?? activeSummary.firstLesson;
+  const primaryLesson = activeSummary.continueLesson ?? activeSummary.firstLesson;
 
   let ctaLabel = "Check back soon";
   if (primaryLesson) {
@@ -196,11 +83,7 @@ export default function RoadmapProgressSummary({
           aria-valuenow={progressValue}
           aria-valuetext={coreSummary.progressLabel}
         >
-          <svg
-            className="h-full w-full -rotate-90"
-            viewBox="0 0 100 100"
-            aria-hidden="true"
-          >
+          <svg className="h-full w-full -rotate-90" viewBox="0 0 100 100" aria-hidden="true">
             <circle
               cx="50"
               cy="50"
@@ -226,9 +109,7 @@ export default function RoadmapProgressSummary({
           </div>
         </div>
         <div className="space-y-1">
-          <p className="text-base font-semibold text-[color:var(--ink-600)]">
-            {progressTitle}
-          </p>
+          <p className="text-base font-semibold text-[color:var(--ink-600)]">{progressTitle}</p>
           <p className="text-lg font-semibold text-[color:var(--ink-900)]">
             {coreSummary.progressLabel}
           </p>
@@ -237,7 +118,7 @@ export default function RoadmapProgressSummary({
 
       {focusSummary && focusOption ? (
         <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4">
-          <p className="text-xs font-semibold text-[color:var(--ink-500)]">
+          <p className="text-sm font-semibold text-[color:var(--ink-500)]">
             Focus: {focusOption.label}
           </p>
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-[color:var(--ink-900)]">
@@ -249,9 +130,7 @@ export default function RoadmapProgressSummary({
 
       {showExtraCredit && extraSummary.totalLessons > 0 ? (
         <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4">
-          <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-            Extra credit
-          </p>
+          <p className="text-sm font-semibold text-[color:var(--ink-500)]">Extra credit</p>
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-[color:var(--ink-900)]">
             <span>{extraSummary.progressLabel}</span>
             <span>{extraSummary.progressPercent}%</span>
@@ -269,22 +148,18 @@ export default function RoadmapProgressSummary({
       ) : null}
 
       {showNextLesson && primaryLesson && activeSummary.continueLesson ? (
-        <p className="text-xs text-[color:var(--ink-500)]">
+        <p className="text-sm text-[color:var(--ink-500)]">
           Up next: Lesson {activeSummary.continueLesson.moduleOrder}.
           {activeSummary.continueLesson.order} - {activeSummary.continueLesson.title}
         </p>
       ) : null}
 
       {isMerging ? (
-        <p className="text-xs text-[color:var(--ink-500)]">
-          Syncing guest progress...
-        </p>
+        <p className="text-sm text-[color:var(--ink-500)]">Syncing guest progress...</p>
       ) : null}
 
       {!isAuthenticated && showSignIn ? (
-        <SignInCta
-          className="inline-flex min-h-11 items-center px-3 text-xs font-semibold text-[color:var(--accent-700)]"
-        >
+        <SignInCta className="inline-flex min-h-11 items-center px-3 text-sm font-semibold text-[color:var(--accent-700)]">
           Sign in to save progress
         </SignInCta>
       ) : null}

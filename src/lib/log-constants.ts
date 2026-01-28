@@ -1,5 +1,6 @@
 export const LOG_EVENT = {
   AUTH_REQUEST: "auth.request",
+  CLIENT_ERROR: "client.error",
   FOCUS_READ: "focus.read",
   FOCUS_WRITE: "focus.write",
   LESSON_CONTENT_REQUEST: "lesson_content.request",
@@ -11,6 +12,7 @@ export const LOG_EVENT = {
 
 export const LOG_ROUTE = {
   AUTH: "api/auth",
+  CLIENT_ERROR: "POST /api/client-error",
   FOCUS_READ: "GET /api/focus",
   FOCUS_WRITE: "POST /api/focus",
   LESSON_CONTENT: "GET /api/lesson-content",

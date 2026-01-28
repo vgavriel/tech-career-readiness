@@ -3,8 +3,8 @@
 import { createContext, useContext, useEffect, useMemo, useSyncExternalStore } from "react";
 
 import type { RoadmapModule } from "@/components/roadmap-module-list";
-import { orderModulesForFocus } from "@/lib/focus-order";
 import type { FocusKey } from "@/lib/focus-options";
+import { orderModulesForFocus } from "@/lib/focus-order";
 import {
   readFocusSelection,
   subscribeToFocusSelection,
@@ -24,11 +24,7 @@ type RoadmapFocusProviderProps = {
 
 const RoadmapFocusContext = createContext<RoadmapFocusContextValue | null>(null);
 
-export function RoadmapFocusProvider({
-  modules,
-  focusKey,
-  children,
-}: RoadmapFocusProviderProps) {
+export function RoadmapFocusProvider({ modules, focusKey, children }: RoadmapFocusProviderProps) {
   const storedFocusKey = useSyncExternalStore(
     subscribeToFocusSelection,
     () => readFocusSelection().focusKey ?? null,
@@ -55,11 +51,7 @@ export function RoadmapFocusProvider({
     [activeFocusKey, focusModules]
   );
 
-  return (
-    <RoadmapFocusContext.Provider value={value}>
-      {children}
-    </RoadmapFocusContext.Provider>
-  );
+  return <RoadmapFocusContext.Provider value={value}>{children}</RoadmapFocusContext.Provider>;
 }
 
 export const useRoadmapFocus = () => {

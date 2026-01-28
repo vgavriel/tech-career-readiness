@@ -3,9 +3,6 @@ import { notFound, redirect } from "next/navigation";
 import { getAuthenticatedUser } from "@/lib/auth-user";
 import { prisma } from "@/lib/prisma";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
 /**
  * Format timestamps for the admin analytics UI.
  */
@@ -95,33 +92,25 @@ export default async function AdminAnalyticsPage() {
         className="page-content mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-24 pt-14 md:pt-18"
       >
         <section className="flex flex-col gap-4">
-          <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-            Admin analytics
-          </p>
+          <p className="text-sm font-semibold text-[color:var(--ink-500)]">Admin analytics</p>
           <h1 className="font-display text-3xl text-[color:var(--ink-900)] md:text-4xl">
             Usage, progress, and timelines
           </h1>
           <div className="grid gap-4 md:grid-cols-3">
             <div className="rounded-3xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-soft)]">
-              <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-                Total users
-              </p>
+              <p className="text-sm font-semibold text-[color:var(--ink-500)]">Total users</p>
               <p className="mt-3 text-3xl font-semibold text-[color:var(--ink-900)]">
                 {totalUsers}
               </p>
             </div>
             <div className="rounded-3xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-soft)]">
-              <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-                Total lessons
-              </p>
+              <p className="text-sm font-semibold text-[color:var(--ink-500)]">Total lessons</p>
               <p className="mt-3 text-3xl font-semibold text-[color:var(--ink-900)]">
                 {totalLessons}
               </p>
             </div>
             <div className="rounded-3xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-5 shadow-[var(--shadow-soft)]">
-              <p className="text-xs font-semibold text-[color:var(--ink-500)]">
-                Admin
-              </p>
+              <p className="text-sm font-semibold text-[color:var(--ink-500)]">Admin</p>
               <p className="mt-3 text-base font-semibold text-[color:var(--ink-900)]">
                 {user.name ?? user.email}
               </p>
@@ -130,9 +119,7 @@ export default async function AdminAnalyticsPage() {
         </section>
 
         <section className="flex flex-col gap-6">
-          <h2 className="font-display text-2xl text-[color:var(--ink-900)]">
-            Learner progress
-          </h2>
+          <h2 className="font-display text-2xl text-[color:var(--ink-900)]">Learner progress</h2>
 
           {users.length === 0 ? (
             <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] p-6 text-sm text-[color:var(--ink-700)] shadow-[var(--shadow-soft)]">
@@ -141,9 +128,8 @@ export default async function AdminAnalyticsPage() {
           ) : (
             <div className="space-y-6">
               {users.map((learner) => {
-                const completedCount = new Set(
-                  learner.progress.map((entry) => entry.lessonId)
-                ).size;
+                const completedCount = new Set(learner.progress.map((entry) => entry.lessonId))
+                  .size;
                 const progressPercent = totalLessons
                   ? Math.round((completedCount / totalLessons) * 100)
                   : 0;
@@ -156,21 +142,21 @@ export default async function AdminAnalyticsPage() {
                   >
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+                        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
                           {learner.name ?? "Unnamed user"}
                         </p>
                         <p className="mt-2 text-sm font-semibold text-[color:var(--ink-900)]">
                           {learner.email}
                         </p>
-                        <p className="mt-1 text-xs text-[color:var(--ink-500)]">
+                        <p className="mt-1 text-sm text-[color:var(--ink-500)]">
                           Joined {formatTimestamp(learner.createdAt)}
                         </p>
                       </div>
-                    <div className="flex min-w-[200px] flex-col gap-2">
-                      <div className="flex items-center justify-between text-xs font-semibold text-[color:var(--ink-500)]">
-                        <span>Progress</span>
-                        <span>{progressPercent}%</span>
-                      </div>
+                      <div className="flex min-w-[200px] flex-col gap-2">
+                        <div className="flex items-center justify-between text-sm font-semibold text-[color:var(--ink-500)]">
+                          <span>Progress</span>
+                          <span>{progressPercent}%</span>
+                        </div>
                         <div className="h-2 w-full">
                           <svg
                             className="h-2 w-full"
@@ -196,21 +182,19 @@ export default async function AdminAnalyticsPage() {
                             />
                           </svg>
                         </div>
-                        <p className="text-xs text-[color:var(--ink-500)]">
+                        <p className="text-sm text-[color:var(--ink-500)]">
                           {completedCount} of {totalLessons} lessons complete
                         </p>
                       </div>
                     </div>
 
                     <details className="mt-6 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-100)] p-4">
-                      <summary className="min-h-11 cursor-pointer text-xs font-semibold text-[color:var(--ink-500)]">
+                      <summary className="min-h-11 cursor-pointer text-sm font-semibold text-[color:var(--ink-500)]">
                         Progress timeline ({learner.events.length})
                       </summary>
                       <div className="mt-4 grid gap-3">
                         {learner.events.length === 0 ? (
-                          <p className="text-sm text-[color:var(--ink-600)]">
-                            No activity yet.
-                          </p>
+                          <p className="text-sm text-[color:var(--ink-600)]">No activity yet.</p>
                         ) : (
                           learner.events.map((event) => {
                             const supersededBy = event.lesson.supersededBy;
@@ -218,9 +202,7 @@ export default async function AdminAnalyticsPage() {
                               ? `Superseded by Module ${supersededBy.module.order}.${supersededBy.order} - ${supersededBy.title}`
                               : null;
                             const statusLabel = event.lesson.isArchived
-                              ? ["Archived", supersededLabel]
-                                  .filter(Boolean)
-                                  .join(" • ")
+                              ? ["Archived", supersededLabel].filter(Boolean).join(" • ")
                               : supersededLabel;
 
                             return (
@@ -229,18 +211,16 @@ export default async function AdminAnalyticsPage() {
                                 className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] px-4 py-3 text-sm text-[color:var(--ink-700)]"
                               >
                                 <p className="font-semibold text-[color:var(--ink-900)]">
-                                  {event.action === "completed"
-                                    ? "Completed"
-                                    : "Marked incomplete"}{" "}
-                                  - Module {event.lesson.module.order}.
-                                  {event.lesson.order} - {event.lesson.title}
+                                  {event.action === "completed" ? "Completed" : "Marked incomplete"}{" "}
+                                  - Module {event.lesson.module.order}.{event.lesson.order} -{" "}
+                                  {event.lesson.title}
                                 </p>
                                 {statusLabel ? (
-                                  <p className="mt-1 text-xs text-[color:var(--ink-500)]">
+                                  <p className="mt-1 text-sm text-[color:var(--ink-500)]">
                                     {statusLabel}
                                   </p>
                                 ) : null}
-                                <p className="mt-1 text-xs text-[color:var(--ink-500)]">
+                                <p className="mt-1 text-sm text-[color:var(--ink-500)]">
                                   {formatTimestamp(event.createdAt)}
                                 </p>
                               </div>

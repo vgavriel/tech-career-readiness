@@ -3,6 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 process.env.NEXTAUTH_SECRET ??= "test-nextauth-secret";
 process.env.GOOGLE_CLIENT_ID ??= "test-google-client-id";
 process.env.GOOGLE_CLIENT_SECRET ??= "test-google-client-secret";
+process.env.ADMIN_EMAILS ??= "dev@example.com";
 process.env.LESSON_CONTENT_MOCK_HTML ??=
   "<h2>Lesson content</h2><p>Sample lesson content for tests.</p>";
 process.env.APP_ENV ??= "test";

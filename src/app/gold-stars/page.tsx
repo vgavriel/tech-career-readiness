@@ -1,34 +1,12 @@
 import RoadmapBadgeAwards from "@/components/roadmap-badge-awards";
-import { prisma } from "@/lib/prisma";
+import { getRoadmapModules } from "@/lib/roadmap-modules";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 /**
  * Render the Gold Stars overview for earned and in-progress milestones.
  */
 export default async function GoldStarsPage() {
-  const modules = await prisma.module.findMany({
-    orderBy: { order: "asc" },
-    select: {
-      id: true,
-      key: true,
-      title: true,
-      description: true,
-      order: true,
-      lessons: {
-        where: { isArchived: false },
-        orderBy: { order: "asc" },
-        select: {
-          id: true,
-          slug: true,
-          title: true,
-          order: true,
-          estimatedMinutes: true,
-        },
-      },
-    },
-  });
+  const modules = await getRoadmapModules();
 
   return (
     <div className="page-shell min-h-screen overflow-hidden">

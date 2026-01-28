@@ -1,20 +1,18 @@
 import { LessonProgressAction } from "@prisma/client";
-import { NextResponse } from "next/server";
 import { StatusCodes } from "http-status-codes";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { getAuthenticatedUser } from "@/lib/auth-user";
 import { errorResponse, parseJsonBody, unauthorizedResponse } from "@/lib/api-helpers";
+import { getAuthenticatedUser } from "@/lib/auth-user";
 import { withDbRetry } from "@/lib/db-retry";
 import { ERROR_MESSAGE } from "@/lib/http-constants";
-import { createRequestLogger } from "@/lib/logger";
 import { LOG_EVENT, LOG_REASON, LOG_ROUTE } from "@/lib/log-constants";
+import { createRequestLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { enforceRateLimit, RATE_LIMIT_BUCKET } from "@/lib/rate-limit";
 import { enforceStateChangeSecurity } from "@/lib/request-guard";
 import { resolveRequestId } from "@/lib/request-id";
-
-export const runtime = "nodejs";
 
 const progressUpdateSchema = z
   .object({
@@ -151,9 +149,7 @@ export async function POST(request: Request) {
   }
 
   const now = new Date();
-  const action = completed
-    ? LessonProgressAction.completed
-    : LessonProgressAction.incomplete;
+  const action = completed ? LessonProgressAction.completed : LessonProgressAction.incomplete;
 
   await withDbRetry(() =>
     prisma.$transaction([

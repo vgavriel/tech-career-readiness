@@ -3,7 +3,6 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import FocusPicker from "@/components/focus-picker";
-import { TEST_ID } from "@/components/test-ids";
 
 const focusMocks = vi.hoisted(() => ({
   setFocusKey: vi.fn(),
@@ -28,7 +27,7 @@ describe("FocusPicker", () => {
 
     const user = userEvent.setup();
     await user.selectOptions(
-      screen.getByTestId(TEST_ID.FOCUS_PICKER_SELECT),
+      screen.getByLabelText(/optional: choose a focus/i),
       "just-starting"
     );
 

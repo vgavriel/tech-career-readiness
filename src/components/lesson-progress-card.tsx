@@ -18,17 +18,9 @@ type LessonProgressCardProps = {
  * Provides a focused CTA to mark completion while reflecting merge/loading
  * state from progress context.
  */
-export default function LessonProgressCard({
-  lessonSlug,
-  lessonTitle,
-}: LessonProgressCardProps) {
-  const {
-    isLessonCompleted,
-    isAuthenticated,
-    isMerging,
-    isReady,
-    setLessonCompletion,
-  } = useProgress();
+export default function LessonProgressCard({ lessonSlug, lessonTitle }: LessonProgressCardProps) {
+  const { isLessonCompleted, isAuthenticated, isMerging, isReady, setLessonCompletion } =
+    useProgress();
   const completed = isReady && isLessonCompleted(lessonSlug);
   const disabled = !isReady || isMerging;
   const statusLabel = !isReady
@@ -43,16 +35,14 @@ export default function LessonProgressCard({
 
   return (
     <div className="rounded-[24px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
-      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+      <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
         Progress
       </p>
-      <p className="mt-3 text-sm font-semibold text-[color:var(--ink-900)]">
-        {lessonTitle}
-      </p>
-      <p className="mt-1 text-xs text-[color:var(--ink-500)]">{statusLabel}</p>
+      <p className="mt-3 text-sm font-semibold text-[color:var(--ink-900)]">{lessonTitle}</p>
+      <p className="mt-1 text-sm text-[color:var(--ink-500)]">{statusLabel}</p>
 
       <button
-        className={`mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-full px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.2em] shadow-[var(--shadow-soft)] transition disabled:cursor-not-allowed disabled:opacity-60 ${
+        className={`mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.2em] shadow-[var(--shadow-soft)] transition disabled:cursor-not-allowed disabled:opacity-60 ${
           completed
             ? "border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-900)] hover:border-[color:var(--ink-900)]"
             : "bg-[color:var(--accent-700)] text-[color:var(--wash-0)] hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
@@ -65,20 +55,14 @@ export default function LessonProgressCard({
         {completed ? "Mark incomplete" : "Mark complete"}
       </button>
 
-      <p className="mt-3 text-xs text-[color:var(--ink-500)]">
-        {helperText}
-      </p>
+      <p className="mt-3 text-sm text-[color:var(--ink-500)]">{helperText}</p>
 
       {isMerging ? (
-        <p className="mt-2 text-xs text-[color:var(--ink-500)]">
-          Syncing guest progress...
-        </p>
+        <p className="mt-2 text-sm text-[color:var(--ink-500)]">Syncing guest progress...</p>
       ) : null}
 
       {!isAuthenticated ? (
-        <SignInCta
-          className="mt-3 inline-flex min-h-11 items-center px-3 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-700)]"
-        >
+        <SignInCta className="mt-3 inline-flex min-h-11 items-center px-3 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-700)]">
           Sign in to save progress
         </SignInCta>
       ) : null}

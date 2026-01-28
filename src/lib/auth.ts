@@ -1,6 +1,6 @@
 import type { NextAuthOptions } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 
 import { devAuthDefaults } from "@/lib/dev-auth";
 import { getEnv, requireEnv } from "@/lib/env";
@@ -35,10 +35,39 @@ const providers = isLocalAuth
       }),
     ];
 
+const resolveSessionVersion = async (email?: string | null) => {
+  if (!email) {
+    return 0;
+  }
+
+  const { prisma } = await import("@/lib/prisma");
+  const user = await prisma.user.findUnique({
+    where: { email: email.toLowerCase() },
+    select: { sessionVersion: true },
+  });
+
+  return user?.sessionVersion ?? 0;
+};
+
 export const authOptions: NextAuthOptions = {
   providers,
   session: {
     strategy: "jwt",
   },
   secret: nextAuthSecret,
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user || token.sessionVersion === undefined) {
+        token.sessionVersion = await resolveSessionVersion(token.email);
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.sessionVersion =
+          typeof token.sessionVersion === "number" ? token.sessionVersion : 0;
+      }
+      return session;
+    },
+  },
 };

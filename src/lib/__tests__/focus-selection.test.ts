@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
-  FOCUS_SELECTION_STORAGE_KEY,
   clearFocusSelection,
+  FOCUS_SELECTION_STORAGE_KEY,
   hasFocusSelection,
   readFocusSelection,
   subscribeToFocusSelection,
@@ -60,6 +60,11 @@ describe("focus selection storage", () => {
       removeItem: () => {
         throw new Error("blocked");
       },
+      clear: () => {
+        throw new Error("blocked");
+      },
+      key: () => null,
+      length: 0,
     } as Storage;
 
     Object.defineProperty(window, "localStorage", {
@@ -109,14 +114,10 @@ describe("focus selection storage", () => {
     const listener = vi.fn();
     const unsubscribe = subscribeToFocusSelection(listener);
 
-    window.dispatchEvent(
-      new StorageEvent("storage", { key: "other-key" })
-    );
+    window.dispatchEvent(new StorageEvent("storage", { key: "other-key" }));
     expect(listener).not.toHaveBeenCalled();
 
-    window.dispatchEvent(
-      new StorageEvent("storage", { key: FOCUS_SELECTION_STORAGE_KEY })
-    );
+    window.dispatchEvent(new StorageEvent("storage", { key: FOCUS_SELECTION_STORAGE_KEY }));
     window.dispatchEvent(new Event("tcr-focus-selection-change"));
 
     expect(listener).toHaveBeenCalledTimes(2);
@@ -124,9 +125,7 @@ describe("focus selection storage", () => {
     listener.mockClear();
     unsubscribe();
 
-    window.dispatchEvent(
-      new StorageEvent("storage", { key: FOCUS_SELECTION_STORAGE_KEY })
-    );
+    window.dispatchEvent(new StorageEvent("storage", { key: FOCUS_SELECTION_STORAGE_KEY }));
     window.dispatchEvent(new Event("tcr-focus-selection-change"));
 
     expect(listener).not.toHaveBeenCalled();

@@ -1,5 +1,5 @@
 import type { Prisma } from "@prisma/client";
-import { type Session, getServerSession } from "next-auth";
+import { getServerSession, type Session } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { getEnv } from "@/lib/env";
@@ -25,6 +25,7 @@ const userSelect = {
   image: true,
   isAdmin: true,
   focusKey: true,
+  sessionVersion: true,
 } satisfies Prisma.UserSelect;
 
 type DbUser = Prisma.UserGetPayload<{ select: typeof userSelect }>;
@@ -67,20 +68,18 @@ export async function getAuthenticatedUser(
 ): Promise<AuthenticatedUser | null> {
   const env = getEnv();
   const session =
-    sessionOverride !== undefined
-      ? sessionOverride
-      : await getServerSession(authOptions);
+    sessionOverride !== undefined ? sessionOverride : await getServerSession(authOptions);
   const email = session?.user?.email;
+  const sessionVersion =
+    typeof session?.user?.sessionVersion === "number" ? session.user.sessionVersion : 0;
 
   if (!email) {
     return null;
   }
 
   const normalizedEmail = email.toLowerCase();
-  const allowAdminBootstrap = env.isPreview || env.isTest;
-  const adminEmails = allowAdminBootstrap
-    ? normalizeEmailList(process.env.ADMIN_EMAILS)
-    : [];
+  const allowAdminBootstrap = env.isLocal || env.isPreview || env.isTest;
+  const adminEmails = allowAdminBootstrap ? normalizeEmailList(process.env.ADMIN_EMAILS) : [];
   const shouldBeAdmin = allowAdminBootstrap && adminEmails.includes(normalizedEmail);
 
   const sessionName = session.user?.name ?? undefined;
@@ -115,6 +114,10 @@ export async function getAuthenticatedUser(
       }
       throw error;
     }
+  }
+
+  if (existingUser.sessionVersion !== sessionVersion) {
+    return null;
   }
 
   const updateData: Prisma.UserUpdateInput = {};

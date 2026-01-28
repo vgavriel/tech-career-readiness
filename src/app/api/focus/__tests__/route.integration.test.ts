@@ -26,6 +26,20 @@ const makeJsonRequest = (
   });
 };
 
+const makeRawJsonRequest = (
+  url: string,
+  body: string,
+  options: { origin?: string } = {}
+) => {
+  const { origin = new URL(url).origin } = options;
+
+  return new Request(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Origin: origin },
+    body,
+  });
+};
+
 beforeEach(() => {
   authMocks.getServerSession.mockReset();
 });
@@ -81,6 +95,57 @@ describe("integration: /api/focus", () => {
     );
 
     expect(response.status).toBe(400);
+  });
+
+  it("rejects malformed JSON payloads", async () => {
+    authMocks.getServerSession.mockResolvedValue({
+      user: {
+        email: "focus-bad-json@example.com",
+        name: "Bad Focus JSON",
+        image: null,
+      },
+    });
+
+    const { POST } = await getFocusRoute();
+    const response = await POST(
+      makeRawJsonRequest("http://localhost/api/focus", "{bad-json")
+    );
+
+    expect(response.status).toBe(400);
+  });
+
+  it("rejects payloads that exceed the body limit", async () => {
+    authMocks.getServerSession.mockResolvedValue({
+      user: {
+        email: "focus-too-large@example.com",
+        name: "Focus Too Large",
+        image: null,
+      },
+    });
+
+    const originalMaxBytes = process.env.MAX_JSON_BODY_BYTES;
+    process.env.MAX_JSON_BODY_BYTES = "20";
+
+    try {
+      const { POST } = await getFocusRoute();
+      const response = await POST(
+        makeRawJsonRequest(
+          "http://localhost/api/focus",
+          JSON.stringify({
+            focusKey: "just-starting",
+            padding: "this payload is too large",
+          })
+        )
+      );
+
+      expect(response.status).toBe(413);
+    } finally {
+      if (originalMaxBytes === undefined) {
+        delete process.env.MAX_JSON_BODY_BYTES;
+      } else {
+        process.env.MAX_JSON_BODY_BYTES = originalMaxBytes;
+      }
+    }
   });
 
   it("updates and returns the stored focus key", async () => {

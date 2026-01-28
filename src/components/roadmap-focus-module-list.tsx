@@ -1,20 +1,14 @@
 "use client";
 
-import RoadmapModuleList, {
-  type RoadmapModule,
-} from "@/components/roadmap-module-list";
 import { useRoadmapFocus } from "@/components/roadmap-focus-provider";
+import RoadmapModuleList, { type RoadmapModule } from "@/components/roadmap-module-list";
 
 type RoadmapFocusModuleListProps = {
   modules: RoadmapModule[];
 };
 
-export default function RoadmapFocusModuleList({
-  modules,
-}: RoadmapFocusModuleListProps) {
+export default function RoadmapFocusModuleList({ modules }: RoadmapFocusModuleListProps) {
   const { focusKey, focusModules } = useRoadmapFocus();
 
-  return (
-    <RoadmapModuleList modules={focusModules ?? modules} focusKey={focusKey} />
-  );
+  return <RoadmapModuleList modules={focusModules ?? modules} focusKey={focusKey} />;
 }

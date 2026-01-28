@@ -1,9 +1,8 @@
 "use client";
 
-import { useId, type ChangeEvent } from "react";
+import { type ChangeEvent, useId } from "react";
 
 import { useFocus } from "@/components/focus-provider";
-import { TEST_ID } from "@/components/test-ids";
 import { FOCUS_OPTIONS, type FocusKey } from "@/lib/focus-options";
 
 type FocusPickerProps = {
@@ -21,13 +20,14 @@ export default function FocusPicker({ className }: FocusPickerProps) {
 
   return (
     <section
+      id="focus-picker"
       className={`space-y-4 rounded-[26px] border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6 ${
         className ?? ""
       }`}
     >
       <div>
         <h2 className="font-display text-2xl text-[color:var(--ink-900)]">
-          Optional: choose a module.
+          <label htmlFor={selectId}>Optional: choose a focus.</label>
         </h2>
       </div>
 
@@ -37,15 +37,12 @@ export default function FocusPicker({ className }: FocusPickerProps) {
             id={selectId}
             value={focusKey ?? ""}
             onChange={handleChange}
-            data-testid={TEST_ID.FOCUS_PICKER_SELECT}
-            aria-label="Focus"
-            className="min-h-11 w-full appearance-none rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-2.5 pr-11 text-[0.95rem] font-semibold text-[color:var(--ink-900)] shadow-[var(--shadow-soft)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--focus-ring)]"
+            data-testid="focus-picker-select"
+            className="min-h-11 w-full appearance-none rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-2.5 pr-11 text-[0.95rem] font-semibold text-[color:var(--ink-900)] shadow-[var(--shadow-soft)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--focus-ring)] cursor-pointer"
           >
-            <option value="">
-              Full roadmap: See every core lesson, in order.
-            </option>
+            <option value="">Full roadmap: See every core lesson, in order.</option>
             {FOCUS_OPTIONS.map((option) => (
-              <option key={option.key} value={option.key}>
+              <option key={option.key} value={option.key} className="cursor-pointer">
                 {option.label}: {option.description}
               </option>
             ))}

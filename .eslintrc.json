@@ -1,0 +1,13 @@
+{
+  "ignorePatterns": [
+    "node_modules",
+    ".next",
+    "coverage",
+    "test-results",
+    ".playwright-browsers",
+    "public",
+    "dist",
+    "build",
+    "out"
+  ]
+}

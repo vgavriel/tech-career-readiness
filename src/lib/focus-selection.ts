@@ -1,4 +1,4 @@
-import { normalizeFocusKey, type FocusKey } from "@/lib/focus-options";
+import { type FocusKey, normalizeFocusKey } from "@/lib/focus-options";
 
 export type FocusSelectionState = {
   version: 1;
@@ -118,8 +118,7 @@ export const clearFocusSelection = () => {
   }
 };
 
-export const hasFocusSelection = (state: FocusSelectionState) =>
-  Boolean(state.focusKey);
+export const hasFocusSelection = (state: FocusSelectionState) => Boolean(state.focusKey);
 
 export const subscribeToFocusSelection = (callback: () => void) => {
   if (typeof window === "undefined") {
