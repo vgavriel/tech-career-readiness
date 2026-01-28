@@ -12,6 +12,9 @@ export type DocStyleMaps = {
   styleNodes: HTMLStyleElement[];
 };
 
+/**
+ * Build style maps from embedded style tags in a Google Doc HTML page.
+ */
 export const extractStyleMaps = (document: Document): DocStyleMaps => {
   const styleNodes = Array.from(document.querySelectorAll<HTMLStyleElement>("style"));
   const classStyleMap = new Map<string, Set<string>>();

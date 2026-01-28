@@ -12,14 +12,23 @@ type LessonContentCacheEntry = {
 
 const lessonContentCache = new Map<string, LessonContentCacheEntry>();
 
+/**
+ * Default TTL for cached lesson HTML.
+ */
 export const LESSON_CONTENT_CACHE_TTL_MS = 60 * 60 * 1000;
 const LESSON_CONTENT_CACHE_VERSION = 3;
 const LESSON_CONTENT_CACHE_PREFIX = `lesson-content:v${LESSON_CONTENT_CACHE_VERSION}`;
 
 let redisClient: Redis | null | undefined;
 
+/**
+ * Build a versioned cache key for a lesson id.
+ */
 const buildCacheKey = (lessonId: string) => `${LESSON_CONTENT_CACHE_PREFIX}:${lessonId}`;
 
+/**
+ * Resolve a shared Redis client when available and allowed in env.
+ */
 const getRedisClient = () => {
   if (redisClient !== undefined) {
     return redisClient;

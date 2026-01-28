@@ -1,13 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-const RETRYABLE_ERROR_CODES = new Set([
-  "P1001",
-  "P1002",
-  "P1008",
-  "P1017",
-  "P2024",
-  "P2034",
-]);
+const RETRYABLE_ERROR_CODES = new Set(["P1001", "P1002", "P1008", "P1017", "P2024", "P2034"]);
 
 /**
  * Sleep for the specified duration in milliseconds.
@@ -47,6 +40,8 @@ const isRetryableError = (error: unknown) => {
 
 /**
  * Execute a Prisma operation with retry/backoff for transient errors.
+ *
+ * Uses exponential backoff with jitter and stops after maxRetries.
  */
 export const withDbRetry = async <T>(
   operation: () => Promise<T>,

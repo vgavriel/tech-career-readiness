@@ -7,6 +7,9 @@ import {
   isAllowedImageSrc,
 } from "@/lib/lesson-content/images";
 
+/**
+ * Remove undefined attribute values while preserving provided keys.
+ */
 const normalizeAttributes = (
   attribs: Record<string, string | undefined>
 ): sanitizeHtml.Attributes =>
@@ -14,12 +17,18 @@ const normalizeAttributes = (
     Object.entries(attribs).filter(([, value]) => value !== undefined)
   ) as sanitizeHtml.Attributes;
 
+/**
+ * Normalize table cell attributes and strip inline styles.
+ */
 const addTableCellAttributes = (attribs: sanitizeHtml.Attributes) =>
   normalizeAttributes({
     ...stripInlineStyle(attribs),
     valign: "top",
   });
 
+/**
+ * Determine if a link points outside the app and should open in a new tab.
+ */
 const isExternalHref = (href: string | undefined) => {
   if (!href) {
     return false;
@@ -54,6 +63,9 @@ const isExternalHref = (href: string | undefined) => {
   }
 };
 
+/**
+ * Sanitize and normalize lesson HTML from Google Docs.
+ */
 const sanitizeOptions: sanitizeHtml.IOptions = {
   allowedTags: [...sanitizeHtml.defaults.allowedTags, "img"],
   allowedAttributes: {
@@ -157,4 +169,9 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
   },
 };
 
+/**
+ * Sanitize lesson HTML using the shared allowlist and transforms.
+ *
+ * Ensures external links open safely and strips untrusted images/styles.
+ */
 export const sanitizeLessonHtml = (html: string) => sanitizeHtml(html, sanitizeOptions);

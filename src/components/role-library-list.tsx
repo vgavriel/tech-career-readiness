@@ -4,16 +4,25 @@ import Link from "next/link";
 
 import { useProgress } from "@/components/progress-provider";
 
+/**
+ * Lesson metadata for role library cards.
+ */
 export type RoleLibraryLesson = {
   id: string;
   slug: string;
   title: string;
 };
 
+/**
+ * Props for the role library list.
+ */
 type RoleLibraryListProps = {
   lessons: RoleLibraryLesson[];
 };
 
+/**
+ * Render role deep-dive lessons with completion badges.
+ */
 export default function RoleLibraryList({ lessons }: RoleLibraryListProps) {
   const { isLessonCompleted, isReady } = useProgress();
   const isLoading = !isReady;

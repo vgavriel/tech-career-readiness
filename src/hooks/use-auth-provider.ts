@@ -5,12 +5,18 @@ import { useEffect, useState } from "react";
 
 import { devAuthDefaults } from "@/lib/dev-auth";
 
+/**
+ * Simplified auth provider metadata for UI rendering.
+ */
 type AuthProvider = {
   id: string;
   label: string;
   isDev: boolean;
 };
 
+/**
+ * Hook state for the active auth provider.
+ */
 type AuthProviderState = {
   provider: AuthProvider;
   isReady: boolean;
@@ -28,6 +34,9 @@ const devProvider: AuthProvider = {
   isDev: true,
 };
 
+/**
+ * Pick the best available provider from the NextAuth providers list.
+ */
 const resolveProvider = (
   providers?: Record<string, { id: string; name?: string }>
 ): AuthProvider => {
@@ -50,6 +59,9 @@ const resolveProvider = (
   return googleProvider;
 };
 
+/**
+ * Load the active auth provider for the sign-in UI.
+ */
 export const useAuthProvider = () => {
   const [state, setState] = useState<AuthProviderState>({
     provider: googleProvider,
@@ -85,6 +97,9 @@ export const useAuthProvider = () => {
   return state;
 };
 
+/**
+ * Build sign-in options, including dev credentials when applicable.
+ */
 export const buildSignInOptions = (providerId: string, callbackUrl?: string) => {
   const options: Record<string, string> = {};
 

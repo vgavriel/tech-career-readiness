@@ -13,6 +13,9 @@ import {
 
 import { type FocusKey, normalizeFocusKey } from "@/lib/focus-options";
 
+/**
+ * Public API exposed by the focus context.
+ */
 type FocusContextValue = {
   focusKey: FocusKey | null;
   isReady: boolean;
@@ -20,6 +23,9 @@ type FocusContextValue = {
   setFocusKey: (focusKey: FocusKey | null) => Promise<void>;
 };
 
+/**
+ * Props for the focus provider component.
+ */
 type FocusProviderProps = {
   initialFocusKey?: FocusKey | null;
   children: React.ReactNode;
@@ -27,6 +33,9 @@ type FocusProviderProps = {
 
 const FocusContext = createContext<FocusContextValue | null>(null);
 
+/**
+ * Fetch the current user's focus selection from the API.
+ */
 const fetchFocusSelection = async () => {
   const response = await fetch("/api/focus", {
     method: "GET",
@@ -41,6 +50,9 @@ const fetchFocusSelection = async () => {
   return normalizeFocusKey(body.focusKey);
 };
 
+/**
+ * Persist a focus selection to the API.
+ */
 const updateFocusSelection = async (focusKey: FocusKey | null) => {
   const response = await fetch("/api/focus", {
     method: "POST",
@@ -56,6 +68,9 @@ const updateFocusSelection = async (focusKey: FocusKey | null) => {
   return normalizeFocusKey(body.focusKey);
 };
 
+/**
+ * Provide focus selection state and actions to the client tree.
+ */
 export function FocusProvider({ initialFocusKey = null, children }: FocusProviderProps) {
   const { data: session, status } = useSession();
   const [focusKey, setFocusKeyState] = useState<FocusKey | null>(initialFocusKey);
@@ -141,6 +156,9 @@ export function FocusProvider({ initialFocusKey = null, children }: FocusProvide
   return <FocusContext.Provider value={value}>{children}</FocusContext.Provider>;
 }
 
+/**
+ * Read the focus context, throwing if used outside the provider.
+ */
 export const useFocus = () => {
   const context = useContext(FocusContext);
   if (!context) {

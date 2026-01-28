@@ -1,14 +1,26 @@
+/**
+ * Credit category for a lesson.
+ */
 export type LessonCredit = "core" | "extra";
 
+/**
+ * Classification metadata for a lesson.
+ */
 export type LessonClassification = {
   credit: LessonCredit;
   roleDeepDive: boolean;
 };
 
+/**
+ * Classification result with mapping status.
+ */
 export type LessonClassificationResult = LessonClassification & {
   isMapped: boolean;
 };
 
+/**
+ * Slugs that represent role deep-dive lessons.
+ */
 export const ROLE_DEEP_DIVE_LESSON_SLUGS = [
   "learn-about-ai-engineering",
   "learn-about-ar-vr-engineering",
@@ -67,6 +79,9 @@ const CORE_LESSON_SLUGS = [
 
 const ROLE_DEEP_DIVE_SET = new Set(ROLE_DEEP_DIVE_LESSON_SLUGS);
 
+/**
+ * In-memory lookup table of lesson slug to classification.
+ */
 export const LESSON_CLASSIFICATIONS: Record<string, LessonClassification> = {};
 
 for (const slug of CORE_LESSON_SLUGS) {
@@ -86,9 +101,15 @@ const DEFAULT_CLASSIFICATION: LessonClassificationResult = {
   isMapped: false,
 };
 
+/**
+ * Look up a classification entry by slug.
+ */
 const lookupClassification = (key?: string | null) =>
   key ? LESSON_CLASSIFICATIONS[key] : undefined;
 
+/**
+ * Resolve a lesson's classification, returning a default when unmapped.
+ */
 export const getLessonClassification = (lesson: {
   slug?: string | null;
 }): LessonClassificationResult => {
@@ -100,10 +121,14 @@ export const getLessonClassification = (lesson: {
   return DEFAULT_CLASSIFICATION;
 };
 
-export const isExtraCreditLesson = (lesson: {
-  slug?: string | null;
-}) => getLessonClassification(lesson).credit === "extra";
+/**
+ * Test whether a lesson is extra credit.
+ */
+export const isExtraCreditLesson = (lesson: { slug?: string | null }) =>
+  getLessonClassification(lesson).credit === "extra";
 
-export const isRoleDeepDiveLesson = (lesson: {
-  slug?: string | null;
-}) => getLessonClassification(lesson).roleDeepDive;
+/**
+ * Test whether a lesson is a role deep-dive.
+ */
+export const isRoleDeepDiveLesson = (lesson: { slug?: string | null }) =>
+  getLessonClassification(lesson).roleDeepDive;

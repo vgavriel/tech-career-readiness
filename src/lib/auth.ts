@@ -35,6 +35,9 @@ const providers = isLocalAuth
       }),
     ];
 
+/**
+ * Resolve the current session version for an email address.
+ */
 const resolveSessionVersion = async (email?: string | null) => {
   if (!email) {
     return 0;
@@ -49,6 +52,9 @@ const resolveSessionVersion = async (email?: string | null) => {
   return user?.sessionVersion ?? 0;
 };
 
+/**
+ * NextAuth configuration with environment-specific providers and session versioning.
+ */
 export const authOptions: NextAuthOptions = {
   providers,
   session: {

@@ -7,10 +7,16 @@ import type { RoadmapModule } from "@/components/roadmap-module-list";
 import RoadmapProgressSummary from "@/components/roadmap-progress-summary";
 import { orderModulesForFocus } from "@/lib/focus-order";
 
+/**
+ * Props for the homepage progress card.
+ */
 type HomeProgressCardProps = {
   modules: RoadmapModule[];
 };
 
+/**
+ * Render a compact progress summary for the homepage.
+ */
 export default function HomeProgressCard({ modules }: HomeProgressCardProps) {
   const { focusKey } = useFocus();
   const focusModules = useMemo(

@@ -10,14 +10,26 @@ const GOOGLE_DOCS_BANNER_PHRASES = [
   "Updated automatically every 5 minutes",
 ];
 
+/**
+ * Normalize banner text by collapsing whitespace.
+ */
 const normalizeBannerText = (text: string) => text.replace(/\\s+/g, " ").trim();
+/**
+ * Normalize content text for case-insensitive comparisons.
+ */
 const normalizeContentText = (text: string) => normalizeBannerText(text).toLowerCase();
 
 const LESSON_FOOTER_PHRASES = ["questions? reach out", "author:", "last updated"];
 
+/**
+ * Test whether the text has any non-whitespace content.
+ */
 const hasMeaningfulText = (text: string | null | undefined) =>
   normalizeBannerText(text ?? "") !== "";
 
+/**
+ * Remove empty heading tags from the lesson content.
+ */
 const removeEmptyHeadings = (root: Element) => {
   for (const heading of Array.from(root.querySelectorAll("h1,h2,h3,h4,h5,h6"))) {
     if (!hasMeaningfulText(heading.textContent)) {
@@ -26,6 +38,9 @@ const removeEmptyHeadings = (root: Element) => {
   }
 };
 
+/**
+ * Normalize heading levels to avoid skipping directly to deep levels.
+ */
 const normalizeHeadingLevels = (root: Element) => {
   const headings = Array.from(root.querySelectorAll("h1,h2,h3,h4,h5,h6"));
   let currentLevel = 1;
@@ -54,12 +69,18 @@ const normalizeHeadingLevels = (root: Element) => {
   }
 };
 
+/**
+ * Apply a bold class to primary headings for consistent styling.
+ */
 const boldenPrimaryHeadings = (root: Element) => {
   for (const heading of Array.from(root.querySelectorAll("h1"))) {
     heading.classList.add("doc-bold");
   }
 };
 
+/**
+ * Remove anchor tags that don't contribute content or navigation.
+ */
 const stripEmptyAnchors = (root: Element) => {
   for (const anchor of Array.from(root.querySelectorAll("a"))) {
     if (anchor.hasAttribute("id") || anchor.hasAttribute("name")) {
@@ -74,6 +95,9 @@ const stripEmptyAnchors = (root: Element) => {
   }
 };
 
+/**
+ * Remove standard Google Docs banner content and duplicates.
+ */
 const stripGoogleDocsBanner = (root: Element) => {
   for (const element of Array.from(root.querySelectorAll("*"))) {
     const text = normalizeBannerText(element.textContent ?? "");
@@ -92,6 +116,9 @@ const stripGoogleDocsBanner = (root: Element) => {
   }
 };
 
+/**
+ * Identify HR-like divider elements (rules or punctuation-only text).
+ */
 const isDividerElement = (element: Element) => {
   if (element.tagName === "HR") {
     return true;
@@ -106,6 +133,9 @@ const isDividerElement = (element: Element) => {
   return stripped.length === 0;
 };
 
+/**
+ * Strip the trailing lesson footer block when it matches known phrases.
+ */
 const stripLessonFooter = (root: Element) => {
   const blocks = Array.from(root.querySelectorAll("p, li, hr"));
   if (blocks.length === 0) {
@@ -164,12 +194,18 @@ const stripLessonFooter = (root: Element) => {
   }
 };
 
+/**
+ * Remove horizontal rules from the lesson content.
+ */
 const stripHorizontalRules = (root: Element) => {
   for (const rule of Array.from(root.querySelectorAll("hr"))) {
     rule.remove();
   }
 };
 
+/**
+ * Trim leading whitespace-only text or empty nodes in an element.
+ */
 const trimLeadingWhitespaceNodes = (element: Element) => {
   let node: ChildNode | null = element.firstChild;
   while (node) {
@@ -203,12 +239,18 @@ const trimLeadingWhitespaceNodes = (element: Element) => {
   }
 };
 
+/**
+ * Normalize whitespace inside table cells.
+ */
 const trimTableCellWhitespace = (root: Element) => {
   for (const cell of Array.from(root.querySelectorAll("td, th"))) {
     trimLeadingWhitespaceNodes(cell);
   }
 };
 
+/**
+ * Find the element that contains the lesson title.
+ */
 const findLessonTitleElement = (root: Element) => {
   const titleCandidate = root.querySelector(".doc-title, .title");
   if (titleCandidate && normalizeBannerText(titleCandidate.textContent ?? "")) {
@@ -225,6 +267,9 @@ const findLessonTitleElement = (root: Element) => {
   return null;
 };
 
+/**
+ * Remove the lesson title element and clean up empty wrappers.
+ */
 const removeLessonTitle = (root: Element) => {
   const titleElement = findLessonTitleElement(root);
   if (!titleElement) {
@@ -239,12 +284,21 @@ const removeLessonTitle = (root: Element) => {
   }
 };
 
+/**
+ * Remove style nodes from the lesson HTML to prevent inline leakage.
+ */
 const stripStyleNodes = (styleNodes: HTMLStyleElement[]) => {
   for (const node of styleNodes) {
     node.remove();
   }
 };
 
+/**
+ * Extract and normalize lesson HTML from raw Google Docs output.
+ *
+ * Removes Google Docs banners/footers, normalizes headings, trims table
+ * whitespace, and applies doc style classes before returning the content body.
+ */
 export const extractLessonHtml = (rawHtml: string) => {
   const virtualConsole = new VirtualConsole();
   const dom = new JSDOM(rawHtml, { virtualConsole });

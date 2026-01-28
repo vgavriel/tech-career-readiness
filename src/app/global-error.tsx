@@ -5,6 +5,9 @@ import { useEffect } from "react";
 
 import { reportClientError } from "@/lib/client-error";
 
+/**
+ * Props supplied to the global error boundary.
+ */
 type GlobalErrorProps = {
   error: Error & { digest?: string };
   reset: () => void;

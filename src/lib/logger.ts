@@ -1,6 +1,12 @@
 import { getEnv } from "@/lib/env";
 
+/**
+ * Supported log levels for structured logging.
+ */
 export type LogLevel = "debug" | "info" | "warn" | "error";
+/**
+ * Additional structured fields to include in log payloads.
+ */
 export type LogFields = Record<string, unknown>;
 
 const LOG_LEVEL_RANK: Record<LogLevel, number> = {
@@ -25,6 +31,9 @@ const REDACT_KEY_EXACT = new Set([
 
 const REDACT_KEY_CONTAINS = ["token", "secret", "password"];
 
+/**
+ * Resolve the effective log level, defaulting by environment.
+ */
 const resolveLogLevel = (value: string | undefined, env: ReturnType<typeof getEnv>): LogLevel => {
   const normalized = value?.toLowerCase();
   if (normalized && normalized in LOG_LEVEL_RANK) {
@@ -40,6 +49,9 @@ const resolveLogLevel = (value: string | undefined, env: ReturnType<typeof getEn
   return "info";
 };
 
+/**
+ * Normalize the sampling rate to the [0,1] range.
+ */
 const parseSampleRate = (value: string | undefined): number => {
   if (!value) {
     return 1;
@@ -60,6 +72,9 @@ const logConfig = {
   sampleRate: parseSampleRate(env.LOG_SAMPLE_RATE),
 };
 
+/**
+ * Decide whether a field key should be redacted.
+ */
 const shouldRedactKey = (key: string) => {
   const normalized = key.toLowerCase();
   if (REDACT_KEY_EXACT.has(normalized)) {
@@ -68,17 +83,19 @@ const shouldRedactKey = (key: string) => {
   return REDACT_KEY_CONTAINS.some((candidate) => normalized.includes(candidate));
 };
 
+/**
+ * Serialize Error instances into structured fields.
+ */
 const serializeError = (error: Error) => ({
   name: error.name,
   message: error.message,
   stack: error.stack,
 });
 
-const redactValue = (
-  value: unknown,
-  depth: number,
-  seen: WeakSet<object>
-): unknown => {
+/**
+ * Recursively redact sensitive values and guard against cycles.
+ */
+const redactValue = (value: unknown, depth: number, seen: WeakSet<object>): unknown => {
   if (value instanceof Error) {
     return serializeError(value);
   }
@@ -107,16 +124,20 @@ const redactValue = (
 
   const output: Record<string, unknown> = {};
   for (const [key, entry] of Object.entries(value as Record<string, unknown>)) {
-    output[key] = shouldRedactKey(key)
-      ? REDACTED_VALUE
-      : redactValue(entry, depth + 1, seen);
+    output[key] = shouldRedactKey(key) ? REDACTED_VALUE : redactValue(entry, depth + 1, seen);
   }
   return output;
 };
 
+/**
+ * Apply redaction rules to a field payload.
+ */
 const redactFields = (fields: LogFields = {}) =>
   redactValue(fields, 0, new WeakSet<object>()) as LogFields;
 
+/**
+ * Determine whether a given log level should be emitted.
+ */
 const shouldLog = (level: LogLevel) => {
   if (LOG_LEVEL_RANK[level] < logConfig.minRank) {
     return false;
@@ -133,6 +154,9 @@ const shouldLog = (level: LogLevel) => {
   return Math.random() < logConfig.sampleRate;
 };
 
+/**
+ * Emit a structured log entry to the console at the requested level.
+ */
 const emitLog = (level: LogLevel, message: string, fields?: LogFields) => {
   if (!shouldLog(level)) {
     return;
@@ -162,6 +186,9 @@ const emitLog = (level: LogLevel, message: string, fields?: LogFields) => {
   console.error(entry);
 };
 
+/**
+ * Structured logger wrapper with built-in redaction and sampling.
+ */
 export const logger = {
   debug: (message: string, fields?: LogFields) => emitLog("debug", message, fields),
   info: (message: string, fields?: LogFields) => emitLog("info", message, fields),
@@ -169,9 +196,18 @@ export const logger = {
   error: (message: string, fields?: LogFields) => emitLog("error", message, fields),
 };
 
+/**
+ * Log levels allowed for request-scoped logging.
+ */
 export type RequestLogLevel = Exclude<LogLevel, "debug">;
+/**
+ * Request logger signature used by API handlers.
+ */
 export type RequestLogger = (level: RequestLogLevel, details?: LogFields) => void;
 
+/**
+ * Create a request-scoped logger that injects request metadata.
+ */
 export const createRequestLogger = (options: {
   event: string;
   route: string;

@@ -5,10 +5,16 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
 import { useFocus } from "@/components/focus-provider";
 import { FOCUS_OPTIONS, type FocusKey } from "@/lib/focus-options";
 
+/**
+ * Props for the focus menu toggle/dropdown.
+ */
 type FocusMenuProps = {
   inlinePanel?: boolean;
 };
 
+/**
+ * Render a focus menu that supports keyboard and outside-click dismissal.
+ */
 export default function FocusMenu({ inlinePanel = false }: FocusMenuProps) {
   const { focusKey, isUpdating, setFocusKey } = useFocus();
   const [isOpen, setIsOpen] = useState(false);
@@ -37,6 +43,9 @@ export default function FocusMenu({ inlinePanel = false }: FocusMenuProps) {
       return;
     }
 
+    /**
+     * Close the menu when clicking outside the panel.
+     */
     const handlePointerDown = (event: PointerEvent) => {
       if (!menuRef.current) {
         return;
@@ -47,6 +56,9 @@ export default function FocusMenu({ inlinePanel = false }: FocusMenuProps) {
       }
     };
 
+    /**
+     * Close the menu on Escape.
+     */
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         closeMenu(true);
@@ -67,6 +79,9 @@ export default function FocusMenu({ inlinePanel = false }: FocusMenuProps) {
     };
   }, [closeMenu, isOpen]);
 
+  /**
+   * Persist the selected focus and close the menu.
+   */
   const handleSelect = (nextFocusKey: FocusKey | null) => {
     void setFocusKey(nextFocusKey);
     closeMenu(true);

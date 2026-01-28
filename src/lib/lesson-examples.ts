@@ -1,3 +1,6 @@
+/**
+ * Sample lesson content used for previews or mocks.
+ */
 export type LessonExample = {
   slug: string;
   title: string;
@@ -78,5 +81,7 @@ const lessonExamples = new Map<string, LessonExample>([
   ],
 ]);
 
-export const getLessonExample = (slug: string) =>
-  lessonExamples.get(slug) ?? null;
+/**
+ * Return a static lesson example for the given slug.
+ */
+export const getLessonExample = (slug: string) => lessonExamples.get(slug) ?? null;

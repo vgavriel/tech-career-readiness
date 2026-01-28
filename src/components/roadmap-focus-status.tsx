@@ -7,10 +7,16 @@ import { useRoadmapFocus } from "@/components/roadmap-focus-provider";
 import { FOCUS_OPTIONS } from "@/lib/focus-options";
 import { clearFocusSelection } from "@/lib/focus-selection";
 
+/**
+ * Props for the focus status banner.
+ */
 type RoadmapFocusStatusProps = {
   totalModules: number;
 };
 
+/**
+ * Display active focus details and allow clearing the selection.
+ */
 export default function RoadmapFocusStatus({ totalModules }: RoadmapFocusStatusProps) {
   const router = useRouter();
   const { focusKey, focusModules } = useRoadmapFocus();
@@ -23,6 +29,9 @@ export default function RoadmapFocusStatus({ totalModules }: RoadmapFocusStatusP
     return null;
   }
 
+  /**
+   * Clear the focus selection and refresh the roadmap view.
+   */
   const handleClear = () => {
     clearFocusSelection();
     router.replace("/roadmap");

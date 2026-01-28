@@ -12,15 +12,24 @@ import { FOCUS_OPTIONS } from "@/lib/focus-options";
 import { orderModulesForFocus } from "@/lib/focus-order";
 import { isExtraCreditLesson } from "@/lib/lesson-classification";
 
+/**
+ * Props for the lesson navigator rail.
+ */
 type LessonNavigatorProps = {
   modules: RoadmapModule[];
   currentLessonSlug: string;
   currentModuleKey: string | null;
 };
 
+/**
+ * Build a stable DOM id for scrolling to a lesson entry.
+ */
 const buildLessonId = (lessonSlug: string) =>
   `navigator-lesson-${lessonSlug.replace(/[^a-z0-9-]/gi, "-")}`;
 
+/**
+ * Render the lesson navigator with progress controls and focus filtering.
+ */
 export default function LessonNavigator({
   modules,
   currentLessonSlug,
@@ -138,6 +147,9 @@ export default function LessonNavigator({
     };
   }, [isLessonCompleted, isReady, visibleModules]);
 
+  /**
+   * Render a single lesson row with completion controls.
+   */
   const renderLessonRow = (
     lesson: RoadmapModule["lessons"][number],
     moduleOrder: number,

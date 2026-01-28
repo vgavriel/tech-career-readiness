@@ -2,10 +2,16 @@
 
 import { useProgress } from "@/components/progress-provider";
 
+/**
+ * Props for the lesson progress toggle button.
+ */
 type LessonProgressToggleProps = {
   lessonSlug: string;
 };
 
+/**
+ * Toggle completion state for a lesson with error feedback.
+ */
 export default function LessonProgressToggle({ lessonSlug }: LessonProgressToggleProps) {
   const {
     isLessonCompleted,

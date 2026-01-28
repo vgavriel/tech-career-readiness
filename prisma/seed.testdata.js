@@ -9,6 +9,9 @@ const TEST_LESSON = {
   moduleKey: "start-here",
 };
 
+/**
+ * Upsert the test-only lesson content error record.
+ */
 async function seedTestLesson(prisma) {
   const moduleRecord = await prisma.module.findUnique({
     where: { key: TEST_LESSON.moduleKey },
@@ -45,6 +48,9 @@ async function seedTestLesson(prisma) {
   await prisma.lesson.create({ data });
 }
 
+/**
+ * Run the standard seed plus test-only lesson creation.
+ */
 async function runSeed() {
   const { prisma, pool } = createSeedClient();
   try {

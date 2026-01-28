@@ -23,6 +23,9 @@ export const assertAllowedLessonUrl = (publishedUrl: string) => {
   return url;
 };
 
+/**
+ * Fetch a URL with an AbortController timeout.
+ */
 const fetchWithTimeout = async (input: string, init: RequestInit, timeoutMs: number) => {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -36,6 +39,8 @@ const fetchWithTimeout = async (input: string, init: RequestInit, timeoutMs: num
 
 /**
  * Fetch published lesson HTML, following safe redirects up to the limit.
+ *
+ * Enforces HTTPS + allowlist checks for redirects.
  */
 export const fetchLessonHtml = async (url: URL, maxRedirects = 3) => {
   let currentUrl = url;

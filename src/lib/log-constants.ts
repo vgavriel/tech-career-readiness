@@ -1,3 +1,6 @@
+/**
+ * Log event identifiers used in structured logging.
+ */
 export const LOG_EVENT = {
   AUTH_REQUEST: "auth.request",
   CLIENT_ERROR: "client.error",
@@ -10,6 +13,9 @@ export const LOG_EVENT = {
   PROGRESS_MERGE: "progress.merge",
 } as const;
 
+/**
+ * Route identifiers used in structured logging.
+ */
 export const LOG_ROUTE = {
   AUTH: "api/auth",
   CLIENT_ERROR: "POST /api/client-error",
@@ -21,6 +27,9 @@ export const LOG_ROUTE = {
   PROGRESS_MERGE: "POST /api/progress/merge",
 } as const;
 
+/**
+ * Standardized log reason codes.
+ */
 export const LOG_REASON = {
   BLOCKED: "blocked",
   INVALID_FOCUS_KEY: "invalid_focus_key",
@@ -32,6 +41,9 @@ export const LOG_REASON = {
   UNAUTHORIZED: "unauthorized",
 } as const;
 
+/**
+ * Cache hit/miss labels for logging.
+ */
 export const LOG_CACHE = {
   HIT: "hit",
   MISS: "miss",

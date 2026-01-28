@@ -3,6 +3,9 @@ import { StatusCodes } from "http-status-codes";
 import { errorResponse } from "@/lib/api-helpers";
 import { ERROR_MESSAGE, HTTP_HEADER } from "@/lib/http-constants";
 
+/**
+ * HTTP methods that mutate server state and should be guarded.
+ */
 const STATE_CHANGING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
 /**
@@ -27,10 +30,7 @@ const buildAllowedOrigins = (request: Request) => {
     origins.add(requestOrigin);
   }
 
-  const configuredOrigins = [
-    process.env.NEXTAUTH_URL,
-    process.env.NEXT_PUBLIC_SITE_URL,
-  ];
+  const configuredOrigins = [process.env.NEXTAUTH_URL, process.env.NEXT_PUBLIC_SITE_URL];
 
   for (const origin of configuredOrigins) {
     const normalized = origin ? normalizeOrigin(origin) : null;
@@ -48,6 +48,8 @@ const buildAllowedOrigins = (request: Request) => {
 
 /**
  * Guard state-changing requests with JSON content type and origin checks.
+ *
+ * Returns a response to block the request or null if the request is allowed.
  */
 export const enforceStateChangeSecurity = (request: Request) => {
   if (!STATE_CHANGING_METHODS.has(request.method.toUpperCase())) {
@@ -56,10 +58,7 @@ export const enforceStateChangeSecurity = (request: Request) => {
 
   const contentType = request.headers.get(HTTP_HEADER.CONTENT_TYPE) ?? "";
   if (!contentType.toLowerCase().includes("application/json")) {
-    return errorResponse(
-      ERROR_MESSAGE.UNSUPPORTED_MEDIA_TYPE,
-      StatusCodes.UNSUPPORTED_MEDIA_TYPE
-    );
+    return errorResponse(ERROR_MESSAGE.UNSUPPORTED_MEDIA_TYPE, StatusCodes.UNSUPPORTED_MEDIA_TYPE);
   }
 
   const originHeader = request.headers.get(HTTP_HEADER.ORIGIN);
@@ -71,10 +70,7 @@ export const enforceStateChangeSecurity = (request: Request) => {
       : null;
 
   if (!origin) {
-    return errorResponse(
-      ERROR_MESSAGE.ORIGIN_REQUIRED,
-      StatusCodes.FORBIDDEN
-    );
+    return errorResponse(ERROR_MESSAGE.ORIGIN_REQUIRED, StatusCodes.FORBIDDEN);
   }
 
   const allowedOrigins = buildAllowedOrigins(request);

@@ -5,14 +5,23 @@ import { type ChangeEvent, useId } from "react";
 import { useFocus } from "@/components/focus-provider";
 import { FOCUS_OPTIONS, type FocusKey } from "@/lib/focus-options";
 
+/**
+ * Props for the focus picker dropdown.
+ */
 type FocusPickerProps = {
   className?: string;
 };
 
+/**
+ * Render the focus selection dropdown.
+ */
 export default function FocusPicker({ className }: FocusPickerProps) {
   const { focusKey, setFocusKey } = useFocus();
   const selectId = useId();
 
+  /**
+   * Update focus selection when the dropdown changes.
+   */
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
     void setFocusKey(value ? (value as FocusKey) : null);

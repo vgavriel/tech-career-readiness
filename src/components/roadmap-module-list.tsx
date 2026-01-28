@@ -72,6 +72,9 @@ export default function RoadmapModuleList({ modules, focusKey = null }: RoadmapM
           0
         );
 
+        /**
+         * Render a list of lesson rows with completion indicators.
+         */
         const renderLessons = (lessons: RoadmapLesson[]) => (
           <ol className="grid gap-3">
             {lessons.map((lesson) => {
