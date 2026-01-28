@@ -41,7 +41,8 @@ renders it as safe HTML inside the lesson page.
 ## Tradeoffs and constraints
 
 - HTML fidelity depends on how Google Docs exports content.
-- Images still load from external hosts unless restricted or proxied.
+- Images load only from allowlisted Google hosts (`docs.google.com`,
+  `googleusercontent.com`, `gstatic.com`) unless we later proxy them.
 
 ## Related docs
 

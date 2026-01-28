@@ -61,7 +61,7 @@ npm run env:preview
 npm run dev:preview
 ```
 
-See `docs/environments.md` for the full workflow.
+See [Environments](docs/environments.md) for the full workflow.
 
 ## Environment variables (short version)
 
@@ -79,7 +79,7 @@ Additional configuration:
 
 ## Testing
 
-See `docs/testing-strategy.md` for the full plan.
+See [Testing Strategy](`docs/testing-strategy.md) for the full plan.
 
 Local integration + E2E quickstart (requires Docker):
 
@@ -89,11 +89,3 @@ npm run test:e2e:local
 ```
 
 If port `5434` is already in use, set `TEST_DB_PORT` to a free port.
-
-## Key code locations
-
-- App routes: `src/app`
-- Shared UI: `src/components`
-- Server/lib logic: `src/lib`
-- Prisma schema: `prisma/schema.prisma`
-- Tests: `src/**/__tests__`
