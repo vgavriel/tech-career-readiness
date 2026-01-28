@@ -12,15 +12,15 @@ export default function LessonNotFound() {
         className="page-content mx-auto flex w-full max-w-4xl flex-col px-5 pb-20 pt-12 md:pt-20"
       >
         <section className="rounded-2xl border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-6 shadow-[var(--shadow-card)]">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
             Lesson not found
           </p>
           <h1 className="font-display mt-4 text-3xl text-[color:var(--ink-900)] md:text-4xl">
             We could not find that lesson.
           </h1>
           <p className="mt-3 text-sm text-[color:var(--ink-700)] md:text-base">
-            The lesson may have moved or been renamed. Jump back into the
-            curriculum to pick the next lesson in sequence.
+            The lesson may have moved or been renamed. Jump back into the curriculum to pick the
+            next lesson in sequence.
           </p>
           <div className="mt-6 flex flex-wrap gap-4">
             <Link

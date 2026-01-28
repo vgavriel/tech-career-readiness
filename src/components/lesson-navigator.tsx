@@ -358,7 +358,7 @@ export default function LessonNavigator({
       </div>
       {progressError?.source === "navigator" ? (
         <div
-          className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-xs text-[color:var(--ink-700)]"
+          className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-sm text-[color:var(--ink-700)]"
           role="status"
         >
           <div className="flex flex-wrap items-center justify-between gap-2">

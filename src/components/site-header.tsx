@@ -118,7 +118,7 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
               ) : (
                 <div className="flex flex-col items-end gap-1">
                   <button
-                    className="min-h-11 whitespace-nowrap rounded-full bg-[color:var(--accent-700)] px-4 text-xs font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="min-h-11 whitespace-nowrap rounded-full bg-[color:var(--accent-700)] px-4 text-sm font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)] disabled:cursor-not-allowed disabled:opacity-60"
                     onClick={() => signIn(authProvider.id, signInOptions)}
                     type="button"
                     disabled={!isReady}
@@ -194,7 +194,7 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
             </nav>
             {showFocusMenu ? (
               <div className="grid gap-3 border-t border-[color:var(--line-soft)] pt-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)] whitespace-nowrap">
+                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)] whitespace-nowrap">
                   Focus
                 </p>
                 <FocusMenu inlinePanel />

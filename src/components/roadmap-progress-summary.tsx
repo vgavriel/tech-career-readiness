@@ -118,7 +118,7 @@ export default function RoadmapProgressSummary({
 
       {focusSummary && focusOption ? (
         <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4">
-          <p className="text-xs font-semibold text-[color:var(--ink-500)]">
+          <p className="text-sm font-semibold text-[color:var(--ink-500)]">
             Focus: {focusOption.label}
           </p>
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-[color:var(--ink-900)]">
@@ -130,7 +130,7 @@ export default function RoadmapProgressSummary({
 
       {showExtraCredit && extraSummary.totalLessons > 0 ? (
         <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-4">
-          <p className="text-xs font-semibold text-[color:var(--ink-500)]">Extra credit</p>
+          <p className="text-sm font-semibold text-[color:var(--ink-500)]">Extra credit</p>
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-[color:var(--ink-900)]">
             <span>{extraSummary.progressLabel}</span>
             <span>{extraSummary.progressPercent}%</span>
@@ -148,18 +148,18 @@ export default function RoadmapProgressSummary({
       ) : null}
 
       {showNextLesson && primaryLesson && activeSummary.continueLesson ? (
-        <p className="text-xs text-[color:var(--ink-500)]">
+        <p className="text-sm text-[color:var(--ink-500)]">
           Up next: Lesson {activeSummary.continueLesson.moduleOrder}.
           {activeSummary.continueLesson.order} - {activeSummary.continueLesson.title}
         </p>
       ) : null}
 
       {isMerging ? (
-        <p className="text-xs text-[color:var(--ink-500)]">Syncing guest progress...</p>
+        <p className="text-sm text-[color:var(--ink-500)]">Syncing guest progress...</p>
       ) : null}
 
       {!isAuthenticated && showSignIn ? (
-        <SignInCta className="inline-flex min-h-11 items-center px-3 text-xs font-semibold text-[color:var(--accent-700)]">
+        <SignInCta className="inline-flex min-h-11 items-center px-3 text-sm font-semibold text-[color:var(--accent-700)]">
           Sign in to save progress
         </SignInCta>
       ) : null}

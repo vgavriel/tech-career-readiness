@@ -6,9 +6,7 @@ type LessonProgressToggleProps = {
   lessonSlug: string;
 };
 
-export default function LessonProgressToggle({
-  lessonSlug,
-}: LessonProgressToggleProps) {
+export default function LessonProgressToggle({ lessonSlug }: LessonProgressToggleProps) {
   const {
     isLessonCompleted,
     isReady,
@@ -19,13 +17,8 @@ export default function LessonProgressToggle({
   } = useProgress();
   const completed = isReady && isLessonCompleted(lessonSlug);
   const disabled = !isReady || isMerging;
-  const label = !isReady
-    ? "Loading..."
-    : completed
-      ? "Mark incomplete"
-      : "Mark complete";
-  const errorMessage =
-    progressError?.source === "toggle" ? progressError.message : null;
+  const label = !isReady ? "Loading..." : completed ? "Mark incomplete" : "Mark complete";
+  const errorMessage = progressError?.source === "toggle" ? progressError.message : null;
 
   return (
     <div className="flex flex-col items-start gap-2">
@@ -45,7 +38,7 @@ export default function LessonProgressToggle({
       </button>
       {errorMessage ? (
         <div
-          className="flex flex-wrap items-center gap-2 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-2 text-xs text-[color:var(--ink-700)]"
+          className="flex flex-wrap items-center gap-2 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-2 text-sm text-[color:var(--ink-700)]"
           role="status"
         >
           <span>{errorMessage}</span>

@@ -77,10 +77,7 @@ export default function FocusMenu({ inlinePanel = false }: FocusMenuProps) {
     : "absolute right-0 z-20 mt-3 w-[min(420px,92vw)] max-h-[70vh] overflow-y-auto rounded-2xl border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] p-4 shadow-[var(--shadow-card)] lg:overflow-visible lg:max-h-none";
 
   return (
-    <div
-      ref={menuRef}
-      className={`relative w-full ${inlinePanel ? "" : "lg:w-auto"}`}
-    >
+    <div ref={menuRef} className={`relative w-full ${inlinePanel ? "" : "lg:w-auto"}`}>
       <button
         type="button"
         onClick={() => setIsOpen((open) => !open)}
@@ -92,9 +89,7 @@ export default function FocusMenu({ inlinePanel = false }: FocusMenuProps) {
         aria-haspopup="true"
         aria-controls="focus-menu-panel"
       >
-        <span className="truncate">
-          {activeOption ? `Focus: ${activeOption.label}` : "Focus"}
-        </span>
+        <span className="truncate">{activeOption ? `Focus: ${activeOption.label}` : "Focus"}</span>
         <svg
           aria-hidden="true"
           className={`h-3 w-3 transition ${isOpen ? "rotate-180" : ""}`}
@@ -116,12 +111,10 @@ export default function FocusMenu({ inlinePanel = false }: FocusMenuProps) {
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <p className="text-sm text-[color:var(--ink-700)]">
-                Filter by focus.
-              </p>
+              <p className="text-sm text-[color:var(--ink-700)]">Filter by focus.</p>
             </div>
             {isUpdating ? (
-              <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2.5 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
+              <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2.5 py-1 text-sm font-semibold text-[color:var(--ink-700)]">
                 Saving...
               </span>
             ) : null}
@@ -148,16 +141,14 @@ export default function FocusMenu({ inlinePanel = false }: FocusMenuProps) {
                       {option.label}
                     </span>
                   </div>
-                  <span className="text-xs">{option.description}</span>
+                  <span className="text-sm">{option.description}</span>
                 </button>
               );
             })}
           </div>
 
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[color:var(--line-soft)] pt-3 text-xs font-semibold text-[color:var(--ink-600)]">
-            <div
-              className={`relative group ${isClearDisabled ? "cursor-not-allowed" : ""}`}
-            >
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[color:var(--line-soft)] pt-3 text-sm font-semibold text-[color:var(--ink-600)]">
+            <div className={`relative group ${isClearDisabled ? "cursor-not-allowed" : ""}`}>
               <button
                 type="button"
                 className="min-h-11 rounded-full border border-[color:var(--line-soft)] px-3 py-1.5 text-[color:var(--ink-700)] transition enabled:cursor-pointer enabled:hover:border-[color:var(--ink-900)] disabled:cursor-not-allowed disabled:opacity-60"
@@ -171,7 +162,7 @@ export default function FocusMenu({ inlinePanel = false }: FocusMenuProps) {
                 <span
                   id={clearTooltipId}
                   role="tooltip"
-                  className="pointer-events-none absolute left-1/2 top-0 z-10 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)] opacity-0 shadow-[var(--shadow-soft)] transition group-hover:opacity-100"
+                  className="pointer-events-none absolute left-1/2 top-0 z-10 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 py-1 text-sm font-semibold text-[color:var(--ink-700)] opacity-0 shadow-[var(--shadow-soft)] transition group-hover:opacity-100"
                 >
                   No focus selected.
                 </span>

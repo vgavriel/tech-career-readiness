@@ -108,7 +108,7 @@ export default function RoadmapModuleList({ modules, focusKey = null }: RoadmapM
                         <span className="sr-only">Incomplete lesson</span>
                       )}
                     </span>
-                    <span className="text-xs font-semibold text-[color:var(--ink-500)]">
+                    <span className="text-sm font-semibold text-[color:var(--ink-500)]">
                       {module.order}.{lesson.order}
                     </span>
                     <Link
@@ -119,7 +119,7 @@ export default function RoadmapModuleList({ modules, focusKey = null }: RoadmapM
                     </Link>
                   </div>
                   {lesson.estimatedMinutes ? (
-                    <span className="self-start text-xs font-semibold text-[color:var(--ink-500)] sm:self-auto">
+                    <span className="self-start text-sm font-semibold text-[color:var(--ink-500)] sm:self-auto">
                       {lesson.estimatedMinutes} min
                     </span>
                   ) : null}
@@ -137,20 +137,20 @@ export default function RoadmapModuleList({ modules, focusKey = null }: RoadmapM
             <div className="relative space-y-6">
               <div className="space-y-3">
                 <div className="flex flex-wrap items-center gap-3">
-                  <p className="text-xs font-semibold text-[color:var(--ink-500)]">
+                  <p className="text-sm font-semibold text-[color:var(--ink-500)]">
                     Module {module.order}
                   </p>
                   {hasCore ? (
-                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
+                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-sm font-semibold text-[color:var(--ink-700)]">
                       {coreLessons.length} core
                     </span>
                   ) : (
-                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
+                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-sm font-semibold text-[color:var(--ink-700)]">
                       Extra credit only
                     </span>
                   )}
                   {hasExtra ? (
-                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
+                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-sm font-semibold text-[color:var(--ink-700)]">
                       {hasCore ? `+${extraLessons.length} extra` : `${extraLessons.length} lessons`}
                     </span>
                   ) : null}
@@ -168,7 +168,7 @@ export default function RoadmapModuleList({ modules, focusKey = null }: RoadmapM
               <div className="space-y-4">
                 {hasCore ? (
                   <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
-                    <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-semibold text-[color:var(--ink-500)]">
+                    <div className="flex flex-wrap items-center justify-between gap-3 text-sm font-semibold text-[color:var(--ink-500)]">
                       <span>Core lessons</span>
                       <span>
                         {isReady
@@ -183,7 +183,7 @@ export default function RoadmapModuleList({ modules, focusKey = null }: RoadmapM
                 {hasExtra ? (
                   hasCore ? (
                     <details className="group rounded-2xl border border-dashed border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5">
-                      <summary className="summary-clean flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-xs font-semibold text-[color:var(--ink-500)]">
+                      <summary className="summary-clean flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-[color:var(--ink-500)]">
                         <span>Extra credit (optional)</span>
                         <span className="flex items-center gap-2 text-[color:var(--ink-500)]">
                           {isReady
@@ -205,7 +205,7 @@ export default function RoadmapModuleList({ modules, focusKey = null }: RoadmapM
                     </details>
                   ) : (
                     <div className="rounded-2xl border border-dashed border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-5">
-                      <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-semibold text-[color:var(--ink-500)]">
+                      <div className="flex flex-wrap items-center justify-between gap-3 text-sm font-semibold text-[color:var(--ink-500)]">
                         <span>Extra credit lessons</span>
                         <span>
                           {isReady

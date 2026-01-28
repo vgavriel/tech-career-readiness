@@ -12,7 +12,7 @@ export default function PrivacyPolicyPage() {
         className="page-content mx-auto flex w-full max-w-3xl flex-col gap-8 px-5 pb-20 pt-12 md:pt-16"
       >
         <header className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-500)]">
             Privacy Policy
           </p>
           <h1 className="font-display text-4xl text-[color:var(--ink-900)] md:text-5xl">

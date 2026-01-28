@@ -27,11 +27,7 @@ export default function RoleLibraryList({ lessons }: RoleLibraryListProps) {
   }
 
   return (
-    <div
-      className="grid gap-4 md:grid-cols-2"
-      aria-busy={isLoading}
-      aria-live="polite"
-    >
+    <div className="grid gap-4 md:grid-cols-2" aria-busy={isLoading} aria-live="polite">
       {lessons.map((lesson) => {
         const isCompleted = isReady && isLessonCompleted(lesson.slug);
         const showLoading = isLoading;
@@ -74,11 +70,7 @@ export default function RoleLibraryList({ lessons }: RoleLibraryListProps) {
                           stroke="currentColor"
                           strokeWidth={3}
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M5 13l4 4L19 7"
-                          />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                       </>
                     ) : showLoading ? (
@@ -90,7 +82,7 @@ export default function RoleLibraryList({ lessons }: RoleLibraryListProps) {
                   <span className="sr-only">Role deep dive</span>
                 </div>
                 <span
-                  className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${statusStyles}`}
+                  className={`rounded-full border px-2.5 py-0.5 text-sm font-semibold ${statusStyles}`}
                 >
                   {statusLabel}
                 </span>

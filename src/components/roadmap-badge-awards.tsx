@@ -59,7 +59,7 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
           <div>
             <h2 className="font-display text-2xl text-[color:var(--ink-900)]">Gold Stars</h2>
           </div>
-          <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
+          <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-sm font-semibold text-[color:var(--ink-700)]">
             Loading progress...
           </span>
         </div>
@@ -82,7 +82,7 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
         <div>
           <h2 className="font-display text-2xl text-[color:var(--ink-900)]">Gold Stars</h2>
         </div>
-        <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-xs font-semibold text-[color:var(--ink-700)]">
+        <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-sm font-semibold text-[color:var(--ink-700)]">
           {earnedCount} of {badges.length} {totalLabel} earned
         </span>
       </div>
@@ -94,7 +94,7 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
               <StarIcon variant="filled" className="text-[color:var(--accent-500)]" />
               <p className="text-sm font-semibold text-[color:var(--ink-800)]">Earned</p>
             </div>
-            <span className="text-xs text-[color:var(--ink-500)]">{earnedBadges.length}</span>
+            <span className="text-sm text-[color:var(--ink-500)]">{earnedBadges.length}</span>
           </div>
           {earnedBadges.length ? (
             <div className="grid gap-3">
@@ -104,14 +104,14 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
                   className="flex flex-col gap-3 rounded-2xl border border-[color:var(--accent-700)] bg-[color:var(--wash-0)] px-4 py-3 shadow-[var(--shadow-soft)]"
                 >
                   <div className="space-y-1">
-                    <p className="text-xs font-semibold text-[color:var(--ink-500)]">
+                    <p className="text-sm font-semibold text-[color:var(--ink-500)]">
                       {badge.title}
                     </p>
                     <p className="text-sm font-semibold text-[color:var(--ink-900)]">
                       {badge.description}
                     </p>
                   </div>
-                  <p className="text-xs text-[color:var(--ink-500)]">{badge.progressLabel}</p>
+                  <p className="text-sm text-[color:var(--ink-500)]">{badge.progressLabel}</p>
                 </div>
               ))}
             </div>
@@ -128,7 +128,7 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
               <StarIcon variant="outline" className="text-[color:var(--accent-500)]" />
               <p className="text-sm font-semibold text-[color:var(--ink-800)]">In progress</p>
             </div>
-            <span className="text-xs text-[color:var(--ink-500)]">{inProgressBadges.length}</span>
+            <span className="text-sm text-[color:var(--ink-500)]">{inProgressBadges.length}</span>
           </div>
           <div className="grid gap-3">
             {inProgressBadges.map((badge) => (
@@ -137,12 +137,12 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
                 className="flex flex-col gap-2 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 shadow-[var(--shadow-soft)]"
               >
                 <div className="space-y-1">
-                  <p className="text-xs font-semibold text-[color:var(--ink-500)]">{badge.title}</p>
+                  <p className="text-sm font-semibold text-[color:var(--ink-500)]">{badge.title}</p>
                   <p className="text-sm font-semibold text-[color:var(--ink-900)]">
                     {badge.description}
                   </p>
                 </div>
-                <p className="text-xs text-[color:var(--ink-500)]">{badge.progressLabel}</p>
+                <p className="text-sm text-[color:var(--ink-500)]">{badge.progressLabel}</p>
               </div>
             ))}
           </div>
