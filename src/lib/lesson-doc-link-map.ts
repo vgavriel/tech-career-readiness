@@ -19,6 +19,9 @@ type LessonLinkRecord = {
   supersededBy: { slug: string; isArchived: boolean } | null;
 };
 
+/**
+ * Resolve the canonical slug for a lesson, honoring superseded active lessons.
+ */
 const resolveLessonSlug = (lesson: LessonLinkRecord) => {
   if (!lesson.isArchived) {
     return lesson.slug;
@@ -31,6 +34,9 @@ const resolveLessonSlug = (lesson: LessonLinkRecord) => {
   return null;
 };
 
+/**
+ * Build a doc-id-to-lesson-slug map from the lesson table.
+ */
 const buildLessonDocLinkMap = async () => {
   const lessons = await prisma.lesson.findMany({
     select: {
@@ -49,8 +55,7 @@ const buildLessonDocLinkMap = async () => {
 
   const map: LessonDocIdMap = new Map();
   for (const lesson of lessons) {
-    const docId =
-      lesson.googleDocId ?? extractGoogleDocIdFromUrl(lesson.publishedUrl);
+    const docId = lesson.googleDocId ?? extractGoogleDocIdFromUrl(lesson.publishedUrl);
     if (!docId) {
       continue;
     }
@@ -66,17 +71,16 @@ const buildLessonDocLinkMap = async () => {
   return map;
 };
 
-export const getLessonDocLinkMap = async (
-  options: { bypassCache?: boolean } = {}
-) => {
+/**
+ * Return a cached doc link map, refreshing from Prisma when needed.
+ *
+ * Supports bypassing the cache and deduplicates concurrent refreshes.
+ */
+export const getLessonDocLinkMap = async (options: { bypassCache?: boolean } = {}) => {
   const { bypassCache = false } = options;
   const now = Date.now();
 
-  if (
-    !bypassCache &&
-    lessonDocLinkCache &&
-    lessonDocLinkCache.expiresAt > now
-  ) {
+  if (!bypassCache && lessonDocLinkCache && lessonDocLinkCache.expiresAt > now) {
     return lessonDocLinkCache.map;
   }
 
@@ -107,6 +111,9 @@ export const getLessonDocLinkMap = async (
   }
 };
 
+/**
+ * Clear the in-memory lesson doc link cache.
+ */
 export const clearLessonDocLinkMapCache = () => {
   lessonDocLinkCache = null;
 };

@@ -39,6 +39,9 @@ const normalizeEmailList = (value?: string) =>
     .map((entry) => entry.trim().toLowerCase())
     .filter(Boolean);
 
+/**
+ * Convert a Prisma user record into the authenticated shape.
+ */
 const toAuthenticatedUser = (user: DbUser): AuthenticatedUser => ({
   id: user.id,
   email: user.email,
@@ -48,6 +51,9 @@ const toAuthenticatedUser = (user: DbUser): AuthenticatedUser => ({
   focusKey: normalizeFocusKey(user.focusKey),
 });
 
+/**
+ * Narrow Prisma errors to unique-constraint violations.
+ */
 const isUniqueConstraintError = (error: unknown): error is { code: string } => {
   if (!error || typeof error !== "object") {
     return false;
@@ -62,6 +68,9 @@ const isUniqueConstraintError = (error: unknown): error is { code: string } => {
 
 /**
  * Fetch or create the signed-in user and return the normalized profile data.
+ *
+ * Returns null when the session is missing or when the session version
+ * no longer matches the database.
  */
 export async function getAuthenticatedUser(
   sessionOverride?: Session | null

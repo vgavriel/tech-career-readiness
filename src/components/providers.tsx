@@ -35,6 +35,9 @@ export default function Providers({
   analyticsEnabled = false,
 }: ProvidersProps) {
   useEffect(() => {
+    /**
+     * Report global runtime errors to the client error endpoint.
+     */
     const handleError = (event: ErrorEvent) => {
       reportClientError({
         message: event.message || "Unhandled client error",
@@ -46,6 +49,9 @@ export default function Providers({
       });
     };
 
+    /**
+     * Report unhandled promise rejections to the client error endpoint.
+     */
     const handleRejection = (event: PromiseRejectionEvent) => {
       const reason = event.reason;
       const error = reason instanceof Error ? reason : new Error(String(reason ?? "Unknown"));

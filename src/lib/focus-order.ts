@@ -5,6 +5,9 @@ type FocusModule = {
   order?: number | null;
 };
 
+/**
+ * Module ordering per focus selection.
+ */
 export const FOCUS_MODULE_ORDER: Record<FocusKey, string[]> = {
   "just-starting": [
     "start-here",
@@ -25,6 +28,9 @@ export const FOCUS_MODULE_ORDER: Record<FocusKey, string[]> = {
   "offer-in-hand": ["offers", "internship-success"],
 };
 
+/**
+ * Normalize a query param into a FocusKey, handling arrays.
+ */
 export const getFocusKeyFromParam = (param: string | string[] | undefined): FocusKey | null => {
   if (!param) {
     return null;
@@ -34,6 +40,9 @@ export const getFocusKeyFromParam = (param: string | string[] | undefined): Focu
   return normalizeFocusKey(rawValue);
 };
 
+/**
+ * Order modules for a given focus, falling back to original order when unknown.
+ */
 export const orderModulesForFocus = <T extends FocusModule>(
   modules: T[],
   focusKey: FocusKey | null

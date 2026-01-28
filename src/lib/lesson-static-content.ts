@@ -1,3 +1,6 @@
+/**
+ * Static lesson content payload used for locally stored lessons.
+ */
 export type StaticLessonContent = {
   slug: string;
   estimatedMinutes: number;
@@ -39,5 +42,7 @@ const staticLessonContent = new Map<string, StaticLessonContent>([
   ],
 ]);
 
-export const getStaticLessonContent = (slug: string) =>
-  staticLessonContent.get(slug) ?? null;
+/**
+ * Look up static lesson content by slug.
+ */
+export const getStaticLessonContent = (slug: string) => staticLessonContent.get(slug) ?? null;

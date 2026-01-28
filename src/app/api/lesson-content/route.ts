@@ -25,6 +25,9 @@ const isTruthy = (value: string | null) => value === "1" || value === "true";
 const shouldBypassCache = (searchParams: URLSearchParams, env: ReturnType<typeof getEnv>) =>
   env.isLocal && isTruthy(searchParams.get("bypassCache"));
 
+/**
+ * Build cache-control header values for CDN caching.
+ */
 const buildCacheControl = () => {
   const maxAgeSeconds = Math.max(1, Math.floor(LESSON_CONTENT_CACHE_TTL_MS / 1000));
   const staleSeconds = Math.max(60, Math.floor(maxAgeSeconds / 6));

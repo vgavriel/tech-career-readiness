@@ -6,6 +6,9 @@ export type GuestProgressState = {
   completed: Record<string, string>;
 };
 
+/**
+ * localStorage key for guest progress state.
+ */
 export const GUEST_PROGRESS_STORAGE_KEY = "tcr-guest-progress";
 
 const COMPLETED_VALUE = "completed";
@@ -42,20 +45,17 @@ const normalizeCompleted = (value: unknown) => {
     return {};
   }
 
-  return Object.entries(value).reduce<Record<string, string>>(
-    (accumulator, [key, entry]) => {
-      if (typeof key !== "string") {
-        return accumulator;
-      }
-
-      if (entry === true || typeof entry === "string") {
-        accumulator[key] = COMPLETED_VALUE;
-      }
-
+  return Object.entries(value).reduce<Record<string, string>>((accumulator, [key, entry]) => {
+    if (typeof key !== "string") {
       return accumulator;
-    },
-    {}
-  );
+    }
+
+    if (entry === true || typeof entry === "string") {
+      accumulator[key] = COMPLETED_VALUE;
+    }
+
+    return accumulator;
+  }, {});
 };
 
 /**
@@ -154,6 +154,8 @@ export const clearGuestProgress = () => {
 
 /**
  * Update a single lesson completion state and persist the result.
+ *
+ * Ignores blank lesson slugs and returns the current in-memory state.
  */
 export const updateGuestProgress = (lessonSlug: string, completed: boolean) => {
   const trimmedLessonSlug = lessonSlug.trim();

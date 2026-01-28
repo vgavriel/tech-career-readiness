@@ -12,10 +12,16 @@ import { UNKNOWN_VALUE } from "@/lib/values";
  */
 const handler = NextAuth(authOptions);
 
+/**
+ * Route context shape for NextAuth dynamic catch-all routes.
+ */
 type AuthRouteContext = {
   params: Promise<{ nextauth?: string[] }> | { nextauth?: string[] };
 };
 
+/**
+ * Wrap NextAuth handler with request logging.
+ */
 const logAuthRequest = async (request: Request, context: AuthRouteContext) => {
   const requestId = resolveRequestId(request);
   const params = await context.params;

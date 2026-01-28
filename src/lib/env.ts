@@ -2,6 +2,9 @@ import { z } from "zod";
 
 const appEnvSchema = z.enum(["local", "preview", "production", "test"]);
 
+/**
+ * Fallback app environment when APP_ENV is not set.
+ */
 const fallbackAppEnv = () => {
   if (process.env.NODE_ENV === "production") {
     return "production";
@@ -45,6 +48,9 @@ export type Env = z.infer<typeof envSchema> & {
 
 let cachedEnv: Env | null = null;
 
+/**
+ * Parse and normalize environment variables into a typed object.
+ */
 const buildEnv = (): Env => {
   const parsed = envSchema.parse({
     ...process.env,
@@ -62,6 +68,9 @@ const buildEnv = (): Env => {
   };
 };
 
+/**
+ * Return a cached Env snapshot, bypassing cache in test mode.
+ */
 export const getEnv = (): Env => {
   const shouldCache = process.env.APP_ENV !== "test" && process.env.NODE_ENV !== "test";
   if (!shouldCache) {
@@ -74,6 +83,9 @@ export const getEnv = (): Env => {
   return cachedEnv;
 };
 
+/**
+ * Require a non-empty env var, throwing with a friendly message.
+ */
 export const requireEnv = (value: string | undefined, name: string): string => {
   if (!value) {
     throw new Error(`Missing ${name} environment variable.`);

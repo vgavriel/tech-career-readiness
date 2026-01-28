@@ -6,15 +6,24 @@ import { useProgress } from "@/components/progress-provider";
 import type { RoadmapModule } from "@/components/roadmap-module-list";
 import { buildBadgeStatuses } from "@/lib/badges";
 
+/**
+ * Props for the badge awards panel.
+ */
 type RoadmapBadgeAwardsProps = {
   modules: RoadmapModule[];
 };
 
+/**
+ * Props for the star icon component.
+ */
 type StarIconProps = {
   variant: "filled" | "outline";
   className?: string;
 };
 
+/**
+ * Render a filled or outlined star icon.
+ */
 const StarIcon = ({ variant, className = "" }: StarIconProps) => {
   const isFilled = variant === "filled";
 
@@ -36,6 +45,9 @@ const StarIcon = ({ variant, className = "" }: StarIconProps) => {
   );
 };
 
+/**
+ * Render earned and in-progress badge cards based on completion.
+ */
 export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps) {
   const { completedLessonSlugs, isReady } = useProgress();
   const badges = useMemo(

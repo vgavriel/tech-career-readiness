@@ -5,6 +5,9 @@ import { useEffect } from "react";
 
 import { reportClientError } from "@/lib/client-error";
 
+/**
+ * Props supplied to the route error boundary.
+ */
 type ErrorProps = {
   error: Error & { digest?: string };
   reset: () => void;

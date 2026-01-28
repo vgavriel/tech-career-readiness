@@ -1,5 +1,8 @@
 import { JSDOM } from "jsdom";
 
+/**
+ * Map of Google Doc ID to lesson slug.
+ */
 export type LessonDocIdMap = Map<string, string>;
 
 type ParsedLessonDocLink = {
@@ -7,6 +10,9 @@ type ParsedLessonDocLink = {
   hash: string;
 };
 
+/**
+ * Extract a document id from URL path segments.
+ */
 const extractDocIdFromSegments = (
   segments: string[],
   marker: string,
@@ -30,9 +36,10 @@ const extractDocIdFromSegments = (
   return candidate;
 };
 
-const parseLessonDocLink = (
-  href: string | null | undefined
-): ParsedLessonDocLink | null => {
+/**
+ * Parse a lesson-related Google Docs or Drive link.
+ */
+const parseLessonDocLink = (href: string | null | undefined): ParsedLessonDocLink | null => {
   if (!href) {
     return null;
   }
@@ -88,14 +95,18 @@ const parseLessonDocLink = (
   return null;
 };
 
-export const extractGoogleDocIdFromUrl = (
-  href: string | null | undefined
-) => parseLessonDocLink(href)?.docId ?? null;
+/**
+ * Extract a Google Doc id from a URL, returning null when invalid.
+ *
+ * Ignores published doc URLs and unwraps Google redirect links when present.
+ */
+export const extractGoogleDocIdFromUrl = (href: string | null | undefined) =>
+  parseLessonDocLink(href)?.docId ?? null;
 
-export const rewriteLessonDocLinks = (
-  html: string,
-  docIdMap: LessonDocIdMap
-) => {
+/**
+ * Rewrite lesson links in HTML to internal /lesson/:slug paths.
+ */
+export const rewriteLessonDocLinks = (html: string, docIdMap: LessonDocIdMap) => {
   if (!html || docIdMap.size === 0) {
     return html;
   }
@@ -115,9 +126,7 @@ export const rewriteLessonDocLinks = (
       continue;
     }
 
-    const nextHref = parsed.hash
-      ? `/lesson/${slug}${parsed.hash}`
-      : `/lesson/${slug}`;
+    const nextHref = parsed.hash ? `/lesson/${slug}${parsed.hash}` : `/lesson/${slug}`;
 
     if (anchor.getAttribute("href") !== nextHref) {
       anchor.setAttribute("href", nextHref);

@@ -49,8 +49,14 @@ type ProgressProviderProps = {
   children: React.ReactNode;
 };
 
+/**
+ * Source of progress update errors for UI placement.
+ */
 type ProgressErrorSource = "toggle" | "navigator";
 
+/**
+ * Error shape exposed through progress context.
+ */
 type ProgressError = {
   message: string;
   source: ProgressErrorSource;

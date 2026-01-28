@@ -156,6 +156,8 @@ const getClientIp = (request: Request) => {
 
 /**
  * Enforce rate limiting for a request and return a response on violation.
+ *
+ * Only active in preview/production and keys by identifier or client IP.
  */
 export const enforceRateLimit = async (
   request: Request,

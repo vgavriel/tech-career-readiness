@@ -30,8 +30,14 @@ const GRID_TEMPLATE_BY_WIDTH: Record<(typeof WIDTH_STEPS)[number], string> = {
 };
 const COLLAPSED_GRID_CLASS = "grid-cols-[0px_12px_minmax(0,1fr)]";
 
+/**
+ * Clamp a numeric value between a minimum and maximum.
+ */
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
+/**
+ * Layout shell that hosts the lesson navigator and main content panel.
+ */
 export default function NavigatorLayout({ navigator, children }: NavigatorLayoutProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mainRef = useRef<HTMLElement | null>(null);
@@ -53,6 +59,9 @@ export default function NavigatorLayout({ navigator, children }: NavigatorLayout
     }
 
     const media = window.matchMedia("(max-width: 960px)");
+    /**
+     * Sync collapse state when switching between mobile and desktop widths.
+     */
     const handleChange = () => {
       const matches = media.matches;
       setIsMobile(matches);
@@ -84,6 +93,9 @@ export default function NavigatorLayout({ navigator, children }: NavigatorLayout
       event.preventDefault();
       setIsDragging(true);
 
+      /**
+       * Track pointer movement to resize the navigator column.
+       */
       const handlePointerMove = (moveEvent: PointerEvent) => {
         if (!containerRef.current) {
           return;
@@ -100,6 +112,9 @@ export default function NavigatorLayout({ navigator, children }: NavigatorLayout
         setIsCollapsed(false);
       };
 
+      /**
+       * Stop tracking pointer movement when dragging ends.
+       */
       const handlePointerUp = () => {
         setIsDragging(false);
         window.removeEventListener("pointermove", handlePointerMove);
@@ -216,6 +231,9 @@ export default function NavigatorLayout({ navigator, children }: NavigatorLayout
       return;
     }
 
+    /**
+     * Scroll to the hash target when the URL hash changes.
+     */
     const handleHash = () => {
       scrollToHash(window.location.hash);
     };

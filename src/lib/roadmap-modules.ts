@@ -23,6 +23,8 @@ const ROADMAP_MODULE_SELECT = {
 
 /**
  * Return ordered roadmap modules with lesson metadata.
+ *
+ * Uses a one-hour cache to avoid repeated Prisma reads.
  */
 export const getRoadmapModules = async () => {
   "use cache";

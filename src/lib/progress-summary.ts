@@ -1,6 +1,9 @@
 import type { FocusKey } from "@/lib/focus-options";
 import { isExtraCreditLesson } from "@/lib/lesson-classification";
 
+/**
+ * Flattened lesson data used for progress calculations.
+ */
 export type ProgressSummaryLesson = {
   id: string;
   slug: string;
@@ -9,6 +12,9 @@ export type ProgressSummaryLesson = {
   moduleOrder: number;
 };
 
+/**
+ * Module data with nested lessons for progress calculations.
+ */
 export type ProgressSummaryModule = {
   id: string;
   key: string;
@@ -21,6 +27,9 @@ export type ProgressSummaryModule = {
   }>;
 };
 
+/**
+ * Progress summary metrics returned to the UI.
+ */
 export type ProgressSummary = {
   orderedLessons: ProgressSummaryLesson[];
   totalLessons: number;
@@ -32,6 +41,9 @@ export type ProgressSummary = {
   progressLabel: string;
 };
 
+/**
+ * Input used to compute core, extra, and focus summaries.
+ */
 export type ProgressSummaryInput = {
   modules: ProgressSummaryModule[];
   completedLessonSlugs: string[];
@@ -54,6 +66,9 @@ export const buildOrderedLessons = (modules: ProgressSummaryModule[]): ProgressS
     }))
   );
 
+/**
+ * Split lessons into core vs extra credit buckets.
+ */
 export const splitLessonsByCredit = (lessons: ProgressSummaryLesson[]) => {
   const coreLessons: ProgressSummaryLesson[] = [];
   const extraLessons: ProgressSummaryLesson[] = [];
@@ -69,6 +84,9 @@ export const splitLessonsByCredit = (lessons: ProgressSummaryLesson[]) => {
   return { coreLessons, extraLessons };
 };
 
+/**
+ * Build a progress summary for a given lesson list and completion set.
+ */
 export const buildProgressSummaryFromLessons = (
   orderedLessons: ProgressSummaryLesson[],
   completedSet: Set<string>,
@@ -100,6 +118,9 @@ export const buildProgressSummaryFromLessons = (
   };
 };
 
+/**
+ * Build core, extra, and focus summaries from module data.
+ */
 export const buildProgressSummaries = ({
   modules,
   completedLessonSlugs,

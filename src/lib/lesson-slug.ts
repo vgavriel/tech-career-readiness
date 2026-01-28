@@ -41,11 +41,17 @@ const lessonSelect = {
 
 type LessonPageLesson = Prisma.LessonGetPayload<{ select: typeof lessonSelect }>;
 
+/**
+ * Result from lesson slug lookup, including alias detection.
+ */
 type LessonSlugLookupResult = {
   lesson: LessonPageLesson | null;
   isAlias: boolean;
 };
 
+/**
+ * Search params shape from Next.js routing.
+ */
 type LessonSearchParams = Record<string, string | string[] | undefined>;
 
 /**
@@ -78,17 +84,13 @@ const buildQueryString = (searchParams?: LessonSearchParams) => {
 /**
  * Build the canonical lesson redirect path with preserved query params.
  */
-export const buildLessonRedirectPath = (
-  slug: string,
-  searchParams?: LessonSearchParams
-) => `/lesson/${slug}${buildQueryString(searchParams)}`;
+export const buildLessonRedirectPath = (slug: string, searchParams?: LessonSearchParams) =>
+  `/lesson/${slug}${buildQueryString(searchParams)}`;
 
 /**
  * Find a lesson by canonical slug, falling back to slug aliases when needed.
  */
-export const findLessonBySlug = async (
-  slug: string
-): Promise<LessonSlugLookupResult> => {
+export const findLessonBySlug = async (slug: string): Promise<LessonSlugLookupResult> => {
   const lesson = await prisma.lesson.findUnique({
     where: { slug },
     select: lessonSelect,

@@ -1,6 +1,9 @@
 import type { RoadmapModule } from "@/components/roadmap-module-list";
 import { getLessonClassification } from "@/lib/lesson-classification";
 
+/**
+ * Canonical badge identifiers.
+ */
 export type BadgeKey =
   | "pathfinder"
   | "explorer"
@@ -11,6 +14,9 @@ export type BadgeKey =
   | "internship-ready"
   | "extra-credit-collector";
 
+/**
+ * UI-ready badge status details.
+ */
 export type BadgeStatus = {
   key: BadgeKey;
   title: string;
@@ -32,6 +38,9 @@ type LessonProgress = {
   isComplete: boolean;
 };
 
+/**
+ * Flatten module lessons into summaries with classification metadata.
+ */
 const buildLessonSummaries = (modules: RoadmapModule[]): LessonSummary[] =>
   modules.flatMap((module) =>
     module.lessons.map((lesson) => ({
@@ -43,13 +52,16 @@ const buildLessonSummaries = (modules: RoadmapModule[]): LessonSummary[] =>
     }))
   );
 
+/**
+ * Determine whether a lesson appears in the completed set.
+ */
 const isLessonCompleted = (lesson: LessonSummary, completedSet: Set<string>) =>
   completedSet.has(lesson.slug);
 
-const summarizeLessons = (
-  lessons: LessonSummary[],
-  completedSet: Set<string>
-): LessonProgress => {
+/**
+ * Summarize completion counts for a lesson list.
+ */
+const summarizeLessons = (lessons: LessonSummary[], completedSet: Set<string>): LessonProgress => {
   const completed = lessons.reduce(
     (count, lesson) => count + (isLessonCompleted(lesson, completedSet) ? 1 : 0),
     0
@@ -63,11 +75,10 @@ const summarizeLessons = (
   };
 };
 
-const formatProgressLabel = (
-  completed: number,
-  total: number,
-  label: string
-) => {
+/**
+ * Format a progress label used in badge UI strings.
+ */
+const formatProgressLabel = (completed: number, total: number, label: string) => {
   if (total === 0) {
     return `No ${label} yet`;
   }
@@ -75,6 +86,9 @@ const formatProgressLabel = (
   return `${completed} of ${total} ${label}`;
 };
 
+/**
+ * Compute module progress, optionally including extra credit lessons.
+ */
 const getModuleProgress = (
   lessons: LessonSummary[],
   completedSet: Set<string>,
@@ -90,6 +104,12 @@ const getModuleProgress = (
   return summarizeLessons(filteredLessons, completedSet);
 };
 
+/**
+ * Build badge status objects based on completed lessons.
+ *
+ * Explorer requires all core explore-roles lessons plus 3 deep dives; extra
+ * credit requires at least 50% of extra lessons completed.
+ */
 export const buildBadgeStatuses = (
   modules: RoadmapModule[],
   completedLessonSlugs: string[]
@@ -99,11 +119,7 @@ export const buildBadgeStatuses = (
 
   const startHere = getModuleProgress(lessons, completedSet, "start-here");
   const exploreRoles = getModuleProgress(lessons, completedSet, "explore-roles");
-  const networking = getModuleProgress(
-    lessons,
-    completedSet,
-    "opportunities-networking"
-  );
+  const networking = getModuleProgress(lessons, completedSet, "opportunities-networking");
   const applications = getModuleProgress(lessons, completedSet, "applications");
   const interviews = getModuleProgress(lessons, completedSet, "interviews");
   const offers = getModuleProgress(lessons, completedSet, "offers");
@@ -111,35 +127,24 @@ export const buildBadgeStatuses = (
     includeExtra: true,
   });
 
-  const roleDeepDives = lessons.filter(
-    (lesson) => lesson.classification.roleDeepDive
-  );
+  const roleDeepDives = lessons.filter((lesson) => lesson.classification.roleDeepDive);
   const roleDeepDiveProgress = summarizeLessons(roleDeepDives, completedSet);
   const roleDeepDiveTarget = 3;
 
-  const extraCreditLessons = lessons.filter(
-    (lesson) => lesson.classification.credit === "extra"
-  );
+  const extraCreditLessons = lessons.filter((lesson) => lesson.classification.credit === "extra");
   const extraCreditProgress = summarizeLessons(extraCreditLessons, completedSet);
   const extraCreditTarget =
-    extraCreditProgress.total === 0
-      ? 0
-      : Math.ceil(extraCreditProgress.total * 0.5);
+    extraCreditProgress.total === 0 ? 0 : Math.ceil(extraCreditProgress.total * 0.5);
 
   const explorerEarned =
-    exploreRoles.isComplete &&
-    roleDeepDiveProgress.completed >= roleDeepDiveTarget;
+    exploreRoles.isComplete && roleDeepDiveProgress.completed >= roleDeepDiveTarget;
 
   return [
     {
       key: "pathfinder",
       title: "Pathfinder",
       description: "Complete the Start Here core lessons.",
-      progressLabel: formatProgressLabel(
-        startHere.completed,
-        startHere.total,
-        "core lessons"
-      ),
+      progressLabel: formatProgressLabel(startHere.completed, startHere.total, "core lessons"),
       statusLabel: startHere.isComplete ? "Earned" : "In progress",
       isEarned: startHere.isComplete,
     },
@@ -159,11 +164,7 @@ export const buildBadgeStatuses = (
       key: "connector",
       title: "Connector",
       description: "Complete the networking core lessons.",
-      progressLabel: formatProgressLabel(
-        networking.completed,
-        networking.total,
-        "core lessons"
-      ),
+      progressLabel: formatProgressLabel(networking.completed, networking.total, "core lessons"),
       statusLabel: networking.isComplete ? "Earned" : "In progress",
       isEarned: networking.isComplete,
     },
@@ -183,11 +184,7 @@ export const buildBadgeStatuses = (
       key: "interview-ready",
       title: "Interview Ready",
       description: "Complete the interview prep core lessons.",
-      progressLabel: formatProgressLabel(
-        interviews.completed,
-        interviews.total,
-        "core lessons"
-      ),
+      progressLabel: formatProgressLabel(interviews.completed, interviews.total, "core lessons"),
       statusLabel: interviews.isComplete ? "Earned" : "In progress",
       isEarned: interviews.isComplete,
     },
@@ -195,11 +192,7 @@ export const buildBadgeStatuses = (
       key: "offer-confident",
       title: "Offer Confident",
       description: "Complete the offers core lessons.",
-      progressLabel: formatProgressLabel(
-        offers.completed,
-        offers.total,
-        "core lessons"
-      ),
+      progressLabel: formatProgressLabel(offers.completed, offers.total, "core lessons"),
       statusLabel: offers.isComplete ? "Earned" : "In progress",
       isEarned: offers.isComplete,
     },
@@ -207,11 +200,7 @@ export const buildBadgeStatuses = (
       key: "internship-ready",
       title: "Internship Ready",
       description: "Complete the internship success lessons.",
-      progressLabel: formatProgressLabel(
-        internship.completed,
-        internship.total,
-        "lessons"
-      ),
+      progressLabel: formatProgressLabel(internship.completed, internship.total, "lessons"),
       statusLabel: internship.isComplete ? "Earned" : "In progress",
       isEarned: internship.isComplete,
     },
@@ -225,13 +214,10 @@ export const buildBadgeStatuses = (
         "extra lessons"
       ),
       statusLabel:
-        extraCreditProgress.total > 0 &&
-        extraCreditProgress.completed >= extraCreditTarget
+        extraCreditProgress.total > 0 && extraCreditProgress.completed >= extraCreditTarget
           ? "Earned"
           : "In progress",
-      isEarned:
-        extraCreditProgress.total > 0 &&
-        extraCreditProgress.completed >= extraCreditTarget,
+      isEarned: extraCreditProgress.total > 0 && extraCreditProgress.completed >= extraCreditTarget,
     },
   ];
 };

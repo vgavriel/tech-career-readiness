@@ -11,11 +11,17 @@ import {
   writeFocusSelection,
 } from "@/lib/focus-selection";
 
+/**
+ * Public API exposed by the roadmap focus context.
+ */
 type RoadmapFocusContextValue = {
   focusKey: FocusKey | null;
   focusModules: RoadmapModule[] | null;
 };
 
+/**
+ * Props for the roadmap focus provider.
+ */
 type RoadmapFocusProviderProps = {
   modules: RoadmapModule[];
   focusKey?: FocusKey | null;
@@ -24,6 +30,9 @@ type RoadmapFocusProviderProps = {
 
 const RoadmapFocusContext = createContext<RoadmapFocusContextValue | null>(null);
 
+/**
+ * Provide focus-aware module ordering for the roadmap experience.
+ */
 export function RoadmapFocusProvider({ modules, focusKey, children }: RoadmapFocusProviderProps) {
   const storedFocusKey = useSyncExternalStore(
     subscribeToFocusSelection,
@@ -54,6 +63,9 @@ export function RoadmapFocusProvider({ modules, focusKey, children }: RoadmapFoc
   return <RoadmapFocusContext.Provider value={value}>{children}</RoadmapFocusContext.Provider>;
 }
 
+/**
+ * Read the roadmap focus context, throwing if used outside the provider.
+ */
 export const useRoadmapFocus = () => {
   const context = useContext(RoadmapFocusContext);
   if (!context) {

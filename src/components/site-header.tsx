@@ -9,16 +9,18 @@ import FocusMenu from "@/components/focus-menu";
 import { buildSignInOptions, useAuthProvider } from "@/hooks/use-auth-provider";
 
 /**
- * Render the persistent site header with auth actions.
- *
- * @remarks
- * Surfaces navigation branding and triggers auth flows based on session state;
- * no local state.
+ * Props for the site header inner renderer.
  */
 type SiteHeaderInnerProps = {
   pathname: string;
 };
 
+/**
+ * Render the persistent site header with auth actions.
+ *
+ * @remarks
+ * Surfaces navigation branding and triggers auth flows based on session state.
+ */
 function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
   const { data: session } = useSession();
   const { provider: authProvider, isReady } = useAuthProvider();
@@ -33,6 +35,9 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
       return;
     }
 
+    /**
+     * Close the mobile menu when clicking outside.
+     */
     const handlePointerDown = (event: PointerEvent) => {
       const target = event.target as Node | null;
       if (menuRef.current?.contains(target) || toggleRef.current?.contains(target)) {
@@ -41,6 +46,9 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
       setIsMenuOpen(false);
     };
 
+    /**
+     * Close the mobile menu on Escape.
+     */
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsMenuOpen(false);
@@ -242,6 +250,9 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
   );
 }
 
+/**
+ * Render the header keyed by pathname to reset menu state on navigation.
+ */
 export default function SiteHeader() {
   const pathname = usePathname();
   return <SiteHeaderInner key={pathname} pathname={pathname} />;

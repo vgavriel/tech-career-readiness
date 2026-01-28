@@ -6,6 +6,9 @@ import { REQUEST_ID_HEADER, resolveRequestId } from "@/lib/request-id";
 
 const isProduction = process.env.NODE_ENV === "production";
 
+/**
+ * Build a CSP string with optional nonce for inline scripts/styles.
+ */
 const buildContentSecurityPolicy = (nonce: string) => {
   const scriptSrc = ["'self'", `'nonce-${nonce}'`];
   const styleSrc = ["'self'", `'nonce-${nonce}'`];
@@ -30,14 +33,23 @@ const buildContentSecurityPolicy = (nonce: string) => {
     "upgrade-insecure-requests",
   ];
 
-  return directives.join("; ").replace(/\s{2,}/g, " ").trim();
+  return directives
+    .join("; ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
 };
 
+/**
+ * Detect whether the incoming request expects HTML.
+ */
 const isHtmlRequest = (request: NextRequest) => {
   const accept = request.headers.get(HTTP_HEADER.ACCEPT);
   return accept?.includes("text/html");
 };
 
+/**
+ * Generate a CSP nonce using a random UUID and base64 encoding when available.
+ */
 const generateNonce = () => {
   const uuid = crypto.randomUUID();
   if (typeof Buffer !== "undefined") {
@@ -49,6 +61,9 @@ const generateNonce = () => {
   return uuid;
 };
 
+/**
+ * Middleware handler that injects request IDs and CSP headers.
+ */
 export function proxy(request: NextRequest) {
   const requestId = resolveRequestId(request, crypto.randomUUID());
   const requestHeaders = new Headers(request.headers);
@@ -76,6 +91,9 @@ export function proxy(request: NextRequest) {
   return response;
 }
 
+/**
+ * Next.js middleware matcher configuration.
+ */
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };

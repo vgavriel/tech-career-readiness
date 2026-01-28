@@ -1,13 +1,22 @@
 import { type FocusKey, normalizeFocusKey } from "@/lib/focus-options";
 
+/**
+ * Persisted focus selection schema.
+ */
 export type FocusSelectionState = {
   version: 1;
   focusKey: FocusKey | null;
 };
 
+/**
+ * localStorage key for focus selection.
+ */
 export const FOCUS_SELECTION_STORAGE_KEY = "tcr-focus-selection";
 const FOCUS_SELECTION_EVENT = "tcr-focus-selection-change";
 
+/**
+ * Build the default selection state.
+ */
 const createEmptyState = (): FocusSelectionState => ({
   version: 1,
   focusKey: null,
@@ -15,6 +24,9 @@ const createEmptyState = (): FocusSelectionState => ({
 
 let inMemorySelection = createEmptyState();
 
+/**
+ * Notify listeners that focus selection has changed.
+ */
 const notifyFocusSelectionChange = () => {
   if (typeof window === "undefined") {
     return;
@@ -27,11 +39,17 @@ const notifyFocusSelectionChange = () => {
   }
 };
 
+/**
+ * Clone selection state to avoid shared mutations.
+ */
 const cloneState = (state: FocusSelectionState): FocusSelectionState => ({
   version: 1,
   focusKey: state.focusKey,
 });
 
+/**
+ * Safely access localStorage in the browser.
+ */
 const getLocalStorage = () => {
   if (typeof window === "undefined") {
     return null;
@@ -44,6 +62,9 @@ const getLocalStorage = () => {
   }
 };
 
+/**
+ * Read focus selection from storage, falling back to in-memory state.
+ */
 export const readFocusSelection = (): FocusSelectionState => {
   const storage = getLocalStorage();
 
@@ -78,6 +99,9 @@ export const readFocusSelection = (): FocusSelectionState => {
   }
 };
 
+/**
+ * Persist a focus selection and notify listeners.
+ */
 export const writeFocusSelection = (focusKey: FocusKey | null) => {
   const normalized: FocusSelectionState = {
     version: 1,
@@ -100,6 +124,9 @@ export const writeFocusSelection = (focusKey: FocusKey | null) => {
   }
 };
 
+/**
+ * Clear the focus selection from storage and notify listeners.
+ */
 export const clearFocusSelection = () => {
   const cleared = createEmptyState();
   inMemorySelection = cloneState(cleared);
@@ -118,19 +145,31 @@ export const clearFocusSelection = () => {
   }
 };
 
+/**
+ * Test whether a selection has a focus key.
+ */
 export const hasFocusSelection = (state: FocusSelectionState) => Boolean(state.focusKey);
 
+/**
+ * Subscribe to focus selection changes (storage + custom event).
+ */
 export const subscribeToFocusSelection = (callback: () => void) => {
   if (typeof window === "undefined") {
     return () => {};
   }
 
+  /**
+   * React to storage updates for the focus selection key.
+   */
   const handleStorage = (event: StorageEvent) => {
     if (event.key === FOCUS_SELECTION_STORAGE_KEY) {
       callback();
     }
   };
 
+  /**
+   * React to in-memory selection changes via the custom event.
+   */
   const handleEvent = () => callback();
 
   window.addEventListener("storage", handleStorage);

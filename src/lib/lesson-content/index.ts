@@ -32,6 +32,9 @@ const lessonContentInFlight = new Map<string, Promise<LessonContentResult>>();
 
 /**
  * Fetch, sanitize, and cache lesson HTML for the given lesson source.
+ *
+ * Uses mock HTML in local/test when configured, dedupes in-flight requests,
+ * and rewrites Google Doc links when a mapping is provided.
  */
 export async function fetchLessonContent(
   lesson: LessonSource,
@@ -43,6 +46,9 @@ export async function fetchLessonContent(
 ): Promise<LessonContentResult> {
   const { bypassCache = false, docIdMap, logErrors = true } = options;
   const env = getEnv();
+  /**
+   * Rewrite lesson doc links when a doc id map is available.
+   */
   const rewriteLinks = (html: string) => (docIdMap ? rewriteLessonDocLinks(html, docIdMap) : html);
 
   if (!bypassCache) {
@@ -63,6 +69,9 @@ export async function fetchLessonContent(
     }
   }
 
+  /**
+   * Fetch and process lesson HTML once, reusing for concurrent callers.
+   */
   const fetchPromise = (async () => {
     const validatedUrl = assertAllowedLessonUrl(lesson.publishedUrl);
     const mockHtml = env.LESSON_CONTENT_MOCK_HTML;

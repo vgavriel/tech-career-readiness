@@ -1,5 +1,8 @@
 import { parseCssLength } from "@/lib/lesson-content/doc-styles";
 
+/**
+ * Resolved background image metadata extracted from CSS.
+ */
 export type BackgroundImageStyle = {
   src: string;
   width?: number;
@@ -8,9 +11,15 @@ export type BackgroundImageStyle = {
 
 const ALLOWED_IMAGE_HOSTS = ["docs.google.com", "googleusercontent.com", "gstatic.com"];
 
+/**
+ * Check if a hostname is in the image allowlist.
+ */
 const isAllowedImageHost = (hostname: string) =>
   ALLOWED_IMAGE_HOSTS.some((host) => (hostname === host ? true : hostname.endsWith(`.${host}`)));
 
+/**
+ * Validate an image src URL against the https allowlist.
+ */
 export const isAllowedImageSrc = (src: string | undefined) => {
   if (!src) {
     return false;
@@ -34,6 +43,9 @@ export const isAllowedImageSrc = (src: string | undefined) => {
   }
 };
 
+/**
+ * Extract a numeric CSS length from a style string for a given property.
+ */
 export const extractCssLengthValue = (style: string | undefined, property: string) => {
   if (!style) {
     return undefined;
@@ -47,6 +59,9 @@ export const extractCssLengthValue = (style: string | undefined, property: strin
   return value === null ? undefined : Math.round(value);
 };
 
+/**
+ * Extract a background-image URL from a CSS declaration block.
+ */
 export const extractBackgroundImage = (style: string | undefined) => {
   if (!style) {
     return undefined;
@@ -59,6 +74,9 @@ export const extractBackgroundImage = (style: string | undefined) => {
   return fallback?.[1];
 };
 
+/**
+ * Normalize computed CSS length values into rounded pixel numbers.
+ */
 const parseComputedLength = (value: string | null | undefined) => {
   if (!value) {
     return undefined;
@@ -67,6 +85,9 @@ const parseComputedLength = (value: string | null | undefined) => {
   return parsed === null ? undefined : Math.round(parsed);
 };
 
+/**
+ * Replace empty background-image elements with <img> tags.
+ */
 export const applyBackgroundImages = (
   root: Element,
   backgroundImageMap: Map<string, BackgroundImageStyle>

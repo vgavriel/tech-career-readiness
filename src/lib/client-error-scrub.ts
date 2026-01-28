@@ -1,5 +1,8 @@
 import type { ClientErrorPayload } from "@/lib/client-error-shared";
 
+/**
+ * Scrubbed client error payload that omits raw URL/user agent values.
+ */
 export type ScrubbedClientError = {
   message: string;
   name?: string;
@@ -17,6 +20,9 @@ const MAX_STACK_LENGTH = 1500;
 const MAX_COMPONENT_STACK_LENGTH = 1000;
 const MAX_STACK_LINES = 5;
 
+/**
+ * Clamp a string to a maximum length, preserving undefined values.
+ */
 const truncateValue = (value: string | undefined, max: number) => {
   if (!value) {
     return value;
@@ -27,9 +33,15 @@ const truncateValue = (value: string | undefined, max: number) => {
   return value.slice(0, max);
 };
 
+/**
+ * Limit a multi-line string to a maximum number of lines.
+ */
 const limitLines = (value: string, maxLines: number) =>
   value.split("\n").slice(0, maxLines).join("\n");
 
+/**
+ * Convert a URL string into a pathname-only representation.
+ */
 const scrubUrl = (value?: string) => {
   if (!value) {
     return undefined;
@@ -42,6 +54,9 @@ const scrubUrl = (value?: string) => {
   }
 };
 
+/**
+ * Hash a value using SHA-256, favoring Web Crypto when available.
+ */
 const hashValue = async (value?: string) => {
   if (!value) {
     return undefined;
@@ -58,6 +73,9 @@ const hashValue = async (value?: string) => {
   return createHash("sha256").update(value).digest("hex");
 };
 
+/**
+ * Scrub a client error payload to remove PII and bound payload size.
+ */
 export const scrubClientError = async (
   payload: ClientErrorPayload
 ): Promise<ScrubbedClientError> => ({

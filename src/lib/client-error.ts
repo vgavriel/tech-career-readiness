@@ -5,6 +5,9 @@ import type { ClientErrorPayload } from "@/lib/client-error-shared";
 const RECENT_ERRORS = new Map<string, number>();
 const RECENT_TTL_MS = 5_000;
 
+/**
+ * Clamp a string to a maximum length, preserving undefined values.
+ */
 const truncateValue = (value: string | undefined, max = 2_000) => {
   if (!value) {
     return value;
@@ -15,11 +18,17 @@ const truncateValue = (value: string | undefined, max = 2_000) => {
   return `${value.slice(0, max)}…`;
 };
 
+/**
+ * Build a stable signature for deduplicating error reports.
+ */
 const buildSignature = (payload: ClientErrorPayload) =>
   [payload.message, payload.name, payload.stack, payload.source, payload.lineno, payload.colno]
     .filter(Boolean)
     .join("|");
 
+/**
+ * Decide whether an error should be reported based on a short dedupe window.
+ */
 const shouldReport = (payload: ClientErrorPayload, now = Date.now()) => {
   const signature = buildSignature(payload);
   const previous = RECENT_ERRORS.get(signature);
@@ -30,6 +39,12 @@ const shouldReport = (payload: ClientErrorPayload, now = Date.now()) => {
   return true;
 };
 
+/**
+ * Report a client error from the browser, using sendBeacon when available.
+ *
+ * Deduplicates repeated errors within a short window and truncates large fields
+ * to keep payload sizes reasonable.
+ */
 export const reportClientError = (payload: ClientErrorPayload) => {
   if (typeof window === "undefined") {
     return;

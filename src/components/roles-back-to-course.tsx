@@ -8,10 +8,16 @@ import { useProgress } from "@/components/progress-provider";
 import { orderModulesForFocus } from "@/lib/focus-order";
 import { buildProgressSummaries, type ProgressSummaryModule } from "@/lib/progress-summary";
 
+/**
+ * Props for the back-to-course button on the Roles page.
+ */
 type RolesBackToCourseProps = {
   modules: ProgressSummaryModule[];
 };
 
+/**
+ * Render a CTA that links back to the user's next lesson.
+ */
 export default function RolesBackToCourse({ modules }: RolesBackToCourseProps) {
   const { focusKey } = useFocus();
   const { completedLessonSlugs, isReady } = useProgress();

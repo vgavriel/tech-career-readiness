@@ -1,6 +1,9 @@
 const INDENT_STEP_PX = 24;
 const MAX_INDENT_LEVEL = 4;
 
+/**
+ * Parse a CSS length into pixels, supporting px/pt/rem/em units.
+ */
 export const parseCssLength = (value: string) => {
   const match = value.trim().match(/^(-?\d*\.?\d+)(px|pt|rem|em)?$/);
   if (!match) {
@@ -23,6 +26,9 @@ export const parseCssLength = (value: string) => {
   return numeric;
 };
 
+/**
+ * Derive an indentation class from inline CSS.
+ */
 const extractIndentClass = (styleValue: string) => {
   const normalized = styleValue.toLowerCase();
   const candidates = [
@@ -43,6 +49,9 @@ const extractIndentClass = (styleValue: string) => {
   return `doc-indent-${level}`;
 };
 
+/**
+ * Convert inline style declarations into doc-* class names.
+ */
 export const extractDocStyleClasses = (styleValue: string) => {
   const classes = new Set<string>();
   const normalized = styleValue.toLowerCase();
@@ -73,6 +82,9 @@ export const extractDocStyleClasses = (styleValue: string) => {
   return Array.from(classes);
 };
 
+/**
+ * Merge new class names with an existing class string.
+ */
 export const mergeClassNames = (existing: string | undefined, additions: string[]) => {
   if (additions.length === 0) {
     return existing;
@@ -91,6 +103,9 @@ export const mergeClassNames = (existing: string | undefined, additions: string[
   return Array.from(merged).join(" ");
 };
 
+/**
+ * Strip inline style attributes while preserving style-derived classes.
+ */
 export const stripInlineStyle = (
   attribs: Record<string, string | undefined>
 ): Record<string, string | undefined> => {
@@ -110,6 +125,9 @@ export const stripInlineStyle = (
   return nextAttribs;
 };
 
+/**
+ * Apply mapped doc classes to elements based on style-class mappings.
+ */
 export const applyDocClassStyles = (root: Element, classStyleMap: Map<string, Set<string>>) => {
   if (classStyleMap.size === 0) {
     return;

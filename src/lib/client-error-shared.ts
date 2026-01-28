@@ -1,3 +1,6 @@
+/**
+ * Raw client error details captured from the browser.
+ */
 export type ClientErrorPayload = {
   message: string;
   name?: string;

@@ -290,6 +290,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Hide horizontal rules inside lesson content
 - [x] Fix in-lesson hash navigation to avoid scroll trap in nested containers
 - [x] Add TSDoc for functions/types and component intent comments
+- [x] Expand TSDoc coverage across app/API/seed utilities (Jan 2026 refresh)
 - [x] Document local/preview workflows and gate auth/rate limiting by `APP_ENV`
 - [x] Expand automated test coverage for auth/progress flows, admin gating, and caching guardrails
 - [x] Add dedicated `typecheck` script and wire into CI

@@ -1,3 +1,6 @@
+/**
+ * Canonical HTTP header names used throughout the app.
+ */
 export const HTTP_HEADER = {
   ACCEPT: "accept",
   CONTENT_TYPE: "content-type",
@@ -13,6 +16,9 @@ export const HTTP_HEADER = {
   RETRY_AFTER: "Retry-After",
 } as const;
 
+/**
+ * Standardized API error messages.
+ */
 export const ERROR_MESSAGE = {
   INVALID_JSON_BODY: "Invalid JSON body.",
   REQUEST_TOO_LONG: "Request too long.",

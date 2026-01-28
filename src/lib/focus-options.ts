@@ -1,17 +1,25 @@
-export type FocusKey =
-  | "just-starting"
-  | "applying-soon"
-  | "interviewing-soon"
-  | "offer-in-hand";
+/**
+ * Canonical focus identifiers used in routing and storage.
+ */
+export type FocusKey = "just-starting" | "applying-soon" | "interviewing-soon" | "offer-in-hand";
 
+/**
+ * Display metadata for a focus option.
+ */
 export type FocusOption = {
   key: FocusKey;
   label: string;
   description: string;
 };
 
+/**
+ * Query string key for focus selection.
+ */
 export const FOCUS_QUERY_PARAM = "focus";
 
+/**
+ * Ordered list of available focus options.
+ */
 export const FOCUS_OPTIONS: FocusOption[] = [
   {
     key: "just-starting",
@@ -37,9 +45,14 @@ export const FOCUS_OPTIONS: FocusOption[] = [
 
 const focusKeySet = new Set(FOCUS_OPTIONS.map((option) => option.key));
 
-export const isFocusKey = (value: string): value is FocusKey =>
-  focusKeySet.has(value as FocusKey);
+/**
+ * Type guard for valid FocusKey values.
+ */
+export const isFocusKey = (value: string): value is FocusKey => focusKeySet.has(value as FocusKey);
 
+/**
+ * Normalize unknown input to a FocusKey or null.
+ */
 export const normalizeFocusKey = (value: unknown): FocusKey | null => {
   if (typeof value !== "string") {
     return null;

@@ -10,12 +10,18 @@ import { DEFAULT_MAX_JSON_BODY_BYTES } from "@/lib/limits";
  */
 type ParsedBodyResult<T> = { data: T } | { error: NextResponse };
 
+/**
+ * Optional error response configuration.
+ */
 type ErrorResponseOptions = {
   headers?: HeadersInit;
 };
 
 /**
  * Parse and validate a JSON request body with size enforcement.
+ *
+ * Returns either the parsed data or a standardized error response that the
+ * caller can return immediately.
  */
 export const parseJsonBody = async <T>(
   request: Request,
@@ -74,9 +80,15 @@ export const errorResponse = (
   options: ErrorResponseOptions = {}
 ) => NextResponse.json({ error: message }, { status, headers: options.headers });
 
+/**
+ * Convenience wrapper for a 401 Unauthorized response.
+ */
 export const unauthorizedResponse = () =>
   errorResponse(ERROR_MESSAGE.UNAUTHORIZED, StatusCodes.UNAUTHORIZED);
 
+/**
+ * Convenience wrapper for a 429 Too Many Requests response.
+ */
 export const tooManyRequestsResponse = (retryAfterSeconds: number) =>
   errorResponse(ERROR_MESSAGE.TOO_MANY_REQUESTS, StatusCodes.TOO_MANY_REQUESTS, {
     headers: {
