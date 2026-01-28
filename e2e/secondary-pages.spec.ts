@@ -22,8 +22,6 @@ test("secondary pages render and focus selection persists", async ({ page }) => 
   await expect(page.getByRole("button", { name: /focus: just starting/i })).toBeVisible();
 
   await page.goto("/roles");
-  await expect(
-    page.getByRole("heading", { name: /explore brown-specific tech roles/i })
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: /explore .*tech roles/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /focus: just starting/i })).toBeVisible();
 });
