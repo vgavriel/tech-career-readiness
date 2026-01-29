@@ -1,7 +1,7 @@
 import { parseHTML } from "linkedom";
 
 import { applyDocClassStyles } from "@/lib/lesson-content/doc-styles";
-import { applyBackgroundImages } from "@/lib/lesson-content/images";
+import { applyBackgroundImages, extractCssLengthValue } from "@/lib/lesson-content/images";
 import { extractStyleMaps } from "@/lib/lesson-content/style-maps";
 
 const GOOGLE_DOCS_BANNER_PHRASES = [
@@ -203,6 +203,127 @@ const stripHorizontalRules = (root: Element) => {
   }
 };
 
+const parseNumericAttribute = (value: string | null) => {
+  if (!value) {
+    return undefined;
+  }
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) ? parsed : undefined;
+};
+
+const extractImageSizeFromSrc = (src: string | null) => {
+  if (!src) {
+    return null;
+  }
+  const match = src.match(/=w(\d+)-h(\d+)/i);
+  if (!match) {
+    return null;
+  }
+  const width = Number.parseInt(match[1], 10);
+  const height = Number.parseInt(match[2], 10);
+  if (!Number.isFinite(width) || !Number.isFinite(height)) {
+    return null;
+  }
+  return { width, height };
+};
+
+const getImageDimensions = (img: Element) => {
+  const widthAttr = parseNumericAttribute(img.getAttribute("width"));
+  const heightAttr = parseNumericAttribute(img.getAttribute("height"));
+
+  const style = img.getAttribute("style") ?? "";
+  const widthStyle = extractCssLengthValue(style, "width");
+  const heightStyle = extractCssLengthValue(style, "height");
+
+  const width = widthAttr ?? widthStyle;
+  const height = heightAttr ?? heightStyle;
+
+  if (width && height) {
+    return { width, height };
+  }
+
+  const fromSrc = extractImageSizeFromSrc(img.getAttribute("src"));
+  if (fromSrc) {
+    return fromSrc;
+  }
+
+  if (width || height) {
+    return { width: width ?? 0, height: height ?? 0 };
+  }
+
+  return null;
+};
+
+const isBannerImage = (img: Element) => {
+  const dimensions = getImageDimensions(img);
+  if (!dimensions?.width || !dimensions?.height) {
+    return false;
+  }
+  const ratio = dimensions.width / dimensions.height;
+  return dimensions.width >= 520 && dimensions.height <= 280 && ratio >= 2;
+};
+
+const stripLeadingBannerImages = (root: Element) => {
+  const orderedElements = Array.from(root.querySelectorAll("*"));
+  const elementIndex = new Map<Element, number>();
+
+  orderedElements.forEach((element, index) => {
+    elementIndex.set(element, index);
+  });
+
+  const textBlockTags = new Set(["P", "H1", "H2", "H3", "H4", "H5", "H6", "LI"]);
+  const firstTextBlock = orderedElements.find(
+    (element) => textBlockTags.has(element.tagName) && hasMeaningfulText(element.textContent)
+  );
+  const firstTextIndex = firstTextBlock ? elementIndex.get(firstTextBlock) : undefined;
+
+  const findImageBlock = (img: Element) => {
+    let current: Element | null = img.parentElement;
+    while (current && current !== root) {
+      if (["P", "DIV", "FIGURE", "TABLE", "SECTION"].includes(current.tagName)) {
+        return current;
+      }
+      current = current.parentElement;
+    }
+    return img.parentElement ?? img;
+  };
+
+  for (const element of orderedElements) {
+    if (element.tagName !== "IMG") {
+      continue;
+    }
+
+    if (!isBannerImage(element)) {
+      continue;
+    }
+
+    const imageIndex = elementIndex.get(element);
+    if (imageIndex === undefined) {
+      continue;
+    }
+
+    if (firstTextIndex !== undefined && imageIndex > firstTextIndex) {
+      continue;
+    }
+
+    const block = findImageBlock(element);
+    if (!block) {
+      continue;
+    }
+
+    if (hasMeaningfulText(block.textContent)) {
+      continue;
+    }
+
+    const blockImages = Array.from(block.querySelectorAll("img"));
+    if (!blockImages.some(isBannerImage)) {
+      continue;
+    }
+
+    block.remove();
+  }
+};
+
 /**
  * Trim leading whitespace-only text or empty nodes in an element.
  */
@@ -319,6 +440,7 @@ export const extractLessonHtml = (rawHtml: string) => {
   trimTableCellWhitespace(contentRoot);
   applyDocClassStyles(contentRoot, classStyleMap);
   applyBackgroundImages(contentRoot, backgroundImageMap);
+  stripLeadingBannerImages(contentRoot);
   stripStyleNodes(styleNodes);
   stripEmptyAnchors(contentRoot);
   removeEmptyHeadings(contentRoot);
