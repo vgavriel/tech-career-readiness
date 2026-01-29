@@ -1,4 +1,4 @@
-import { JSDOM, VirtualConsole } from "jsdom";
+import { parseHTML } from "linkedom";
 
 import { applyDocClassStyles } from "@/lib/lesson-content/doc-styles";
 import { applyBackgroundImages } from "@/lib/lesson-content/images";
@@ -300,9 +300,7 @@ const stripStyleNodes = (styleNodes: HTMLStyleElement[]) => {
  * whitespace, and applies doc style classes before returning the content body.
  */
 export const extractLessonHtml = (rawHtml: string) => {
-  const virtualConsole = new VirtualConsole();
-  const dom = new JSDOM(rawHtml, { virtualConsole });
-  const document = dom.window.document;
+  const { document } = parseHTML(rawHtml);
   const { classStyleMap, backgroundImageMap, styleNodes } = extractStyleMaps(document);
 
   const contentRoot =
