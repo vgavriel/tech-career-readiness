@@ -1,4 +1,4 @@
-import { JSDOM } from "jsdom";
+import { parseHTML } from "linkedom";
 
 /**
  * Map of Google Doc ID to lesson slug.
@@ -111,8 +111,7 @@ export const rewriteLessonDocLinks = (html: string, docIdMap: LessonDocIdMap) =>
     return html;
   }
 
-  const dom = new JSDOM(`<body>${html}</body>`);
-  const { document } = dom.window;
+  const { document } = parseHTML(`<html><body>${html}</body></html>`);
   let didChange = false;
 
   for (const anchor of Array.from(document.querySelectorAll("a[href]"))) {

@@ -75,30 +75,12 @@ export const extractBackgroundImage = (style: string | undefined) => {
 };
 
 /**
- * Normalize computed CSS length values into rounded pixel numbers.
- */
-const parseComputedLength = (value: string | null | undefined) => {
-  if (!value) {
-    return undefined;
-  }
-  const parsed = parseCssLength(value);
-  return parsed === null ? undefined : Math.round(parsed);
-};
-
-/**
  * Replace empty background-image elements with <img> tags.
  */
 export const applyBackgroundImages = (
   root: Element,
   backgroundImageMap: Map<string, BackgroundImageStyle>
 ) => {
-  if (backgroundImageMap.size === 0) {
-    if (!root.ownerDocument?.defaultView) {
-      return;
-    }
-  }
-
-  const defaultView = root.ownerDocument?.defaultView;
   const elements = [root, ...Array.from(root.querySelectorAll("*"))];
 
   for (const element of elements) {
@@ -120,24 +102,23 @@ export const applyBackgroundImages = (
       }
     }
 
-    if (defaultView) {
-      const computedStyle = defaultView.getComputedStyle(element);
-      const computedBackground = extractBackgroundImage(computedStyle.backgroundImage);
-      if (!matchedStyle && computedBackground) {
-        if (isAllowedImageSrc(computedBackground)) {
-          matchedStyle = {
-            src: computedBackground,
-            width: parseComputedLength(computedStyle.width),
-            height: parseComputedLength(computedStyle.height),
-          };
-        }
-      } else if (matchedStyle) {
-        matchedStyle = {
-          ...matchedStyle,
-          width: matchedStyle.width ?? parseComputedLength(computedStyle.width),
-          height: matchedStyle.height ?? parseComputedLength(computedStyle.height),
-        };
-      }
+    const inlineStyle = element.getAttribute?.("style") ?? "";
+    const inlineBackground = extractBackgroundImage(inlineStyle);
+    const inlineWidth = extractCssLengthValue(inlineStyle, "width");
+    const inlineHeight = extractCssLengthValue(inlineStyle, "height");
+
+    if (!matchedStyle && inlineBackground && isAllowedImageSrc(inlineBackground)) {
+      matchedStyle = {
+        src: inlineBackground,
+        width: inlineWidth,
+        height: inlineHeight,
+      };
+    } else if (matchedStyle) {
+      matchedStyle = {
+        ...matchedStyle,
+        width: matchedStyle.width ?? inlineWidth,
+        height: matchedStyle.height ?? inlineHeight,
+      };
     }
 
     if (!matchedStyle) {
