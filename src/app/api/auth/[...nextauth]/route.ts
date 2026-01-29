@@ -16,7 +16,7 @@ const handler = NextAuth(authOptions);
  * Route context shape for NextAuth dynamic catch-all routes.
  */
 type AuthRouteContext = {
-  params: Promise<{ nextauth?: string[] }> | { nextauth?: string[] };
+  params: Promise<{ nextauth?: string[] }>;
 };
 
 /**
