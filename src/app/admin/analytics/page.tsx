@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { notFound, redirect } from "next/navigation";
 
 import { getAuthenticatedUser } from "@/lib/auth-user";
@@ -11,6 +12,54 @@ const formatTimestamp = (value: Date) =>
     dateStyle: "medium",
     timeStyle: "short",
   }).format(value);
+
+const userSelect = {
+  id: true,
+  email: true,
+  name: true,
+  createdAt: true,
+  progress: {
+    where: { completedAt: { not: null }, lesson: { isArchived: false } },
+    select: { lessonId: true },
+  },
+  events: {
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      action: true,
+      createdAt: true,
+      lesson: {
+        select: {
+          title: true,
+          slug: true,
+          order: true,
+          isArchived: true,
+          supersededBy: {
+            select: {
+              title: true,
+              slug: true,
+              order: true,
+              module: {
+                select: {
+                  title: true,
+                  order: true,
+                },
+              },
+            },
+          },
+          module: {
+            select: {
+              title: true,
+              order: true,
+            },
+          },
+        },
+      },
+    },
+  },
+} satisfies Prisma.UserSelect;
+
+type AnalyticsUser = Prisma.UserGetPayload<{ select: typeof userSelect }>;
 
 /**
  * Render the admin analytics dashboard for usage and progress.
@@ -34,51 +83,7 @@ export default async function AdminAnalyticsPage() {
     prisma.lesson.count({ where: { isArchived: false } }),
     prisma.user.findMany({
       orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        createdAt: true,
-        progress: {
-          where: { completedAt: { not: null }, lesson: { isArchived: false } },
-          select: { lessonId: true },
-        },
-        events: {
-          orderBy: { createdAt: "desc" },
-          select: {
-            id: true,
-            action: true,
-            createdAt: true,
-            lesson: {
-              select: {
-                title: true,
-                slug: true,
-                order: true,
-                isArchived: true,
-                supersededBy: {
-                  select: {
-                    title: true,
-                    slug: true,
-                    order: true,
-                    module: {
-                      select: {
-                        title: true,
-                        order: true,
-                      },
-                    },
-                  },
-                },
-                module: {
-                  select: {
-                    title: true,
-                    order: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      select: userSelect,
     }),
   ]);
 
@@ -127,7 +132,7 @@ export default async function AdminAnalyticsPage() {
             </div>
           ) : (
             <div className="space-y-6">
-              {users.map((learner) => {
+              {users.map((learner: AnalyticsUser) => {
                 const completedCount = new Set(learner.progress.map((entry) => entry.lessonId))
                   .size;
                 const progressPercent = totalLessons
