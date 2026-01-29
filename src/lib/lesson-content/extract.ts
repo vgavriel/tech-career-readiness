@@ -300,7 +300,9 @@ const stripStyleNodes = (styleNodes: HTMLStyleElement[]) => {
  * whitespace, and applies doc style classes before returning the content body.
  */
 export const extractLessonHtml = (rawHtml: string) => {
-  const { document } = parseHTML(rawHtml);
+  const hasDocumentWrapper = /<html[\s>]/i.test(rawHtml) || /<body[\s>]/i.test(rawHtml);
+  const html = hasDocumentWrapper ? rawHtml : `<html><body>${rawHtml}</body></html>`;
+  const { document } = parseHTML(html);
   const { classStyleMap, backgroundImageMap, styleNodes } = extractStyleMaps(document);
 
   const contentRoot =

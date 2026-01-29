@@ -111,7 +111,7 @@ export const rewriteLessonDocLinks = (html: string, docIdMap: LessonDocIdMap) =>
     return html;
   }
 
-  const { document } = parseHTML(`<body>${html}</body>`);
+  const { document } = parseHTML(`<html><body>${html}</body></html>`);
   let didChange = false;
 
   for (const anchor of Array.from(document.querySelectorAll("a[href]"))) {
