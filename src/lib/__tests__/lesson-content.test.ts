@@ -109,6 +109,30 @@ describe("fetchLessonContent", () => {
     expect(result.html).not.toContain("example.com/evil.png");
   });
 
+  it("drops leading banner images while keeping content images", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          '<p><img src="https://lh3.googleusercontent.com/banner=w1200-h200" width="1200" height="200" /></p>',
+          '<p><img src="https://lh3.googleusercontent.com/resume=w800-h1100" width="800" height="1100" /></p>',
+          "<p>Body</p>",
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).not.toContain("banner=w1200-h200");
+    expect(result.html).toContain("resume=w800-h1100");
+    expect(result.html).toContain("Body");
+  });
+
   it("throws when the upstream response is not ok", async () => {
     process.env.APP_ENV = "preview";
     fetchMock.mockResolvedValueOnce(new Response("oops", { status: 500 }));

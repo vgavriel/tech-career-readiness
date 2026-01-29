@@ -16,7 +16,7 @@ const lessonContentCache = new Map<string, LessonContentCacheEntry>();
  * Default TTL for cached lesson HTML.
  */
 export const LESSON_CONTENT_CACHE_TTL_MS = 60 * 60 * 1000;
-const LESSON_CONTENT_CACHE_VERSION = 3;
+const LESSON_CONTENT_CACHE_VERSION = 4;
 const LESSON_CONTENT_CACHE_PREFIX = `lesson-content:v${LESSON_CONTENT_CACHE_VERSION}`;
 
 let redisClient: Redis | null | undefined;

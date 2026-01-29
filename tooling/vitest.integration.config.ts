@@ -11,6 +11,7 @@ export default defineConfig({
     environment: "node",
     include: ["src/**/*.integration.test.ts", "src/**/*.integration.test.tsx"],
     setupFiles: [path.resolve(__dirname, "./vitest.integration.setup.ts")],
+    fileParallelism: false,
   },
   resolve: {
     alias: {
