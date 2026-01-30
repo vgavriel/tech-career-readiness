@@ -401,7 +401,7 @@ export default function NavigatorLayout({ navigator, children }: NavigatorLayout
         tabIndex={-1}
         ref={mainRef}
         onClickCapture={handleMainClick}
-        className="scroll-panel flex h-full min-h-0 flex-col gap-6 overflow-y-auto rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] px-2.5 pb-8 pt-6 shadow-[var(--shadow-card)] sm:px-4 md:px-7 md:pt-8"
+        className="scroll-panel flex h-full min-h-0 flex-col gap-6 overflow-y-auto rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] px-2.5 pb-2.5 pt-6 shadow-[var(--shadow-card)] sm:px-4 sm:pb-4 md:px-7 md:pb-8 md:pt-8"
       >
         {children}
       </main>

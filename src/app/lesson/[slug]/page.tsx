@@ -3,6 +3,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 
 import LessonContent from "@/components/lesson-content";
 import LessonNavigator from "@/components/lesson-navigator";
+import LessonNextCoreCta from "@/components/lesson-next-core-cta";
 import LessonProgressToggle from "@/components/lesson-progress-toggle";
 import NavigatorLayout from "@/components/navigator-layout";
 import { fetchLessonContent } from "@/lib/lesson-content";
@@ -106,63 +107,66 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
           />
         }
       >
-        <div className="space-y-6">
-          <header className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex flex-wrap items-center gap-3 text-sm font-semibold text-[color:var(--ink-600)]">
-                <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2.5 py-0.5 text-[color:var(--ink-700)]">
-                  Module {lesson.module?.order ?? "?"}
-                </span>
-                <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2.5 py-0.5 text-[color:var(--ink-700)]">
-                  Lesson {lesson.order}
-                </span>
-                {estimatedMinutes ? (
-                  <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2.5 py-0.5 text-[color:var(--ink-700)]">
-                    {estimatedMinutes} min estimated reading time
+        <div className="relative flex min-h-full flex-col gap-6 pb-6">
+          <div className="space-y-6">
+            <header className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-3 text-sm font-semibold text-[color:var(--ink-600)]">
+                  <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-2.5 py-0.5 text-[color:var(--ink-700)]">
+                    Module {lesson.module?.order ?? "?"}
                   </span>
-                ) : null}
+                  <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2.5 py-0.5 text-[color:var(--ink-700)]">
+                    Lesson {lesson.order}
+                  </span>
+                  {estimatedMinutes ? (
+                    <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-2.5 py-0.5 text-[color:var(--ink-700)]">
+                      {estimatedMinutes} min estimated reading time
+                    </span>
+                  ) : null}
+                </div>
+                <LessonProgressToggle lessonSlug={lesson.slug} />
               </div>
-              <LessonProgressToggle lessonSlug={lesson.slug} />
-            </div>
-            <h1 className="font-display mt-5 text-3xl text-[color:var(--ink-900)] md:text-4xl lg:text-5xl">
-              {lesson.title}
-            </h1>
-          </header>
+              <h1 className="font-display mt-5 text-3xl text-[color:var(--ink-900)] md:text-4xl lg:text-5xl">
+                {lesson.title}
+              </h1>
+            </header>
 
-          <section className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
-            {showFallbackNotice ? (
-              <div className="mt-3 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-sm text-[color:var(--ink-700)]">
-                The live document is still syncing. Showing a full sample lesson below in the
-                meantime.
-              </div>
-            ) : null}
-            {showErrorState ? (
-              <div className="mt-3 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-sm text-[color:var(--ink-700)]">
-                Lesson content is unavailable right now.{" "}
-                <Link
-                  href={`/lesson/${lesson.slug}`}
-                  className="font-semibold text-[color:var(--accent-700)] underline"
-                >
-                  Try again
-                </Link>{" "}
-                or{" "}
-                <a
-                  href={lesson.publishedUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold text-[color:var(--accent-700)] underline"
-                >
-                  open the source doc
-                </a>
-                .
-              </div>
-            ) : null}
-            {contentHtml ? (
-              <div className="mt-4">
-                <LessonContent html={contentHtml} />
-              </div>
-            ) : null}
-          </section>
+            <section className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
+              {showFallbackNotice ? (
+                <div className="mt-3 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-sm text-[color:var(--ink-700)]">
+                  The live document is still syncing. Showing a full sample lesson below in the
+                  meantime.
+                </div>
+              ) : null}
+              {showErrorState ? (
+                <div className="mt-3 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-sm text-[color:var(--ink-700)]">
+                  Lesson content is unavailable right now.{" "}
+                  <Link
+                    href={`/lesson/${lesson.slug}`}
+                    className="font-semibold text-[color:var(--accent-700)] underline"
+                  >
+                    Try again
+                  </Link>{" "}
+                  or{" "}
+                  <a
+                    href={lesson.publishedUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-[color:var(--accent-700)] underline"
+                  >
+                    open the source doc
+                  </a>
+                  .
+                </div>
+              ) : null}
+              {contentHtml ? (
+                <div className="mt-4">
+                  <LessonContent html={contentHtml} />
+                </div>
+              ) : null}
+            </section>
+          </div>
+          <LessonNextCoreCta modules={modules} currentLessonSlug={lesson.slug} />
         </div>
       </NavigatorLayout>
     </div>
