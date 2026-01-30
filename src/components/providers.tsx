@@ -1,9 +1,9 @@
 "use client";
 
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SessionProvider } from "next-auth/react";
-import type { ReactNode } from "react";
-import { useEffect } from "react";
+import { type ReactNode, useEffect } from "react";
 
 import { FocusProvider } from "@/components/focus-provider";
 import { ProgressProvider } from "@/components/progress-provider";
@@ -76,7 +76,12 @@ export default function Providers({
       <FocusProvider initialFocusKey={initialFocusKey}>
         <ProgressProvider>
           {children}
-          {analyticsEnabled ? <Analytics /> : null}
+          {analyticsEnabled ? (
+            <>
+              <Analytics />
+              <SpeedInsights />
+            </>
+          ) : null}
         </ProgressProvider>
       </FocusProvider>
     </SessionProvider>
