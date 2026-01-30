@@ -63,27 +63,26 @@ export default function LessonNextCoreCta({ modules, currentLessonSlug }: Lesson
 
   return (
     <>
-      <div className="hidden md:block rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
-        <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
-            Up next (core)
-          </p>
-          <h2 className="font-display text-2xl text-[color:var(--ink-900)] md:text-3xl">
-            {nextLesson.title}
-          </h2>
-          <p className="text-sm font-semibold text-[color:var(--ink-600)]">{metaLabel}</p>
+      <div className="hidden md:block">
+        <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-5 py-4 shadow-[var(--shadow-card)] md:px-6 md:py-4">
+          <div className="flex items-center justify-between gap-4">
+            <p className="min-w-0 truncate text-md font-semibold text-[color:var(--ink-700)]">
+              Up Next: {metaLabel} - {nextLesson.title}
+            </p>
+            <Link
+              href={nextHref}
+              className="no-underline inline-flex min-h-10 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent-700)] px-4 py-2 text-sm font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)]"
+            >
+              Next core lesson
+            </Link>
+          </div>
         </div>
-        <Link
-          href={nextHref}
-          className="no-underline mt-4 inline-flex min-h-11 items-center justify-center rounded-full bg-[color:var(--accent-700)] px-5 py-2.5 text-sm font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)]"
-        >
-          Next core lesson
-        </Link>
+        <div aria-hidden="true" className="h-6" />
       </div>
 
-      <div className="md:hidden fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-10">
-        <div className="mx-auto w-[min(100%-2rem,540px)]">
-          <div className="flex items-center justify-between gap-3 rounded-full border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] px-4 py-3 shadow-[var(--shadow-card)]">
+      <div className="md:hidden sticky bottom-0 z-10">
+        <div className="w-full">
+          <div className="flex items-center justify-between gap-3 rounded-2xl border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] px-4 py-3 shadow-[var(--shadow-card)]">
             <div className="min-w-0">
               <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
                 Up next

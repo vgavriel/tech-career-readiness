@@ -107,7 +107,7 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
           />
         }
       >
-        <div className="relative flex min-h-full flex-col gap-6 pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-0">
+        <div className="relative flex min-h-full flex-col gap-6 pb-6">
           <div className="space-y-6">
             <header className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">

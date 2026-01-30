@@ -395,13 +395,13 @@ body {
 
   .lesson-content ul,
   .lesson-content ol {
-    padding-left: 0.75rem;
+    padding-left: 0rem;
   }
 
   .lesson-content li > ul,
   .lesson-content li > ol {
     margin-top: 0.6rem;
-    padding-left: 0.75rem;
+    padding-left: 0rem;
   }
 
   .lesson-content .doc-indent-1 {
