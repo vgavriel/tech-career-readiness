@@ -36,6 +36,16 @@ These standards keep the codebase consistent, safe, and easy to maintain.
 - Use `errorResponse` for consistent error shapes and log with `createRequestLogger`.
 - Keep SSRF allowlists tight (Google Docs only).
 
+## Security operations
+
+- Maintainers must enable MFA on GitHub and keep recovery methods updated.
+- Restrict write access; review collaborator access regularly.
+- Require PR reviews on `main` via CODEOWNERS and branch protection rules.
+- Enable GitHub security features: private vulnerability reporting, Dependabot alerts/updates, and secret scanning with push protection.
+- Keep automated security checks in CI (CodeQL, dependency review) and update configs as risks evolve.
+- Review new dependency licenses and adjust dependency-review allow/deny lists as needed.
+- Keep security docs current: `SECURITY.md`, threat model, and incident response.
+
 ## Testing expectations
 
 - Unit tests for pure logic and components.
