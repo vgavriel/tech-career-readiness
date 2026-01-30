@@ -393,6 +393,49 @@ body {
     font-size: 1rem;
   }
 
+  .lesson-content ul,
+  .lesson-content ol {
+    padding-left: 1rem;
+  }
+
+  .lesson-content li > ul,
+  .lesson-content li > ol {
+    margin-top: 0.6rem;
+    padding-left: 1rem;
+  }
+
+  .lesson-content .doc-indent-1 {
+    padding-left: 0.9rem;
+  }
+
+  .lesson-content .doc-indent-2 {
+    padding-left: 1.8rem;
+  }
+
+  .lesson-content .doc-indent-3 {
+    padding-left: 2.7rem;
+  }
+
+  .lesson-content .doc-indent-4 {
+    padding-left: 3.6rem;
+  }
+
+  .lesson-content li.doc-indent-1 {
+    margin-left: 0.9rem;
+  }
+
+  .lesson-content li.doc-indent-2 {
+    margin-left: 1.8rem;
+  }
+
+  .lesson-content li.doc-indent-3 {
+    margin-left: 2.7rem;
+  }
+
+  .lesson-content li.doc-indent-4 {
+    margin-left: 3.6rem;
+  }
+
   .lesson-content table {
     display: block;
     border: 0;

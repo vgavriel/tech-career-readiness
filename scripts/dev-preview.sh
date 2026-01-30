@@ -14,4 +14,5 @@ fi
 
 bash "${SCRIPT_DIR}/with-env.sh" "$ENV_FILE" npx prisma generate
 bash "${SCRIPT_DIR}/with-env.sh" "$ENV_FILE" node "${SCRIPT_DIR}/preview-db-check.mjs"
+echo "Starting Next.js with environment loaded from .env.preview."
 bash "${SCRIPT_DIR}/with-env.sh" "$ENV_FILE" npm run dev
