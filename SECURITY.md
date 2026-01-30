@@ -38,6 +38,4 @@ Out of scope:
 
 ## Related docs
 
-- Threat model: `docs/security-threat-model.md`
-- Incident response: `docs/security-incident-response.md`
 - App security controls: `docs/system-design/security.md`

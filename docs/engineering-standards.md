@@ -44,7 +44,7 @@ These standards keep the codebase consistent, safe, and easy to maintain.
 - Enable GitHub security features: private vulnerability reporting, Dependabot alerts/updates, and secret scanning with push protection.
 - Keep automated security checks in CI (CodeQL, dependency review) and update configs as risks evolve.
 - Review new dependency licenses and adjust dependency-review allow/deny lists as needed.
-- Keep security docs current: `SECURITY.md`, threat model, and incident response.
+- Keep security docs current: `SECURITY.md` and any repo-level security guidelines.
 
 ## Testing expectations
 

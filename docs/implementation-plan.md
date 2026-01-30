@@ -362,7 +362,6 @@ Source of truth for modules, focuses, progress categories, and gamification:
 ### Phase 20 — Open-source security practices
 
 - [x] Add `SECURITY.md` with private vulnerability reporting guidance
-- [x] Add lightweight threat model and incident response docs
 - [x] Add CodeQL code scanning workflow for TypeScript
 - [x] Add dependency review workflow with license guardrails
 - [x] Add Dependabot config for npm and GitHub Actions
