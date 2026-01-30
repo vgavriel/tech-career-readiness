@@ -395,45 +395,45 @@ body {
 
   .lesson-content ul,
   .lesson-content ol {
-    padding-left: 1rem;
+    padding-left: 0.75rem;
   }
 
   .lesson-content li > ul,
   .lesson-content li > ol {
     margin-top: 0.6rem;
-    padding-left: 1rem;
+    padding-left: 0.75rem;
   }
 
   .lesson-content .doc-indent-1 {
-    padding-left: 0.9rem;
+    padding-left: 0.75rem;
   }
 
   .lesson-content .doc-indent-2 {
-    padding-left: 1.8rem;
+    padding-left: 1.5rem;
   }
 
   .lesson-content .doc-indent-3 {
-    padding-left: 2.7rem;
+    padding-left: 2.25rem;
   }
 
   .lesson-content .doc-indent-4 {
-    padding-left: 3.6rem;
+    padding-left: 3rem;
   }
 
   .lesson-content li.doc-indent-1 {
-    margin-left: 0.9rem;
+    margin-left: 0.75rem;
   }
 
   .lesson-content li.doc-indent-2 {
-    margin-left: 1.8rem;
+    margin-left: 1.5rem;
   }
 
   .lesson-content li.doc-indent-3 {
-    margin-left: 2.7rem;
+    margin-left: 2.25rem;
   }
 
   .lesson-content li.doc-indent-4 {
-    margin-left: 3.6rem;
+    margin-left: 3rem;
   }
 
   .lesson-content table {
