@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import LessonNextCoreCta from "@/components/lesson-next-core-cta";
@@ -11,6 +12,7 @@ const focusMocks = vi.hoisted(() => ({
 const progressMocks = vi.hoisted(() => ({
   completedLessonSlugs: [] as string[],
   isReady: true,
+  setLessonCompletion: vi.fn(),
 }));
 
 vi.mock("@/components/focus-provider", () => ({
@@ -23,6 +25,7 @@ vi.mock("@/components/progress-provider", () => ({
   useProgress: () => ({
     completedLessonSlugs: progressMocks.completedLessonSlugs,
     isReady: progressMocks.isReady,
+    setLessonCompletion: progressMocks.setLessonCompletion,
   }),
 }));
 
@@ -39,6 +42,7 @@ describe("LessonNextCoreCta", () => {
     focusMocks.focusKey = null;
     progressMocks.completedLessonSlugs = [];
     progressMocks.isReady = true;
+    progressMocks.setLessonCompletion.mockReset();
   });
 
   it("links to the next core lesson after the current lesson", () => {
@@ -88,6 +92,45 @@ describe("LessonNextCoreCta", () => {
 
     const link = screen.getByRole("link", { name: /next core lesson/i });
     expect(link).toHaveAttribute("href", "/lesson/tech-recruiting-timeline");
+  });
+
+  it("marks the current lesson complete when the CTA is used", async () => {
+    const user = userEvent.setup();
+    const modules: RoadmapModule[] = [
+      {
+        id: "module-1",
+        key: "start-here",
+        title: "Start here",
+        description: null,
+        order: 1,
+        lessons: [
+          {
+            id: "lesson-1",
+            slug: "start-to-finish-roadmap",
+            title: "Start here",
+            order: 1,
+            estimatedMinutes: null,
+          },
+          {
+            id: "lesson-2",
+            slug: "tech-recruiting-timeline",
+            title: "Timeline",
+            order: 2,
+            estimatedMinutes: null,
+          },
+        ],
+      },
+    ];
+
+    render(<LessonNextCoreCta modules={modules} currentLessonSlug="start-to-finish-roadmap" />);
+
+    await user.click(screen.getByRole("link", { name: /next core lesson/i }));
+
+    expect(progressMocks.setLessonCompletion).toHaveBeenCalledWith(
+      "start-to-finish-roadmap",
+      true,
+      "navigator"
+    );
   });
 
   it("falls back to the next incomplete core lesson when the current lesson is extra credit", () => {

@@ -27,7 +27,7 @@ type LessonNextCoreCtaProps = {
  */
 export default function LessonNextCoreCta({ modules, currentLessonSlug }: LessonNextCoreCtaProps) {
   const { focusKey } = useFocus();
-  const { completedLessonSlugs, isReady } = useProgress();
+  const { completedLessonSlugs, isReady, setLessonCompletion } = useProgress();
 
   const nextLesson = useMemo(() => {
     const orderedModules = orderModulesForFocus(modules, focusKey);
@@ -60,6 +60,13 @@ export default function LessonNextCoreCta({ modules, currentLessonSlug }: Lesson
 
   const metaLabel = `Module ${nextLesson.moduleOrder} - Lesson ${nextLesson.order}`;
   const nextHref = `/lesson/${nextLesson.slug}`;
+  const shouldMarkComplete = !completedLessonSlugs.includes(currentLessonSlug);
+  const handleNextClick = () => {
+    if (!shouldMarkComplete) {
+      return;
+    }
+    void setLessonCompletion(currentLessonSlug, true, "navigator");
+  };
 
   return (
     <>
@@ -71,6 +78,7 @@ export default function LessonNextCoreCta({ modules, currentLessonSlug }: Lesson
             </p>
             <Link
               href={nextHref}
+              onClick={handleNextClick}
               className="no-underline inline-flex min-h-10 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent-700)] px-4 py-2 text-sm font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)]"
             >
               Next core lesson
@@ -93,6 +101,7 @@ export default function LessonNextCoreCta({ modules, currentLessonSlug }: Lesson
             </div>
             <Link
               href={nextHref}
+              onClick={handleNextClick}
               className="no-underline inline-flex min-h-10 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent-700)] px-4 py-2 text-sm font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)]"
             >
               Next
