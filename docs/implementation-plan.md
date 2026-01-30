@@ -355,6 +355,18 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [ ] Add background refresh jobs (cron/QStash) to keep snapshots warm
 - [ ] Provide cache invalidation + fallback to last-known-good content
 
+### Phase 19 — Repository governance (public release)
+
+- [x] Add CODEOWNERS to require maintainer review for main-branch changes
+
+### Phase 20 — Open-source security practices
+
+- [x] Add `SECURITY.md` with private vulnerability reporting guidance
+- [x] Add CodeQL code scanning workflow for TypeScript
+- [x] Add dependency review workflow with license guardrails
+- [x] Add Dependabot config for npm and GitHub Actions
+- [x] Document repo security expectations (MFA, least privilege, secret scanning)
+
 ## Environment variables
 
 - APP_ENV (local, preview, production, test)
