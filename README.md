@@ -17,12 +17,6 @@ Each document explains **what a system does**, **why it exists**, and
 - [Architecture overview](docs/architecture.md)
 - [Implementation plan](docs/implementation-plan.md)
 
-## WCAG accessibility explainer
-
-We run automated checks against **WCAG AAA**. If you're new to accessibility,
-this explainer is a good starting point:
-https://www.w3.org/WAI/WCAG21/Understanding/conformance
-
 ## System design map
 
 These docs are intentionally thorough and cross-linked:
