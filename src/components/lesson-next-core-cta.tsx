@@ -63,7 +63,7 @@ export default function LessonNextCoreCta({ modules, currentLessonSlug }: Lesson
 
   return (
     <>
-      <div className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
+      <div className="hidden md:block rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
         <div className="space-y-2">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-500)]">
             Up next (core)
