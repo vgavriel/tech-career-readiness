@@ -289,6 +289,8 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Normalize lesson table spacing and borders
 - [x] Hide horizontal rules inside lesson content
 - [x] Fix in-lesson hash navigation to avoid scroll trap in nested containers
+- [x] Tighten mobile lesson content padding and list indentation for readability
+- [x] Reposition the mobile navigator toggle to avoid overlapping lesson content
 - [x] Add TSDoc for functions/types and component intent comments
 - [x] Expand TSDoc coverage across app/API/seed utilities (Jan 2026 refresh)
 - [x] Document local/preview workflows and gate auth/rate limiting by `APP_ENV`

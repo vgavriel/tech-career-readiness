@@ -280,13 +280,13 @@ export default function NavigatorLayout({ navigator, children }: NavigatorLayout
   return (
     <div
       ref={containerRef}
-      className={`page-content relative mx-auto grid h-full w-full max-w-[1400px] items-start gap-0 px-4 py-4 md:px-6 md:py-6 ${gridClass}`}
+      className={`page-content relative mx-auto grid h-full w-full max-w-[1400px] items-start gap-0 px-2 py-4 sm:px-3 md:px-6 md:py-6 ${gridClass}`}
     >
       {isMobile && isCollapsed ? (
         <button
           type="button"
           onClick={() => setIsCollapsed(false)}
-          className="absolute left-6 top-6 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-700)] shadow-[var(--shadow-soft)] transition hover:border-[color:var(--ink-900)]"
+          className="absolute left-2 top-4 z-30 flex h-8 w-8 items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-700)] shadow-[var(--shadow-soft)] transition hover:border-[color:var(--ink-900)]"
           aria-label="Open navigator"
           aria-controls="lesson-navigator"
         >
@@ -401,7 +401,7 @@ export default function NavigatorLayout({ navigator, children }: NavigatorLayout
         tabIndex={-1}
         ref={mainRef}
         onClickCapture={handleMainClick}
-        className="scroll-panel flex h-full min-h-0 flex-col gap-6 overflow-y-auto rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] px-5 pb-8 pt-6 shadow-[var(--shadow-card)] md:px-7 md:pt-8"
+        className="scroll-panel flex h-full min-h-0 flex-col gap-6 overflow-y-auto rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] px-2.5 pb-8 pt-6 shadow-[var(--shadow-card)] sm:px-4 md:px-7 md:pt-8"
       >
         {children}
       </main>
