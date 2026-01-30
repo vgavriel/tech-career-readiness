@@ -286,13 +286,13 @@ export default function NavigatorLayout({ navigator, children }: NavigatorLayout
         <button
           type="button"
           onClick={() => setIsCollapsed(false)}
-          className="absolute left-3 top-4 z-30 flex h-9 w-9 items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-700)] shadow-[var(--shadow-soft)] transition hover:border-[color:var(--ink-900)]"
+          className="absolute left-2 top-4 z-30 flex h-8 w-8 items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-700)] shadow-[var(--shadow-soft)] transition hover:border-[color:var(--ink-900)]"
           aria-label="Open navigator"
           aria-controls="lesson-navigator"
         >
           <svg
             aria-hidden="true"
-            className={`h-3 w-3 transition ${isCollapsed ? "rotate-180" : ""}`}
+            className={`h-3.5 w-3.5 transition ${isCollapsed ? "rotate-180" : ""}`}
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
