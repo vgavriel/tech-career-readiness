@@ -10,6 +10,12 @@ readability, responsive layouts, and focus management for key interactions.
 - Students consume lessons on mobile and desktop.
 - Focus selection and progress updates must be easy to reach and understand.
 - Accessibility (keyboard, focus, labels) is part of the product definition.
+ 
+## WCAG accessibility explainer
+
+We run automated tests to check for **WCAG AAA** conformance. If you're new to accessibility,
+this explainer is a good starting point:
+https://www.w3.org/WAI/WCAG21/Understanding/conformance
 
 ## Key UI systems
 

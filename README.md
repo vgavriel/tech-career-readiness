@@ -3,13 +3,12 @@
 
 # Tech Career Readiness
 
-Tech Career Readiness is a self-paced learning app built for college students.
+Tech Career Readiness is a self-paced learning app built for Brown students.
 The app itself is intentionally simple; the **engineering scaffolding** around
-it is not. This repo is written for students who want to see how production
+it is not. This repo is viewable for students who want to see how production
 systems are designed and why those choices matter.
 
-If you've completed an introductory CS sequence, you should be able to follow
-along. Each document explains **what a system does**, **why it exists**, and
+Each document explains **what a system does**, **why it exists**, and
 **where the code lives**.
 
 ## Start here (student-friendly)
@@ -17,12 +16,6 @@ along. Each document explains **what a system does**, **why it exists**, and
 - [System design guide](docs/system-design/README.md)
 - [Architecture overview](docs/architecture.md)
 - [Implementation plan](docs/implementation-plan.md)
-
-## WCAG accessibility explainer
-
-We run automated checks against **WCAG AAA**. If you're new to accessibility,
-this explainer is a good starting point:
-https://www.w3.org/WAI/WCAG21/Understanding/conformance
 
 ## System design map
 
