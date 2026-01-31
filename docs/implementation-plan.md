@@ -370,6 +370,12 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Add Dependabot config for npm and GitHub Actions
 - [x] Document repo security expectations (MFA, least privilege, secret scanning)
 
+### Phase 21 — Codex learning artifacts (student playbook)
+
+- [x] Create student-facing Codex playbook in `docs/codex-playbook`
+- [x] Add prompt library, checkpoints, case study timeline, and templates
+- [x] Link all playbook artifacts from `docs/codex-playbook/README.md`
+
 ## Environment variables
 
 - APP_ENV (local, preview, production, test)
