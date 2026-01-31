@@ -183,4 +183,138 @@ describe("LessonNextCoreCta", () => {
     const link = screen.getByRole("link", { name: /next core lesson/i });
     expect(link).toHaveAttribute("href", "/lesson/tech-recruiting-timeline");
   });
+
+  it("does not render the CTA when all core lessons are complete", () => {
+    progressMocks.completedLessonSlugs = ["start-to-finish-roadmap", "tech-recruiting-timeline"];
+
+    const modules: RoadmapModule[] = [
+      {
+        id: "module-1",
+        key: "start-here",
+        title: "Start here",
+        description: null,
+        order: 1,
+        lessons: [
+          {
+            id: "lesson-1",
+            slug: "start-to-finish-roadmap",
+            title: "Start here",
+            order: 1,
+            estimatedMinutes: null,
+          },
+          {
+            id: "lesson-2",
+            slug: "tech-recruiting-timeline",
+            title: "Timeline",
+            order: 2,
+            estimatedMinutes: null,
+          },
+        ],
+      },
+      {
+        id: "module-2",
+        key: "internship-success",
+        title: "Internship Success",
+        description: null,
+        order: 2,
+        lessons: [
+          {
+            id: "lesson-3",
+            slug: "internship-success-handbook",
+            title: "Handbook",
+            order: 1,
+            estimatedMinutes: null,
+          },
+        ],
+      },
+    ];
+
+    render(<LessonNextCoreCta modules={modules} currentLessonSlug="internship-success-handbook" />);
+
+    expect(screen.queryByRole("link", { name: /next core lesson/i })).toBeNull();
+  });
+
+  it("celebrates the end of the core course on the last lesson with no button", () => {
+    progressMocks.completedLessonSlugs = ["start-to-finish-roadmap", "tech-recruiting-timeline"];
+
+    const modules: RoadmapModule[] = [
+      {
+        id: "module-1",
+        key: "start-here",
+        title: "Start here",
+        description: null,
+        order: 1,
+        lessons: [
+          {
+            id: "lesson-1",
+            slug: "start-to-finish-roadmap",
+            title: "Start here",
+            order: 1,
+            estimatedMinutes: null,
+          },
+          {
+            id: "lesson-2",
+            slug: "tech-recruiting-timeline",
+            title: "Timeline",
+            order: 2,
+            estimatedMinutes: null,
+          },
+          {
+            id: "lesson-3",
+            slug: "practice-interviews",
+            title: "Practice",
+            order: 3,
+            estimatedMinutes: null,
+          },
+        ],
+      },
+    ];
+
+    render(<LessonNextCoreCta modules={modules} currentLessonSlug="practice-interviews" />);
+
+    expect(screen.getAllByText(/end of the core course/i)).toHaveLength(2);
+    expect(screen.queryByRole("link")).toBeNull();
+  });
+
+  it("links to the first incomplete core lesson when the last core lesson is reached", () => {
+    progressMocks.completedLessonSlugs = ["tech-recruiting-timeline"];
+
+    const modules: RoadmapModule[] = [
+      {
+        id: "module-1",
+        key: "start-here",
+        title: "Start here",
+        description: null,
+        order: 1,
+        lessons: [
+          {
+            id: "lesson-1",
+            slug: "start-to-finish-roadmap",
+            title: "Start here",
+            order: 1,
+            estimatedMinutes: null,
+          },
+          {
+            id: "lesson-2",
+            slug: "tech-recruiting-timeline",
+            title: "Timeline",
+            order: 2,
+            estimatedMinutes: null,
+          },
+          {
+            id: "lesson-3",
+            slug: "practice-interviews",
+            title: "Practice",
+            order: 3,
+            estimatedMinutes: null,
+          },
+        ],
+      },
+    ];
+
+    render(<LessonNextCoreCta modules={modules} currentLessonSlug="practice-interviews" />);
+
+    const link = screen.getByRole("link", { name: /finish core lessons/i });
+    expect(link).toHaveAttribute("href", "/lesson/start-to-finish-roadmap");
+  });
 });

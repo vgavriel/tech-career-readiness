@@ -36,5 +36,6 @@ module.exports = {
         "wait for element #focus-menu-panel to be visible",
       ],
     },
+    `${baseUrl}/privacy`,
   ],
 };

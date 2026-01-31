@@ -2,9 +2,9 @@ import type { RoadmapModule } from "@/components/roadmap-module-list";
 import { getLessonClassification } from "@/lib/lesson-classification";
 
 /**
- * Canonical badge identifiers.
+ * Canonical gold star identifiers.
  */
-export type BadgeKey =
+export type GoldStarKey =
   | "pathfinder"
   | "explorer"
   | "connector"
@@ -15,20 +15,23 @@ export type BadgeKey =
   | "extra-credit-collector";
 
 /**
- * UI-ready badge status details.
+ * UI-ready gold star status details.
  */
-export type BadgeStatus = {
-  key: BadgeKey;
+export type GoldStarStatus = {
+  key: GoldStarKey;
   title: string;
   description: string;
   progressLabel: string;
   statusLabel: string;
   isEarned: boolean;
+  targetLessonSlug: string | null;
 };
 
 type LessonSummary = {
   slug: string;
   moduleKey: string;
+  moduleOrder: number;
+  order: number;
   classification: ReturnType<typeof getLessonClassification>;
 };
 
@@ -41,16 +44,23 @@ type LessonProgress = {
 /**
  * Flatten module lessons into summaries with classification metadata.
  */
-const buildLessonSummaries = (modules: RoadmapModule[]): LessonSummary[] =>
-  modules.flatMap((module) =>
-    module.lessons.map((lesson) => ({
+const buildLessonSummaries = (modules: RoadmapModule[]): LessonSummary[] => {
+  const orderedModules = [...modules].sort((left, right) => left.order - right.order);
+
+  return orderedModules.flatMap((module) => {
+    const orderedLessons = [...module.lessons].sort((left, right) => left.order - right.order);
+
+    return orderedLessons.map((lesson) => ({
       slug: lesson.slug,
       moduleKey: module.key,
+      moduleOrder: module.order,
+      order: lesson.order,
       classification: getLessonClassification({
         slug: lesson.slug,
       }),
-    }))
-  );
+    }));
+  });
+};
 
 /**
  * Determine whether a lesson appears in the completed set.
@@ -76,7 +86,35 @@ const summarizeLessons = (lessons: LessonSummary[], completedSet: Set<string>): 
 };
 
 /**
- * Format a progress label used in badge UI strings.
+ * Sort lessons by module then lesson order.
+ */
+const sortLessons = (lessons: LessonSummary[]) =>
+  [...lessons].sort(
+    (left, right) =>
+      left.moduleOrder - right.moduleOrder ||
+      left.order - right.order ||
+      left.slug.localeCompare(right.slug)
+  );
+
+/**
+ * Return ordered lessons for a module, optionally including extra credit.
+ */
+const getModuleLessons = (
+  lessons: LessonSummary[],
+  moduleKey: string,
+  options?: { includeExtra?: boolean }
+) => {
+  const includeExtra = options?.includeExtra ?? false;
+  const moduleLessons = lessons.filter((lesson) => lesson.moduleKey === moduleKey);
+  const filteredLessons = includeExtra
+    ? moduleLessons
+    : moduleLessons.filter((lesson) => lesson.classification.credit === "core");
+
+  return sortLessons(filteredLessons);
+};
+
+/**
+ * Format a progress label used in gold star UI strings.
  */
 const formatProgressLabel = (completed: number, total: number, label: string) => {
   if (total === 0) {
@@ -95,49 +133,77 @@ const getModuleProgress = (
   moduleKey: string,
   options?: { includeExtra?: boolean }
 ) => {
-  const includeExtra = options?.includeExtra ?? false;
-  const moduleLessons = lessons.filter((lesson) => lesson.moduleKey === moduleKey);
-  const filteredLessons = includeExtra
-    ? moduleLessons
-    : moduleLessons.filter((lesson) => lesson.classification.credit === "core");
-
+  const filteredLessons = getModuleLessons(lessons, moduleKey, options);
   return summarizeLessons(filteredLessons, completedSet);
 };
 
 /**
- * Build badge status objects based on completed lessons.
+ * Pick the lesson slug to use for a gold star CTA.
+ */
+const getGoldStarTargetSlug = (
+  lessons: LessonSummary[],
+  completedSet: Set<string>,
+  isEarned: boolean
+) => {
+  if (lessons.length === 0) {
+    return null;
+  }
+
+  if (isEarned) {
+    return lessons[0].slug;
+  }
+
+  const nextLesson = lessons.find((lesson) => !completedSet.has(lesson.slug));
+  return nextLesson ? nextLesson.slug : null;
+};
+
+/**
+ * Build gold star status objects based on completed lessons.
  *
  * Explorer requires all core explore-roles lessons plus 3 deep dives; extra
  * credit requires at least 50% of extra lessons completed.
  */
-export const buildBadgeStatuses = (
+export const buildGoldStarStatuses = (
   modules: RoadmapModule[],
   completedLessonSlugs: string[]
-): BadgeStatus[] => {
+): GoldStarStatus[] => {
   const lessons = buildLessonSummaries(modules);
   const completedSet = new Set(completedLessonSlugs);
 
-  const startHere = getModuleProgress(lessons, completedSet, "start-here");
-  const exploreRoles = getModuleProgress(lessons, completedSet, "explore-roles");
-  const networking = getModuleProgress(lessons, completedSet, "opportunities-networking");
-  const applications = getModuleProgress(lessons, completedSet, "applications");
-  const interviews = getModuleProgress(lessons, completedSet, "interviews");
-  const offers = getModuleProgress(lessons, completedSet, "offers");
-  const internship = getModuleProgress(lessons, completedSet, "internship-success", {
+  const startHereLessons = getModuleLessons(lessons, "start-here");
+  const exploreCoreLessons = getModuleLessons(lessons, "explore-roles");
+  const networkingLessons = getModuleLessons(lessons, "opportunities-networking");
+  const applicationsLessons = getModuleLessons(lessons, "applications");
+  const interviewsLessons = getModuleLessons(lessons, "interviews");
+  const offersLessons = getModuleLessons(lessons, "offers");
+  const internshipLessons = getModuleLessons(lessons, "internship-success", {
     includeExtra: true,
   });
 
-  const roleDeepDives = lessons.filter((lesson) => lesson.classification.roleDeepDive);
+  const roleDeepDives = sortLessons(lessons.filter((lesson) => lesson.classification.roleDeepDive));
   const roleDeepDiveProgress = summarizeLessons(roleDeepDives, completedSet);
   const roleDeepDiveTarget = 3;
 
-  const extraCreditLessons = lessons.filter((lesson) => lesson.classification.credit === "extra");
+  const extraCreditLessons = sortLessons(
+    lessons.filter((lesson) => lesson.classification.credit === "extra")
+  );
   const extraCreditProgress = summarizeLessons(extraCreditLessons, completedSet);
   const extraCreditTarget =
     extraCreditProgress.total === 0 ? 0 : Math.ceil(extraCreditProgress.total * 0.5);
 
+  const startHere = summarizeLessons(startHereLessons, completedSet);
+  const exploreRoles = summarizeLessons(exploreCoreLessons, completedSet);
+  const networking = summarizeLessons(networkingLessons, completedSet);
+  const applications = summarizeLessons(applicationsLessons, completedSet);
+  const interviews = summarizeLessons(interviewsLessons, completedSet);
+  const offers = summarizeLessons(offersLessons, completedSet);
+  const internship = summarizeLessons(internshipLessons, completedSet);
+
   const explorerEarned =
     exploreRoles.isComplete && roleDeepDiveProgress.completed >= roleDeepDiveTarget;
+  const explorerLessons = sortLessons([...exploreCoreLessons, ...roleDeepDives]);
+  const extraCreditEarned =
+    extraCreditProgress.total > 0 && extraCreditProgress.completed >= extraCreditTarget;
 
   return [
     {
@@ -147,6 +213,7 @@ export const buildBadgeStatuses = (
       progressLabel: formatProgressLabel(startHere.completed, startHere.total, "core lessons"),
       statusLabel: startHere.isComplete ? "Earned" : "In progress",
       isEarned: startHere.isComplete,
+      targetLessonSlug: getGoldStarTargetSlug(startHereLessons, completedSet, startHere.isComplete),
     },
     {
       key: "explorer",
@@ -159,6 +226,7 @@ export const buildBadgeStatuses = (
       )} · Deep dives ${roleDeepDiveProgress.completed} of ${roleDeepDiveTarget}`,
       statusLabel: explorerEarned ? "Earned" : "In progress",
       isEarned: explorerEarned,
+      targetLessonSlug: getGoldStarTargetSlug(explorerLessons, completedSet, explorerEarned),
     },
     {
       key: "connector",
@@ -167,6 +235,11 @@ export const buildBadgeStatuses = (
       progressLabel: formatProgressLabel(networking.completed, networking.total, "core lessons"),
       statusLabel: networking.isComplete ? "Earned" : "In progress",
       isEarned: networking.isComplete,
+      targetLessonSlug: getGoldStarTargetSlug(
+        networkingLessons,
+        completedSet,
+        networking.isComplete
+      ),
     },
     {
       key: "applicant",
@@ -179,6 +252,11 @@ export const buildBadgeStatuses = (
       ),
       statusLabel: applications.isComplete ? "Earned" : "In progress",
       isEarned: applications.isComplete,
+      targetLessonSlug: getGoldStarTargetSlug(
+        applicationsLessons,
+        completedSet,
+        applications.isComplete
+      ),
     },
     {
       key: "interview-ready",
@@ -187,6 +265,11 @@ export const buildBadgeStatuses = (
       progressLabel: formatProgressLabel(interviews.completed, interviews.total, "core lessons"),
       statusLabel: interviews.isComplete ? "Earned" : "In progress",
       isEarned: interviews.isComplete,
+      targetLessonSlug: getGoldStarTargetSlug(
+        interviewsLessons,
+        completedSet,
+        interviews.isComplete
+      ),
     },
     {
       key: "offer-confident",
@@ -195,6 +278,7 @@ export const buildBadgeStatuses = (
       progressLabel: formatProgressLabel(offers.completed, offers.total, "core lessons"),
       statusLabel: offers.isComplete ? "Earned" : "In progress",
       isEarned: offers.isComplete,
+      targetLessonSlug: getGoldStarTargetSlug(offersLessons, completedSet, offers.isComplete),
     },
     {
       key: "internship-ready",
@@ -203,6 +287,11 @@ export const buildBadgeStatuses = (
       progressLabel: formatProgressLabel(internship.completed, internship.total, "lessons"),
       statusLabel: internship.isComplete ? "Earned" : "In progress",
       isEarned: internship.isComplete,
+      targetLessonSlug: getGoldStarTargetSlug(
+        internshipLessons,
+        completedSet,
+        internship.isComplete
+      ),
     },
     {
       key: "extra-credit-collector",
@@ -213,11 +302,9 @@ export const buildBadgeStatuses = (
         extraCreditProgress.total,
         "extra lessons"
       ),
-      statusLabel:
-        extraCreditProgress.total > 0 && extraCreditProgress.completed >= extraCreditTarget
-          ? "Earned"
-          : "In progress",
-      isEarned: extraCreditProgress.total > 0 && extraCreditProgress.completed >= extraCreditTarget,
+      statusLabel: extraCreditEarned ? "Earned" : "In progress",
+      isEarned: extraCreditEarned,
+      targetLessonSlug: getGoldStarTargetSlug(extraCreditLessons, completedSet, extraCreditEarned),
     },
   ];
 };

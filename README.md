@@ -6,7 +6,8 @@
 Tech Career Readiness is a self-paced learning app built for Brown students.
 The app itself is intentionally simple; the **engineering scaffolding** around
 it is not. This repo is viewable for students who want to see how production
-systems are designed and why those choices matter.
+systems are designed and why those choices matter. This app was created with
+GPT-5.2-Codex.
 
 Each document explains **what a system does**, **why it exists**, and
 **where the code lives**.
@@ -16,6 +17,7 @@ Each document explains **what a system does**, **why it exists**, and
 - [System design guide](docs/system-design/README.md)
 - [Architecture overview](docs/architecture.md)
 - [Implementation plan](docs/implementation-plan.md)
+- [OpenAI Codex playbook (prompts + checkpoints)](docs/codex-playbook/README.md)
 
 ## System design map
 
@@ -56,7 +58,7 @@ npm run dev:preview
 
 See [Environments](docs/environments.md) for the full workflow.
 
-## Environment variables (short version)
+## Environment variables
 
 - `APP_ENV` controls behavior (`local`, `preview`, `production`, `test`).
 - Local dev uses `.env.local` (auto-loaded by Next.js).
@@ -74,11 +76,10 @@ Additional configuration:
 
 See [Testing Strategy](docs/system-design/testing.md) for the full plan.
 
-Local integration + E2E quickstart (requires Docker):
+Local unit + integration + E2E quickstart (requires Docker):
 
 ```bash
-npm run test:integration:local
-npm run test:e2e:local
+npm run test:all:local
 ```
 
 If port `5434` is already in use, set `TEST_DB_PORT` to a free port.

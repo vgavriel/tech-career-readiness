@@ -21,7 +21,7 @@ type RoleLibraryListProps = {
 };
 
 /**
- * Render role deep-dive lessons with completion badges.
+ * Render role deep-dive lessons with completion gold stars.
  */
 export default function RoleLibraryList({ lessons }: RoleLibraryListProps) {
   const { isLessonCompleted, isReady } = useProgress();

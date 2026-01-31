@@ -1,5 +1,5 @@
+import BackToCourseCta from "@/components/back-to-course-cta";
 import RoleLibraryList from "@/components/role-library-list";
-import RolesBackToCourse from "@/components/roles-back-to-course";
 import { ROLE_DEEP_DIVE_LESSON_SLUGS } from "@/lib/lesson-classification";
 import { getRoadmapModules } from "@/lib/roadmap-modules";
 
@@ -41,7 +41,7 @@ export default async function RolesPage() {
               affect core progress.
             </p>
             <div className="flex flex-wrap gap-4">
-              <RolesBackToCourse modules={modules} />
+              <BackToCourseCta modules={modules} />
             </div>
           </div>
         </section>

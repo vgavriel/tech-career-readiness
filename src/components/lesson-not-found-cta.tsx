@@ -9,16 +9,16 @@ import { orderModulesForFocus } from "@/lib/focus-order";
 import { buildProgressSummaries, type ProgressSummaryModule } from "@/lib/progress-summary";
 
 /**
- * Props for the back-to-course button on the Roles page.
+ * Props for the lesson not-found CTA.
  */
-type RolesBackToCourseProps = {
+type LessonNotFoundCtaProps = {
   modules: ProgressSummaryModule[];
 };
 
 /**
- * Render a CTA that links back to the user's next lesson.
+ * Render a back-to-course CTA for the lesson not-found state.
  */
-export default function RolesBackToCourse({ modules }: RolesBackToCourseProps) {
+export default function LessonNotFoundCta({ modules }: LessonNotFoundCtaProps) {
   const { focusKey } = useFocus();
   const { completedLessonSlugs, isReady } = useProgress();
   const focusModules = useMemo(
@@ -26,7 +26,7 @@ export default function RolesBackToCourse({ modules }: RolesBackToCourseProps) {
     [focusKey, modules]
   );
 
-  const { activeSummary } = useMemo(
+  const { activeSummary, coreSummary } = useMemo(
     () =>
       buildProgressSummaries({
         modules,
@@ -38,6 +38,14 @@ export default function RolesBackToCourse({ modules }: RolesBackToCourseProps) {
     [completedLessonSlugs, focusKey, focusModules, isReady, modules]
   );
 
+  if (coreSummary.allComplete) {
+    return (
+      <p className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-5 py-2.5 text-sm font-semibold text-[color:var(--ink-700)]">
+        You reached the end of the core course.
+      </p>
+    );
+  }
+
   const primaryLesson = activeSummary.continueLesson ?? activeSummary.firstLesson;
 
   if (!primaryLesson) {
@@ -47,7 +55,7 @@ export default function RolesBackToCourse({ modules }: RolesBackToCourseProps) {
   return (
     <Link
       href={`/lesson/${primaryLesson.slug}`}
-      className="no-underline inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-5 py-2.5 text-sm font-semibold text-[color:var(--ink-900)] transition hover:border-[color:var(--ink-800)] sm:w-auto"
+      className="no-underline inline-flex min-h-11 items-center justify-center rounded-lg bg-[color:var(--accent-700)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
     >
       Back to course
     </Link>

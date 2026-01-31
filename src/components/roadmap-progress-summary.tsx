@@ -57,9 +57,11 @@ export default function RoadmapProgressSummary({
   const ringOffset = ringCircumference * (1 - progressValue / 100);
 
   const primaryLesson = activeSummary.continueLesson ?? activeSummary.firstLesson;
+  const coreComplete = coreSummary.allComplete;
+  const celebratoryMessage = "Congratulations! You reached the end of the core course.";
 
   let ctaLabel = "Check back soon";
-  if (primaryLesson) {
+  if (primaryLesson && !coreComplete) {
     if (activeSummary.allComplete) {
       ctaLabel = "Review course";
     } else if (activeSummary.completedCount === 0) {
@@ -138,7 +140,11 @@ export default function RoadmapProgressSummary({
         </div>
       ) : null}
 
-      {primaryLesson ? (
+      {coreComplete ? (
+        <p className="inline-flex min-h-11 items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-5 py-2.5 text-sm font-semibold text-[color:var(--ink-700)] sm:w-auto">
+          {celebratoryMessage}
+        </p>
+      ) : primaryLesson ? (
         <Link
           href={`/lesson/${primaryLesson.slug}`}
           className="no-underline inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[color:var(--accent-700)] px-5 py-2.5 text-md font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)] sm:w-auto"
@@ -147,7 +153,7 @@ export default function RoadmapProgressSummary({
         </Link>
       ) : null}
 
-      {showNextLesson && primaryLesson && activeSummary.continueLesson ? (
+      {showNextLesson && !coreComplete && primaryLesson && activeSummary.continueLesson ? (
         <p className="text-sm text-[color:var(--ink-500)]">
           Up next: Lesson {activeSummary.continueLesson.moduleOrder}.
           {activeSummary.continueLesson.order} - {activeSummary.continueLesson.title}
