@@ -56,7 +56,7 @@ npm run dev:preview
 
 See [Environments](docs/environments.md) for the full workflow.
 
-## Environment variables (short version)
+## Environment variables
 
 - `APP_ENV` controls behavior (`local`, `preview`, `production`, `test`).
 - Local dev uses `.env.local` (auto-loaded by Next.js).
@@ -74,11 +74,10 @@ Additional configuration:
 
 See [Testing Strategy](docs/system-design/testing.md) for the full plan.
 
-Local integration + E2E quickstart (requires Docker):
+Local unit + integration + E2E quickstart (requires Docker):
 
 ```bash
-npm run test:integration:local
-npm run test:e2e:local
+npm run test:all:local
 ```
 
 If port `5434` is already in use, set `TEST_DB_PORT` to a free port.

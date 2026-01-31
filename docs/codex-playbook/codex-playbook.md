@@ -1,6 +1,6 @@
 # Codex Playbook: Build a Web App End-to-End
 
-This playbook is designed to be **copied and reused** by students. It shows _how to drive a full app build_ with Codex using explicit phases, reproducible prompts, and outcome checkpoints.
+This playbook is designed to be **copied and reused** by students. It shows _how to drive a full app build_ with Codex using explicit phases, reproducible prompts, and outcome checkpoints. This app was built with GPT-5.2-Codex (not GPT-5.2-Codex-Max) set at Extra High reasoning effort.
 
 > If you only read one file: start here, then jump to the prompt library.
 

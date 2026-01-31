@@ -2,8 +2,6 @@
 
 This is a student-friendly narrative of how the app was built end-to-end with Codex. It summarizes the _decisions_ and _outcomes_ rather than every single message.
 
-> Full evidence lives in `/Users/viktorgavrielov/Downloads/CodexDecisionTimeline.md` on this machine. Copy it into this folder if you want it in-repo.
-
 ---
 
 ## 0) Pre-Codex cloud planning (before 2026-01-07)

@@ -81,7 +81,7 @@ Include required env vars and fail-fast checks.
 
 ```
 Provide an API route design for fetching and sanitizing HTML.
-Include caching and a dev bypass.
+Include caching with a dev bypass.
 ```
 
 ---
