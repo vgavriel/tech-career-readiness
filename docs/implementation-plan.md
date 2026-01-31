@@ -290,6 +290,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Hide horizontal rules inside lesson content
 - [x] Fix in-lesson hash navigation to avoid scroll trap in nested containers
 - [x] Tighten mobile lesson content padding and list indentation for readability
+- [x] Tighten lesson content heading line-height and post-heading spacing
 - [x] Reposition the mobile navigator toggle to avoid overlapping lesson content
 - [x] Add next-core-lesson CTA for mobile lesson navigation
 - [x] Add TSDoc for functions/types and component intent comments
