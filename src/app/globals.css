@@ -211,18 +211,31 @@ body {
   letter-spacing: -0.02em;
 }
 
+.lesson-content h1 + p {
+  margin-top: 1.6rem;
+}
+
+.lesson-content h2 + p {
+  margin-top: 1.2rem;
+}
+
+.lesson-content h3 + p,
+.lesson-content h4 + p {
+  margin-top: 1.1rem;
+}
+
 .lesson-content h1 {
   font-family: var(--font-body), sans-serif;
   font-size: 1.2rem;
-  line-height: 3;
+  line-height: 1.15;
   margin-top: 1.5rem;
 }
 
 .lesson-content h2 {
   font-family: var(--font-body), sans-serif;
   font-size: 1rem;
-  line-height: 2.4;
-  margin-top: 0.75rem;
+  line-height: 1.25;
+  margin-top: 1.15rem;
 }
 
 .lesson-content h3 {
@@ -381,16 +394,29 @@ body {
 
   .lesson-content h1 {
     font-size: 1.2rem;
-    line-height: 3;
+    line-height: 1.15;
   }
 
   .lesson-content h2 {
     font-size: 1rem;
-    line-height: 2.4;
+    line-height: 1.25;
   }
 
   .lesson-content h3 {
     font-size: 1rem;
+  }
+
+  .lesson-content h1 + p {
+    margin-top: 1.4rem;
+  }
+
+  .lesson-content h2 + p {
+    margin-top: 1.05rem;
+  }
+
+  .lesson-content h3 + p,
+  .lesson-content h4 + p {
+    margin-top: 1rem;
   }
 
   .lesson-content ul,
