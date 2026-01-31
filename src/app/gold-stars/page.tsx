@@ -1,6 +1,6 @@
-import RoadmapBadgeAwards from "@/components/roadmap-badge-awards";
+import BackToCourseCta from "@/components/back-to-course-cta";
+import RoadmapGoldStars from "@/components/roadmap-gold-stars";
 import { getRoadmapModules } from "@/lib/roadmap-modules";
-
 
 /**
  * Render the Gold Stars overview for earned and in-progress milestones.
@@ -20,13 +20,16 @@ export default async function GoldStarsPage() {
             Gold Stars
           </h1>
           <p className="max-w-2xl text-base text-[color:var(--ink-700)] md:text-lg">
-            Earn gold stars by completing core lessons and optional extra credit.
-            Track earned and in-progress milestones as you improve your readiness
-            towards careers in Tech.
+            Earn gold stars by completing core lessons and optional extra credit. Track earned and
+            in-progress milestones as you improve your readiness towards careers in Tech.
           </p>
         </section>
 
-        <RoadmapBadgeAwards modules={modules} />
+        <RoadmapGoldStars modules={modules} />
+
+        <div className="flex">
+          <BackToCourseCta modules={modules} />
+        </div>
       </main>
     </div>
   );

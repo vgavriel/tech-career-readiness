@@ -172,7 +172,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 ### Notes
 
 - Store curriculum structure in DB for ordering, navigation, and progress calculations.
-- Use stable module keys for focus ordering and badge progress.
+- Use stable module keys for focus ordering and gold star progress.
 - Use stable lesson slugs; store legacy slugs in LessonSlugAlias to support redirects.
 
 ## Seed data
@@ -310,9 +310,9 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Show focus progress alongside overall core progress
 - [x] Define “Continue” behavior when a focus is selected (focus order vs global order)
 - [x] Show core vs extra credit progress breakdown
-- [x] Add lesson classification mapping for core/extra credit + role deep dives (badge source of truth)
+- [x] Add lesson classification mapping for core/extra credit + role deep dives (gold star source of truth)
 - [x] Add Role Library view showing all role deep dives
-- [x] Add lightweight badge awards (no streaks) based on lesson completion
+- [x] Add lightweight gold star awards (no streaks) based on lesson completion
 - [x] Persist focus selection in the database and surface it in the header picker
 - [x] Replace the standalone roadmap page with a persistent navigator (collapsible + resizable)
 - [x] Auto-scroll the navigator to the active lesson on open

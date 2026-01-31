@@ -29,7 +29,7 @@ Use this checklist to decide when a phase is "done." If you can't verify a check
 
 - [ ] `docs/curriculum-plan.md` defines modules, focuses, progress categories
 - [ ] Curriculum plan linked from implementation plan
-- [ ] Gamification plan captured (core vs extra credit, badges)
+- [ ] Gamification plan captured (core vs extra credit, gold stars)
 
 ## Phase 4 -- Data model + seed
 
@@ -66,7 +66,7 @@ Use this checklist to decide when a phase is "done." If you can't verify a check
 - [ ] Guest progress stored locally + merge-on-login flow
 - [ ] Core vs extra credit progress shown
 - [ ] "Continue" and "Next core lesson" CTAs defined + tracked
-- [ ] Badge/award surface (Gold Stars) implemented
+- [ ] Gold Stars award surface implemented
 
 ## Phase 9 -- Security + reliability
 

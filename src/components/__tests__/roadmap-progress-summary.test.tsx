@@ -106,10 +106,8 @@ describe("RoadmapProgressSummary", () => {
 
     render(<RoadmapProgressSummary modules={modules} />);
 
-    expect(screen.getByRole("link", { name: /review course/i })).toHaveAttribute(
-      "href",
-      "/lesson/intro"
-    );
+    expect(screen.getByText(/end of the core course/i)).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /review course/i })).toBeNull();
     expect(
       screen.queryByRole("button", { name: /sign in to save progress/i })
     ).not.toBeInTheDocument();

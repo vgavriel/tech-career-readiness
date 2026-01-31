@@ -6,7 +6,8 @@
 Tech Career Readiness is a self-paced learning app built for Brown students.
 The app itself is intentionally simple; the **engineering scaffolding** around
 it is not. This repo is viewable for students who want to see how production
-systems are designed and why those choices matter.
+systems are designed and why those choices matter. This app was created with
+GPT-5.2-Codex.
 
 Each document explains **what a system does**, **why it exists**, and
 **where the code lives**.
@@ -16,6 +17,7 @@ Each document explains **what a system does**, **why it exists**, and
 - [System design guide](docs/system-design/README.md)
 - [Architecture overview](docs/architecture.md)
 - [Implementation plan](docs/implementation-plan.md)
+- [OpenAI Codex playbook (prompts + checkpoints)](docs/codex-playbook/README.md)
 
 ## System design map
 

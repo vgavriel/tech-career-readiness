@@ -1,9 +1,14 @@
 import Link from "next/link";
 
+import LessonNotFoundCta from "@/components/lesson-not-found-cta";
+import { getRoadmapModules } from "@/lib/roadmap-modules";
+
 /**
  * Render a helpful not-found state for missing lessons.
  */
-export default function LessonNotFound() {
+export default async function LessonNotFound() {
+  const modules = await getRoadmapModules();
+
   return (
     <div className="page-shell min-h-screen overflow-hidden">
       <main
@@ -23,12 +28,7 @@ export default function LessonNotFound() {
             next lesson in sequence.
           </p>
           <div className="mt-6 flex flex-wrap gap-4">
-            <Link
-              href="/lesson/start-to-finish-roadmap"
-              className="no-underline inline-flex min-h-11 items-center justify-center rounded-lg bg-[color:var(--accent-700)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--ink-800)]"
-            >
-              Back to course
-            </Link>
+            <LessonNotFoundCta modules={modules} />
             <Link
               href="/"
               className="no-underline inline-flex min-h-11 items-center justify-center rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-900)] transition hover:-translate-y-0.5 hover:border-[color:var(--ink-800)] hover:bg-[color:var(--accent-500)]"

@@ -1,15 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo } from "react";
 
 import { useProgress } from "@/components/progress-provider";
 import type { RoadmapModule } from "@/components/roadmap-module-list";
-import { buildBadgeStatuses } from "@/lib/badges";
+import { buildGoldStarStatuses, type GoldStarStatus } from "@/lib/gold-stars";
 
 /**
- * Props for the badge awards panel.
+ * Props for the gold stars panel.
  */
-type RoadmapBadgeAwardsProps = {
+type RoadmapGoldStarsProps = {
   modules: RoadmapModule[];
 };
 
@@ -46,23 +47,23 @@ const StarIcon = ({ variant, className = "" }: StarIconProps) => {
 };
 
 /**
- * Render earned and in-progress badge cards based on completion.
+ * Render earned and in-progress gold star cards based on completion.
  */
-export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps) {
+export default function RoadmapGoldStars({ modules }: RoadmapGoldStarsProps) {
   const { completedLessonSlugs, isReady } = useProgress();
-  const badges = useMemo(
-    () => (isReady ? buildBadgeStatuses(modules, completedLessonSlugs) : []),
+  const goldStars = useMemo(
+    () => (isReady ? buildGoldStarStatuses(modules, completedLessonSlugs) : []),
     [completedLessonSlugs, isReady, modules]
   );
-  const sortedBadges = useMemo(() => {
-    const earned = badges.filter((badge) => badge.isEarned);
-    const inProgress = badges.filter((badge) => !badge.isEarned);
+  const sortedGoldStars = useMemo(() => {
+    const earned = goldStars.filter((star) => star.isEarned);
+    const inProgress = goldStars.filter((star) => !star.isEarned);
     return [...inProgress, ...earned];
-  }, [badges]);
-  const earnedCount = badges.filter((badge) => badge.isEarned).length;
-  const earnedBadges = sortedBadges.filter((badge) => badge.isEarned);
-  const inProgressBadges = sortedBadges.filter((badge) => !badge.isEarned);
-  const totalLabel = badges.length === 1 ? "star" : "stars";
+  }, [goldStars]);
+  const earnedCount = goldStars.filter((star) => star.isEarned).length;
+  const earnedStars = sortedGoldStars.filter((star) => star.isEarned);
+  const inProgressStars = sortedGoldStars.filter((star) => !star.isEarned);
+  const totalLabel = goldStars.length === 1 ? "star" : "stars";
 
   if (!isReady) {
     return (
@@ -95,7 +96,7 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
           <h2 className="font-display text-2xl text-[color:var(--ink-900)]">Gold Stars</h2>
         </div>
         <span className="rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-1 text-sm font-semibold text-[color:var(--ink-700)]">
-          {earnedCount} of {badges.length} {totalLabel} earned
+          {earnedCount} of {goldStars.length} {totalLabel} earned
         </span>
       </div>
 
@@ -106,25 +107,12 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
               <StarIcon variant="filled" className="text-[color:var(--accent-500)]" />
               <p className="text-sm font-semibold text-[color:var(--ink-800)]">Earned</p>
             </div>
-            <span className="text-sm text-[color:var(--ink-500)]">{earnedBadges.length}</span>
+            <span className="text-sm text-[color:var(--ink-500)]">{earnedStars.length}</span>
           </div>
-          {earnedBadges.length ? (
+          {earnedStars.length ? (
             <div className="grid gap-3">
-              {earnedBadges.map((badge) => (
-                <div
-                  key={badge.key}
-                  className="flex flex-col gap-3 rounded-2xl border border-[color:var(--accent-700)] bg-[color:var(--wash-0)] px-4 py-3 shadow-[var(--shadow-soft)]"
-                >
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold text-[color:var(--ink-500)]">
-                      {badge.title}
-                    </p>
-                    <p className="text-sm font-semibold text-[color:var(--ink-900)]">
-                      {badge.description}
-                    </p>
-                  </div>
-                  <p className="text-sm text-[color:var(--ink-500)]">{badge.progressLabel}</p>
-                </div>
+              {earnedStars.map((star) => (
+                <GoldStarCard key={star.key} star={star} variant="earned" labelPrefix="Review" />
               ))}
             </div>
           ) : (
@@ -140,22 +128,16 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
               <StarIcon variant="outline" className="text-[color:var(--accent-500)]" />
               <p className="text-sm font-semibold text-[color:var(--ink-800)]">In progress</p>
             </div>
-            <span className="text-sm text-[color:var(--ink-500)]">{inProgressBadges.length}</span>
+            <span className="text-sm text-[color:var(--ink-500)]">{inProgressStars.length}</span>
           </div>
           <div className="grid gap-3">
-            {inProgressBadges.map((badge) => (
-              <div
-                key={badge.key}
-                className="flex flex-col gap-2 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 shadow-[var(--shadow-soft)]"
-              >
-                <div className="space-y-1">
-                  <p className="text-sm font-semibold text-[color:var(--ink-500)]">{badge.title}</p>
-                  <p className="text-sm font-semibold text-[color:var(--ink-900)]">
-                    {badge.description}
-                  </p>
-                </div>
-                <p className="text-sm text-[color:var(--ink-500)]">{badge.progressLabel}</p>
-              </div>
+            {inProgressStars.map((star) => (
+              <GoldStarCard
+                key={star.key}
+                star={star}
+                variant="in-progress"
+                labelPrefix="Continue"
+              />
             ))}
           </div>
         </div>
@@ -163,3 +145,45 @@ export default function RoadmapBadgeAwards({ modules }: RoadmapBadgeAwardsProps)
     </section>
   );
 }
+
+type GoldStarCardProps = {
+  star: GoldStarStatus;
+  variant: "earned" | "in-progress";
+  labelPrefix: string;
+};
+
+const GoldStarCard = ({ star, variant, labelPrefix }: GoldStarCardProps) => {
+  const isClickable = Boolean(star.targetLessonSlug);
+  const baseClasses =
+    variant === "earned"
+      ? "flex flex-col gap-3 rounded-2xl border border-[color:var(--accent-700)] bg-[color:var(--wash-0)] px-4 py-3 shadow-[var(--shadow-soft)]"
+      : "flex flex-col gap-2 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 shadow-[var(--shadow-soft)]";
+  const interactiveClasses = isClickable
+    ? "no-underline cursor-pointer transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--focus-ring)]"
+    : "";
+  const ariaLabel = `${labelPrefix} ${star.title}`;
+
+  const content = (
+    <>
+      <div className="space-y-1">
+        <p className="text-sm font-semibold text-[color:var(--ink-500)]">{star.title}</p>
+        <p className="text-sm font-semibold text-[color:var(--ink-900)]">{star.description}</p>
+      </div>
+      <p className="text-sm text-[color:var(--ink-500)]">{star.progressLabel}</p>
+    </>
+  );
+
+  if (isClickable && star.targetLessonSlug) {
+    return (
+      <Link
+        href={`/lesson/${star.targetLessonSlug}`}
+        className={`${baseClasses} ${interactiveClasses}`}
+        aria-label={ariaLabel}
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return <div className={baseClasses}>{content}</div>;
+};
