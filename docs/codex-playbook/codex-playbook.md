@@ -13,6 +13,29 @@ This playbook is designed to be **copied and reused** by students. It shows _how
 
 ---
 
+## MCP servers used in this project (and safety notes)
+
+Before using any MCP server, treat it like a privileged integration:
+
+- MCPs can access local files, run browser automation, or fetch docs. That means they can also leak secrets if misconfigured.
+- Only connect to trusted MCP servers, prefer local/self-hosted where possible, and avoid giving them access to secrets.
+- Keep least-privilege in mind: share the minimum context and confirm what an MCP will do before it does it.
+- Assume prompt injection is possible when MCPs fetch external content; validate outputs and never execute unknown code blindly.
+
+**Playwright MCP (UI validation and iteration)**
+
+- What it is: A browser automation MCP that can navigate the running app, click, type, and inspect the UI.
+- Why we used it: To verify UX changes quickly at real breakpoints, confirm focus/keyboard behavior, and iterate on UI feature implementation by enabling Codex to check its own work using multimodal capabilities.
+- How it helped: We repeatedly checked desktop and mobile layouts, validated nav behavior, and used screenshots/DOM checks to confirm fixes.
+
+**Context7 MCP (dependency documentation)**
+
+- What it is: A documentation MCP that fetches up-to-date official docs for libraries and frameworks.
+- Why we used it: To avoid stale API usage in Codex training data and align changes with current docs (e.g., auth, logging, or tooling).
+- How it helped: Reduced Codex guesswork and prevented outdated or incorrect config changes.
+
+---
+
 ## Phase 0 -- Product framing + constraints
 
 **Goal**: Define the problem, target user, and system boundaries.

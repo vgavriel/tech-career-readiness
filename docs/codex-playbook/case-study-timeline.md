@@ -4,7 +4,7 @@ This is a student-friendly narrative of how the app was built end-to-end with Co
 
 ---
 
-## 0) Pre-Codex cloud planning (before 2026-01-07)
+## 0) Pre-Codex cloud planning (2026-01-07)
 
 **Key decisions**
 
@@ -43,7 +43,7 @@ This is a student-friendly narrative of how the app was built end-to-end with Co
 
 ---
 
-## 3) Content pipeline + UX iteration
+## 3) Content pipeline + UX iteration (2026-01-14 -> 2026-01-19)
 
 **Key decisions**
 
@@ -56,7 +56,7 @@ This is a student-friendly narrative of how the app was built end-to-end with Co
 
 ---
 
-## 4) Quality pass + scaling
+## 4) Quality pass + scaling (2026-01-18 -> 2026-01-23)
 
 **Key decisions**
 
@@ -69,14 +69,17 @@ This is a student-friendly narrative of how the app was built end-to-end with Co
 
 ---
 
-## 5) Reproducibility takeaway for students
+## 5) Playbook + documentation systemization (2026-01-23 -> 2026-01-30)
 
-**Key decisions to copy**
+**Key decisions**
 
-- Start with a plan and a checklist.
-- Use explicit prompts for schema, auth, and caching.
-- Use CI failures as "design feedback" rather than blockers.
-- Keep a timeline of prompts + outcomes to build learning value.
+- Capture lessons learned as reusable prompts and checklists.
+- Document observability and release expectations.
+- Keep a timeline of prompts + outcomes to turn implementation into a teachable case study.
+
+**Outcome**
+
+- A durable playbook emerged (prompts, checkpoints, timelines) that students can reuse to build their own project with Codex.
 
 ---
 

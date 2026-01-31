@@ -412,41 +412,6 @@ Include warnings, confirmation steps, and validation checks.
 
 ---
 
-## Operational prompts (from real sessions)
-
-**Prompt: Switch branches**
-
-```
-We need to work on branch [name]. If it doesn't exist, create it.
-Do not continue on main.
-```
-
-**Prompt: Use Playwright to verify UI changes**
-
-```
-Make the change, then verify using Playwright MCP:
-- Desktop and mobile widths
-- Primary flow
-- Core interaction (buttons/links)
-Report any UI issues you find and iterate.
-```
-
-**Prompt: Handle direction changes**
-
-```
-User says "nevermind" or changes direction.
-Summarize what changed, then continue with the new request only.
-```
-
-**Prompt: Debug "button does nothing" in dev**
-
-```
-The UI loads but buttons don't respond. Console shows CSP errors.
-Find the root cause and apply a dev-only CSP fix.
-```
-
----
-
 ## Related
 
 - `codex-playbook.md`
