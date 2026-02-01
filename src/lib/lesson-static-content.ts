@@ -18,7 +18,7 @@ const startToFinishContent = [
   "</ul>",
   "<h2>Course Modules</h2>",
   "<ol>",
-  "<li><strong>Start here</strong></a> - the roadmap (this lesson) plus the Tech Recruiting Timeline.</li>",
+  "<li><strong>Start here</strong> - the roadmap (this lesson) plus the Tech Recruiting Timeline.</li>",
   '<li><a href="/lesson/explore-technology-jobs"><strong>Explore roles</strong></a> - understand tech roles and how Brown CS prepare you for certain job titles.</li>',
   '<li><a href="/lesson/build-experience"><strong>Build experience</strong></a> - plan projects, coursework, and on-campus opportunities to build experience outside of internships.</li>',
   '<li><a href="/lesson/tech-internship-and-job-boards"><strong>Find opportunities + networking</strong></a> - job boards, informational interviews, and recruiter outreach.</li>',
