@@ -38,7 +38,20 @@ export default function BackToCourseCta({ modules }: BackToCourseCtaProps) {
     [completedLessonSlugs, focusKey, focusModules, isReady, modules]
   );
 
+  const restartLesson = coreSummary.firstLesson ?? activeSummary.firstLesson;
+
   if (coreSummary.allComplete) {
+    if (restartLesson) {
+      return (
+        <Link
+          href={`/lesson/${restartLesson.slug}`}
+          className="no-underline inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-5 py-2.5 text-sm font-semibold text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-800)] sm:w-auto"
+        >
+          You finished the core coursework.
+        </Link>
+      );
+    }
+
     return (
       <p className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-5 py-2.5 text-sm font-semibold text-[color:var(--ink-700)] sm:w-auto">
         You finished the core coursework.

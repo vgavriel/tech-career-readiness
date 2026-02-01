@@ -96,7 +96,7 @@ describe("RoadmapProgressSummary", () => {
     expect(screen.getByRole("button", { name: /sign in to save progress/i })).toBeInTheDocument();
   });
 
-  it("shows a review action when all lessons are complete", () => {
+  it("links to the first lesson when all lessons are complete", () => {
     progressMocks.useProgress.mockReturnValue({
       completedLessonSlugs: ["intro", "next"],
       isAuthenticated: true,
@@ -106,8 +106,8 @@ describe("RoadmapProgressSummary", () => {
 
     render(<RoadmapProgressSummary modules={modules} />);
 
-    expect(screen.getByText(/end of the core course/i)).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: /review course/i })).toBeNull();
+    const link = screen.getByRole("link", { name: /end of the core course/i });
+    expect(link).toHaveAttribute("href", "/lesson/intro");
     expect(
       screen.queryByRole("button", { name: /sign in to save progress/i })
     ).not.toBeInTheDocument();

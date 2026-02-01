@@ -59,9 +59,14 @@ export default function RoadmapProgressSummary({
   const primaryLesson = activeSummary.continueLesson ?? activeSummary.firstLesson;
   const coreComplete = coreSummary.allComplete;
   const celebratoryMessage = "Congratulations! You reached the end of the core course.";
+  const restartLesson = coreSummary.firstLesson ?? activeSummary.firstLesson;
 
+  let ctaLesson = primaryLesson;
   let ctaLabel = "Check back soon";
-  if (primaryLesson && !coreComplete) {
+  if (coreComplete) {
+    ctaLesson = restartLesson;
+    ctaLabel = celebratoryMessage;
+  } else if (primaryLesson) {
     if (activeSummary.allComplete) {
       ctaLabel = "Review course";
     } else if (activeSummary.completedCount === 0) {
@@ -140,17 +145,21 @@ export default function RoadmapProgressSummary({
         </div>
       ) : null}
 
-      {coreComplete ? (
-        <p className="inline-flex min-h-11 items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-5 py-2.5 text-sm font-semibold text-[color:var(--ink-700)] sm:w-auto">
-          {celebratoryMessage}
-        </p>
-      ) : primaryLesson ? (
+      {ctaLesson ? (
         <Link
-          href={`/lesson/${primaryLesson.slug}`}
-          className="no-underline inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[color:var(--accent-700)] px-5 py-2.5 text-md font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)] sm:w-auto"
+          href={`/lesson/${ctaLesson.slug}`}
+          className={
+            coreComplete
+              ? "no-underline inline-flex min-h-11 items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-5 py-2.5 text-sm font-semibold text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-800)] sm:w-auto"
+              : "no-underline inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[color:var(--accent-700)] px-5 py-2.5 text-md font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)] sm:w-auto"
+          }
         >
           {ctaLabel}
         </Link>
+      ) : coreComplete ? (
+        <p className="inline-flex min-h-11 items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-5 py-2.5 text-sm font-semibold text-[color:var(--ink-700)] sm:w-auto">
+          {celebratoryMessage}
+        </p>
       ) : null}
 
       {showNextLesson && !coreComplete && primaryLesson && activeSummary.continueLesson ? (

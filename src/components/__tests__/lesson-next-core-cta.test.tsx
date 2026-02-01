@@ -184,7 +184,7 @@ describe("LessonNextCoreCta", () => {
     expect(link).toHaveAttribute("href", "/lesson/tech-recruiting-timeline");
   });
 
-  it("does not render the CTA when all core lessons are complete", () => {
+  it("links to the first core lesson when all core lessons are complete", () => {
     progressMocks.completedLessonSlugs = ["start-to-finish-roadmap", "tech-recruiting-timeline"];
 
     const modules: RoadmapModule[] = [
@@ -231,10 +231,11 @@ describe("LessonNextCoreCta", () => {
 
     render(<LessonNextCoreCta modules={modules} currentLessonSlug="internship-success-handbook" />);
 
-    expect(screen.queryByRole("link", { name: /next core lesson/i })).toBeNull();
+    const link = screen.getByRole("link", { name: /start course/i });
+    expect(link).toHaveAttribute("href", "/lesson/start-to-finish-roadmap");
   });
 
-  it("celebrates the end of the core course on the last lesson with no button", () => {
+  it("celebrates the end of the core course on the last lesson with a restart button", () => {
     progressMocks.completedLessonSlugs = ["start-to-finish-roadmap", "tech-recruiting-timeline"];
 
     const modules: RoadmapModule[] = [
@@ -273,7 +274,8 @@ describe("LessonNextCoreCta", () => {
     render(<LessonNextCoreCta modules={modules} currentLessonSlug="practice-interviews" />);
 
     expect(screen.getAllByText(/end of the core course/i)).toHaveLength(2);
-    expect(screen.queryByRole("link")).toBeNull();
+    const link = screen.getByRole("link", { name: /start course/i });
+    expect(link).toHaveAttribute("href", "/lesson/start-to-finish-roadmap");
   });
 
   it("links to the first incomplete core lesson when the last core lesson is reached", () => {
