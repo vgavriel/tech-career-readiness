@@ -1,6 +1,6 @@
 # Implementation Plan (Template)
 
-> Copy this file to `docs/implementation-plan.md` in your project and fill it in.
+> Copy this file to [docs/implementation-plan.md](../implementation-plan.md) in your project and fill it in.
 
 ## Overview
 
@@ -139,6 +139,6 @@ Record your key prompts + outcomes here.
 
 ## Related
 
-- `codex-playbook.md`
-- `prompt-library.md`
-- `checkpoints.md`
+- [codex-playbook.md](./codex-playbook.md)
+- [prompt-library.md](./prompt-library.md)
+- [checkpoints.md](./checkpoints.md)

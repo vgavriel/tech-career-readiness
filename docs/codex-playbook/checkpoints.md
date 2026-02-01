@@ -13,9 +13,9 @@ Use this checklist to decide when a phase is "done." If you can't verify a check
 
 ## Phase 1 -- Plan + scaffolding
 
-- [ ] `docs/implementation-plan.md` exists with phases + acceptance criteria
-- [ ] `AGENTS.md` exists and reflects your workflow
-- [ ] Engineering/test expectations documented (`docs/testing-strategy.md`, etc.)
+- [ ] [docs/implementation-plan.md](../implementation-plan.md) exists with phases + acceptance criteria
+- [ ] [AGENTS.md](../../AGENTS.md) exists and reflects your workflow
+- [ ] Engineering/test expectations documented ([docs/testing-strategy.md](../testing-strategy.md), etc.)
 - [ ] Repo builds locally (or setup steps documented)
 
 ## Phase 2 -- CI + quality gates
@@ -27,7 +27,7 @@ Use this checklist to decide when a phase is "done." If you can't verify a check
 
 ## Phase 3 -- Curriculum planning
 
-- [ ] `docs/curriculum-plan.md` defines modules, focuses, progress categories
+- [ ] [docs/curriculum-plan.md](../curriculum-plan.md) defines modules, focuses, progress categories
 - [ ] Curriculum plan linked from implementation plan
 - [ ] Gamification plan captured (core vs extra credit, gold stars)
 
@@ -103,14 +103,14 @@ Use this checklist to decide when a phase is "done." If you can't verify a check
 ## Evidence & transparency
 
 - [ ] Save key prompts + outcomes in a timeline doc
-- [ ] Link timeline from `case-study-timeline.md`
+- [ ] Link timeline from [case-study-timeline.md](./case-study-timeline.md)
 - [ ] Keep prompt library updated with real prompts
 
 ---
 
 ## Related
 
-- `codex-playbook.md`
-- `prompt-library.md`
-- `case-study-timeline.md`
-- `README.md`
+- [codex-playbook.md](./codex-playbook.md)
+- [prompt-library.md](./prompt-library.md)
+- [case-study-timeline.md](./case-study-timeline.md)
+- [README.md](./README.md)

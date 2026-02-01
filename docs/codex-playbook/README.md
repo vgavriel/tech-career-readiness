@@ -4,19 +4,20 @@ This folder turns the project's Codex history into a reproducible, end-to-end wo
 
 ## Start here (quickstart)
 
-1. Copy `agents.template.md` into your repo as `AGENTS.md` and customize it.
-2. Copy `implementation-plan.template.md` into `docs/implementation-plan.md`.
-3. Use the prompts in `prompt-library.md` to generate your first plan + schema + seed strategy.
-4. Follow the phase checklist in `checkpoints.md` to gate progress.
-5. Use `case-study-timeline.md` to see how this project evolved end-to-end.
+1. Copy [agents.template.md](./agents.template.md) into your repo as [AGENTS.md](../../AGENTS.md) and customize it.
+2. Copy [implementation-plan.template.md](./implementation-plan.template.md) into [docs/implementation-plan.md](../implementation-plan.md).
+3. Use the prompts in [prompt-library.md](./prompt-library.md) to generate your first plan + schema + seed strategy.
+4. Follow the phase checklist in [checkpoints.md](./checkpoints.md) to gate progress.
+5. Use [case-study-timeline.md](./case-study-timeline.md) to see how this project evolved end-to-end.
 
-## Files (linked)
+## Directory index (all .md files)
 
-- `codex-playbook.md` -- Full playbook with phases, goals, outputs, and guardrails.
-- `prompt-library.md` -- Copy-paste prompts organized by phase.
-- `checkpoints.md` -- Decision gates and acceptance criteria.
-- `case-study-timeline.md` -- Condensed narrative of how this app was built, tied to the timeline.
-- `implementation-plan.template.md` -- Template for creating your own incremental plan.
-- `agents.template.md` -- Template for Codex operating instructions.
+- [README.md](./README.md) -- Index and quickstart for the playbook.
+- [codex-playbook.md](./codex-playbook.md) -- Full playbook with phases, goals, outputs, and guardrails.
+- [prompt-library.md](./prompt-library.md) -- Copy-paste prompts organized by phase.
+- [checkpoints.md](./checkpoints.md) -- Decision gates and acceptance criteria.
+- [case-study-timeline.md](./case-study-timeline.md) -- Condensed narrative of how this app was built, tied to the timeline.
+- [implementation-plan.template.md](./implementation-plan.template.md) -- Template for creating your own incremental plan.
+- [agents.template.md](./agents.template.md) -- Template for Codex operating instructions.
 
-Up next: `codex-playbook.md`
+Up next: [codex-playbook.md](./codex-playbook.md)
