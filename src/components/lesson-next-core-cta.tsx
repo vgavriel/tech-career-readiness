@@ -38,10 +38,11 @@ export default function LessonNextCoreCta({ modules, currentLessonSlug }: Lesson
   const { focusKey } = useFocus();
   const { completedLessonSlugs, isReady, setLessonCompletion } = useProgress();
 
-  const ctaState = useMemo<LessonNextCoreCtaState>(() => {
+  const { ctaState, restartLesson } = useMemo(() => {
     const orderedModules = orderModulesForFocus(modules, focusKey);
     const orderedLessons = buildOrderedLessons(orderedModules);
     const { coreLessons } = splitLessonsByCredit(orderedLessons);
+    const restartLesson = coreLessons[0] ?? null;
     const currentIndex = coreLessons.findIndex((lesson) => lesson.slug === currentLessonSlug);
 
     if (currentIndex >= 0) {
@@ -53,39 +54,45 @@ export default function LessonNextCoreCta({ modules, currentLessonSlug }: Lesson
         );
 
         if (remainingLessons.length === 0) {
-          return { kind: "complete" };
+          return { ctaState: { kind: "complete" }, restartLesson };
         }
 
         return {
-          kind: "lesson",
-          lesson: remainingLessons[0],
-          variant: "catch-up",
+          ctaState: {
+            kind: "lesson",
+            lesson: remainingLessons[0],
+            variant: "catch-up",
+          },
+          restartLesson,
         };
       }
 
       const nextLesson = coreLessons[currentIndex + 1];
-      return nextLesson
-        ? { kind: "lesson", lesson: nextLesson, variant: "next" }
-        : { kind: "hidden" };
+      return {
+        ctaState: nextLesson
+          ? { kind: "lesson", lesson: nextLesson, variant: "next" }
+          : { kind: "hidden" },
+        restartLesson,
+      };
     }
 
     if (coreLessons.length === 0) {
-      return { kind: "hidden" };
+      return { ctaState: { kind: "hidden" }, restartLesson: null };
     }
 
     const completedSet = new Set(completedLessonSlugs);
     const summary = buildProgressSummaryFromLessons(coreLessons, completedSet, isReady);
     if (summary.allComplete) {
-      return { kind: "hidden" };
+      return { ctaState: { kind: "complete" }, restartLesson };
     }
 
     const candidate = summary.continueLesson ?? summary.firstLesson ?? null;
 
     if (!candidate || candidate.slug === currentLessonSlug) {
-      return { kind: "hidden" };
+      return { ctaState: { kind: "hidden" }, restartLesson };
     }
 
-    return { kind: "lesson", lesson: candidate, variant: "next" };
+    return { ctaState: { kind: "lesson", lesson: candidate, variant: "next" }, restartLesson };
   }, [completedLessonSlugs, currentLessonSlug, focusKey, isReady, modules]);
 
   if (ctaState.kind === "hidden") {
@@ -93,10 +100,11 @@ export default function LessonNextCoreCta({ modules, currentLessonSlug }: Lesson
   }
 
   const nextLesson = ctaState.kind === "lesson" ? ctaState.lesson : null;
+  const actionLesson = ctaState.kind === "lesson" ? nextLesson : restartLesson;
   const metaLabel = nextLesson
     ? `Module ${nextLesson.moduleOrder} - Lesson ${nextLesson.order}`
     : "";
-  const nextHref = nextLesson ? `/lesson/${nextLesson.slug}` : "";
+  const actionHref = actionLesson ? `/lesson/${actionLesson.slug}` : "";
   const desktopMessage =
     ctaState.kind === "complete"
       ? "You reached the end of the core course."
@@ -118,8 +126,11 @@ export default function LessonNextCoreCta({ modules, currentLessonSlug }: Lesson
       ? ctaState.variant === "catch-up"
         ? "Finish core lessons"
         : "Next core lesson"
-      : "";
-  const shouldMarkComplete = !completedLessonSlugs.includes(currentLessonSlug);
+      : "Start course";
+  const mobileButtonLabel =
+    ctaState.kind === "lesson" ? (ctaState.variant === "catch-up" ? "Finish" : "Next") : "Start";
+  const shouldMarkComplete =
+    ctaState.kind === "lesson" && !completedLessonSlugs.includes(currentLessonSlug);
   const handleNextClick = () => {
     if (!shouldMarkComplete) {
       return;
@@ -139,9 +150,9 @@ export default function LessonNextCoreCta({ modules, currentLessonSlug }: Lesson
             >
               {desktopMessage}
             </p>
-            {ctaState.kind === "lesson" ? (
+            {actionLesson ? (
               <Link
-                href={nextHref}
+                href={actionHref}
                 onClick={handleNextClick}
                 className="no-underline inline-flex min-h-10 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent-700)] px-4 py-2 text-sm font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)]"
               >
@@ -168,13 +179,13 @@ export default function LessonNextCoreCta({ modules, currentLessonSlug }: Lesson
                 {mobileTitle}
               </p>
             </div>
-            {ctaState.kind === "lesson" ? (
+            {actionLesson ? (
               <Link
-                href={nextHref}
+                href={actionHref}
                 onClick={handleNextClick}
                 className="no-underline inline-flex min-h-10 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent-700)] px-4 py-2 text-sm font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)]"
               >
-                {ctaState.variant === "catch-up" ? "Finish" : "Next"}
+                {mobileButtonLabel}
               </Link>
             ) : null}
           </div>

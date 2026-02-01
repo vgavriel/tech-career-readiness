@@ -38,7 +38,20 @@ export default function LessonNotFoundCta({ modules }: LessonNotFoundCtaProps) {
     [completedLessonSlugs, focusKey, focusModules, isReady, modules]
   );
 
+  const restartLesson = coreSummary.firstLesson ?? activeSummary.firstLesson;
+
   if (coreSummary.allComplete) {
+    if (restartLesson) {
+      return (
+        <Link
+          href={`/lesson/${restartLesson.slug}`}
+          className="no-underline inline-flex min-h-11 items-center justify-center rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-5 py-2.5 text-sm font-semibold text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-800)]"
+        >
+          You reached the end of the core course.
+        </Link>
+      );
+    }
+
     return (
       <p className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-5 py-2.5 text-sm font-semibold text-[color:var(--ink-700)]">
         You reached the end of the core course.
