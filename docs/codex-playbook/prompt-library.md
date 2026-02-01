@@ -84,10 +84,10 @@ Output format:
 - Checklist (unchecked)
 ```
 
-**Prompt: AGENTS.md (expanded)**
+**Prompt: [AGENTS.md](../../AGENTS.md) (expanded)**
 
 ```
-Draft AGENTS.md with:
+Draft [AGENTS.md](../../AGENTS.md) with:
 - Branching rules (feature/<scope>)
 - Test expectations (what to run, when to skip)
 - Docs to follow (implementation plan, testing strategy)
@@ -414,7 +414,7 @@ Include warnings, confirmation steps, and validation checks.
 
 ## Related
 
-- `codex-playbook.md`
-- `checkpoints.md`
-- `case-study-timeline.md`
-- `README.md`
+- [codex-playbook.md](./codex-playbook.md)
+- [checkpoints.md](./checkpoints.md)
+- [case-study-timeline.md](./case-study-timeline.md)
+- [README.md](./README.md)

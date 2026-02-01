@@ -85,7 +85,7 @@ This is a student-friendly narrative of how the app was built end-to-end with Co
 
 ## Related
 
-- `codex-playbook.md`
-- `prompt-library.md`
-- `checkpoints.md`
-- `README.md`
+- [codex-playbook.md](./codex-playbook.md)
+- [prompt-library.md](./prompt-library.md)
+- [checkpoints.md](./checkpoints.md)
+- [README.md](./README.md)

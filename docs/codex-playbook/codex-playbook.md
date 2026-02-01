@@ -40,7 +40,7 @@ Before using any MCP server, treat it like a privileged integration:
 
 **Goal**: Define the problem, target user, and system boundaries.
 
-**Prompts**: see `prompt-library.md` -> Phase 0.
+**Prompts**: see [prompt-library.md](./prompt-library.md) -> Phase 0.
 
 **Outputs**
 
@@ -63,8 +63,8 @@ Before using any MCP server, treat it like a privileged integration:
 
 **Outputs**
 
-- `docs/implementation-plan.md` (checklist-driven)
-- `AGENTS.md` (Codex operating rules)
+- [docs/implementation-plan.md](../implementation-plan.md) (checklist-driven)
+- [AGENTS.md](../../AGENTS.md) (Codex operating rules)
 
 **Guardrails**
 
@@ -228,9 +228,9 @@ Before using any MCP server, treat it like a privileged integration:
 
 ## Related
 
-- `prompt-library.md`
-- `checkpoints.md`
-- `case-study-timeline.md`
-- `implementation-plan.template.md`
-- `agents.template.md`
-- `README.md`
+- [prompt-library.md](./prompt-library.md)
+- [checkpoints.md](./checkpoints.md)
+- [case-study-timeline.md](./case-study-timeline.md)
+- [implementation-plan.template.md](./implementation-plan.template.md)
+- [agents.template.md](./agents.template.md)
+- [README.md](./README.md)

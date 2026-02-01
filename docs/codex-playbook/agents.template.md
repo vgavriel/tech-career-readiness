@@ -8,11 +8,11 @@ This file provides instructions to Codex (or any coding agent) about how to oper
 
 - Product: [one-line description]
 - Stack: [frontend] + [backend] + [db] + [auth]
-- Key docs: `README.md`, `docs/implementation-plan.md`, `docs/testing-strategy.md`
+- Key docs: [README.md](../../README.md), [docs/implementation-plan.md](../implementation-plan.md), [docs/testing-strategy.md](../testing-strategy.md)
 
 ## Workflow expectations for agents
 
-- Follow `docs/implementation-plan.md` in order and update its checklist.
+- Follow [docs/implementation-plan.md](../implementation-plan.md) in order and update its checklist.
 - Create a new branch per request (e.g., `feature/<scope>` or `chore/<scope>`).
 - Commit after each phase; run a quick self-review.
 - Add/update tests for features or bugfixes; avoid real network/OAuth in tests.
