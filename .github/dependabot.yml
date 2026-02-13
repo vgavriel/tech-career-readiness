@@ -3,8 +3,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
+      interval: "daily"
     versioning-strategy: "increase-if-necessary"
   - package-ecosystem: "github-actions"
     directory: "/"
