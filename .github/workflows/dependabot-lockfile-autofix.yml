@@ -28,11 +28,19 @@ jobs:
       startsWith(github.event.pull_request.head.ref, 'dependabot/npm_and_yarn/')
     runs-on: ubuntu-latest
     steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.DEPENDABOT_AUTOFIX_APP_ID }}
+          private-key: ${{ secrets.DEPENDABOT_AUTOFIX_APP_PRIVATE_KEY }}
+
       - name: Checkout Dependabot branch
         uses: actions/checkout@v4
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Use Node.js 20
         uses: actions/setup-node@v4
