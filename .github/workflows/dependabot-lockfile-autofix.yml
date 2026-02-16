@@ -13,6 +13,7 @@ on:
       - package-lock.json
 
 permissions:
+  actions: write
   contents: write
   pull-requests: read
 
@@ -28,19 +29,11 @@ jobs:
       startsWith(github.event.pull_request.head.ref, 'dependabot/npm_and_yarn/')
     runs-on: ubuntu-latest
     steps:
-      - name: Generate GitHub App token
-        id: app-token
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ secrets.DEPENDABOT_AUTOFIX_APP_ID }}
-          private-key: ${{ secrets.DEPENDABOT_AUTOFIX_APP_PRIVATE_KEY }}
-
       - name: Checkout Dependabot branch
         uses: actions/checkout@v4
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
-          token: ${{ steps.app-token.outputs.token }}
 
       - name: Use Node.js 20
         uses: actions/setup-node@v4
@@ -52,6 +45,10 @@ jobs:
         run: npm install --package-lock-only --ignore-scripts
 
       - name: Commit and push lockfile update
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
           if git diff --quiet -- package-lock.json; then
             echo "No package-lock.json changes to commit."
@@ -63,3 +60,23 @@ jobs:
           git add package-lock.json
           git commit -m "chore: refresh package-lock.json"
           git push
+
+          # GITHUB_TOKEN pushes don't trigger pull_request workflows, so
+          # explicitly dispatch the full validation suite on the updated head ref.
+          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/dispatches" \
+            -X POST \
+            -f ref="${PR_HEAD_REF}"
+          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/e2e.yml/dispatches" \
+            -X POST \
+            -f ref="${PR_HEAD_REF}"
+          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/a11y.yml/dispatches" \
+            -X POST \
+            -f ref="${PR_HEAD_REF}"
+          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/codeql.yml/dispatches" \
+            -X POST \
+            -f ref="${PR_HEAD_REF}"
+          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/dependency-review.yml/dispatches" \
+            -X POST \
+            -f ref="${PR_HEAD_REF}" \
+            -f "inputs[base_ref]=${PR_BASE_REF}" \
+            -f "inputs[head_ref]=${PR_HEAD_REF}"
