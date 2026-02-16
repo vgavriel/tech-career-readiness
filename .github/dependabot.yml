@@ -1,11 +1,14 @@
 version: 2
 updates:
+  # Keep Dependabot active for security updates while Renovate handles
+  # regular version-update pull requests.
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "daily"
-    versioning-strategy: "increase-if-necessary"
+    open-pull-requests-limit: 0
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 0
