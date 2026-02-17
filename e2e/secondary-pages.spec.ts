@@ -7,12 +7,10 @@ test("secondary pages render and focus selection persists", async ({ page }) => 
   const signInButton = page.getByRole("button", {
     name: /sign in \(dev\)/i,
   });
-  await expect(signInButton.first()).toBeVisible({ timeout: 15000 });
-  await expect(signInButton.first()).toBeEnabled({ timeout: 15000 });
+  await expect(signInButton.first()).toBeVisible();
+  await expect(signInButton.first()).toBeEnabled();
   await signInButton.first().click();
-  await expect(page.getByText(/signed in as:/i)).toBeVisible({
-    timeout: 15000,
-  });
+  await expect(page.getByText(/signed in as:/i)).toBeVisible();
 
   const focusToggle = page.getByRole("button", { name: /^Focus/ }).first();
   await focusToggle.click();

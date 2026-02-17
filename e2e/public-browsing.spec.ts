@@ -10,13 +10,11 @@ test("public browsing from landing to lesson content", async ({ page }) => {
   ).toBeVisible();
 
   await Promise.all([
-    page.waitForURL(/\/lesson\/start-to-finish-roadmap/, { timeout: 15000 }),
+    page.waitForURL(/\/lesson\/start-to-finish-roadmap/),
     page.getByRole("link", { name: /start course/i }).click(),
   ]);
 
-  await expect(page.getByRole("heading", { name: /start to finish/i })).toBeVisible({
-    timeout: 15000,
-  });
+  await expect(page.getByRole("heading", { name: /start to finish/i })).toBeVisible();
   await expect(page.getByRole("complementary")).toContainText(/full curriculum/i);
   await expect(page.getByText(/Pick a focus if you are on a deadline./i)).toBeVisible();
 });
