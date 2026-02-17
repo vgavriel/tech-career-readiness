@@ -125,19 +125,6 @@ const formatProgressLabel = (completed: number, total: number, label: string) =>
 };
 
 /**
- * Compute module progress, optionally including extra credit lessons.
- */
-const getModuleProgress = (
-  lessons: LessonSummary[],
-  completedSet: Set<string>,
-  moduleKey: string,
-  options?: { includeExtra?: boolean }
-) => {
-  const filteredLessons = getModuleLessons(lessons, moduleKey, options);
-  return summarizeLessons(filteredLessons, completedSet);
-};
-
-/**
  * Pick the lesson slug to use for a gold star CTA.
  */
 const getGoldStarTargetSlug = (
