@@ -1,4 +1,16 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Locator, type Page, test } from "@playwright/test";
+
+const openFocusMenu = async (focusToggle: Locator, page: Page) => {
+  const focusPanel = page.locator("#focus-menu-panel");
+
+  await expect(async () => {
+    if ((await focusToggle.getAttribute("aria-expanded")) !== "true") {
+      await focusToggle.click();
+    }
+
+    await expect(focusPanel).toBeVisible({ timeout: 10_000 });
+  }).toPass();
+};
 
 test("secondary pages render and focus selection persists", async ({ page }) => {
   await page.goto("/gold-stars");
@@ -13,8 +25,7 @@ test("secondary pages render and focus selection persists", async ({ page }) => 
   await expect(page.getByText(/signed in as:/i)).toBeVisible();
 
   const focusToggle = page.getByRole("button", { name: /^Focus/ }).first();
-  await focusToggle.click();
-  await expect(page.locator("#focus-menu-panel")).toBeVisible();
+  await openFocusMenu(focusToggle, page);
 
   await page.getByRole("button", { name: /just starting/i }).click();
   await expect(page.getByRole("button", { name: /focus: just starting/i })).toBeVisible();

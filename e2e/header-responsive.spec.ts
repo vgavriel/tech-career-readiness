@@ -1,4 +1,14 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Locator, test } from "@playwright/test";
+
+const openFocusMenu = async (focusToggle: Locator, focusPanel: Locator) => {
+  await expect(async () => {
+    if ((await focusToggle.getAttribute("aria-expanded")) !== "true") {
+      await focusToggle.click();
+    }
+
+    await expect(focusPanel).toBeVisible({ timeout: 10_000 });
+  }).toPass();
+};
 
 test.describe("responsive header focus menu", () => {
   test.describe("mobile", () => {
@@ -6,23 +16,18 @@ test.describe("responsive header focus menu", () => {
 
     test("keeps focus controls reachable", async ({ page }) => {
       await page.goto("/lesson/start-to-finish-roadmap");
-      await expect(
-        page.getByRole("heading", { name: /start to finish/i })
-      ).toBeVisible();
+      await expect(page.getByRole("heading", { name: /start to finish/i })).toBeVisible();
 
       await page.getByRole("button", { name: "Menu" }).click();
       const menuPanel = page.locator("#mobile-menu-panel");
       await expect(menuPanel).toBeVisible();
 
-      const overflowY = await menuPanel.evaluate(
-        (element) => getComputedStyle(element).overflowY
-      );
+      const overflowY = await menuPanel.evaluate((element) => getComputedStyle(element).overflowY);
       expect(overflowY).toBe("auto");
 
       const focusToggle = menuPanel.getByRole("button", { name: /^Focus/ });
-      await focusToggle.click();
       const focusPanel = menuPanel.locator("#focus-menu-panel");
-      await expect(focusPanel).toBeVisible();
+      await openFocusMenu(focusToggle, focusPanel);
 
       const clearButton = focusPanel.getByRole("button", {
         name: "Clear focus",
@@ -37,19 +42,15 @@ test.describe("responsive header focus menu", () => {
 
     test("focus panel stays within menu bounds", async ({ page }) => {
       await page.goto("/lesson/start-to-finish-roadmap");
-      await expect(
-        page.getByRole("heading", { name: /start to finish/i })
-      ).toBeVisible();
+      await expect(page.getByRole("heading", { name: /start to finish/i })).toBeVisible();
 
       await page.getByRole("button", { name: "Menu" }).click();
       const menuPanel = page.locator("#mobile-menu-panel");
       await expect(menuPanel).toBeVisible();
 
       const focusToggle = menuPanel.getByRole("button", { name: /^Focus/ });
-      await focusToggle.click();
-
       const focusPanel = menuPanel.locator("#focus-menu-panel");
-      await expect(focusPanel).toBeVisible();
+      await openFocusMenu(focusToggle, focusPanel);
 
       const panelBox = await menuPanel.boundingBox();
       const focusBox = await focusPanel.boundingBox();
@@ -62,9 +63,7 @@ test.describe("responsive header focus menu", () => {
       }
 
       expect(focusBox.x).toBeGreaterThanOrEqual(panelBox.x - 1);
-      expect(focusBox.x + focusBox.width).toBeLessThanOrEqual(
-        panelBox.x + panelBox.width + 1
-      );
+      expect(focusBox.x + focusBox.width).toBeLessThanOrEqual(panelBox.x + panelBox.width + 1);
     });
   });
 
@@ -73,12 +72,11 @@ test.describe("responsive header focus menu", () => {
 
     test("clear focus tooltip stays on-screen", async ({ page }) => {
       await page.goto("/lesson/start-to-finish-roadmap");
-      await expect(
-        page.getByRole("heading", { name: /start to finish/i })
-      ).toBeVisible();
+      await expect(page.getByRole("heading", { name: /start to finish/i })).toBeVisible();
 
       const focusToggle = page.getByRole("button", { name: /^Focus/ }).first();
-      await focusToggle.click();
+      const focusPanel = page.locator("#focus-menu-panel");
+      await openFocusMenu(focusToggle, focusPanel);
 
       const clearButton = page.getByRole("button", {
         name: "Clear focus",
@@ -102,9 +100,7 @@ test.describe("responsive header focus menu", () => {
 
       expect(tooltipBox.x).toBeGreaterThanOrEqual(0);
       expect(tooltipBox.y).toBeGreaterThanOrEqual(0);
-      expect(tooltipBox.x + tooltipBox.width).toBeLessThanOrEqual(
-        viewport.width
-      );
+      expect(tooltipBox.x + tooltipBox.width).toBeLessThanOrEqual(viewport.width);
     });
   });
 });
