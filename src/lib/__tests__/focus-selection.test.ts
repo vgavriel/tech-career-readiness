@@ -10,6 +10,15 @@ import {
 } from "@/lib/focus-selection";
 
 describe("focus selection storage", () => {
+  const dispatchStorageEvent = (key: string) => {
+    const storageEvent = new Event("storage");
+    Object.defineProperty(storageEvent, "key", {
+      configurable: true,
+      value: key,
+    });
+    window.dispatchEvent(storageEvent);
+  };
+
   beforeEach(() => {
     localStorage.clear();
   });
@@ -114,10 +123,10 @@ describe("focus selection storage", () => {
     const listener = vi.fn();
     const unsubscribe = subscribeToFocusSelection(listener);
 
-    window.dispatchEvent(new StorageEvent("storage", { key: "other-key" }));
+    dispatchStorageEvent("other-key");
     expect(listener).not.toHaveBeenCalled();
 
-    window.dispatchEvent(new StorageEvent("storage", { key: FOCUS_SELECTION_STORAGE_KEY }));
+    dispatchStorageEvent(FOCUS_SELECTION_STORAGE_KEY);
     window.dispatchEvent(new Event("tcr-focus-selection-change"));
 
     expect(listener).toHaveBeenCalledTimes(2);
@@ -125,7 +134,7 @@ describe("focus selection storage", () => {
     listener.mockClear();
     unsubscribe();
 
-    window.dispatchEvent(new StorageEvent("storage", { key: FOCUS_SELECTION_STORAGE_KEY }));
+    dispatchStorageEvent(FOCUS_SELECTION_STORAGE_KEY);
     window.dispatchEvent(new Event("tcr-focus-selection-change"));
 
     expect(listener).not.toHaveBeenCalled();
