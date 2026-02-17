@@ -8,7 +8,7 @@
   "platformAutomerge": true,
   "rebaseWhen": "behind-base-branch",
   "vulnerabilityAlerts": {
-    "enabled": false
+    "enabled": true
   },
   "osvVulnerabilityAlerts": true,
   "dependencyDashboardOSVVulnerabilitySummary": "all",
