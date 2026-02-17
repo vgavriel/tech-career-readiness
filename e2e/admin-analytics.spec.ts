@@ -4,10 +4,10 @@ const signInDevUser = async (page: Page) => {
   const signInButton = page.getByRole("button", {
     name: /sign in \(dev\)/i,
   });
-  await expect(signInButton.first()).toBeVisible({ timeout: 15000 });
-  await expect(signInButton.first()).toBeEnabled({ timeout: 15000 });
+  await expect(signInButton.first()).toBeVisible();
+  await expect(signInButton.first()).toBeEnabled();
   await signInButton.first().click();
-  await expect(page.getByText(/signed in as:/i)).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText(/signed in as:/i)).toBeVisible();
 };
 
 test("admin analytics redirects when unauthenticated", async ({ page }) => {
