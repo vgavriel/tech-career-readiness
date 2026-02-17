@@ -2,6 +2,9 @@
   "name": "tmp-next",
   "version": "1.1.2",
   "private": true,
+  "engines": {
+    "npm": ">=10 <11"
+  },
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build",
