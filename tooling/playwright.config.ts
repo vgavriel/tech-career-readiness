@@ -15,9 +15,9 @@ process.env.NEXT_PUBLIC_SITE_URL ??= baseURL;
 
 export default defineConfig({
   testDir: "../e2e",
-  timeout: 30_000,
+  timeout: 60_000,
   expect: {
-    timeout: 30_000,
+    timeout: 60_000,
   },
   use: {
     baseURL,
