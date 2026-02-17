@@ -292,7 +292,7 @@ export default function NavigatorLayout({ navigator, children }: NavigatorLayout
         >
           <svg
             aria-hidden="true"
-            className={`h-3.5 w-3.5 transition ${isCollapsed ? "rotate-180" : ""}`}
+            className="h-3.5 w-3.5 rotate-180 transition"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
