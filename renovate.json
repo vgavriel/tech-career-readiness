@@ -3,6 +3,10 @@
   "extends": ["config:recommended"],
   "enabledManagers": ["npm", "github-actions"],
   "labels": ["dependencies"],
+  "automerge": true,
+  "automergeType": "pr",
+  "platformAutomerge": true,
+  "rebaseWhen": "behind-base-branch",
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
   "lockFileMaintenance": {
