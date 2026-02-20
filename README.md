@@ -3,7 +3,7 @@
 
 # Tech Career Readiness
 
-Tech Career Readiness is a self-paced learning app built for Brown students.
+Tech Career Readiness is a self-paced learning app built for Brown University students.
 The app itself is intentionally simple; the **engineering scaffolding** around
 it is not. This repo is viewable for students who want to see how production
 systems are designed and why those choices matter. This app was created with
