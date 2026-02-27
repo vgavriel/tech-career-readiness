@@ -128,7 +128,7 @@ describe("RoadmapProgressSummary", () => {
     const focusSection = screen.getByText(/focus: applying soon/i).parentElement;
     expect(focusSection).not.toBeNull();
     if (!focusSection) {
-      return;
+      throw new Error("Expected focus section container to be present.");
     }
 
     expect(within(focusSection).getByText(/1 of 2 complete/i)).toBeInTheDocument();
@@ -149,7 +149,7 @@ describe("RoadmapProgressSummary", () => {
     const extraCreditSection = screen.getByText(/extra credit/i).parentElement;
     expect(extraCreditSection).not.toBeNull();
     if (!extraCreditSection) {
-      return;
+      throw new Error("Expected extra credit section container to be present.");
     }
 
     expect(within(extraCreditSection).getByText(/1 of 1 complete/i)).toBeInTheDocument();

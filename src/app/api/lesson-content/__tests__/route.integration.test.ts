@@ -29,7 +29,7 @@ describe("integration: GET /api/lesson-content", () => {
 
     expect(lesson).not.toBeNull();
     if (!lesson) {
-      return;
+      throw new Error("Expected seeded lesson 'start-to-finish-roadmap' to exist.");
     }
 
     const originalMockHtml = process.env.LESSON_CONTENT_MOCK_HTML;

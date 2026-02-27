@@ -171,7 +171,7 @@ describe("integration: /api/progress", () => {
 
     expect(lesson).not.toBeNull();
     if (!lesson) {
-      return;
+      throw new Error("Expected a seeded lesson for progress mark/unmark test.");
     }
 
     const { POST } = await getProgressRoute();
@@ -191,7 +191,7 @@ describe("integration: /api/progress", () => {
 
     expect(user).not.toBeNull();
     if (!user) {
-      return;
+      throw new Error("Expected user to exist after marking lesson progress.");
     }
 
     const progress = await prisma.lessonProgress.findUnique({
@@ -261,7 +261,7 @@ describe("integration: /api/progress", () => {
 
     expect(lesson).not.toBeNull();
     if (!lesson) {
-      return;
+      throw new Error("Expected a seeded lesson for progress GET integration test.");
     }
 
     const { POST, GET } = await getProgressRoute();
@@ -345,7 +345,7 @@ describe("integration: /api/progress/merge", () => {
 
     expect(lesson).not.toBeNull();
     if (!lesson) {
-      return;
+      throw new Error("Expected a seeded lesson for progress merge integration test.");
     }
 
     const { POST } = await getMergeRoute();
@@ -367,7 +367,7 @@ describe("integration: /api/progress/merge", () => {
 
     expect(user).not.toBeNull();
     if (!user) {
-      return;
+      throw new Error("Expected user to exist after merging lesson progress.");
     }
 
     const progress = await prisma.lessonProgress.findUnique({
@@ -408,9 +408,6 @@ describe("integration: /api/progress/merge", () => {
     });
 
     expect(lessons).toHaveLength(2);
-    if (lessons.length < 2) {
-      return;
-    }
 
     const [firstLesson, secondLesson] = lessons;
     const { POST } = await getMergeRoute();
@@ -433,7 +430,7 @@ describe("integration: /api/progress/merge", () => {
 
     expect(user).not.toBeNull();
     if (!user) {
-      return;
+      throw new Error("Expected user to exist after merge-order integration test.");
     }
 
     const progressRows = await prisma.lessonProgress.findMany({
