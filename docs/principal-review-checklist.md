@@ -33,8 +33,8 @@ Passing threshold for each mandatory gate:
 
 - [x] `npm run lint` (1 warning, 0 errors)
 - [x] `npm run typecheck`
-- [x] `npm run test:unit` (47 files, 205 tests passed)
-- [x] `npm run test:integration:local` (3 files, 17 tests passed)
+- [x] `npm run test:unit` (47 files, 206 tests passed)
+- [x] `npm run test:integration:local` (3 files, 18 tests passed)
 - [x] `npm run test:e2e:local` (11 tests passed)
 - [x] `npm run test:a11y` (6/6 URLs passed)
 
@@ -42,8 +42,19 @@ Passing threshold for each mandatory gate:
 
 - [x] Collect hotspot evidence (size + churn)
 - [x] Rank candidates by `(Impact x Risk x Churn) / Effort`
-- [ ] Approve first refactor batch
-- [ ] Define rollback + success metrics for each batch
+- [x] Approve first refactor batch
+- [x] Define rollback + success metrics for each batch
+
+### Batch Plan and Success Metrics
+
+1. **Batch A (correctness + test stability)**
+   - Scope: focus menu panel ID collisions, selector robustness, lesson-content empty-body guard.
+   - Rollback trigger: E2E focus flow failures or lesson-content fallback regressions.
+   - Success metrics: no duplicate ID collisions, stable E2E selectors, no blank lesson content renders.
+2. **Batch B (simplicity + maintainability)**
+   - Scope: header markup deduplication, navigator lesson-row extraction, deterministic progress-merge response ordering.
+   - Rollback trigger: unit/E2E regressions in header, navigator, or progress flows.
+   - Success metrics: reduced duplicated UI paths, clearer navigator composition, deterministic merge API responses.
 
 ### Current Refactor Candidates
 
@@ -57,19 +68,19 @@ Passing threshold for each mandatory gate:
 - [x] Verify API payload validation and request-size limits
 - [x] Fix deterministic correctness issue: focus menu panel IDs are now instance-safe
 - [x] Guard against empty sanitized lesson content (avoid blank lesson rendering)
-- [ ] Audit remaining edge-case behavior for progress merges
+- [x] Audit remaining edge-case behavior for progress merges
 
 ## Gate 3: Idiomatic Implementation
 
 - [x] Remove lint warning in `lesson-next-core-cta` via explicit typed memo return
 - [x] Make E2E selectors robust by resolving focus panel via `aria-controls`
-- [ ] Audit remaining high-churn modules for idiomatic simplifications
+- [x] Audit remaining high-churn modules for idiomatic simplifications
 
 ## Gate 4: Simplicity and Effectiveness
 
 - [x] Reduce duplication in `site-header` nav/action rendering
-- [ ] Extract navigator row rendering concerns from `lesson-navigator`
-- [ ] Re-check cognitive load after refactor edits
+- [x] Extract navigator row rendering concerns from `lesson-navigator`
+- [x] Re-check cognitive load after refactor edits
 
 ## Regression Gate
 
@@ -77,10 +88,16 @@ Passing threshold for each mandatory gate:
 - [x] `npm run typecheck`
 - [x] `npm run test:unit -- src/components/__tests__/focus-menu.test.tsx src/components/__tests__/lesson-next-core-cta.test.tsx`
 - [x] `npm run test:unit -- src/lib/__tests__/lesson-content.test.ts`
+- [x] `npm run test:integration:local -- src/app/api/progress/__tests__/route.integration.test.ts`
 - [x] `npm run test:e2e:local -- e2e/header-responsive.spec.ts e2e/secondary-pages.spec.ts`
 - [x] `npm run test:e2e:local -- e2e/public-browsing.spec.ts e2e/lesson-content-error.spec.ts`
 - [x] `npm run test:unit -- src/components/__tests__/site-header.test.tsx`
 - [x] `npm run test:e2e:local -- e2e/header-responsive.spec.ts`
+- [x] `npm run test:unit -- src/components/__tests__/lesson-navigator.test.tsx`
+- [x] `npm run test:e2e:local -- e2e/progress-flows.spec.ts e2e/public-browsing.spec.ts`
+- [x] `npm run test:unit`
+- [x] `npm run test:integration:local`
+- [x] `npm run test:e2e:local`
 
 ## Findings Log
 
@@ -92,3 +109,7 @@ Passing threshold for each mandatory gate:
   - Fix: added non-empty guard in `fetchLessonContent` and regression test coverage.
 - **P3 (fixed)**: duplicated desktop/mobile header nav/disclosure markup increased drift risk.
   - Fix: centralized primary nav metadata and shared sign-in disclosure rendering in `site-header`.
+- **P2 (fixed)**: progress merge response order depended on database row ordering.
+  - Fix: preserved merged/ skipped lesson slug order based on deduplicated request order and added integration coverage.
+- **P3 (fixed)**: lesson navigator contained deeply nested row rendering logic, increasing change risk.
+  - Fix: extracted `NavigatorLessonRow` and module snapshot helpers to simplify component orchestration.

@@ -23,11 +23,7 @@ const getMergeRoute = async () => await import("@/app/api/progress/merge/route")
 /**
  * Build a JSON POST request with an optional Origin header.
  */
-const makeJsonRequest = (
-  url: string,
-  body: unknown,
-  options: { origin?: string } = {}
-) => {
+const makeJsonRequest = (url: string, body: unknown, options: { origin?: string } = {}) => {
   const { origin = new URL(url).origin } = options;
 
   return new Request(url, {
@@ -37,11 +33,7 @@ const makeJsonRequest = (
   });
 };
 
-const makeRawJsonRequest = (
-  url: string,
-  body: string,
-  options: { origin?: string } = {}
-) => {
+const makeRawJsonRequest = (url: string, body: string, options: { origin?: string } = {}) => {
   const { origin = new URL(url).origin } = options;
 
   return new Request(url, {
@@ -124,12 +116,7 @@ describe("integration: /api/progress", () => {
     });
 
     const { POST } = await getProgressRoute();
-    const response = await POST(
-      makeRawJsonRequest(
-        "http://localhost/api/progress",
-        "{bad-json"
-      )
-    );
+    const response = await POST(makeRawJsonRequest("http://localhost/api/progress", "{bad-json"));
 
     expect(response.status).toBe(400);
   });
@@ -337,10 +324,7 @@ describe("integration: /api/progress/merge", () => {
     const { POST } = await getMergeRoute();
 
     const response = await POST(
-      makeRawJsonRequest(
-        "http://localhost/api/progress/merge",
-        oversizedPayload
-      )
+      makeRawJsonRequest("http://localhost/api/progress/merge", oversizedPayload)
     );
 
     expect(response.status).toBe(413);
@@ -406,5 +390,67 @@ describe("integration: /api/progress/merge", () => {
     });
 
     expect(mergeEvent).not.toBeNull();
+  });
+
+  it("deduplicates lesson slugs and preserves request order in merge results", async () => {
+    authMocks.getServerSession.mockResolvedValue({
+      user: {
+        email: "progress-merge-order@example.com",
+        name: "Merge Order User",
+        image: null,
+      },
+    });
+
+    const lessons = await prisma.lesson.findMany({
+      select: { id: true, slug: true },
+      orderBy: [{ module: { order: "asc" } }, { order: "asc" }],
+      take: 2,
+    });
+
+    expect(lessons).toHaveLength(2);
+    if (lessons.length < 2) {
+      return;
+    }
+
+    const [firstLesson, secondLesson] = lessons;
+    const { POST } = await getMergeRoute();
+
+    const response = await POST(
+      makeJsonRequest("http://localhost/api/progress/merge", {
+        lessonSlugs: [secondLesson.slug, firstLesson.slug, secondLesson.slug, "missing-lesson"],
+      })
+    );
+
+    expect(response.status).toBe(200);
+
+    const body = await response.json();
+    expect(body.mergedLessonSlugs).toEqual([secondLesson.slug, firstLesson.slug]);
+    expect(body.skippedLessonSlugs).toEqual(["missing-lesson"]);
+
+    const user = await prisma.user.findUnique({
+      where: { email: "progress-merge-order@example.com" },
+    });
+
+    expect(user).not.toBeNull();
+    if (!user) {
+      return;
+    }
+
+    const progressRows = await prisma.lessonProgress.findMany({
+      where: {
+        userId: user.id,
+        lessonId: { in: [firstLesson.id, secondLesson.id] },
+      },
+    });
+    expect(progressRows).toHaveLength(2);
+
+    const mergeEvents = await prisma.lessonProgressEvent.findMany({
+      where: {
+        userId: user.id,
+        lessonId: { in: [firstLesson.id, secondLesson.id] },
+        action: "completed",
+      },
+    });
+    expect(mergeEvents).toHaveLength(2);
   });
 });
