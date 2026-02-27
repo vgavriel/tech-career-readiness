@@ -2,15 +2,15 @@
 
 ## Scope
 
-- Reviewed every production component in `src/components/*.tsx` (25 files).
+- Reviewed every production component in `src/components/*.tsx` (20 files).
 - Cross-checked runtime composition through `src/app` routes/pages.
 - Included confidence ratings per component based on code + usage evidence.
+- Updated after dead-code cleanup removing unused focus-roadmap wrappers and lesson progress card.
 
 ## Confidence Scale
 
 - `High`: behavior and purpose are clear from implementation and live route usage.
 - `Medium`: behavior is clear, but product intent/active usage is partial or indirect.
-- `Low`: implementation exists, but active product usage is unclear or appears legacy.
 
 ## Shell and App Infrastructure
 
@@ -76,15 +76,8 @@
 
 - Does: reusable sign-in button that resolves active auth provider and optional callback URL.
 - Why: consistent sign-in trigger for multiple contexts without duplicating provider lookup logic.
-- Used by: progress summary/card/navigator components.
+- Used by: progress summary and lesson navigator surfaces.
 - Confidence: `High`.
-
-### `roadmap-focus-provider.tsx`
-
-- Does: local focus-selection store bridge (`useSyncExternalStore`) and focus-filtered module projection.
-- Why: support focus-aware roadmap composition without tightly coupling to full focus context.
-- Used by: `roadmap-focus-*` components (no current route-level import observed).
-- Confidence: `Medium` (implementation clear, active runtime usage unclear).
 
 ## Lesson Experience Components
 
@@ -123,27 +116,13 @@
 - Used by: lesson `not-found` page.
 - Confidence: `High`.
 
-### `lesson-progress-card.tsx`
-
-- Does: standalone lesson progress status card with completion button and sign-in hint.
-- Why: likely older/alternate lesson control card pattern.
-- Used by: no production imports detected.
-- Confidence: `Low` (clear behavior, uncertain product necessity).
-
 ## Curriculum and Progress Display Components
-
-### `roadmap-module-list.tsx`
-
-- Does: full curriculum module/lesson listing with completion indicators and extra-credit segmentation.
-- Why: reusable module-list renderer for roadmap-oriented surfaces.
-- Used by: `roadmap-focus-module-list` and related test scaffolding; no direct active page import.
-- Confidence: `Medium` (well-defined behavior, current route usage unclear after `/roadmap` redirect).
 
 ### `roadmap-progress-summary.tsx`
 
-- Does: progress ring summary + CTA logic (start/continue/review/restart), optional focus and extra-credit panes.
+- Does: progress ring summary plus CTA logic (start/continue/review/restart), optional focus and extra-credit panes.
 - Why: canonical progress summary UI reused across contexts.
-- Used by: `home-progress-card`, `roadmap-focus-summary`.
+- Used by: `home-progress-card`.
 - Confidence: `High`.
 
 ### `home-progress-card.tsx`
@@ -174,26 +153,12 @@
 - Used by: gold-stars page.
 - Confidence: `High`.
 
-### `roadmap-focus-module-list.tsx`
+### `roadmap-module-list.tsx`
 
-- Does: thin adapter that selects `focusModules` or all modules for `roadmap-module-list`.
-- Why: composition helper for focus-aware roadmap rendering.
-- Used by: no production route imports detected.
-- Confidence: `Low` (purpose clear, active usage unclear).
-
-### `roadmap-focus-summary.tsx`
-
-- Does: thin adapter providing focus context into `roadmap-progress-summary`.
-- Why: composition helper for focus-scoped progress summary.
-- Used by: no production route imports detected.
-- Confidence: `Low` (purpose clear, active usage unclear).
-
-### `roadmap-focus-status.tsx`
-
-- Does: active-focus banner with clear action and module-count context.
-- Why: communicate currently applied focus filter on roadmap views.
-- Used by: no production route imports detected.
-- Confidence: `Low` (purpose clear, active usage unclear).
+- Does: full curriculum module/lesson list rendering with completion indicators and extra-credit segmentation.
+- Why: retained as shared list UI and source of the `RoadmapModule` type used widely in roadmap-related logic.
+- Used by: direct runtime import not found in current routes; component usage is currently test-only.
+- Confidence: `Medium`.
 
 ## Adjacent Non-Component Dependency (Important)
 
@@ -206,15 +171,14 @@
 
 ## Repository-Level Observations
 
-- Core runtime path is clear and cohesive:
+- Core runtime path remains cohesive:
   - `layout` -> `app-shell` -> `providers` + `site-header`
   - lesson page -> `navigator-layout` + `lesson-navigator` + lesson content/progress controls
-  - secondary pages use `back-to-course-cta`, `roadmap-gold-stars`, `role-library-list`, or home progress cards.
-- Some roadmap-focus-specific components appear structurally sound but currently not wired into active routes.
-- `lesson-progress-card` also appears currently unused in production routes.
-
-## Open Questions (for perfect confidence)
-
-1. Are `roadmap-focus-module-list`, `roadmap-focus-summary`, and `roadmap-focus-status` intentionally retained for upcoming roadmap-page reinstatement, or should they be retired?
-2. Is `lesson-progress-card` still a planned variant, or can it be removed to reduce surface area?
-3. Should `/roadmap` remain a permanent redirect to first lesson, or is there a plan to reintroduce a dedicated roadmap page that would consume the focus components directly?
+  - secondary pages use `back-to-course-cta`, `roadmap-gold-stars`, `role-library-list`, and home progress cards
+- `/roadmap` is currently implemented as an intentional redirect route to the first lesson.
+- Removed unused components on 2026-02-27:
+  - `lesson-progress-card.tsx`
+  - `roadmap-focus-provider.tsx`
+  - `roadmap-focus-module-list.tsx`
+  - `roadmap-focus-summary.tsx`
+  - `roadmap-focus-status.tsx`
