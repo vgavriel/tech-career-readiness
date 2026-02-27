@@ -6,11 +6,11 @@ import { useEffect, useMemo, useRef } from "react";
 
 import { useFocus } from "@/components/focus-provider";
 import { useProgress } from "@/components/progress-provider";
-import type { RoadmapModule } from "@/components/roadmap-module-list";
 import SignInCta from "@/components/sign-in-cta";
 import { FOCUS_OPTIONS } from "@/lib/focus-options";
 import { orderModulesForFocus } from "@/lib/focus-order";
 import { isExtraCreditLesson } from "@/lib/lesson-classification";
+import type { RoadmapModule } from "@/lib/roadmap-types";
 
 /**
  * Props for the lesson navigator rail.

@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useMemo } from "react";
 
 import { useProgress } from "@/components/progress-provider";
-import type { RoadmapModule } from "@/components/roadmap-module-list";
 import { buildGoldStarStatuses, type GoldStarStatus } from "@/lib/gold-stars";
+import type { RoadmapModule } from "@/lib/roadmap-types";
 
 /**
  * Props for the gold stars panel.

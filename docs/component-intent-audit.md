@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Reviewed every production component in `src/components/*.tsx` (20 files).
+- Reviewed every production component in `src/components/*.tsx` (19 files).
 - Cross-checked runtime composition through `src/app` routes/pages.
 - Included confidence ratings per component based on code + usage evidence.
 - Updated after dead-code cleanup removing unused focus-roadmap wrappers and lesson progress card.
@@ -153,13 +153,6 @@
 - Used by: gold-stars page.
 - Confidence: `High`.
 
-### `roadmap-module-list.tsx`
-
-- Does: full curriculum module/lesson list rendering with completion indicators and extra-credit segmentation.
-- Why: retained as shared list UI and source of the `RoadmapModule` type used widely in roadmap-related logic.
-- Used by: direct runtime import not found in current routes; component usage is currently test-only.
-- Confidence: `Medium`.
-
 ## Adjacent Non-Component Dependency (Important)
 
 ### `src/hooks/use-auth-provider.ts`
@@ -182,3 +175,4 @@
   - `roadmap-focus-module-list.tsx`
   - `roadmap-focus-summary.tsx`
   - `roadmap-focus-status.tsx`
+  - `roadmap-module-list.tsx`

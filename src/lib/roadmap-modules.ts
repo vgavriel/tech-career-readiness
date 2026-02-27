@@ -1,6 +1,7 @@
 import { cacheLife } from "next/cache";
 
 import { prisma } from "@/lib/prisma";
+import type { RoadmapModule } from "@/lib/roadmap-types";
 
 const ROADMAP_MODULE_SELECT = {
   id: true,
@@ -26,7 +27,7 @@ const ROADMAP_MODULE_SELECT = {
  *
  * Uses a one-hour cache to avoid repeated Prisma reads.
  */
-export const getRoadmapModules = async () => {
+export const getRoadmapModules = async (): Promise<RoadmapModule[]> => {
   "use cache";
   cacheLife({ revalidate: 60 * 60 });
   return prisma.module.findMany({

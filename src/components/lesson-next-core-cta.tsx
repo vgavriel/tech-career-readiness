@@ -5,7 +5,6 @@ import { useMemo } from "react";
 
 import { useFocus } from "@/components/focus-provider";
 import { useProgress } from "@/components/progress-provider";
-import type { RoadmapModule } from "@/components/roadmap-module-list";
 import { orderModulesForFocus } from "@/lib/focus-order";
 import {
   buildOrderedLessons,
@@ -13,6 +12,7 @@ import {
   type ProgressSummaryLesson,
   splitLessonsByCredit,
 } from "@/lib/progress-summary";
+import type { RoadmapModule } from "@/lib/roadmap-types";
 
 /**
  * Props for the next core lesson CTA.

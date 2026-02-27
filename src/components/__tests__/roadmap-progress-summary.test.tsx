@@ -2,8 +2,8 @@ import { render, screen, within } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { RoadmapModule } from "@/components/roadmap-module-list";
 import RoadmapProgressSummary from "@/components/roadmap-progress-summary";
+import type { RoadmapModule } from "@/lib/roadmap-types";
 
 const progressMocks = vi.hoisted(() => ({
   useProgress: vi.fn(),

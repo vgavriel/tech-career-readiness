@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import type { RoadmapModule } from "@/components/roadmap-module-list";
 import { buildGoldStarStatuses } from "@/lib/gold-stars";
+import type { RoadmapModule } from "@/lib/roadmap-types";
 
 const makeLesson = (slug: string, order: number) => ({
   id: slug,

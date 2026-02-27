@@ -1,5 +1,5 @@
-import type { RoadmapModule } from "@/components/roadmap-module-list";
 import { getLessonClassification } from "@/lib/lesson-classification";
+import type { RoadmapModule } from "@/lib/roadmap-types";
 
 /**
  * Canonical gold star identifiers.

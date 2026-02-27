@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import LessonNavigator from "@/components/lesson-navigator";
-import type { RoadmapModule } from "@/components/roadmap-module-list";
+import type { RoadmapModule } from "@/lib/roadmap-types";
 
 const routerMocks = vi.hoisted(() => ({
   replace: vi.fn(),
@@ -53,14 +53,7 @@ vi.mock("@/components/sign-in-cta", () => ({
 }));
 
 vi.mock("next/link", () => ({
-  default: ({
-    href,
-    children,
-    ...props
-  }: {
-    href: string;
-    children: ReactNode;
-  }) => (
+  default: ({ href, children, ...props }: { href: string; children: ReactNode }) => (
     <a href={href} {...props}>
       {children}
     </a>
@@ -131,9 +124,7 @@ describe("LessonNavigator", () => {
     );
 
     const scrollPanel = container.querySelector(".scroll-panel") as HTMLDivElement;
-    const target = container.querySelector(
-      "#navigator-lesson-lesson-two"
-    ) as HTMLElement;
+    const target = container.querySelector("#navigator-lesson-lesson-two") as HTMLElement;
 
     expect(scrollPanel).not.toBeNull();
     expect(target).not.toBeNull();
@@ -318,9 +309,7 @@ describe("LessonNavigator", () => {
 
     expect(screen.getAllByText(/extra credit/i).length).toBeGreaterThan(0);
 
-    await user.click(
-      screen.getByRole("button", { name: /mark tech career stories complete/i })
-    );
+    await user.click(screen.getByRole("button", { name: /mark tech career stories complete/i }));
 
     expect(progressMocks.setLessonCompletion).toHaveBeenCalledWith(
       "tech-career-stories",
