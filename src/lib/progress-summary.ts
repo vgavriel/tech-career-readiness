@@ -42,6 +42,18 @@ export type ProgressSummary = {
 };
 
 /**
+ * Core CTA details derived from progress summaries.
+ */
+export type ProgressSummaryCta = {
+  primaryLesson: ProgressSummaryLesson | null;
+  restartLesson: ProgressSummaryLesson | null;
+  ctaLesson: ProgressSummaryLesson | null;
+  ctaLabel: string;
+  coreComplete: boolean;
+  celebratoryMessage: string;
+};
+
+/**
  * Input used to compute core, extra, and focus summaries.
  */
 export type ProgressSummaryInput = {
@@ -150,5 +162,48 @@ export const buildProgressSummaries = ({
     extraSummary,
     focusSummary,
     activeSummary,
+  };
+};
+
+/**
+ * Resolve primary CTA lesson and label from core + active summaries.
+ */
+export const buildProgressSummaryCta = ({
+  coreSummary,
+  activeSummary,
+}: {
+  coreSummary: ProgressSummary;
+  activeSummary: ProgressSummary;
+}): ProgressSummaryCta => {
+  const primaryLesson = activeSummary.continueLesson ?? activeSummary.firstLesson ?? null;
+  const coreComplete = coreSummary.allComplete;
+  const celebratoryMessage = "Congratulations! You reached the end of the core course.";
+  const restartLesson = coreSummary.firstLesson ?? activeSummary.firstLesson ?? null;
+
+  let ctaLesson = primaryLesson;
+  let ctaLabel = "Check back soon";
+
+  if (coreComplete) {
+    ctaLesson = restartLesson;
+    ctaLabel = celebratoryMessage;
+  } else if (primaryLesson) {
+    if (activeSummary.allComplete) {
+      ctaLabel = "Review course";
+    } else if (activeSummary.completedCount === 0) {
+      ctaLabel = "Start course";
+    } else if (activeSummary.continueLesson) {
+      ctaLabel = "Continue course";
+    } else {
+      ctaLabel = "Start course";
+    }
+  }
+
+  return {
+    primaryLesson,
+    restartLesson,
+    ctaLesson,
+    ctaLabel,
+    coreComplete,
+    celebratoryMessage,
   };
 };

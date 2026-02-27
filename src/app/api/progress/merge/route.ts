@@ -92,9 +92,12 @@ export async function POST(request: Request) {
     select: { id: true, slug: true },
   });
 
-  const validLessonIds = lessons.map((lesson) => lesson.id);
-  const validLessonSlugs = lessons.map((lesson) => lesson.slug);
-  const validLessonSlugSet = new Set(validLessonSlugs);
+  const lessonBySlug = new Map(lessons.map((lesson) => [lesson.slug, lesson]));
+  const validLessons = lessonSlugs
+    .map((lessonSlug) => lessonBySlug.get(lessonSlug))
+    .filter((lesson): lesson is { id: string; slug: string } => Boolean(lesson));
+  const validLessonIds = validLessons.map((lesson) => lesson.id);
+  const validLessonSlugs = validLessons.map((lesson) => lesson.slug);
 
   if (validLessonIds.length === 0) {
     logRequest("warn", {
@@ -136,9 +139,7 @@ export async function POST(request: Request) {
     ])
   );
 
-  const skippedLessonSlugs = lessonSlugs.filter(
-    (lessonSlug) => !validLessonSlugSet.has(lessonSlug)
-  );
+  const skippedLessonSlugs = lessonSlugs.filter((lessonSlug) => !lessonBySlug.has(lessonSlug));
 
   logRequest("info", {
     status: StatusCodes.OK,

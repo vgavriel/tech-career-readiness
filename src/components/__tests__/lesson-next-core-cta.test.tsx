@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import LessonNextCoreCta from "@/components/lesson-next-core-cta";
-import type { RoadmapModule } from "@/components/roadmap-module-list";
+import type { RoadmapModule } from "@/lib/roadmap-types";
 
 const focusMocks = vi.hoisted(() => ({
   focusKey: null as string | null,

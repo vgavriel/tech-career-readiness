@@ -3,9 +3,9 @@
 import { useMemo } from "react";
 
 import { useFocus } from "@/components/focus-provider";
-import type { RoadmapModule } from "@/components/roadmap-module-list";
 import RoadmapProgressSummary from "@/components/roadmap-progress-summary";
 import { orderModulesForFocus } from "@/lib/focus-order";
+import type { RoadmapModule } from "@/lib/roadmap-types";
 
 /**
  * Props for the homepage progress card.

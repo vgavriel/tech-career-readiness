@@ -1,32 +1,14 @@
 import { cacheLife } from "next/cache";
 
 import { prisma } from "@/lib/prisma";
-
-const ROADMAP_MODULE_SELECT = {
-  id: true,
-  key: true,
-  title: true,
-  description: true,
-  order: true,
-  lessons: {
-    where: { isArchived: false },
-    orderBy: { order: "asc" },
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-      order: true,
-      estimatedMinutes: true,
-    },
-  },
-} as const;
+import { ROADMAP_MODULE_SELECT, type RoadmapModule } from "@/lib/roadmap-types";
 
 /**
  * Return ordered roadmap modules with lesson metadata.
  *
  * Uses a one-hour cache to avoid repeated Prisma reads.
  */
-export const getRoadmapModules = async () => {
+export const getRoadmapModules = async (): Promise<RoadmapModule[]> => {
   "use cache";
   cacheLife({ revalidate: 60 * 60 });
   return prisma.module.findMany({

@@ -22,6 +22,7 @@ export default function FocusMenu({ inlinePanel = false }: FocusMenuProps) {
   const toggleRef = useRef<HTMLButtonElement | null>(null);
   const firstOptionRef = useRef<HTMLButtonElement | null>(null);
   const clearTooltipId = useId();
+  const panelId = `focus-menu-panel-${useId().replace(/:/g, "")}`;
   const isClearDisabled = !focusKey;
 
   const activeOption = useMemo(
@@ -102,7 +103,7 @@ export default function FocusMenu({ inlinePanel = false }: FocusMenuProps) {
         }`}
         aria-expanded={isOpen}
         aria-haspopup="true"
-        aria-controls="focus-menu-panel"
+        aria-controls={panelId}
       >
         <span className="truncate">{activeOption ? `Focus: ${activeOption.label}` : "Focus"}</span>
         <svg
@@ -118,12 +119,7 @@ export default function FocusMenu({ inlinePanel = false }: FocusMenuProps) {
       </button>
 
       {isOpen ? (
-        <div
-          id="focus-menu-panel"
-          className={panelClassName}
-          role="region"
-          aria-label="Focus options"
-        >
+        <div id={panelId} className={panelClassName} role="region" aria-label="Focus options">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <p className="text-sm text-[color:var(--ink-700)]">Filter by focus.</p>

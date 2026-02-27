@@ -15,6 +15,53 @@ type SiteHeaderInnerProps = {
   pathname: string;
 };
 
+type PrimaryNavLink = {
+  href: string;
+  label: string;
+  external?: boolean;
+};
+
+const PRIMARY_NAV_LINKS: PrimaryNavLink[] = [
+  { href: "/gold-stars", label: "Gold Stars" },
+  { href: "/roles", label: "Explore Tech Roles" },
+  {
+    href: "https://github.com/vgavriel/tech-career-readiness",
+    label: "About",
+    external: true,
+  },
+  { href: "/privacy", label: "Privacy Policy" },
+];
+
+const renderPrimaryNavLink = (link: PrimaryNavLink, className: string) => {
+  if (link.external) {
+    return (
+      <a key={link.href} href={link.href} target="_blank" rel="noreferrer" className={className}>
+        {link.label}
+      </a>
+    );
+  }
+
+  return (
+    <Link key={link.href} href={link.href} className={className}>
+      {link.label}
+    </Link>
+  );
+};
+
+type SignInDisclosureProps = {
+  className: string;
+};
+
+const SignInDisclosure = ({ className }: SignInDisclosureProps) => (
+  <p className={className}>
+    By signing in, you agree to our{" "}
+    <Link href="/privacy" className="underline underline-offset-2">
+      Privacy Policy
+    </Link>
+    .
+  </p>
+);
+
 /**
  * Render the persistent site header with auth actions.
  *
@@ -79,32 +126,12 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
               aria-label="Primary"
               className="hidden items-center gap-3 text-sm text-[color:var(--ink-600)] lg:flex"
             >
-              <Link
-                href="/gold-stars"
-                className="inline-flex min-h-11 items-center whitespace-nowrap transition hover:text-[color:var(--ink-900)]"
-              >
-                Gold Stars
-              </Link>
-              <Link
-                href="/roles"
-                className="inline-flex min-h-11 items-center whitespace-nowrap transition hover:text-[color:var(--ink-900)]"
-              >
-                Explore Tech Roles
-              </Link>
-              <a
-                href="https://github.com/vgavriel/tech-career-readiness"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex min-h-11 items-center whitespace-nowrap transition hover:text-[color:var(--ink-900)]"
-              >
-                About
-              </a>
-              <Link
-                href="/privacy"
-                className="inline-flex min-h-11 items-center whitespace-nowrap transition hover:text-[color:var(--ink-900)]"
-              >
-                Privacy Policy
-              </Link>
+              {PRIMARY_NAV_LINKS.map((link) =>
+                renderPrimaryNavLink(
+                  link,
+                  "inline-flex min-h-11 items-center whitespace-nowrap transition hover:text-[color:var(--ink-900)]"
+                )
+              )}
             </nav>
           </div>
           <div className="flex items-center gap-2">
@@ -134,13 +161,7 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
                   >
                     {authProvider.label}
                   </button>
-                  <p className="text-[10px] leading-snug text-[color:var(--ink-500)] text-right">
-                    By signing in, you agree to our{" "}
-                    <Link href="/privacy" className="underline underline-offset-2">
-                      Privacy Policy
-                    </Link>
-                    .
-                  </p>
+                  <SignInDisclosure className="text-[10px] leading-snug text-[color:var(--ink-500)] text-right" />
                 </div>
               )}
             </div>
@@ -173,32 +194,12 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
             className="mt-3 grid max-h-[70vh] gap-4 overflow-y-auto rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-4 shadow-[var(--shadow-card)] md:gap-5 md:p-5 lg:hidden"
           >
             <nav aria-label="Primary" className="grid gap-2 text-sm">
-              <Link
-                href="/gold-stars"
-                className="inline-flex items-center justify-between rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-2 font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)] whitespace-nowrap"
-              >
-                Gold Stars
-              </Link>
-              <Link
-                href="/roles"
-                className="inline-flex items-center justify-between rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-2 font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)] whitespace-nowrap"
-              >
-                Explore Tech Roles
-              </Link>
-              <a
-                href="https://github.com/vgavriel/tech-career-readiness"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-between rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-2 font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)] whitespace-nowrap"
-              >
-                About
-              </a>
-              <Link
-                href="/privacy"
-                className="inline-flex items-center justify-between rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-2 font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)] whitespace-nowrap"
-              >
-                Privacy Policy
-              </Link>
+              {PRIMARY_NAV_LINKS.map((link) =>
+                renderPrimaryNavLink(
+                  link,
+                  "inline-flex items-center justify-between rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-3 py-2 font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)] whitespace-nowrap"
+                )
+              )}
             </nav>
             {showFocusMenu ? (
               <div className="grid gap-3 border-t border-[color:var(--line-soft)] pt-4">
@@ -233,13 +234,7 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
                   >
                     {authProvider.label}
                   </button>
-                  <p className="text-[11px] leading-snug text-[color:var(--ink-500)]">
-                    By signing in, you agree to our{" "}
-                    <Link href="/privacy" className="underline underline-offset-2">
-                      Privacy Policy
-                    </Link>
-                    .
-                  </p>
+                  <SignInDisclosure className="text-[11px] leading-snug text-[color:var(--ink-500)]" />
                 </div>
               )}
             </div>

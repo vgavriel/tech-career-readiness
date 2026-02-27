@@ -6,7 +6,11 @@ import { useMemo } from "react";
 import { useProgress } from "@/components/progress-provider";
 import SignInCta from "@/components/sign-in-cta";
 import { FOCUS_OPTIONS, type FocusKey } from "@/lib/focus-options";
-import { buildProgressSummaries, type ProgressSummaryModule } from "@/lib/progress-summary";
+import {
+  buildProgressSummaries,
+  buildProgressSummaryCta,
+  type ProgressSummaryModule,
+} from "@/lib/progress-summary";
 
 /**
  * Props for the roadmap progress summary card.
@@ -56,27 +60,10 @@ export default function RoadmapProgressSummary({
   const ringCircumference = 2 * Math.PI * ringRadius;
   const ringOffset = ringCircumference * (1 - progressValue / 100);
 
-  const primaryLesson = activeSummary.continueLesson ?? activeSummary.firstLesson;
-  const coreComplete = coreSummary.allComplete;
-  const celebratoryMessage = "Congratulations! You reached the end of the core course.";
-  const restartLesson = coreSummary.firstLesson ?? activeSummary.firstLesson;
-
-  let ctaLesson = primaryLesson;
-  let ctaLabel = "Check back soon";
-  if (coreComplete) {
-    ctaLesson = restartLesson;
-    ctaLabel = celebratoryMessage;
-  } else if (primaryLesson) {
-    if (activeSummary.allComplete) {
-      ctaLabel = "Review course";
-    } else if (activeSummary.completedCount === 0) {
-      ctaLabel = "Start course";
-    } else if (activeSummary.continueLesson) {
-      ctaLabel = "Continue course";
-    } else {
-      ctaLabel = "Start course";
-    }
-  }
+  const { primaryLesson, ctaLesson, ctaLabel, coreComplete, celebratoryMessage } = useMemo(
+    () => buildProgressSummaryCta({ coreSummary, activeSummary }),
+    [activeSummary, coreSummary]
+  );
   const progressTitle = showExtraCredit ? "Core progress" : "Course Progress";
 
   return (

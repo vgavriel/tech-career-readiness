@@ -31,6 +31,16 @@ export type LessonContentResult = {
 const lessonContentInFlight = new Map<string, Promise<LessonContentResult>>();
 
 /**
+ * Ensure sanitized lesson content has meaningful HTML before caching.
+ */
+const assertNonEmptyLessonContent = (html: string) => {
+  if (html.trim().length === 0) {
+    throw new Error("Lesson content is empty.");
+  }
+  return html;
+};
+
+/**
  * Fetch, sanitize, and cache lesson HTML for the given lesson source.
  *
  * Uses mock HTML in local/test when configured, dedupes in-flight requests,
@@ -76,13 +86,15 @@ export async function fetchLessonContent(
     const validatedUrl = assertAllowedLessonUrl(lesson.publishedUrl);
     const mockHtml = env.LESSON_CONTENT_MOCK_HTML;
     if (mockHtml && (env.isLocal || env.isTest)) {
-      const sanitizedHtml = sanitizeLessonHtml(rewriteLinks(mockHtml));
+      const sanitizedHtml = assertNonEmptyLessonContent(sanitizeLessonHtml(rewriteLinks(mockHtml)));
       setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
       return { lessonId: lesson.id, html: sanitizedHtml, cached: false };
     }
     const rawHtml = await fetchLessonHtml(validatedUrl);
     const extractedHtml = extractLessonHtml(rawHtml);
-    const sanitizedHtml = sanitizeLessonHtml(rewriteLinks(extractedHtml));
+    const sanitizedHtml = assertNonEmptyLessonContent(
+      sanitizeLessonHtml(rewriteLinks(extractedHtml))
+    );
     setLessonContentCache(lesson.id, sanitizedHtml, LESSON_CONTENT_CACHE_TTL_MS);
 
     return { lessonId: lesson.id, html: sanitizedHtml, cached: false };

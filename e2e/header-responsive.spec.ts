@@ -1,6 +1,10 @@
-import { expect, type Locator, test } from "@playwright/test";
+import { expect, type Locator, type Page, test } from "@playwright/test";
 
-const openFocusMenu = async (focusToggle: Locator, focusPanel: Locator) => {
+const openFocusMenu = async (focusToggle: Locator, scope: Locator | Page) => {
+  const focusPanelId = await focusToggle.getAttribute("aria-controls");
+  expect(focusPanelId).toBeTruthy();
+
+  const focusPanel = scope.locator(`#${focusPanelId}`);
   await expect(async () => {
     if ((await focusToggle.getAttribute("aria-expanded")) !== "true") {
       await focusToggle.click();
@@ -8,6 +12,8 @@ const openFocusMenu = async (focusToggle: Locator, focusPanel: Locator) => {
 
     await expect(focusPanel).toBeVisible({ timeout: 10_000 });
   }).toPass();
+
+  return focusPanel;
 };
 
 test.describe("responsive header focus menu", () => {
@@ -26,8 +32,7 @@ test.describe("responsive header focus menu", () => {
       expect(overflowY).toBe("auto");
 
       const focusToggle = menuPanel.getByRole("button", { name: /^Focus/ });
-      const focusPanel = menuPanel.locator("#focus-menu-panel");
-      await openFocusMenu(focusToggle, focusPanel);
+      const focusPanel = await openFocusMenu(focusToggle, menuPanel);
 
       const clearButton = focusPanel.getByRole("button", {
         name: "Clear focus",
@@ -49,8 +54,7 @@ test.describe("responsive header focus menu", () => {
       await expect(menuPanel).toBeVisible();
 
       const focusToggle = menuPanel.getByRole("button", { name: /^Focus/ });
-      const focusPanel = menuPanel.locator("#focus-menu-panel");
-      await openFocusMenu(focusToggle, focusPanel);
+      const focusPanel = await openFocusMenu(focusToggle, menuPanel);
 
       const panelBox = await menuPanel.boundingBox();
       const focusBox = await focusPanel.boundingBox();
@@ -75,8 +79,7 @@ test.describe("responsive header focus menu", () => {
       await expect(page.getByRole("heading", { name: /start to finish/i })).toBeVisible();
 
       const focusToggle = page.getByRole("button", { name: /^Focus/ }).first();
-      const focusPanel = page.locator("#focus-menu-panel");
-      await openFocusMenu(focusToggle, focusPanel);
+      await openFocusMenu(focusToggle, page);
 
       const clearButton = page.getByRole("button", {
         name: "Clear focus",
