@@ -98,6 +98,7 @@ Passing threshold for each mandatory gate:
 - [x] `npm run test:unit`
 - [x] `npm run test:integration:local`
 - [x] `npm run test:e2e:local`
+- [x] `npm run test:a11y`
 
 ## Findings Log
 
@@ -113,3 +114,5 @@ Passing threshold for each mandatory gate:
   - Fix: preserved merged/ skipped lesson slug order based on deduplicated request order and added integration coverage.
 - **P3 (fixed)**: lesson navigator contained deeply nested row rendering logic, increasing change risk.
   - Fix: extracted `NavigatorLessonRow` and module snapshot helpers to simplify component orchestration.
+- **P2 (fixed)**: accessibility automation depended on a removed static focus-menu selector.
+  - Fix: updated Pa11y actions to target dynamic focus-menu selectors with prefix-matching attributes.

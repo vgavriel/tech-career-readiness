@@ -25,15 +25,15 @@ module.exports = {
     {
       url: `${baseUrl}/gold-stars`,
       actions: [
-        'click element button[aria-controls="focus-menu-panel"]',
-        "wait for element #focus-menu-panel to be visible",
+        'click element button[aria-controls^="focus-menu-panel-"]',
+        'wait for element [id^="focus-menu-panel-"] to be visible',
       ],
     },
     {
       url: `${baseUrl}/roles`,
       actions: [
-        'click element button[aria-controls="focus-menu-panel"]',
-        "wait for element #focus-menu-panel to be visible",
+        'click element button[aria-controls^="focus-menu-panel-"]',
+        'wait for element [id^="focus-menu-panel-"] to be visible',
       ],
     },
     `${baseUrl}/privacy`,
