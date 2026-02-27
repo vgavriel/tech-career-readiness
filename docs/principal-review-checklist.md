@@ -67,7 +67,7 @@ Passing threshold for each mandatory gate:
 
 ## Gate 4: Simplicity and Effectiveness
 
-- [ ] Reduce duplication in `site-header` nav/action rendering
+- [x] Reduce duplication in `site-header` nav/action rendering
 - [ ] Extract navigator row rendering concerns from `lesson-navigator`
 - [ ] Re-check cognitive load after refactor edits
 
@@ -79,6 +79,8 @@ Passing threshold for each mandatory gate:
 - [x] `npm run test:unit -- src/lib/__tests__/lesson-content.test.ts`
 - [x] `npm run test:e2e:local -- e2e/header-responsive.spec.ts e2e/secondary-pages.spec.ts`
 - [x] `npm run test:e2e:local -- e2e/public-browsing.spec.ts e2e/lesson-content-error.spec.ts`
+- [x] `npm run test:unit -- src/components/__tests__/site-header.test.tsx`
+- [x] `npm run test:e2e:local -- e2e/header-responsive.spec.ts`
 
 ## Findings Log
 
@@ -88,3 +90,5 @@ Passing threshold for each mandatory gate:
   - Fix: typed `useMemo` return to enforce state shape and remove warning.
 - **P1 (fixed)**: lesson content pipeline could return sanitized empty HTML and render a blank lesson body.
   - Fix: added non-empty guard in `fetchLessonContent` and regression test coverage.
+- **P3 (fixed)**: duplicated desktop/mobile header nav/disclosure markup increased drift risk.
+  - Fix: centralized primary nav metadata and shared sign-in disclosure rendering in `site-header`.
