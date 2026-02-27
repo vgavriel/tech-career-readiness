@@ -1,7 +1,9 @@
 import { expect, type Locator, type Page, test } from "@playwright/test";
 
 const openFocusMenu = async (focusToggle: Locator, page: Page) => {
-  const focusPanel = page.locator("#focus-menu-panel");
+  const focusPanelId = await focusToggle.getAttribute("aria-controls");
+  expect(focusPanelId).toBeTruthy();
+  const focusPanel = page.locator(`#${focusPanelId}`);
 
   await expect(async () => {
     if ((await focusToggle.getAttribute("aria-expanded")) !== "true") {

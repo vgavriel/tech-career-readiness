@@ -38,7 +38,10 @@ export default function LessonNextCoreCta({ modules, currentLessonSlug }: Lesson
   const { focusKey } = useFocus();
   const { completedLessonSlugs, isReady, setLessonCompletion } = useProgress();
 
-  const { ctaState, restartLesson } = useMemo(() => {
+  const { ctaState, restartLesson } = useMemo<{
+    ctaState: LessonNextCoreCtaState;
+    restartLesson: ProgressSummaryLesson | null;
+  }>(() => {
     const orderedModules = orderModulesForFocus(modules, focusKey);
     const orderedLessons = buildOrderedLessons(orderedModules);
     const { coreLessons } = splitLessonsByCredit(orderedLessons);

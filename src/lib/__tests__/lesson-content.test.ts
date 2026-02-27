@@ -140,6 +140,24 @@ describe("fetchLessonContent", () => {
     await expect(fetchLessonContent(lesson)).rejects.toThrow("Failed to fetch lesson content.");
   });
 
+  it("throws when sanitized lesson content is empty", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          '<script>alert("remove")</script>',
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    await expect(fetchLessonContent(lesson)).rejects.toThrow("Lesson content is empty.");
+  });
+
   it("throws after too many redirects", async () => {
     process.env.APP_ENV = "preview";
     fetchMock.mockImplementation(() =>
