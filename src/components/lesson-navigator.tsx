@@ -10,7 +10,12 @@ import SignInCta from "@/components/sign-in-cta";
 import { FOCUS_OPTIONS } from "@/lib/focus-options";
 import { orderModulesForFocus } from "@/lib/focus-order";
 import { isExtraCreditLesson } from "@/lib/lesson-classification";
-import type { RoadmapModule } from "@/lib/roadmap-types";
+import {
+  getModuleProgressSnapshot,
+  isCurrentModuleVisibleForFocus,
+  summarizeVisibleLessonProgress,
+} from "@/lib/lesson-navigator";
+import type { RoadmapLesson, RoadmapModule } from "@/lib/roadmap-types";
 
 /**
  * Props for the lesson navigator rail.
@@ -21,7 +26,7 @@ type LessonNavigatorProps = {
   currentModuleKey: string | null;
 };
 
-type NavigatorLesson = RoadmapModule["lessons"][number];
+type NavigatorLesson = RoadmapLesson;
 
 type LessonCompletionSource = "toggle" | "navigator";
 
@@ -124,57 +129,6 @@ const NavigatorLessonRow = ({
   );
 };
 
-type ModuleProgressSnapshot = {
-  coreLessons: NavigatorLesson[];
-  extraLessons: NavigatorLesson[];
-  extraCompletedCount: number;
-  isModuleComplete: boolean;
-  progressLabel: string;
-  isActiveExtra: boolean;
-};
-
-/**
- * Compute derived progress state for a single module section.
- */
-const getModuleProgressSnapshot = ({
-  module,
-  currentLessonSlug,
-  isReady,
-  isLessonCompleted,
-}: {
-  module: RoadmapModule;
-  currentLessonSlug: string;
-  isReady: boolean;
-  isLessonCompleted: (lessonSlug: string) => boolean;
-}): ModuleProgressSnapshot => {
-  const coreLessons = module.lessons.filter((lesson) => !isExtraCreditLesson(lesson));
-  const extraLessons = module.lessons.filter((lesson) => isExtraCreditLesson(lesson));
-  const coreCompletedCount = coreLessons.reduce(
-    (count, lesson) => count + (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
-    0
-  );
-  const extraCompletedCount = extraLessons.reduce(
-    (count, lesson) => count + (isReady && isLessonCompleted(lesson.slug) ? 1 : 0),
-    0
-  );
-  const isModuleComplete =
-    isReady && coreLessons.length > 0 ? coreCompletedCount === coreLessons.length : false;
-  const progressLabel =
-    coreLessons.length > 0
-      ? `${coreCompletedCount}/${coreLessons.length} core`
-      : `${extraCompletedCount}/${extraLessons.length} extra`;
-  const isActiveExtra = extraLessons.some((lesson) => lesson.slug === currentLessonSlug);
-
-  return {
-    coreLessons,
-    extraLessons,
-    extraCompletedCount,
-    isModuleComplete,
-    progressLabel,
-    isActiveExtra,
-  };
-};
-
 /**
  * Render the lesson navigator with progress controls and focus filtering.
  */
@@ -202,13 +156,15 @@ export default function LessonNavigator({
     [modules, focusKey]
   );
 
-  const isCurrentModuleVisible = useMemo(() => {
-    if (!focusKey || !currentModuleKey) {
-      return true;
-    }
-
-    return visibleModules.some((module) => module.key === currentModuleKey);
-  }, [currentModuleKey, focusKey, visibleModules]);
+  const isCurrentModuleVisible = useMemo(
+    () =>
+      isCurrentModuleVisibleForFocus({
+        focusKey,
+        currentModuleKey,
+        visibleModules,
+      }),
+    [currentModuleKey, focusKey, visibleModules]
+  );
 
   useEffect(() => {
     if (!focusKey || isCurrentModuleVisible) {
@@ -267,33 +223,15 @@ export default function LessonNavigator({
     ? `Focus: ${FOCUS_OPTIONS.find((option) => option.key === focusKey)?.label ?? "Focus"}`
     : "Full curriculum";
 
-  const { coreCompleted, coreTotal, extraCompleted, extraTotal } = useMemo(() => {
-    const allLessons = visibleModules.flatMap((module) => module.lessons);
-    let coreCompletedCount = 0;
-    let extraCompletedCount = 0;
-    let coreCount = 0;
-    let extraCount = 0;
-
-    for (const lesson of allLessons) {
-      const isExtra = isExtraCreditLesson(lesson);
-      const completed = isReady && isLessonCompleted(lesson.slug);
-
-      if (isExtra) {
-        extraCount += 1;
-        extraCompletedCount += completed ? 1 : 0;
-      } else {
-        coreCount += 1;
-        coreCompletedCount += completed ? 1 : 0;
-      }
-    }
-
-    return {
-      coreCompleted: coreCompletedCount,
-      coreTotal: coreCount,
-      extraCompleted: extraCompletedCount,
-      extraTotal: extraCount,
-    };
-  }, [isLessonCompleted, isReady, visibleModules]);
+  const { coreCompleted, coreTotal, extraCompleted, extraTotal } = useMemo(
+    () =>
+      summarizeVisibleLessonProgress({
+        modules: visibleModules,
+        isReady,
+        isLessonCompleted,
+      }),
+    [isLessonCompleted, isReady, visibleModules]
+  );
 
   return (
     <div className="flex h-full flex-col gap-4 px-4 pb-4 pt-5">

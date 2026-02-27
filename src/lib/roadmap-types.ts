@@ -1,22 +1,35 @@
+import type { Prisma } from "@prisma/client";
+
 /**
- * Lesson metadata used across roadmap and progress features.
+ * Canonical module projection used by roadmap and progress surfaces.
  */
-export type RoadmapLesson = {
-  id: string;
-  slug: string;
-  title: string;
-  order: number;
-  estimatedMinutes: number | null;
-};
+export const ROADMAP_MODULE_SELECT = {
+  id: true,
+  key: true,
+  title: true,
+  description: true,
+  order: true,
+  lessons: {
+    where: { isArchived: false },
+    orderBy: { order: "asc" },
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      order: true,
+      estimatedMinutes: true,
+    },
+  },
+} as const satisfies Prisma.ModuleSelect;
 
 /**
  * Module metadata used across roadmap and progress features.
  */
-export type RoadmapModule = {
-  id: string;
-  key: string;
-  title: string;
-  description: string | null;
-  order: number;
-  lessons: RoadmapLesson[];
-};
+export type RoadmapModule = Prisma.ModuleGetPayload<{
+  select: typeof ROADMAP_MODULE_SELECT;
+}>;
+
+/**
+ * Lesson metadata used across roadmap and progress features.
+ */
+export type RoadmapLesson = RoadmapModule["lessons"][number];

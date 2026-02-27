@@ -5,13 +5,7 @@ import { useMemo } from "react";
 
 import { useFocus } from "@/components/focus-provider";
 import { useProgress } from "@/components/progress-provider";
-import { orderModulesForFocus } from "@/lib/focus-order";
-import {
-  buildOrderedLessons,
-  buildProgressSummaryFromLessons,
-  type ProgressSummaryLesson,
-  splitLessonsByCredit,
-} from "@/lib/progress-summary";
+import { buildLessonNextCoreCtaDecision } from "@/lib/lesson-next-core-cta";
 import type { RoadmapModule } from "@/lib/roadmap-types";
 
 /**
@@ -22,15 +16,6 @@ type LessonNextCoreCtaProps = {
   currentLessonSlug: string;
 };
 
-type LessonNextCoreCtaState =
-  | { kind: "hidden" }
-  | { kind: "complete" }
-  | {
-      kind: "lesson";
-      lesson: ProgressSummaryLesson;
-      variant: "next" | "catch-up";
-    };
-
 /**
  * Render a focus-aware CTA that jumps to the next core lesson.
  */
@@ -38,65 +23,17 @@ export default function LessonNextCoreCta({ modules, currentLessonSlug }: Lesson
   const { focusKey } = useFocus();
   const { completedLessonSlugs, isReady, setLessonCompletion } = useProgress();
 
-  const { ctaState, restartLesson } = useMemo<{
-    ctaState: LessonNextCoreCtaState;
-    restartLesson: ProgressSummaryLesson | null;
-  }>(() => {
-    const orderedModules = orderModulesForFocus(modules, focusKey);
-    const orderedLessons = buildOrderedLessons(orderedModules);
-    const { coreLessons } = splitLessonsByCredit(orderedLessons);
-    const restartLesson = coreLessons[0] ?? null;
-    const currentIndex = coreLessons.findIndex((lesson) => lesson.slug === currentLessonSlug);
-
-    if (currentIndex >= 0) {
-      const isLastCoreLesson = currentIndex === coreLessons.length - 1;
-      if (isLastCoreLesson) {
-        const completedSet = new Set(completedLessonSlugs);
-        const remainingLessons = coreLessons.filter(
-          (lesson) => lesson.slug !== currentLessonSlug && !completedSet.has(lesson.slug)
-        );
-
-        if (remainingLessons.length === 0) {
-          return { ctaState: { kind: "complete" }, restartLesson };
-        }
-
-        return {
-          ctaState: {
-            kind: "lesson",
-            lesson: remainingLessons[0],
-            variant: "catch-up",
-          },
-          restartLesson,
-        };
-      }
-
-      const nextLesson = coreLessons[currentIndex + 1];
-      return {
-        ctaState: nextLesson
-          ? { kind: "lesson", lesson: nextLesson, variant: "next" }
-          : { kind: "hidden" },
-        restartLesson,
-      };
-    }
-
-    if (coreLessons.length === 0) {
-      return { ctaState: { kind: "hidden" }, restartLesson: null };
-    }
-
-    const completedSet = new Set(completedLessonSlugs);
-    const summary = buildProgressSummaryFromLessons(coreLessons, completedSet, isReady);
-    if (summary.allComplete) {
-      return { ctaState: { kind: "complete" }, restartLesson };
-    }
-
-    const candidate = summary.continueLesson ?? summary.firstLesson ?? null;
-
-    if (!candidate || candidate.slug === currentLessonSlug) {
-      return { ctaState: { kind: "hidden" }, restartLesson };
-    }
-
-    return { ctaState: { kind: "lesson", lesson: candidate, variant: "next" }, restartLesson };
-  }, [completedLessonSlugs, currentLessonSlug, focusKey, isReady, modules]);
+  const { ctaState, restartLesson } = useMemo(
+    () =>
+      buildLessonNextCoreCtaDecision({
+        modules,
+        focusKey,
+        currentLessonSlug,
+        completedLessonSlugs,
+        isReady,
+      }),
+    [completedLessonSlugs, currentLessonSlug, focusKey, isReady, modules]
+  );
 
   if (ctaState.kind === "hidden") {
     return null;
