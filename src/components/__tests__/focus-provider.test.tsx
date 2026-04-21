@@ -16,7 +16,7 @@ const buildResponse = (body: unknown, ok = true) =>
   ({
     ok,
     json: async () => body,
-  } as Response);
+  }) as Response;
 
 const FocusInspector = () => {
   const { focusKey, isReady, isUpdating, setFocusKey } = useFocus();
@@ -59,7 +59,9 @@ describe("FocusProvider", () => {
     );
 
     expect(screen.getByTestId("focus-key")).toHaveTextContent("just-starting");
-    expect(screen.getByTestId("ready")).toHaveTextContent("yes");
+    await waitFor(() => {
+      expect(screen.getByTestId("ready")).toHaveTextContent("yes");
+    });
 
     const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: /apply focus/i }));
@@ -180,9 +182,7 @@ describe("FocusProvider", () => {
   it("throws when useFocus is outside the provider", () => {
     const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
 
-    expect(() => render(<FocusInspector />)).toThrow(
-      "useFocus must be used within FocusProvider."
-    );
+    expect(() => render(<FocusInspector />)).toThrow("useFocus must be used within FocusProvider.");
 
     consoleError.mockRestore();
   });
