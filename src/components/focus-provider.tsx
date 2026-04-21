@@ -88,35 +88,54 @@ export function FocusProvider({ initialFocusKey = null, children }: FocusProvide
       return;
     }
 
-    if (status !== "authenticated") {
-      lastLoadedFor.current = null;
-      setIsReady(true);
-      return;
-    }
-
-    const email = session?.user?.email ?? null;
-    if (!email) {
-      setIsReady(true);
-      return;
-    }
-
-    if (lastLoadedFor.current === email) {
-      return;
-    }
-
-    lastLoadedFor.current = email;
-    setIsReady(false);
+    let cancelled = false;
 
     void (async () => {
+      if (status !== "authenticated") {
+        lastLoadedFor.current = null;
+        await Promise.resolve();
+        if (!cancelled) {
+          setIsReady(true);
+        }
+        return;
+      }
+
+      const email = session?.user?.email ?? null;
+      if (!email) {
+        await Promise.resolve();
+        if (!cancelled) {
+          setIsReady(true);
+        }
+        return;
+      }
+
+      if (lastLoadedFor.current === email) {
+        return;
+      }
+
+      lastLoadedFor.current = email;
+      await Promise.resolve();
+      if (!cancelled) {
+        setIsReady(false);
+      }
+
       try {
         const serverFocus = await fetchFocusSelection();
-        setFocusKeyState(serverFocus);
+        if (!cancelled) {
+          setFocusKeyState(serverFocus);
+        }
       } catch (error) {
         console.error(error);
       } finally {
-        setIsReady(true);
+        if (!cancelled) {
+          setIsReady(true);
+        }
       }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [session?.user?.email, status]);
 
   const setFocusKey = useCallback(

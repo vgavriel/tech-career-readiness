@@ -242,24 +242,38 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
       return;
     }
 
-    if (!isAuthenticated) {
-      loadGuestProgress();
-      mergeAttemptedFor.current = null;
-      return;
-    }
+    let cancelled = false;
 
-    const email = session?.user?.email ?? null;
-    if (!email) {
-      loadGuestProgress();
-      return;
-    }
+    void (async () => {
+      if (!isAuthenticated) {
+        mergeAttemptedFor.current = null;
+        await Promise.resolve();
+        if (!cancelled) {
+          loadGuestProgress();
+        }
+        return;
+      }
 
-    if (mergeAttemptedFor.current === email) {
-      return;
-    }
+      const email = session?.user?.email ?? null;
+      if (!email) {
+        await Promise.resolve();
+        if (!cancelled) {
+          loadGuestProgress();
+        }
+        return;
+      }
 
-    mergeAttemptedFor.current = email;
-    void handleMerge();
+      if (mergeAttemptedFor.current === email) {
+        return;
+      }
+
+      mergeAttemptedFor.current = email;
+      await handleMerge();
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [handleMerge, isAuthenticated, loadGuestProgress, session?.user?.email, status]);
 
   const completedLessonSlugs = useMemo(() => Object.keys(progressMap), [progressMap]);
