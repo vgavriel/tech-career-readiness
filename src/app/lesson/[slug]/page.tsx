@@ -22,6 +22,8 @@ type LessonPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
+const PUBLISHED_DOC_ONLY_LESSON_SLUGS = new Set(["tech-resume-example"]);
+
 /**
  * Render the lesson page with content and progress actions.
  *
@@ -57,14 +59,15 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
 
   const lessonExample = getLessonExample(lesson.slug);
   const staticLesson = getStaticLessonContent(lesson.slug);
+  const shouldShowPublishedDocOnly = PUBLISHED_DOC_ONLY_LESSON_SLUGS.has(lesson.slug);
   const estimatedMinutes =
     lesson.estimatedMinutes ?? staticLesson?.estimatedMinutes ?? lessonExample?.estimatedMinutes;
-  let contentHtml = staticLesson?.contentHtml ?? null;
+  let contentHtml = shouldShowPublishedDocOnly ? null : (staticLesson?.contentHtml ?? null);
   let contentSource: "static" | "fetch" | "example" | null = contentHtml ? "static" : null;
   let showFallbackNotice = false;
   let showErrorState = false;
 
-  if (!contentHtml) {
+  if (!contentHtml && !shouldShowPublishedDocOnly) {
     let lessonContent: Awaited<ReturnType<typeof fetchLessonContent>> | null = null;
     let contentError = false;
 
@@ -132,6 +135,27 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
             </header>
 
             <section className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
+              {shouldShowPublishedDocOnly ? (
+                <div className="space-y-4" data-testid="published-doc-only-notice">
+                  <div className="space-y-2">
+                    <h2 className="font-display text-2xl text-[color:var(--ink-900)] md:text-3xl">
+                      Open this lesson in the published Google Doc
+                    </h2>
+                    <p className="max-w-3xl text-md leading-7 text-[color:var(--ink-700)]">
+                      This annotated resume does not render accurately in the course reader. Use the
+                      published Google Doc for the full example and annotations.
+                    </p>
+                  </div>
+                  <a
+                    href={lesson.publishedUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="no-underline inline-flex min-h-11 items-center justify-center rounded-full bg-[color:var(--accent-700)] px-4 py-2 text-sm font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)]"
+                  >
+                    Visit the published Google Doc
+                  </a>
+                </div>
+              ) : null}
               {showFallbackNotice ? (
                 <div className="mt-3 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-sm text-[color:var(--ink-700)]">
                   The live document is still syncing. Showing a full sample lesson below in the
