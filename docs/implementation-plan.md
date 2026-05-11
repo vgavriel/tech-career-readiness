@@ -318,6 +318,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Auto-scroll the navigator to the active lesson on open
 - [x] Add a Gold Stars page linked from the global header
 - [x] Replace Start Here lesson 1 with in-app overview content (no external links)
+- [x] Route Tech Resume Example with Annotations to the original Google Doc instead of in-app HTML rendering
 - [x] Add estimated reading time metadata for every lesson
 
 ### Phase 14 — Accessibility (WCAG AAA)
