@@ -416,7 +416,7 @@ export default function NavigatorLayout({ navigator, children }: NavigatorLayout
 
       {!isMobile ? (
         <div
-          className={`relative flex h-full min-h-0 items-center justify-center touch-none ${
+          className={`relative z-40 flex h-full min-h-0 items-center justify-center touch-none ${
             isDragging ? "cursor-col-resize" : "cursor-ew-resize"
           }`}
           onPointerDown={handlePointerDown}

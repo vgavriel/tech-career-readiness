@@ -89,6 +89,17 @@ describe("NavigatorLayout", () => {
     });
   });
 
+  it("keeps the desktop navigator toggle above the lesson panel", () => {
+    render(
+      <NavigatorLayout navigator={<div>Navigator</div>}>
+        <div>Lesson content</div>
+      </NavigatorLayout>
+    );
+
+    expect(screen.getByRole("separator")).toHaveClass("z-40");
+    expect(screen.getByRole("button", { name: /collapse navigator/i })).toBeInTheDocument();
+  });
+
   it("resizes with pointer drag and updates cursor state", async () => {
     const { container } = render(
       <NavigatorLayout navigator={<div>Navigator</div>}>
