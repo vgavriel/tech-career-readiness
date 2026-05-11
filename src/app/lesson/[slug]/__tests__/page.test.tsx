@@ -114,7 +114,17 @@ type LessonMock = {
   estimatedMinutes: number | null;
   publishedUrl: string;
   isArchived: boolean;
-  supersededBy: null;
+  supersededBy: {
+    id: string;
+    slug: string;
+    title: string;
+    order: number;
+    isArchived: boolean;
+    module: {
+      title: string;
+      order: number;
+    };
+  } | null;
   module: {
     key: string;
     order: number;
@@ -142,11 +152,14 @@ const makeLesson = (overrides: Partial<LessonMock> = {}): LessonMock => ({
   ...overrides,
 });
 
-const renderLessonPage = async (slug: string) => {
+const renderLessonPage = async (
+  slug: string,
+  searchParams: Record<string, string | string[] | undefined> = {}
+) => {
   const LessonPage = (await import("@/app/lesson/[slug]/page")).default;
   const ui = await LessonPage({
     params: Promise.resolve({ slug }),
-    searchParams: Promise.resolve({}),
+    searchParams: Promise.resolve(searchParams),
   });
 
   render(ui);
@@ -156,7 +169,7 @@ describe("Lesson page", () => {
   beforeEach(() => {
     contentMocks.fetchLessonContent.mockReset();
     docLinkMapMocks.getLessonDocLinkMap.mockReset();
-    docLinkMapMocks.rewriteLessonDocLinks.mockClear();
+    docLinkMapMocks.rewriteLessonDocLinks.mockReset();
     lessonExampleMocks.getLessonExample.mockReset();
     lessonSlugMocks.buildLessonRedirectPath.mockClear();
     lessonSlugMocks.findLessonBySlug.mockReset();
@@ -166,6 +179,7 @@ describe("Lesson page", () => {
     staticContentMocks.getStaticLessonContent.mockReset();
 
     docLinkMapMocks.getLessonDocLinkMap.mockResolvedValue(new Map());
+    docLinkMapMocks.rewriteLessonDocLinks.mockImplementation((html: string) => html);
     lessonExampleMocks.getLessonExample.mockReturnValue(null);
     roadmapMocks.getRoadmapModules.mockResolvedValue([]);
     staticContentMocks.getStaticLessonContent.mockReturnValue(null);
@@ -221,5 +235,85 @@ describe("Lesson page", () => {
     );
     expect(screen.getByTestId("lesson-content")).toHaveTextContent("Fetched lesson content");
     expect(screen.queryByRole("link", { name: /open google doc/i })).not.toBeInTheDocument();
+  });
+
+  it("renders static lesson content and rewrites internal doc links", async () => {
+    lessonSlugMocks.findLessonBySlug.mockResolvedValue({
+      lesson: makeLesson({
+        id: "lesson-static",
+        slug: "static-lesson",
+        title: "Static Lesson",
+        estimatedMinutes: null,
+        publishedUrl: "https://docs.google.com/document/d/e/static-lesson/pub",
+      }),
+      isAlias: false,
+    });
+    staticContentMocks.getStaticLessonContent.mockReturnValue({
+      slug: "static-lesson",
+      estimatedMinutes: 8,
+      contentHtml: "<p>Static lesson content</p>",
+    });
+    docLinkMapMocks.rewriteLessonDocLinks.mockReturnValue("<p>Rewritten static content</p>");
+
+    await renderLessonPage("static-lesson");
+
+    expect(contentMocks.fetchLessonContent).not.toHaveBeenCalled();
+    expect(docLinkMapMocks.rewriteLessonDocLinks).toHaveBeenCalledWith(
+      "<p>Static lesson content</p>",
+      expect.any(Map)
+    );
+    expect(screen.getByText(/8 min estimated reading time/i)).toBeInTheDocument();
+    expect(screen.getByTestId("lesson-content")).toHaveTextContent("Rewritten static content");
+  });
+
+  it("shows example content with a fallback notice when fetching fails", async () => {
+    lessonSlugMocks.findLessonBySlug.mockResolvedValue({
+      lesson: makeLesson({
+        id: "lesson-fallback",
+        slug: "fallback-lesson",
+        title: "Fallback Lesson",
+        estimatedMinutes: null,
+        publishedUrl: "https://docs.google.com/document/d/e/fallback-lesson/pub",
+      }),
+      isAlias: false,
+    });
+    lessonExampleMocks.getLessonExample.mockReturnValue({
+      estimatedMinutes: 6,
+      contentHtml: "<p>Example fallback content</p>",
+    });
+    contentMocks.fetchLessonContent.mockRejectedValue(new Error("Fetch failed"));
+
+    await renderLessonPage("fallback-lesson");
+
+    expect(screen.getByText(/live document is still syncing/i)).toBeInTheDocument();
+    expect(screen.getByText(/6 min estimated reading time/i)).toBeInTheDocument();
+    expect(screen.getByTestId("lesson-content")).toHaveTextContent("Example fallback content");
+  });
+
+  it("shows an unavailable message when fetching fails without fallback content", async () => {
+    const publishedUrl = "https://docs.google.com/document/d/e/unavailable-lesson/pub";
+    lessonSlugMocks.findLessonBySlug.mockResolvedValue({
+      lesson: makeLesson({
+        id: "lesson-unavailable",
+        slug: "unavailable-lesson",
+        title: "Unavailable Lesson",
+        publishedUrl,
+      }),
+      isAlias: false,
+    });
+    contentMocks.fetchLessonContent.mockRejectedValue(new Error("Fetch failed"));
+
+    await renderLessonPage("unavailable-lesson");
+
+    expect(screen.queryByTestId("lesson-content")).not.toBeInTheDocument();
+    expect(screen.getByText(/lesson content is unavailable right now/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /try again/i })).toHaveAttribute(
+      "href",
+      "/lesson/unavailable-lesson"
+    );
+    expect(screen.getByRole("link", { name: /open the source doc/i })).toHaveAttribute(
+      "href",
+      publishedUrl
+    );
   });
 });
