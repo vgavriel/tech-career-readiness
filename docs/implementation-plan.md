@@ -294,6 +294,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Reposition the mobile navigator toggle to avoid overlapping lesson content
 - [x] Add next-core-lesson CTA for mobile lesson navigation
 - [x] Add lesson content-card loading state for cold starts and content cache misses
+- [x] Show immediate main-panel loading overlay after lesson navigator clicks
 - [x] Add TSDoc for functions/types and component intent comments
 - [x] Expand TSDoc coverage across app/API/seed utilities (Jan 2026 refresh)
 - [x] Document local/preview workflows and gate auth/rate limiting by `APP_ENV`
