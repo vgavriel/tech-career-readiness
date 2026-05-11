@@ -123,6 +123,8 @@ type LessonMock = {
 
 const publishedResumeUrl =
   "https://docs.google.com/document/d/e/2PACX-1vSjS8d_YwKSSR9h_S1DyVoyZZh1wZr8z5qoqnY7vazFiJhzv2VUGx0toRq9d0D4cs549ODZEGSzyF2V/pub";
+const resumeGoogleDocUrl =
+  "https://docs.google.com/document/d/1eP7sJtgJxT0i9vR7bsSfQY3wFb7_5ewCOcscenBLkyQ/";
 
 const makeLesson = (overrides: Partial<LessonMock> = {}): LessonMock => ({
   id: "lesson-tech-resume",
@@ -169,7 +171,7 @@ describe("Lesson page", () => {
     staticContentMocks.getStaticLessonContent.mockReturnValue(null);
   });
 
-  it("shows a published Google Doc link instead of rendering the resume annotation content", async () => {
+  it("shows the original Google Doc link instead of rendering the resume annotation content", async () => {
     lessonSlugMocks.findLessonBySlug.mockResolvedValue({
       lesson: makeLesson(),
       isAlias: false,
@@ -180,14 +182,14 @@ describe("Lesson page", () => {
     expect(contentMocks.fetchLessonContent).not.toHaveBeenCalled();
     expect(screen.queryByTestId("lesson-content")).not.toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: /open this lesson in the published google doc/i })
+      screen.getByRole("heading", { name: /open this lesson in google docs/i })
     ).toBeInTheDocument();
     expect(
       screen.getByText(/does not render accurately in the course reader/i)
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /visit the published google doc/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /open google doc/i })).toHaveAttribute(
       "href",
-      publishedResumeUrl
+      resumeGoogleDocUrl
     );
   });
 
@@ -218,8 +220,6 @@ describe("Lesson page", () => {
       { docIdMap: expect.any(Map) }
     );
     expect(screen.getByTestId("lesson-content")).toHaveTextContent("Fetched lesson content");
-    expect(
-      screen.queryByRole("link", { name: /visit the published google doc/i })
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /open google doc/i })).not.toBeInTheDocument();
   });
 });
