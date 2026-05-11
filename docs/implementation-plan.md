@@ -353,6 +353,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [ ] Deploy to Vercel
 - [ ] Configure env vars
 - [ ] Smoke-test public browsing, auth, progress, and continue flow
+- [x] Add automated date-based deploy versions for each main merge
 - [x] Pre-production cleanup: simplify seed logic
 - [ ] Pre-production cleanup: run fresh migration/seed against a reset preview DB
 
@@ -388,6 +389,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - NEXTAUTH_SECRET
 - GOOGLE_CLIENT_ID
 - GOOGLE_CLIENT_SECRET
+- NEXT_PUBLIC_APP_VERSION (optional override; normally computed during build)
 
 ## Prisma configuration
 

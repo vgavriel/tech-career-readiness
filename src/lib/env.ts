@@ -34,6 +34,8 @@ const envSchema = z.object({
   LOG_LEVEL: z.string().optional(),
   LOG_SAMPLE_RATE: z.string().optional(),
   NEXT_PUBLIC_ANALYTICS_ENABLED: z.string().optional(),
+  APP_VERSION: z.string().optional(),
+  NEXT_PUBLIC_APP_VERSION: z.string().optional(),
 });
 
 export type AppEnv = z.infer<typeof appEnvSchema>;
