@@ -90,5 +90,6 @@ version from the current commit date and SHA, then exposes it as:
 - `GET /api/version` for smoke tests and support checks.
 
 Every push to `main` also runs `.github/workflows/version.yml`, which creates
-the matching `vYYYY.MM.DD.<short-sha>` Git tag and GitHub release. Local builds
-can override the computed value with `NEXT_PUBLIC_APP_VERSION`.
+the matching `vYYYY.MM.DD.<short-sha>` Git tag and GitHub release with notes
+generated from merged PR metadata. Local builds can override the computed value
+with `NEXT_PUBLIC_APP_VERSION`.

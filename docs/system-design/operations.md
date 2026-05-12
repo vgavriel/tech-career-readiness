@@ -43,8 +43,11 @@ wrapper computes a date-based deploy version (`YYYY.MM.DD.<short-sha>`) and
 passes it into Next.js as the build id and `NEXT_PUBLIC_APP_VERSION`.
 
 On every push to `main`, `.github/workflows/version.yml` creates the matching
-Git tag and GitHub release (`vYYYY.MM.DD.<short-sha>`). Deployed versions can be
-checked with the `X-App-Version` response header or `GET /api/version`.
+Git tag and GitHub release (`vYYYY.MM.DD.<short-sha>`) with release notes
+generated from merged PR metadata. Deployed versions can be checked with the
+`X-App-Version` response header or `GET /api/version`.
+
+Release note conventions live in [`docs/release-notes.md`](../release-notes.md).
 
 ## Related docs
 

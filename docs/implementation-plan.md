@@ -354,6 +354,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [ ] Configure env vars
 - [ ] Smoke-test public browsing, auth, progress, and continue flow
 - [x] Add automated date-based deploy versions for each main merge
+- [x] Generate release notes from merged PR metadata for each deploy
 - [x] Pre-production cleanup: simplify seed logic
 - [ ] Pre-production cleanup: run fresh migration/seed against a reset preview DB
 

@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: read
 
 jobs:
   tag:
@@ -28,9 +29,11 @@ jobs:
           commit_date="$(git show -s --format=%cI HEAD)"
           version_date="$(date -u -d "$commit_date" +'%Y.%m.%d')"
           version="${version_date}.${short_sha}"
+          previous_tag="$(git describe --tags --abbrev=0 --match 'v[0-9]*' HEAD^ 2>/dev/null || true)"
 
           echo "tag=v${version}" >> "$GITHUB_OUTPUT"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "previous_tag=${previous_tag}" >> "$GITHUB_OUTPUT"
 
       - name: Create version tag
         env:
@@ -49,20 +52,44 @@ jobs:
           git tag -a "${TAG}" -m "Version ${VERSION}"
           git push origin "${TAG}"
 
-      - name: Create GitHub release
+      - name: Generate release notes
         env:
-          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+          PREVIOUS_TAG: ${{ steps.version.outputs.previous_tag }}
           TAG: ${{ steps.version.outputs.tag }}
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           set -euo pipefail
 
+          args=(
+            --repo "${GITHUB_REPOSITORY}"
+            --to "${GITHUB_SHA}"
+            --tag "${TAG}"
+            --version "${VERSION}"
+            --output release-notes.md
+          )
+
+          if [[ -n "${PREVIOUS_TAG}" ]]; then
+            args+=(--from "${PREVIOUS_TAG}")
+          fi
+
+          node scripts/generate-release-notes.mjs "${args[@]}"
+
+      - name: Create or update GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          set -euo pipefail
+
           if gh release view "${TAG}" >/dev/null 2>&1; then
-            echo "Release ${TAG} already exists."
+            gh release edit "${TAG}" \
+              --title "${TAG}" \
+              --notes-file release-notes.md
             exit 0
           fi
 
           gh release create "${TAG}" \
             --target "${GITHUB_SHA}" \
             --title "${TAG}" \
-            --notes "Automated production version ${VERSION} for ${GITHUB_SHA}."
+            --notes-file release-notes.md

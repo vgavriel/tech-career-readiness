@@ -24,6 +24,7 @@
     "typecheck": "bash scripts/typecheck.sh",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "release:notes": "node scripts/generate-release-notes.mjs",
     "env:local": "bash scripts/dev-setup.sh --env-only",
     "env:preview": "bash scripts/env-preview.sh",
     "dev:setup": "bash scripts/dev-setup.sh",

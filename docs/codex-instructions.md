@@ -11,6 +11,9 @@ Follow engineering standards in `docs/engineering-standards.md`.
 - Use branch names like `feature/<short-scope>` or `chore/<short-scope>`.
 - After finishing a phase, commit on the branch and ask the user to open a PR.
 - Assume CI runs on `pull_request`; avoid pushing directly to `main`.
+- When opening or updating a PR, maintain its `## Release` block according to
+  `docs/release-notes.md`. Use a real user-facing note for learner-visible
+  changes and `Release note: None` for internal-only work.
 
 ## Testing policy
 
