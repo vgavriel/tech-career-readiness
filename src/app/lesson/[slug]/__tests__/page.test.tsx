@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -154,7 +154,8 @@ const makeLesson = (overrides: Partial<LessonMock> = {}): LessonMock => ({
 
 const renderLessonPage = async (
   slug: string,
-  searchParams: Record<string, string | string[] | undefined> = {}
+  searchParams: Record<string, string | string[] | undefined> = {},
+  options: { awaitSuspense?: boolean } = {}
 ) => {
   const LessonPage = (await import("@/app/lesson/[slug]/page")).default;
   const ui = await LessonPage({
@@ -162,7 +163,14 @@ const renderLessonPage = async (
     searchParams: Promise.resolve(searchParams),
   });
 
-  render(ui);
+  if (options.awaitSuspense === false) {
+    render(ui);
+    return;
+  }
+
+  await act(async () => {
+    render(ui);
+  });
 };
 
 describe("Lesson page", () => {
@@ -194,10 +202,10 @@ describe("Lesson page", () => {
     await renderLessonPage("tech-resume-example");
 
     expect(contentMocks.fetchLessonContent).not.toHaveBeenCalled();
-    expect(screen.queryByTestId("lesson-content")).not.toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: /open this lesson in google docs/i })
+      await screen.findByRole("heading", { name: /open this lesson in google docs/i })
     ).toBeInTheDocument();
+    expect(screen.queryByTestId("lesson-content")).not.toBeInTheDocument();
     expect(
       screen.getByText(/does not render accurately in the course reader/i)
     ).toBeInTheDocument();
@@ -233,8 +241,29 @@ describe("Lesson page", () => {
       },
       { docIdMap: expect.any(Map) }
     );
-    expect(screen.getByTestId("lesson-content")).toHaveTextContent("Fetched lesson content");
+    expect(await screen.findByTestId("lesson-content")).toHaveTextContent("Fetched lesson content");
     expect(screen.queryByRole("link", { name: /open google doc/i })).not.toBeInTheDocument();
+  });
+
+  it("keeps the lesson frame visible while fetched content is pending", async () => {
+    lessonSlugMocks.findLessonBySlug.mockResolvedValue({
+      lesson: makeLesson({
+        id: "lesson-slow",
+        slug: "slow-lesson",
+        title: "Slow Lesson",
+        order: 4,
+        publishedUrl: "https://docs.google.com/document/d/e/slow-lesson/pub",
+      }),
+      isAlias: false,
+    });
+    contentMocks.fetchLessonContent.mockReturnValue(new Promise(() => {}));
+
+    await renderLessonPage("slow-lesson", {}, { awaitSuspense: false });
+
+    expect(screen.getByRole("heading", { name: /slow lesson/i })).toBeInTheDocument();
+    expect(screen.getByTestId("lesson-navigator")).toHaveTextContent("slow-lesson");
+    expect(screen.getByTestId("lesson-content-loading")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Loading lesson content...");
   });
 
   it("renders static lesson content and rewrites internal doc links", async () => {
@@ -263,7 +292,9 @@ describe("Lesson page", () => {
       expect.any(Map)
     );
     expect(screen.getByText(/8 min estimated reading time/i)).toBeInTheDocument();
-    expect(screen.getByTestId("lesson-content")).toHaveTextContent("Rewritten static content");
+    expect(await screen.findByTestId("lesson-content")).toHaveTextContent(
+      "Rewritten static content"
+    );
   });
 
   it("shows example content with a fallback notice when fetching fails", async () => {
@@ -285,9 +316,11 @@ describe("Lesson page", () => {
 
     await renderLessonPage("fallback-lesson");
 
-    expect(screen.getByText(/live document is still syncing/i)).toBeInTheDocument();
+    expect(await screen.findByText(/live document is still syncing/i)).toBeInTheDocument();
     expect(screen.getByText(/6 min estimated reading time/i)).toBeInTheDocument();
-    expect(screen.getByTestId("lesson-content")).toHaveTextContent("Example fallback content");
+    expect(await screen.findByTestId("lesson-content")).toHaveTextContent(
+      "Example fallback content"
+    );
   });
 
   it("shows an unavailable message when fetching fails without fallback content", async () => {
@@ -305,8 +338,8 @@ describe("Lesson page", () => {
 
     await renderLessonPage("unavailable-lesson");
 
+    expect(await screen.findByText(/lesson content is unavailable right now/i)).toBeInTheDocument();
     expect(screen.queryByTestId("lesson-content")).not.toBeInTheDocument();
-    expect(screen.getByText(/lesson content is unavailable right now/i)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /try again/i })).toHaveAttribute(
       "href",
       "/lesson/unavailable-lesson"

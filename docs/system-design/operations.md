@@ -36,6 +36,16 @@ Where it lives:
 - `npm run test:integration:local`
 - `npm run test:e2e:local`
 
+## Release versions
+
+`npm run build` wraps `next build` with `scripts/with-build-version.mjs`. The
+wrapper computes a date-based deploy version (`YYYY.MM.DD.<short-sha>`) and
+passes it into Next.js as the build id and `NEXT_PUBLIC_APP_VERSION`.
+
+On every push to `main`, `.github/workflows/version.yml` creates the matching
+Git tag and GitHub release (`vYYYY.MM.DD.<short-sha>`). Deployed versions can be
+checked with the `X-App-Version` response header or `GET /api/version`.
+
 ## Related docs
 
 - [Testing strategy](./testing.md)

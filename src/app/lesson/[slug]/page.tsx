@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
+import { type ReactNode, Suspense, use } from "react";
 
 import LessonContent from "@/components/lesson-content";
+import LessonContentLoading from "@/components/lesson-content-loading";
 import LessonNavigator from "@/components/lesson-navigator";
 import LessonNextCoreCta from "@/components/lesson-next-core-cta";
 import LessonProgressToggle from "@/components/lesson-progress-toggle";
@@ -28,6 +30,139 @@ const GOOGLE_DOC_ONLY_LESSON_URLS = new Map([
     "https://docs.google.com/document/d/1eP7sJtgJxT0i9vR7bsSfQY3wFb7_5ewCOcscenBLkyQ/",
   ],
 ]);
+
+type BuildLessonContentPanelProps = {
+  googleDocOnlyUrl: string | null;
+  lesson: {
+    id: string;
+    publishedUrl: string;
+    slug: string;
+  };
+  lessonDocLinkMap: Awaited<ReturnType<typeof getLessonDocLinkMap>>;
+  lessonExample: ReturnType<typeof getLessonExample>;
+  staticLesson: ReturnType<typeof getStaticLessonContent>;
+};
+
+type LessonContentPanelProps = {
+  contentPromise: Promise<ReactNode>;
+};
+
+/**
+ * Resolve the lesson content body inside the page content card.
+ *
+ * @remarks
+ * This function intentionally owns the slow published-content fetch so the
+ * page can stream the lesson frame while this panel shows a focused loading
+ * state during cache misses.
+ */
+async function buildLessonContentPanel({
+  googleDocOnlyUrl,
+  lesson,
+  lessonDocLinkMap,
+  lessonExample,
+  staticLesson,
+}: BuildLessonContentPanelProps) {
+  let contentHtml = googleDocOnlyUrl ? null : (staticLesson?.contentHtml ?? null);
+  let contentSource: "static" | "fetch" | "example" | null = contentHtml ? "static" : null;
+  let showFallbackNotice = false;
+  let showErrorState = false;
+
+  if (!contentHtml && !googleDocOnlyUrl) {
+    let lessonContent: Awaited<ReturnType<typeof fetchLessonContent>> | null = null;
+    let contentError = false;
+
+    try {
+      lessonContent = await fetchLessonContent(
+        {
+          id: lesson.id,
+          publishedUrl: lesson.publishedUrl,
+        },
+        { docIdMap: lessonDocLinkMap }
+      );
+    } catch {
+      contentError = true;
+    }
+
+    const fallbackHtml = contentError ? (lessonExample?.contentHtml ?? null) : null;
+    contentHtml = lessonContent?.html ?? fallbackHtml;
+    if (lessonContent?.html) {
+      contentSource = "fetch";
+    } else if (fallbackHtml) {
+      contentSource = "example";
+    } else {
+      contentSource = null;
+    }
+    showFallbackNotice = Boolean(contentError && fallbackHtml);
+    showErrorState = Boolean(contentError && !fallbackHtml);
+  }
+  if (contentHtml && contentSource !== "fetch") {
+    contentHtml = rewriteLessonDocLinks(contentHtml, lessonDocLinkMap);
+  }
+
+  return (
+    <>
+      {googleDocOnlyUrl ? (
+        <div className="space-y-4" data-testid="google-doc-only-notice">
+          <div className="space-y-2">
+            <h2 className="font-display text-2xl text-[color:var(--ink-900)] md:text-3xl">
+              Open this lesson in Google Docs
+            </h2>
+            <p className="max-w-3xl text-md leading-7 text-[color:var(--ink-700)]">
+              This annotated resume does not render accurately in the course reader. Use the
+              original Google Doc for the full example and annotations.
+            </p>
+          </div>
+          <a
+            href={googleDocOnlyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="no-underline inline-flex min-h-11 items-center justify-center rounded-full bg-[color:var(--accent-700)] px-4 py-2 text-sm font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)]"
+          >
+            Open Google Doc
+          </a>
+        </div>
+      ) : null}
+      {showFallbackNotice ? (
+        <div className="mt-3 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-sm text-[color:var(--ink-700)]">
+          The live document is still syncing. Showing a full sample lesson below in the meantime.
+        </div>
+      ) : null}
+      {showErrorState ? (
+        <div className="mt-3 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-sm text-[color:var(--ink-700)]">
+          Lesson content is unavailable right now.{" "}
+          <Link
+            href={`/lesson/${lesson.slug}`}
+            className="font-semibold text-[color:var(--accent-700)] underline"
+          >
+            Try again
+          </Link>{" "}
+          or{" "}
+          <a
+            href={lesson.publishedUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-[color:var(--accent-700)] underline"
+          >
+            open the source doc
+          </a>
+          .
+        </div>
+      ) : null}
+      {contentHtml ? (
+        <div className="mt-4">
+          <LessonContent html={contentHtml} />
+        </div>
+      ) : null}
+    </>
+  );
+}
+
+/**
+ * Suspend only the lesson content card body while content resolves.
+ */
+function LessonContentPanel({ contentPromise }: LessonContentPanelProps) {
+  return use(contentPromise);
+}
 
 /**
  * Render the lesson page with content and progress actions.
@@ -67,42 +202,17 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
   const googleDocOnlyUrl = GOOGLE_DOC_ONLY_LESSON_URLS.get(lesson.slug) ?? null;
   const estimatedMinutes =
     lesson.estimatedMinutes ?? staticLesson?.estimatedMinutes ?? lessonExample?.estimatedMinutes;
-  let contentHtml = googleDocOnlyUrl ? null : (staticLesson?.contentHtml ?? null);
-  let contentSource: "static" | "fetch" | "example" | null = contentHtml ? "static" : null;
-  let showFallbackNotice = false;
-  let showErrorState = false;
-
-  if (!contentHtml && !googleDocOnlyUrl) {
-    let lessonContent: Awaited<ReturnType<typeof fetchLessonContent>> | null = null;
-    let contentError = false;
-
-    try {
-      lessonContent = await fetchLessonContent(
-        {
-          id: lesson.id,
-          publishedUrl: lesson.publishedUrl,
-        },
-        { docIdMap: lessonDocLinkMap }
-      );
-    } catch {
-      contentError = true;
-    }
-
-    const fallbackHtml = contentError ? (lessonExample?.contentHtml ?? null) : null;
-    contentHtml = lessonContent?.html ?? fallbackHtml;
-    if (lessonContent?.html) {
-      contentSource = "fetch";
-    } else if (fallbackHtml) {
-      contentSource = "example";
-    } else {
-      contentSource = null;
-    }
-    showFallbackNotice = Boolean(contentError && fallbackHtml);
-    showErrorState = Boolean(contentError && !fallbackHtml);
-  }
-  if (contentHtml && contentSource !== "fetch") {
-    contentHtml = rewriteLessonDocLinks(contentHtml, lessonDocLinkMap);
-  }
+  const contentPromise = buildLessonContentPanel({
+    googleDocOnlyUrl,
+    lesson: {
+      id: lesson.id,
+      publishedUrl: lesson.publishedUrl,
+      slug: lesson.slug,
+    },
+    lessonDocLinkMap,
+    lessonExample,
+    staticLesson,
+  });
 
   return (
     <div className="page-shell h-full overflow-hidden">
@@ -140,59 +250,9 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
             </header>
 
             <section className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
-              {googleDocOnlyUrl ? (
-                <div className="space-y-4" data-testid="google-doc-only-notice">
-                  <div className="space-y-2">
-                    <h2 className="font-display text-2xl text-[color:var(--ink-900)] md:text-3xl">
-                      Open this lesson in Google Docs
-                    </h2>
-                    <p className="max-w-3xl text-md leading-7 text-[color:var(--ink-700)]">
-                      This annotated resume does not render accurately in the course reader. Use the
-                      original Google Doc for the full example and annotations.
-                    </p>
-                  </div>
-                  <a
-                    href={googleDocOnlyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="no-underline inline-flex min-h-11 items-center justify-center rounded-full bg-[color:var(--accent-700)] px-4 py-2 text-sm font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)]"
-                  >
-                    Open Google Doc
-                  </a>
-                </div>
-              ) : null}
-              {showFallbackNotice ? (
-                <div className="mt-3 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-sm text-[color:var(--ink-700)]">
-                  The live document is still syncing. Showing a full sample lesson below in the
-                  meantime.
-                </div>
-              ) : null}
-              {showErrorState ? (
-                <div className="mt-3 rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] p-3 text-sm text-[color:var(--ink-700)]">
-                  Lesson content is unavailable right now.{" "}
-                  <Link
-                    href={`/lesson/${lesson.slug}`}
-                    className="font-semibold text-[color:var(--accent-700)] underline"
-                  >
-                    Try again
-                  </Link>{" "}
-                  or{" "}
-                  <a
-                    href={lesson.publishedUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-[color:var(--accent-700)] underline"
-                  >
-                    open the source doc
-                  </a>
-                  .
-                </div>
-              ) : null}
-              {contentHtml ? (
-                <div className="mt-4">
-                  <LessonContent html={contentHtml} />
-                </div>
-              ) : null}
+              <Suspense fallback={<LessonContentLoading />}>
+                <LessonContentPanel contentPromise={contentPromise} />
+              </Suspense>
             </section>
           </div>
           <LessonNextCoreCta modules={modules} currentLessonSlug={lesson.slug} />

@@ -293,6 +293,8 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Tighten lesson content heading line-height and post-heading spacing
 - [x] Reposition the mobile navigator toggle to avoid overlapping lesson content
 - [x] Add next-core-lesson CTA for mobile lesson navigation
+- [x] Add lesson content-card loading state for cold starts and content cache misses
+- [x] Show immediate main-panel loading overlay after lesson navigator clicks
 - [x] Add TSDoc for functions/types and component intent comments
 - [x] Expand TSDoc coverage across app/API/seed utilities (Jan 2026 refresh)
 - [x] Document local/preview workflows and gate auth/rate limiting by `APP_ENV`
@@ -351,6 +353,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [ ] Deploy to Vercel
 - [ ] Configure env vars
 - [ ] Smoke-test public browsing, auth, progress, and continue flow
+- [x] Add automated date-based deploy versions for each main merge
 - [x] Pre-production cleanup: simplify seed logic
 - [ ] Pre-production cleanup: run fresh migration/seed against a reset preview DB
 
@@ -386,6 +389,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - NEXTAUTH_SECRET
 - GOOGLE_CLIENT_ID
 - GOOGLE_CLIENT_SECRET
+- NEXT_PUBLIC_APP_VERSION (optional override; normally computed during build)
 
 ## Prisma configuration
 

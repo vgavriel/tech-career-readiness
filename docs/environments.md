@@ -20,25 +20,29 @@ npm run dev:local
 ```
 
 What it does:
+
 - Creates `.env.local` if missing (from `.env.example`).
 - Forces `APP_ENV=local`.
 - Starts a tmpfs-backed Postgres container.
 - Runs `prisma migrate deploy`, `prisma generate`, and `prisma db seed`.
 - Starts the dev server.
-If the dev database container is already running, the script reuses it (and its
-port) so you can restart the app without re-creating the DB.
+  If the dev database container is already running, the script reuses it (and its
+  port) so you can restart the app without re-creating the DB.
 
 If you only want to refresh the env file without starting Docker:
+
 ```bash
 npm run env:local
 ```
 
 If you want to prep the local DB without starting the server:
+
 ```bash
 npm run dev:setup
 ```
 
 Auth and rate limiting:
+
 - Uses a dev-only credentials provider (no Google OAuth).
 - Rate limiting is disabled.
 
@@ -54,12 +58,14 @@ npm run dev:preview
 ```
 
 Requirements:
+
 - `DATABASE_URL` for Neon.
 - `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET`.
 - `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`.
 - `NEXTAUTH_URL` set to the local dev URL (or your deployed preview URL).
 
 Notes:
+
 - `APP_ENV=preview` disables dev auth and requires Google OAuth.
 - Rate limiting requires Upstash config.
 - `npm run dev:preview` will warn if migrations or seed data look out of date.
@@ -69,3 +75,20 @@ Notes:
 
 Test runners set `APP_ENV=test` automatically.
 Auth uses the dev credentials provider, and lesson content can be mocked.
+
+## Deployment versioning
+
+Production builds use a date-based app version in the format
+`YYYY.MM.DD.<short-sha>`, for example `2026.05.11.abcdef0`.
+
+The build command runs `scripts/with-build-version.mjs`, which computes the
+version from the current commit date and SHA, then exposes it as:
+
+- the Next.js build id,
+- the `X-App-Version` response header,
+- `NEXT_PUBLIC_APP_VERSION` for client/server code,
+- `GET /api/version` for smoke tests and support checks.
+
+Every push to `main` also runs `.github/workflows/version.yml`, which creates
+the matching `vYYYY.MM.DD.<short-sha>` Git tag and GitHub release. Local builds
+can override the computed value with `NEXT_PUBLIC_APP_VERSION`.

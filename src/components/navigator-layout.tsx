@@ -1,7 +1,9 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import {
   type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
   useCallback,
   useEffect,
@@ -39,12 +41,14 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
  * Layout shell that hosts the lesson navigator and main content panel.
  */
 export default function NavigatorLayout({ navigator, children }: NavigatorLayoutProps) {
+  const pathname = usePathname();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mainRef = useRef<HTMLElement | null>(null);
   const [navigatorWidth, setNavigatorWidth] = useState<(typeof WIDTH_STEPS)[number]>(26);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [pendingLessonPath, setPendingLessonPath] = useState<string | null>(null);
   const isCollapsedRef = useRef(isCollapsed);
   const collapsedByMediaRef = useRef(false);
   const collapsedStateBeforeAutoRef = useRef(false);
@@ -277,6 +281,62 @@ export default function NavigatorLayout({ navigator, children }: NavigatorLayout
     [normalizeHash, scrollToHash]
   );
 
+  const handleNavigatorClick = useCallback(
+    (event: ReactMouseEvent<HTMLElement>) => {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.shiftKey
+      ) {
+        return;
+      }
+
+      const target = event.target as HTMLElement | null;
+      const anchor = target?.closest("a[href]");
+      if (!(anchor instanceof HTMLAnchorElement)) {
+        return;
+      }
+
+      if (anchor.target && anchor.target !== "_self") {
+        return;
+      }
+
+      const href = anchor.getAttribute("href");
+      if (!href) {
+        return;
+      }
+
+      let url: URL;
+      try {
+        url = new URL(href, window.location.href);
+      } catch {
+        return;
+      }
+
+      if (url.origin !== window.location.origin || !url.pathname.startsWith("/lesson/")) {
+        return;
+      }
+
+      if (url.pathname === pathname && url.search === window.location.search) {
+        return;
+      }
+
+      setPendingLessonPath(`${url.pathname}${url.search}`);
+      mainRef.current?.scrollTo?.({ top: 0, behavior: "auto" });
+      if (isMobile) {
+        setIsCollapsed(true);
+      }
+    },
+    [isMobile, pathname]
+  );
+
+  const currentLessonRouteKey = `${pathname}${typeof window === "undefined" ? "" : window.location.search}`;
+  const isLessonNavigationPending =
+    pendingLessonPath !== null && pendingLessonPath !== currentLessonRouteKey;
+
   return (
     <div
       ref={containerRef}
@@ -313,6 +373,7 @@ export default function NavigatorLayout({ navigator, children }: NavigatorLayout
       <aside
         id="lesson-navigator"
         aria-label="Lesson navigator"
+        onClickCapture={handleNavigatorClick}
         className={`min-h-0 overflow-hidden rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] shadow-[var(--shadow-card)] ${
           isMobile
             ? `absolute inset-y-0 left-0 z-30 h-full w-[min(92vw,360px)] transform transition-transform duration-200 ${
@@ -355,7 +416,7 @@ export default function NavigatorLayout({ navigator, children }: NavigatorLayout
 
       {!isMobile ? (
         <div
-          className={`relative flex h-full min-h-0 items-center justify-center touch-none ${
+          className={`relative z-40 flex h-full min-h-0 items-center justify-center touch-none ${
             isDragging ? "cursor-col-resize" : "cursor-ew-resize"
           }`}
           onPointerDown={handlePointerDown}
@@ -401,9 +462,27 @@ export default function NavigatorLayout({ navigator, children }: NavigatorLayout
         tabIndex={-1}
         ref={mainRef}
         onClickCapture={handleMainClick}
-        className="scroll-panel flex h-full min-h-0 flex-col gap-6 overflow-y-auto rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] px-2.5 pb-2.5 pt-6 shadow-[var(--shadow-card)] sm:px-4 sm:pb-4 md:px-7 md:pb-8 md:pt-8"
+        aria-busy={isLessonNavigationPending}
+        className="scroll-panel relative flex h-full min-h-0 flex-col gap-6 overflow-y-auto rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] px-2.5 pb-2.5 pt-6 shadow-[var(--shadow-card)] sm:px-4 sm:pb-4 md:px-7 md:pb-8 md:pt-8"
       >
         {children}
+        {isLessonNavigationPending ? (
+          <div
+            className="absolute inset-0 z-20 flex min-h-full items-start justify-center bg-[color:var(--surface)]/90 px-4 py-8 backdrop-blur-sm"
+            data-testid="lesson-navigation-loading"
+          >
+            <div
+              className="mt-10 flex w-full max-w-md items-center gap-3 rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-3 text-sm font-semibold text-[color:var(--ink-700)] shadow-[var(--shadow-card)]"
+              role="status"
+            >
+              <span
+                aria-hidden="true"
+                className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-[color:var(--line-soft)] border-t-[color:var(--accent-700)]"
+              />
+              <span>Loading lesson...</span>
+            </div>
+          </div>
+        ) : null}
       </main>
     </div>
   );

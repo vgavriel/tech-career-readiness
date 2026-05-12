@@ -1,5 +1,14 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import Link from "next/link";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const navigationMocks = vi.hoisted(() => ({
+  pathname: "/lesson/current",
+}));
+
+vi.mock("next/navigation", () => ({
+  usePathname: () => navigationMocks.pathname,
+}));
 
 import NavigatorLayout from "@/components/navigator-layout";
 
@@ -17,6 +26,7 @@ const mockMatchMedia = (matches = false) => {
 
 describe("NavigatorLayout", () => {
   beforeEach(() => {
+    navigationMocks.pathname = "/lesson/current";
     mockMatchMedia(false);
   });
 
@@ -79,6 +89,17 @@ describe("NavigatorLayout", () => {
     });
   });
 
+  it("keeps the desktop navigator toggle above the lesson panel", () => {
+    render(
+      <NavigatorLayout navigator={<div>Navigator</div>}>
+        <div>Lesson content</div>
+      </NavigatorLayout>
+    );
+
+    expect(screen.getByRole("separator")).toHaveClass("z-40");
+    expect(screen.getByRole("button", { name: /collapse navigator/i })).toBeInTheDocument();
+  });
+
   it("resizes with pointer drag and updates cursor state", async () => {
     const { container } = render(
       <NavigatorLayout navigator={<div>Navigator</div>}>
@@ -137,9 +158,7 @@ describe("NavigatorLayout", () => {
 
     const navigator = screen.getByLabelText("Lesson navigator");
     expect(navigator).toHaveAttribute("aria-hidden", "true");
-    expect(
-      screen.getByRole("button", { name: /open navigator/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /open navigator/i })).toBeInTheDocument();
   });
 
   it("scrolls to hash targets when clicking in-page links", () => {
@@ -209,5 +228,53 @@ describe("NavigatorLayout", () => {
         delete (HTMLElement.prototype as { scrollTo?: unknown }).scrollTo;
       }
     }
+  });
+
+  it("shows a main-panel loading overlay immediately after navigator lesson clicks", async () => {
+    const lessonFrame = (
+      <NavigatorLayout navigator={<Link href="/lesson/next">Next lesson</Link>}>
+        <h1>Current lesson</h1>
+        <div>Current lesson content</div>
+      </NavigatorLayout>
+    );
+    const { rerender } = render(lessonFrame);
+    screen
+      .getByRole("link", { name: /next lesson/i })
+      .addEventListener("click", (event) => event.preventDefault());
+
+    fireEvent.click(screen.getByRole("link", { name: /next lesson/i }));
+
+    expect(screen.getByRole("heading", { name: /current lesson/i })).toBeInTheDocument();
+    expect(screen.getByText(/current lesson content/i)).toBeInTheDocument();
+    expect(screen.getByTestId("lesson-navigation-loading")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Loading lesson...");
+    expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "true");
+
+    navigationMocks.pathname = "/lesson/next";
+    rerender(
+      <NavigatorLayout navigator={<Link href="/lesson/next">Next lesson</Link>}>
+        <h1>Current lesson</h1>
+        <div>Current lesson content</div>
+      </NavigatorLayout>
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("lesson-navigation-loading")).not.toBeInTheDocument();
+      expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "false");
+    });
+  });
+
+  it("does not show the navigation overlay for the current lesson link", () => {
+    render(
+      <NavigatorLayout navigator={<Link href="/lesson/current">Current lesson</Link>}>
+        <h1>Current lesson</h1>
+      </NavigatorLayout>
+    );
+
+    const currentLink = screen.getByRole("link", { name: /current lesson/i });
+    currentLink.addEventListener("click", (event) => event.preventDefault());
+    fireEvent.click(currentLink);
+
+    expect(screen.queryByTestId("lesson-navigation-loading")).not.toBeInTheDocument();
   });
 });
