@@ -31,8 +31,17 @@ const GRID_TEMPLATE_BY_WIDTH: Record<(typeof WIDTH_STEPS)[number], string> = {
   34: "grid-cols-[34%_12px_minmax(0,1fr)]",
 };
 const COLLAPSED_GRID_CLASS = "grid-cols-[0px_12px_minmax(0,1fr)]";
-const LESSON_NAVIGATION_INDICATOR_DELAY_MS = 150;
-const LESSON_NAVIGATION_FAILSAFE_MS = 10_000;
+/**
+ * Grace period before showing the navigation overlay.
+ *
+ * @remarks
+ * App Router does not expose a deterministic "this navigation missed cache"
+ * signal here. The only reliable signals are the click and the committed route,
+ * so this short UX grace window prevents a flash on fast cached navigations
+ * while still surfacing feedback for navigations that remain pending.
+ */
+export const LESSON_NAVIGATION_INDICATOR_DELAY_MS = 150;
+export const LESSON_NAVIGATION_FAILSAFE_MS = 10_000;
 
 type PendingLessonNavigation = {
   fromPath: string;

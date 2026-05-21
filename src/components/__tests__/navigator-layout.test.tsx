@@ -12,7 +12,10 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(navigationMocks.searchParams),
 }));
 
-import NavigatorLayout from "@/components/navigator-layout";
+import NavigatorLayout, {
+  LESSON_NAVIGATION_FAILSAFE_MS,
+  LESSON_NAVIGATION_INDICATOR_DELAY_MS,
+} from "@/components/navigator-layout";
 
 const mockMatchMedia = (matches = false) => {
   Object.defineProperty(window, "matchMedia", {
@@ -257,7 +260,7 @@ describe("NavigatorLayout", () => {
       expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "false");
 
       act(() => {
-        vi.advanceTimersByTime(150);
+        vi.advanceTimersByTime(LESSON_NAVIGATION_INDICATOR_DELAY_MS);
       });
 
       expect(screen.getByTestId("lesson-navigation-loading")).toBeInTheDocument();
@@ -306,7 +309,7 @@ describe("NavigatorLayout", () => {
       );
 
       act(() => {
-        vi.advanceTimersByTime(200);
+        vi.advanceTimersByTime(LESSON_NAVIGATION_INDICATOR_DELAY_MS + 1);
       });
 
       expect(screen.getByText(/next lesson content/i)).toBeInTheDocument();
@@ -334,7 +337,7 @@ describe("NavigatorLayout", () => {
       fireEvent.click(screen.getByRole("link", { name: /legacy lesson/i }));
 
       act(() => {
-        vi.advanceTimersByTime(150);
+        vi.advanceTimersByTime(LESSON_NAVIGATION_INDICATOR_DELAY_MS);
       });
 
       expect(screen.getByTestId("lesson-navigation-loading")).toBeInTheDocument();
@@ -372,13 +375,13 @@ describe("NavigatorLayout", () => {
       fireEvent.click(screen.getByRole("link", { name: /next lesson/i }));
 
       act(() => {
-        vi.advanceTimersByTime(150);
+        vi.advanceTimersByTime(LESSON_NAVIGATION_INDICATOR_DELAY_MS);
       });
 
       expect(screen.getByTestId("lesson-navigation-loading")).toBeInTheDocument();
 
       act(() => {
-        vi.advanceTimersByTime(10_000);
+        vi.advanceTimersByTime(LESSON_NAVIGATION_FAILSAFE_MS);
       });
 
       expect(screen.queryByTestId("lesson-navigation-loading")).not.toBeInTheDocument();
