@@ -358,6 +358,49 @@ describe("NavigatorLayout", () => {
     }
   });
 
+  it("clears the navigation overlay when rendered lesson content changes before pathname updates", () => {
+    vi.useFakeTimers();
+
+    try {
+      const { rerender } = render(
+        <NavigatorLayout
+          renderedLessonRouteKey="/lesson/current"
+          navigator={<Link href="/lesson/next">Next lesson</Link>}
+        >
+          <h1>Current lesson</h1>
+          <div>Current lesson content</div>
+        </NavigatorLayout>
+      );
+      screen
+        .getByRole("link", { name: /next lesson/i })
+        .addEventListener("click", (event) => event.preventDefault());
+
+      fireEvent.click(screen.getByRole("link", { name: /next lesson/i }));
+
+      act(() => {
+        vi.advanceTimersByTime(LESSON_NAVIGATION_INDICATOR_DELAY_MS);
+      });
+
+      expect(screen.getByTestId("lesson-navigation-loading")).toBeInTheDocument();
+
+      rerender(
+        <NavigatorLayout
+          renderedLessonRouteKey="/lesson/next"
+          navigator={<Link href="/lesson/next">Next lesson</Link>}
+        >
+          <h1>Next lesson</h1>
+          <div>Next lesson content</div>
+        </NavigatorLayout>
+      );
+
+      expect(screen.getByText(/next lesson content/i)).toBeInTheDocument();
+      expect(screen.queryByTestId("lesson-navigation-loading")).not.toBeInTheDocument();
+      expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "false");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("clears the navigation overlay if a lesson navigation never commits", () => {
     vi.useFakeTimers();
 

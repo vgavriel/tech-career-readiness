@@ -15,6 +15,10 @@ import {
 type NavigatorLayoutProps = {
   navigator: React.ReactNode;
   children: React.ReactNode;
+  /**
+   * Route key for the lesson children rendered by the server.
+   */
+  renderedLessonRouteKey?: string;
 };
 
 const WIDTH_STEPS = [20, 22, 24, 26, 28, 30, 32, 34] as const;
@@ -64,7 +68,11 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 /**
  * Layout shell that hosts the lesson navigator and main content panel.
  */
-export default function NavigatorLayout({ navigator, children }: NavigatorLayoutProps) {
+export default function NavigatorLayout({
+  navigator,
+  children,
+  renderedLessonRouteKey,
+}: NavigatorLayoutProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -419,10 +427,35 @@ export default function NavigatorLayout({ navigator, children }: NavigatorLayout
     return () => window.clearTimeout(settleTimer);
   }, [currentLessonRouteKey, pendingLessonNavigation]);
 
+  useEffect(() => {
+    if (
+      !pendingLessonNavigation ||
+      !renderedLessonRouteKey ||
+      renderedLessonRouteKey === pendingLessonNavigation.fromPath
+    ) {
+      return;
+    }
+
+    const settledNavigation = pendingLessonNavigation;
+    const settleTimer = window.setTimeout(() => {
+      setPendingLessonNavigation((currentPending) =>
+        isSamePendingLessonNavigation(currentPending, settledNavigation) ? null : currentPending
+      );
+      setIndicatorReadyNavigation((currentNavigation) =>
+        isSamePendingLessonNavigation(currentNavigation, settledNavigation)
+          ? null
+          : currentNavigation
+      );
+    }, 0);
+
+    return () => window.clearTimeout(settleTimer);
+  }, [pendingLessonNavigation, renderedLessonRouteKey]);
+
   const isLessonNavigationPending = Boolean(
     pendingLessonNavigation &&
     isSamePendingLessonNavigation(indicatorReadyNavigation, pendingLessonNavigation) &&
-    currentLessonRouteKey === pendingLessonNavigation.fromPath
+    currentLessonRouteKey === pendingLessonNavigation.fromPath &&
+    (!renderedLessonRouteKey || renderedLessonRouteKey === pendingLessonNavigation.fromPath)
   );
 
   return (
