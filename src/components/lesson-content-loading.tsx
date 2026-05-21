@@ -35,6 +35,7 @@ export default function LessonContentLoading() {
       <div
         className="flex items-center gap-3 rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-4 py-3 text-sm font-semibold text-[color:var(--ink-700)]"
         role="status"
+        aria-atomic="true"
       >
         <span
           aria-hidden="true"

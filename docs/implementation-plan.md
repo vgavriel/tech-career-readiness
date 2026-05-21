@@ -295,6 +295,8 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Add next-core-lesson CTA for mobile lesson navigation
 - [x] Add lesson content-card loading state for cold starts and content cache misses
 - [x] Show immediate main-panel loading overlay after lesson navigator clicks
+- [x] Harden lesson loading indicators for fast cache hits, redirects, and abandoned navigations
+- [x] Add deterministic Playwright coverage for cached and slow lesson navigation loading states
 - [x] Add TSDoc for functions/types and component intent comments
 - [x] Expand TSDoc coverage across app/API/seed utilities (Jan 2026 refresh)
 - [x] Document local/preview workflows and gate auth/rate limiting by `APP_ENV`

@@ -1,16 +1,21 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import Link from "next/link";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const navigationMocks = vi.hoisted(() => ({
   pathname: "/lesson/current",
+  searchParams: "",
 }));
 
 vi.mock("next/navigation", () => ({
   usePathname: () => navigationMocks.pathname,
+  useSearchParams: () => new URLSearchParams(navigationMocks.searchParams),
 }));
 
-import NavigatorLayout from "@/components/navigator-layout";
+import NavigatorLayout, {
+  LESSON_NAVIGATION_FAILSAFE_MS,
+  LESSON_NAVIGATION_INDICATOR_DELAY_MS,
+} from "@/components/navigator-layout";
 
 const mockMatchMedia = (matches = false) => {
   Object.defineProperty(window, "matchMedia", {
@@ -27,6 +32,7 @@ const mockMatchMedia = (matches = false) => {
 describe("NavigatorLayout", () => {
   beforeEach(() => {
     navigationMocks.pathname = "/lesson/current";
+    navigationMocks.searchParams = "";
     mockMatchMedia(false);
   });
 
@@ -230,38 +236,159 @@ describe("NavigatorLayout", () => {
     }
   });
 
-  it("shows a main-panel loading overlay immediately after navigator lesson clicks", async () => {
+  it("shows a delayed main-panel loading overlay after navigator lesson clicks", () => {
+    vi.useFakeTimers();
+
     const lessonFrame = (
       <NavigatorLayout navigator={<Link href="/lesson/next">Next lesson</Link>}>
         <h1>Current lesson</h1>
         <div>Current lesson content</div>
       </NavigatorLayout>
     );
-    const { rerender } = render(lessonFrame);
-    screen
-      .getByRole("link", { name: /next lesson/i })
-      .addEventListener("click", (event) => event.preventDefault());
 
-    fireEvent.click(screen.getByRole("link", { name: /next lesson/i }));
+    try {
+      const { rerender } = render(lessonFrame);
+      screen
+        .getByRole("link", { name: /next lesson/i })
+        .addEventListener("click", (event) => event.preventDefault());
 
-    expect(screen.getByRole("heading", { name: /current lesson/i })).toBeInTheDocument();
-    expect(screen.getByText(/current lesson content/i)).toBeInTheDocument();
-    expect(screen.getByTestId("lesson-navigation-loading")).toBeInTheDocument();
-    expect(screen.getByRole("status")).toHaveTextContent("Loading lesson...");
-    expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "true");
+      fireEvent.click(screen.getByRole("link", { name: /next lesson/i }));
 
-    navigationMocks.pathname = "/lesson/next";
-    rerender(
-      <NavigatorLayout navigator={<Link href="/lesson/next">Next lesson</Link>}>
-        <h1>Current lesson</h1>
-        <div>Current lesson content</div>
-      </NavigatorLayout>
-    );
-
-    await waitFor(() => {
+      expect(screen.getByRole("heading", { name: /current lesson/i })).toBeInTheDocument();
+      expect(screen.getByText(/current lesson content/i)).toBeInTheDocument();
       expect(screen.queryByTestId("lesson-navigation-loading")).not.toBeInTheDocument();
       expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "false");
-    });
+
+      act(() => {
+        vi.advanceTimersByTime(LESSON_NAVIGATION_INDICATOR_DELAY_MS);
+      });
+
+      expect(screen.getByTestId("lesson-navigation-loading")).toBeInTheDocument();
+      expect(screen.getByRole("status")).toHaveTextContent("Loading lesson...");
+      expect(screen.getByRole("status")).toHaveAttribute("aria-atomic", "true");
+      expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "true");
+
+      navigationMocks.pathname = "/lesson/next";
+      rerender(
+        <NavigatorLayout navigator={<Link href="/lesson/next">Next lesson</Link>}>
+          <h1>Next lesson</h1>
+          <div>Next lesson content</div>
+        </NavigatorLayout>
+      );
+
+      expect(screen.queryByTestId("lesson-navigation-loading")).not.toBeInTheDocument();
+      expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "false");
+      expect(screen.getByText(/next lesson content/i)).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("does not flash the navigation overlay when cached content settles before the delay", () => {
+    vi.useFakeTimers();
+
+    try {
+      const { rerender } = render(
+        <NavigatorLayout navigator={<Link href="/lesson/next">Next lesson</Link>}>
+          <h1>Current lesson</h1>
+          <div>Current lesson content</div>
+        </NavigatorLayout>
+      );
+      screen
+        .getByRole("link", { name: /next lesson/i })
+        .addEventListener("click", (event) => event.preventDefault());
+
+      fireEvent.click(screen.getByRole("link", { name: /next lesson/i }));
+
+      navigationMocks.pathname = "/lesson/next";
+      rerender(
+        <NavigatorLayout navigator={<Link href="/lesson/next">Next lesson</Link>}>
+          <h1>Next lesson</h1>
+          <div>Next lesson content</div>
+        </NavigatorLayout>
+      );
+
+      act(() => {
+        vi.advanceTimersByTime(LESSON_NAVIGATION_INDICATOR_DELAY_MS + 1);
+      });
+
+      expect(screen.getByText(/next lesson content/i)).toBeInTheDocument();
+      expect(screen.queryByTestId("lesson-navigation-loading")).not.toBeInTheDocument();
+      expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "false");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("clears the navigation overlay when a lesson redirect settles on another route", () => {
+    vi.useFakeTimers();
+
+    try {
+      const { rerender } = render(
+        <NavigatorLayout navigator={<Link href="/lesson/legacy">Legacy lesson</Link>}>
+          <h1>Current lesson</h1>
+          <div>Current lesson content</div>
+        </NavigatorLayout>
+      );
+      screen
+        .getByRole("link", { name: /legacy lesson/i })
+        .addEventListener("click", (event) => event.preventDefault());
+
+      fireEvent.click(screen.getByRole("link", { name: /legacy lesson/i }));
+
+      act(() => {
+        vi.advanceTimersByTime(LESSON_NAVIGATION_INDICATOR_DELAY_MS);
+      });
+
+      expect(screen.getByTestId("lesson-navigation-loading")).toBeInTheDocument();
+
+      navigationMocks.pathname = "/lesson/canonical";
+      rerender(
+        <NavigatorLayout navigator={<Link href="/lesson/legacy">Legacy lesson</Link>}>
+          <h1>Canonical lesson</h1>
+          <div>Canonical lesson content</div>
+        </NavigatorLayout>
+      );
+
+      expect(screen.getByText(/canonical lesson content/i)).toBeInTheDocument();
+      expect(screen.queryByTestId("lesson-navigation-loading")).not.toBeInTheDocument();
+      expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "false");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("clears the navigation overlay if a lesson navigation never commits", () => {
+    vi.useFakeTimers();
+
+    try {
+      render(
+        <NavigatorLayout navigator={<Link href="/lesson/next">Next lesson</Link>}>
+          <h1>Current lesson</h1>
+          <div>Current lesson content</div>
+        </NavigatorLayout>
+      );
+      screen
+        .getByRole("link", { name: /next lesson/i })
+        .addEventListener("click", (event) => event.preventDefault());
+
+      fireEvent.click(screen.getByRole("link", { name: /next lesson/i }));
+
+      act(() => {
+        vi.advanceTimersByTime(LESSON_NAVIGATION_INDICATOR_DELAY_MS);
+      });
+
+      expect(screen.getByTestId("lesson-navigation-loading")).toBeInTheDocument();
+
+      act(() => {
+        vi.advanceTimersByTime(LESSON_NAVIGATION_FAILSAFE_MS);
+      });
+
+      expect(screen.queryByTestId("lesson-navigation-loading")).not.toBeInTheDocument();
+      expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "false");
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("does not show the navigation overlay for the current lesson link", () => {
