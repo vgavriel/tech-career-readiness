@@ -31,6 +31,31 @@ const GOOGLE_DOC_ONLY_LESSON_URLS = new Map([
   ],
 ]);
 
+const buildLessonRouteKey = (
+  slug: string,
+  rawSearchParams?: Record<string, string | string[] | undefined>
+) => {
+  const searchParams = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(rawSearchParams ?? {})) {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (item !== undefined) {
+          searchParams.append(key, item);
+        }
+      }
+      continue;
+    }
+
+    if (value !== undefined) {
+      searchParams.set(key, value);
+    }
+  }
+
+  const serializedSearchParams = searchParams.toString();
+  return serializedSearchParams ? `/lesson/${slug}?${serializedSearchParams}` : `/lesson/${slug}`;
+};
+
 type BuildLessonContentPanelProps = {
   googleDocOnlyUrl: string | null;
   lesson: {
@@ -202,6 +227,7 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
   const googleDocOnlyUrl = GOOGLE_DOC_ONLY_LESSON_URLS.get(lesson.slug) ?? null;
   const estimatedMinutes =
     lesson.estimatedMinutes ?? staticLesson?.estimatedMinutes ?? lessonExample?.estimatedMinutes;
+  const renderedLessonRouteKey = buildLessonRouteKey(lesson.slug, rawSearchParams);
   const contentPromise = buildLessonContentPanel({
     googleDocOnlyUrl,
     lesson: {
@@ -217,6 +243,7 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
   return (
     <div className="page-shell h-full overflow-hidden">
       <NavigatorLayout
+        renderedLessonRouteKey={renderedLessonRouteKey}
         navigator={
           <LessonNavigator
             modules={modules}

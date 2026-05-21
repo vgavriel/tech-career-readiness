@@ -358,6 +358,122 @@ describe("NavigatorLayout", () => {
     }
   });
 
+  it("clears the navigation overlay when rendered lesson content changes before pathname updates", () => {
+    vi.useFakeTimers();
+
+    try {
+      const { rerender } = render(
+        <NavigatorLayout
+          renderedLessonRouteKey="/lesson/current"
+          navigator={<Link href="/lesson/next">Next lesson</Link>}
+        >
+          <h1>Current lesson</h1>
+          <div>Current lesson content</div>
+        </NavigatorLayout>
+      );
+      screen
+        .getByRole("link", { name: /next lesson/i })
+        .addEventListener("click", (event) => event.preventDefault());
+
+      fireEvent.click(screen.getByRole("link", { name: /next lesson/i }));
+
+      act(() => {
+        vi.advanceTimersByTime(LESSON_NAVIGATION_INDICATOR_DELAY_MS);
+      });
+
+      expect(screen.getByTestId("lesson-navigation-loading")).toBeInTheDocument();
+
+      rerender(
+        <NavigatorLayout
+          renderedLessonRouteKey="/lesson/next"
+          navigator={<Link href="/lesson/next">Next lesson</Link>}
+        >
+          <h1>Next lesson</h1>
+          <div>Next lesson content</div>
+        </NavigatorLayout>
+      );
+
+      expect(screen.getByText(/next lesson content/i)).toBeInTheDocument();
+      expect(screen.queryByTestId("lesson-navigation-loading")).not.toBeInTheDocument();
+      expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "false");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("clears the navigation overlay when a cached lesson shell is hidden", () => {
+    vi.useFakeTimers();
+
+    const originalResizeObserver = globalThis.ResizeObserver;
+    let resizeObserverCallback: ResizeObserverCallback | null = null;
+    class MockResizeObserver implements ResizeObserver {
+      observe = vi.fn();
+      unobserve = vi.fn();
+      disconnect = vi.fn();
+
+      constructor(callback: ResizeObserverCallback) {
+        resizeObserverCallback = callback;
+      }
+    }
+    Object.defineProperty(globalThis, "ResizeObserver", {
+      configurable: true,
+      value: MockResizeObserver,
+    });
+
+    try {
+      const { container } = render(
+        <NavigatorLayout navigator={<Link href="/lesson/next">Next lesson</Link>}>
+          <h1>Current lesson</h1>
+          <div>Current lesson content</div>
+        </NavigatorLayout>
+      );
+      screen
+        .getByRole("link", { name: /next lesson/i })
+        .addEventListener("click", (event) => event.preventDefault());
+
+      fireEvent.click(screen.getByRole("link", { name: /next lesson/i }));
+
+      act(() => {
+        vi.advanceTimersByTime(LESSON_NAVIGATION_INDICATOR_DELAY_MS);
+      });
+
+      expect(screen.getByTestId("lesson-navigation-loading")).toBeInTheDocument();
+
+      const layoutRoot = container.firstElementChild as HTMLElement;
+      Object.defineProperty(layoutRoot, "getBoundingClientRect", {
+        configurable: true,
+        value: () => ({
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          width: 0,
+          height: 0,
+          x: 0,
+          y: 0,
+          toJSON: () => ({}),
+        }),
+      });
+
+      act(() => {
+        resizeObserverCallback?.([], {} as ResizeObserver);
+      });
+
+      expect(screen.queryByTestId("lesson-navigation-loading")).not.toBeInTheDocument();
+      expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "false");
+    } finally {
+      if (originalResizeObserver) {
+        Object.defineProperty(globalThis, "ResizeObserver", {
+          configurable: true,
+          value: originalResizeObserver,
+        });
+      } else {
+        delete (globalThis as { ResizeObserver?: unknown }).ResizeObserver;
+      }
+      vi.useRealTimers();
+    }
+  });
+
   it("clears the navigation overlay if a lesson navigation never commits", () => {
     vi.useFakeTimers();
 
