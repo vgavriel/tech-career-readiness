@@ -553,6 +553,7 @@ export default function NavigatorLayout({ navigator, children }: NavigatorLayout
             <div
               className="mt-10 flex w-full max-w-md items-center gap-3 rounded-xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 py-3 text-sm font-semibold text-[color:var(--ink-700)] shadow-[var(--shadow-card)]"
               role="status"
+              aria-atomic="true"
             >
               <span
                 aria-hidden="true"

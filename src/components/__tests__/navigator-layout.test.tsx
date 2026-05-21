@@ -262,6 +262,7 @@ describe("NavigatorLayout", () => {
 
       expect(screen.getByTestId("lesson-navigation-loading")).toBeInTheDocument();
       expect(screen.getByRole("status")).toHaveTextContent("Loading lesson...");
+      expect(screen.getByRole("status")).toHaveAttribute("aria-atomic", "true");
       expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "true");
 
       navigationMocks.pathname = "/lesson/next";

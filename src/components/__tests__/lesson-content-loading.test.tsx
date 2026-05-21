@@ -9,5 +9,6 @@ describe("LessonContentLoading", () => {
 
     expect(screen.getByTestId("lesson-content-loading")).toHaveAttribute("aria-busy", "true");
     expect(screen.getByRole("status")).toHaveTextContent("Loading lesson content...");
+    expect(screen.getByRole("status")).toHaveAttribute("aria-atomic", "true");
   });
 });
