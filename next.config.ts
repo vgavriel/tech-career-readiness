@@ -9,6 +9,20 @@ const appVersion =
     process.env.NEXT_PUBLIC_APP_VERSION,
     process.env.APP_VERSION
   ) ?? "dev";
+const watchIgnoredPaths = [
+  "**/.playwright-mcp/**",
+  "**/playwright-report/**",
+  "**/test-results/**",
+] as const;
+
+const toWatchIgnoredPatterns = (ignored: unknown) => [
+  ...(Array.isArray(ignored)
+    ? ignored.filter((pattern): pattern is string => typeof pattern === "string" && pattern !== "")
+    : typeof ignored === "string" && ignored !== ""
+      ? [ignored]
+      : []),
+  ...watchIgnoredPaths,
+];
 
 const securityHeaders = [
   {
@@ -50,8 +64,19 @@ if (isProduction) {
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  turbopack: {},
   env: {
     NEXT_PUBLIC_APP_VERSION: appVersion,
+  },
+  webpack(config, { dev }) {
+    if (dev) {
+      config.watchOptions = {
+        ...config.watchOptions,
+        ignored: toWatchIgnoredPatterns(config.watchOptions?.ignored),
+      };
+    }
+
+    return config;
   },
   /**
    * Keep the Next.js build id aligned with the deploy version.

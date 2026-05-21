@@ -102,6 +102,32 @@ export default function NavigatorLayout({
       return;
     }
 
+    const container = containerRef.current;
+    if (!container || typeof ResizeObserver === "undefined") {
+      return;
+    }
+
+    const clearPendingNavigationIfHidden = () => {
+      const rect = container.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        return;
+      }
+
+      setPendingLessonNavigation(null);
+      setIndicatorReadyNavigation(null);
+    };
+
+    const resizeObserver = new ResizeObserver(clearPendingNavigationIfHidden);
+    resizeObserver.observe(container);
+
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
     const media = window.matchMedia("(max-width: 960px)");
     /**
      * Sync collapse state when switching between mobile and desktop widths.

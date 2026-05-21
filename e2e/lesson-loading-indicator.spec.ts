@@ -44,6 +44,16 @@ test.describe("lesson loading indicators", () => {
     await expect(page.getByText(/welcome to the roadmap/i)).toBeVisible();
     await expect(page.getByTestId(navigationOverlayTestId)).toBeHidden();
     await expect(page.getByRole("main")).toHaveAttribute("aria-busy", "false");
+
+    await Promise.all([
+      page.waitForURL(lessonUrlPattern(targetLessonSlug)),
+      lessonLink(page, /tech recruiting timeline/i).click(),
+    ]);
+
+    await expect(page.getByRole("heading", { name: /tech recruiting timeline/i })).toBeVisible();
+    await expect(page.getByText(mockLessonContent)).toBeVisible();
+    await expect(page.getByTestId(navigationOverlayTestId)).toBeHidden();
+    await expect(page.getByRole("main")).toHaveAttribute("aria-busy", "false");
   });
 
   test("slow lesson navigation shows and clears the overlay deterministically", async ({
