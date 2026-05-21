@@ -23,6 +23,7 @@ test.describe("lesson loading indicators", () => {
     await page.goto(`/lesson/${sourceLessonSlug}`);
     await expect(page.getByRole("heading", { name: /start to finish/i })).toBeVisible();
     await expect(page.getByTestId(navigationOverlayTestId)).toBeHidden();
+    await expect(page.getByRole("main")).toHaveAttribute("aria-busy", "false");
 
     await Promise.all([
       page.waitForURL(lessonUrlPattern(targetLessonSlug)),
@@ -32,6 +33,7 @@ test.describe("lesson loading indicators", () => {
     await expect(page.getByRole("heading", { name: /tech recruiting timeline/i })).toBeVisible();
     await expect(page.getByText(mockLessonContent)).toBeVisible();
     await expect(page.getByTestId(navigationOverlayTestId)).toBeHidden();
+    await expect(page.getByRole("main")).toHaveAttribute("aria-busy", "false");
   });
 
   test("slow lesson navigation shows and clears the overlay deterministically", async ({
@@ -68,6 +70,7 @@ test.describe("lesson loading indicators", () => {
       await targetRequestSeen;
       await expect(page).toHaveURL(lessonUrlPattern(sourceLessonSlug));
       await expect(overlay).toBeVisible();
+      await expect(page.getByRole("main")).toHaveAttribute("aria-busy", "true");
       await expect(overlay.getByRole("status")).toContainText(/loading lesson/i);
 
       releaseNavigation();
@@ -77,6 +80,7 @@ test.describe("lesson loading indicators", () => {
       await expect(page.getByRole("heading", { name: /tech recruiting timeline/i })).toBeVisible();
       await expect(page.getByText(mockLessonContent)).toBeVisible();
       await expect(overlay).toBeHidden();
+      await expect(page.getByRole("main")).toHaveAttribute("aria-busy", "false");
     } finally {
       releaseNavigation();
     }
