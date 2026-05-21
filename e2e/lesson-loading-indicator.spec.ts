@@ -14,6 +14,9 @@ const lessonNavigator = (page: Page) =>
 const lessonLink = (page: Page, slugTitle: RegExp): Locator =>
   lessonNavigator(page).getByRole("link", { name: slugTitle });
 
+const visibleNavigationOverlay = (page: Page): Locator =>
+  page.getByTestId(navigationOverlayTestId).filter({ visible: true });
+
 test.describe("lesson loading indicators", () => {
   test("cached lesson navigation settles without a stuck overlay", async ({ page }) => {
     await page.goto(`/lesson/${targetLessonSlug}`);
@@ -22,7 +25,7 @@ test.describe("lesson loading indicators", () => {
 
     await page.goto(`/lesson/${sourceLessonSlug}`);
     await expect(page.getByRole("heading", { name: /start to finish/i })).toBeVisible();
-    await expect(page.getByTestId(navigationOverlayTestId)).toBeHidden();
+    await expect(visibleNavigationOverlay(page)).toHaveCount(0);
     await expect(page.getByRole("main")).toHaveAttribute("aria-busy", "false");
 
     await Promise.all([
@@ -32,7 +35,7 @@ test.describe("lesson loading indicators", () => {
 
     await expect(page.getByRole("heading", { name: /tech recruiting timeline/i })).toBeVisible();
     await expect(page.getByText(mockLessonContent)).toBeVisible();
-    await expect(page.getByTestId(navigationOverlayTestId)).toBeHidden();
+    await expect(visibleNavigationOverlay(page)).toHaveCount(0);
     await expect(page.getByRole("main")).toHaveAttribute("aria-busy", "false");
 
     await Promise.all([
@@ -42,7 +45,7 @@ test.describe("lesson loading indicators", () => {
 
     await expect(page.getByRole("heading", { name: /start to finish/i })).toBeVisible();
     await expect(page.getByText(/welcome to the roadmap/i)).toBeVisible();
-    await expect(page.getByTestId(navigationOverlayTestId)).toBeHidden();
+    await expect(visibleNavigationOverlay(page)).toHaveCount(0);
     await expect(page.getByRole("main")).toHaveAttribute("aria-busy", "false");
 
     await Promise.all([
@@ -52,7 +55,7 @@ test.describe("lesson loading indicators", () => {
 
     await expect(page.getByRole("heading", { name: /tech recruiting timeline/i })).toBeVisible();
     await expect(page.getByText(mockLessonContent)).toBeVisible();
-    await expect(page.getByTestId(navigationOverlayTestId)).toBeHidden();
+    await expect(visibleNavigationOverlay(page)).toHaveCount(0);
     await expect(page.getByRole("main")).toHaveAttribute("aria-busy", "false");
   });
 
