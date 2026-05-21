@@ -266,6 +266,53 @@ describe("Lesson page", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Loading lesson content...");
   });
 
+  it("replaces the content loading state when cached fetched content resolves", async () => {
+    type LessonContentResult = Awaited<ReturnType<typeof contentMocks.fetchLessonContent>>;
+    let resolveContent!: (value: LessonContentResult) => void;
+
+    lessonSlugMocks.findLessonBySlug.mockResolvedValue({
+      lesson: makeLesson({
+        id: "lesson-cached",
+        slug: "cached-lesson",
+        title: "Cached Lesson",
+        order: 5,
+        publishedUrl: "https://docs.google.com/document/d/e/cached-lesson/pub",
+      }),
+      isAlias: false,
+    });
+    contentMocks.fetchLessonContent.mockReturnValue(
+      new Promise((resolve) => {
+        resolveContent = resolve;
+      })
+    );
+
+    const LessonPage = (await import("@/app/lesson/[slug]/page")).default;
+    const ui = await LessonPage({
+      params: Promise.resolve({ slug: "cached-lesson" }),
+      searchParams: Promise.resolve({}),
+    });
+
+    await act(async () => {
+      render(ui);
+    });
+
+    expect(screen.getByRole("heading", { name: /cached lesson/i })).toBeInTheDocument();
+    expect(screen.getByTestId("lesson-content-loading")).toBeInTheDocument();
+
+    await act(async () => {
+      resolveContent({
+        lessonId: "lesson-cached",
+        html: "<p>Cached lesson content</p>",
+        cached: true,
+      });
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(await screen.findByTestId("lesson-content")).toHaveTextContent("Cached lesson content");
+    expect(screen.queryByTestId("lesson-content-loading")).not.toBeInTheDocument();
+  });
+
   it("renders static lesson content and rewrites internal doc links", async () => {
     lessonSlugMocks.findLessonBySlug.mockResolvedValue({
       lesson: makeLesson({

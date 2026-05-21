@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
@@ -31,6 +31,21 @@ const GRID_TEMPLATE_BY_WIDTH: Record<(typeof WIDTH_STEPS)[number], string> = {
   34: "grid-cols-[34%_12px_minmax(0,1fr)]",
 };
 const COLLAPSED_GRID_CLASS = "grid-cols-[0px_12px_minmax(0,1fr)]";
+const LESSON_NAVIGATION_INDICATOR_DELAY_MS = 150;
+const LESSON_NAVIGATION_FAILSAFE_MS = 10_000;
+
+type PendingLessonNavigation = {
+  fromPath: string;
+  targetPath: string;
+};
+
+/**
+ * Compare pending navigation snapshots without relying on object identity.
+ */
+const isSamePendingLessonNavigation = (
+  first: PendingLessonNavigation | null,
+  second: PendingLessonNavigation
+) => first?.fromPath === second.fromPath && first.targetPath === second.targetPath;
 
 /**
  * Clamp a numeric value between a minimum and maximum.
@@ -42,16 +57,24 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
  */
 export default function NavigatorLayout({ navigator, children }: NavigatorLayoutProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mainRef = useRef<HTMLElement | null>(null);
   const [navigatorWidth, setNavigatorWidth] = useState<(typeof WIDTH_STEPS)[number]>(26);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [pendingLessonPath, setPendingLessonPath] = useState<string | null>(null);
+  const [pendingLessonNavigation, setPendingLessonNavigation] =
+    useState<PendingLessonNavigation | null>(null);
+  const [indicatorReadyNavigation, setIndicatorReadyNavigation] =
+    useState<PendingLessonNavigation | null>(null);
   const isCollapsedRef = useRef(isCollapsed);
   const collapsedByMediaRef = useRef(false);
   const collapsedStateBeforeAutoRef = useRef(false);
+  const currentLessonRouteKey = useMemo(() => {
+    const currentSearch = searchParams.toString();
+    return currentSearch ? `${pathname}?${currentSearch}` : pathname;
+  }, [pathname, searchParams]);
 
   useEffect(() => {
     isCollapsedRef.current = isCollapsed;
@@ -320,22 +343,78 @@ export default function NavigatorLayout({ navigator, children }: NavigatorLayout
         return;
       }
 
-      if (url.pathname === pathname && url.search === window.location.search) {
+      const targetSearch = url.searchParams.toString();
+      const targetPath = targetSearch ? `${url.pathname}?${targetSearch}` : url.pathname;
+
+      if (targetPath === currentLessonRouteKey) {
         return;
       }
 
-      setPendingLessonPath(`${url.pathname}${url.search}`);
+      setPendingLessonNavigation({
+        fromPath: currentLessonRouteKey,
+        targetPath,
+      });
+      setIndicatorReadyNavigation(null);
       mainRef.current?.scrollTo?.({ top: 0, behavior: "auto" });
       if (isMobile) {
         setIsCollapsed(true);
       }
     },
-    [isMobile, pathname]
+    [currentLessonRouteKey, isMobile]
   );
 
-  const currentLessonRouteKey = `${pathname}${typeof window === "undefined" ? "" : window.location.search}`;
-  const isLessonNavigationPending =
-    pendingLessonPath !== null && pendingLessonPath !== currentLessonRouteKey;
+  useEffect(() => {
+    if (!pendingLessonNavigation) {
+      return;
+    }
+
+    const indicatorTimer = window.setTimeout(() => {
+      setIndicatorReadyNavigation(pendingLessonNavigation);
+    }, LESSON_NAVIGATION_INDICATOR_DELAY_MS);
+    const failsafeTimer = window.setTimeout(() => {
+      setPendingLessonNavigation((currentPending) =>
+        isSamePendingLessonNavigation(currentPending, pendingLessonNavigation)
+          ? null
+          : currentPending
+      );
+      setIndicatorReadyNavigation((currentNavigation) =>
+        isSamePendingLessonNavigation(currentNavigation, pendingLessonNavigation)
+          ? null
+          : currentNavigation
+      );
+    }, LESSON_NAVIGATION_FAILSAFE_MS);
+
+    return () => {
+      window.clearTimeout(indicatorTimer);
+      window.clearTimeout(failsafeTimer);
+    };
+  }, [pendingLessonNavigation]);
+
+  useEffect(() => {
+    if (!pendingLessonNavigation || currentLessonRouteKey === pendingLessonNavigation.fromPath) {
+      return;
+    }
+
+    const settledNavigation = pendingLessonNavigation;
+    const settleTimer = window.setTimeout(() => {
+      setPendingLessonNavigation((currentPending) =>
+        isSamePendingLessonNavigation(currentPending, settledNavigation) ? null : currentPending
+      );
+      setIndicatorReadyNavigation((currentNavigation) =>
+        isSamePendingLessonNavigation(currentNavigation, settledNavigation)
+          ? null
+          : currentNavigation
+      );
+    }, 0);
+
+    return () => window.clearTimeout(settleTimer);
+  }, [currentLessonRouteKey, pendingLessonNavigation]);
+
+  const isLessonNavigationPending = Boolean(
+    pendingLessonNavigation &&
+    isSamePendingLessonNavigation(indicatorReadyNavigation, pendingLessonNavigation) &&
+    currentLessonRouteKey === pendingLessonNavigation.fromPath
+  );
 
   return (
     <div
