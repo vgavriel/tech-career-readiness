@@ -55,43 +55,32 @@ ensure_test_db() {
 }
 
 configure_puppeteer_browser() {
-  if [[ "${CI:-}" == "true" ]] && [[ -z "${PUPPETEER_EXECUTABLE_PATH:-}" ]]; then
-    if command -v google-chrome >/dev/null 2>&1; then
-      PUPPETEER_EXECUTABLE_PATH="$(command -v google-chrome)"
-      export PUPPETEER_EXECUTABLE_PATH
-    elif command -v google-chrome-stable >/dev/null 2>&1; then
-      PUPPETEER_EXECUTABLE_PATH="$(command -v google-chrome-stable)"
-      export PUPPETEER_EXECUTABLE_PATH
-    elif command -v chromium >/dev/null 2>&1; then
-      PUPPETEER_EXECUTABLE_PATH="$(command -v chromium)"
-      export PUPPETEER_EXECUTABLE_PATH
-    fi
+  if [[ "${CI:-}" != "true" ]]; then
+    return 0
   fi
 
-  if [[ "${CI:-}" == "true" ]] && [[ -z "${PUPPETEER_CACHE_DIR:-}" ]] && [[ -n "${RUNNER_TEMP:-}" ]]; then
-    export PUPPETEER_CACHE_DIR="${RUNNER_TEMP}/puppeteer"
-  fi
-}
-
-ensure_puppeteer_chrome() {
   if [[ -n "${PUPPETEER_EXECUTABLE_PATH:-}" ]] && [[ -x "${PUPPETEER_EXECUTABLE_PATH}" ]]; then
     echo "A11Y browser: using ${PUPPETEER_EXECUTABLE_PATH}."
     return 0
   fi
 
-  if node - >/dev/null 2>&1 <<'NODE'
-const fs = require("fs");
-const puppeteer = require("puppeteer");
-
-const executablePath = puppeteer.executablePath();
-process.exit(fs.existsSync(executablePath) ? 0 : 1);
-NODE
-  then
-    return 0
+  if [[ -n "${PUPPETEER_EXECUTABLE_PATH:-}" ]]; then
+    echo "A11Y browser: PUPPETEER_EXECUTABLE_PATH is not executable: ${PUPPETEER_EXECUTABLE_PATH}" >&2
+    exit 1
   fi
 
-  echo "A11Y browser: Puppeteer Chrome not found; installing..."
-  npx puppeteer browsers install chrome
+  local browser_path=""
+  for browser_bin in google-chrome google-chrome-stable chromium; do
+    if browser_path="$(command -v "${browser_bin}" 2>/dev/null)"; then
+      export PUPPETEER_EXECUTABLE_PATH="${browser_path}"
+      echo "A11Y browser: using ${PUPPETEER_EXECUTABLE_PATH}."
+      return 0
+    fi
+  done
+
+  echo "A11Y browser: no system Chrome executable found in CI." >&2
+  echo "Install Chrome or set PUPPETEER_EXECUTABLE_PATH." >&2
+  exit 1
 }
 
 cleanup() {
@@ -105,7 +94,6 @@ trap cleanup EXIT
 
 ensure_test_db
 configure_puppeteer_browser
-ensure_puppeteer_chrome
 
 npm run build
 PORT="${PORT}" npm run start &
