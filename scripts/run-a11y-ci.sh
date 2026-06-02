@@ -54,25 +54,19 @@ ensure_test_db() {
   exec "${SCRIPT_DIR}/with-test-db.sh" bash "${SCRIPT_DIR}/run-a11y-ci.sh"
 }
 
+configure_puppeteer_cache() {
+  if [[ "${CI:-}" == "true" ]] && [[ -z "${PUPPETEER_CACHE_DIR:-}" ]] && [[ -n "${RUNNER_TEMP:-}" ]]; then
+    export PUPPETEER_CACHE_DIR="${RUNNER_TEMP}/puppeteer"
+  fi
+}
+
 ensure_puppeteer_chrome() {
   if node - >/dev/null 2>&1 <<'NODE'
 const fs = require("fs");
-const path = require("path");
 const puppeteer = require("puppeteer");
 
 const executablePath = puppeteer.executablePath();
-if (fs.existsSync(executablePath)) {
-  process.exit(0);
-}
-
-const pathParts = executablePath.split(path.sep);
-const chromeIndex = pathParts.lastIndexOf("chrome");
-if (chromeIndex !== -1 && pathParts.length > chromeIndex + 1) {
-  const browserDir = pathParts.slice(0, chromeIndex + 2).join(path.sep) || path.sep;
-  fs.rmSync(browserDir, { recursive: true, force: true });
-}
-
-process.exit(1);
+process.exit(fs.existsSync(executablePath) ? 0 : 1);
 NODE
   then
     return 0
@@ -92,6 +86,7 @@ cleanup() {
 trap cleanup EXIT
 
 ensure_test_db
+configure_puppeteer_cache
 ensure_puppeteer_chrome
 
 npm run build
