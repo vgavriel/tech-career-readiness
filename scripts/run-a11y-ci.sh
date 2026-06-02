@@ -54,13 +54,31 @@ ensure_test_db() {
   exec "${SCRIPT_DIR}/with-test-db.sh" bash "${SCRIPT_DIR}/run-a11y-ci.sh"
 }
 
-configure_puppeteer_cache() {
+configure_puppeteer_browser() {
+  if [[ "${CI:-}" == "true" ]] && [[ -z "${PUPPETEER_EXECUTABLE_PATH:-}" ]]; then
+    if command -v google-chrome >/dev/null 2>&1; then
+      PUPPETEER_EXECUTABLE_PATH="$(command -v google-chrome)"
+      export PUPPETEER_EXECUTABLE_PATH
+    elif command -v google-chrome-stable >/dev/null 2>&1; then
+      PUPPETEER_EXECUTABLE_PATH="$(command -v google-chrome-stable)"
+      export PUPPETEER_EXECUTABLE_PATH
+    elif command -v chromium >/dev/null 2>&1; then
+      PUPPETEER_EXECUTABLE_PATH="$(command -v chromium)"
+      export PUPPETEER_EXECUTABLE_PATH
+    fi
+  fi
+
   if [[ "${CI:-}" == "true" ]] && [[ -z "${PUPPETEER_CACHE_DIR:-}" ]] && [[ -n "${RUNNER_TEMP:-}" ]]; then
     export PUPPETEER_CACHE_DIR="${RUNNER_TEMP}/puppeteer"
   fi
 }
 
 ensure_puppeteer_chrome() {
+  if [[ -n "${PUPPETEER_EXECUTABLE_PATH:-}" ]] && [[ -x "${PUPPETEER_EXECUTABLE_PATH}" ]]; then
+    echo "A11Y browser: using ${PUPPETEER_EXECUTABLE_PATH}."
+    return 0
+  fi
+
   if node - >/dev/null 2>&1 <<'NODE'
 const fs = require("fs");
 const puppeteer = require("puppeteer");
@@ -86,7 +104,7 @@ cleanup() {
 trap cleanup EXIT
 
 ensure_test_db
-configure_puppeteer_cache
+configure_puppeteer_browser
 ensure_puppeteer_chrome
 
 npm run build

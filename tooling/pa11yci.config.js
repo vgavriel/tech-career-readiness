@@ -3,14 +3,20 @@ const baseUrl =
   process.env.BASE_URL ??
   `http://localhost:${process.env.PORT ?? 3000}`;
 
+const chromeLaunchConfig = {
+  args: ["--no-sandbox"],
+};
+
+if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+  chromeLaunchConfig.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+}
+
 module.exports = {
   defaults: {
     standard: "WCAG2AAA",
     timeout: 60000,
     wait: 1000,
-    chromeLaunchConfig: {
-      args: ["--no-sandbox"],
-    },
+    chromeLaunchConfig,
   },
   urls: [
     `${baseUrl}/`,
