@@ -57,10 +57,22 @@ ensure_test_db() {
 ensure_puppeteer_chrome() {
   if node - >/dev/null 2>&1 <<'NODE'
 const fs = require("fs");
+const path = require("path");
 const puppeteer = require("puppeteer");
 
 const executablePath = puppeteer.executablePath();
-process.exit(fs.existsSync(executablePath) ? 0 : 1);
+if (fs.existsSync(executablePath)) {
+  process.exit(0);
+}
+
+const pathParts = executablePath.split(path.sep);
+const chromeIndex = pathParts.lastIndexOf("chrome");
+if (chromeIndex !== -1 && pathParts.length > chromeIndex + 1) {
+  const browserDir = pathParts.slice(0, chromeIndex + 2).join(path.sep) || path.sep;
+  fs.rmSync(browserDir, { recursive: true, force: true });
+}
+
+process.exit(1);
 NODE
   then
     return 0
