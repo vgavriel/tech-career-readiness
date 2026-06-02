@@ -54,6 +54,35 @@ ensure_test_db() {
   exec "${SCRIPT_DIR}/with-test-db.sh" bash "${SCRIPT_DIR}/run-a11y-ci.sh"
 }
 
+configure_puppeteer_browser() {
+  if [[ "${CI:-}" != "true" ]]; then
+    return 0
+  fi
+
+  if [[ -n "${PUPPETEER_EXECUTABLE_PATH:-}" ]] && [[ -x "${PUPPETEER_EXECUTABLE_PATH}" ]]; then
+    echo "A11Y browser: using ${PUPPETEER_EXECUTABLE_PATH}."
+    return 0
+  fi
+
+  if [[ -n "${PUPPETEER_EXECUTABLE_PATH:-}" ]]; then
+    echo "A11Y browser: PUPPETEER_EXECUTABLE_PATH is not executable: ${PUPPETEER_EXECUTABLE_PATH}" >&2
+    exit 1
+  fi
+
+  local browser_path=""
+  for browser_bin in google-chrome google-chrome-stable chromium; do
+    if browser_path="$(command -v "${browser_bin}" 2>/dev/null)"; then
+      export PUPPETEER_EXECUTABLE_PATH="${browser_path}"
+      echo "A11Y browser: using ${PUPPETEER_EXECUTABLE_PATH}."
+      return 0
+    fi
+  done
+
+  echo "A11Y browser: no system Chrome executable found in CI." >&2
+  echo "Install Chrome or set PUPPETEER_EXECUTABLE_PATH." >&2
+  exit 1
+}
+
 cleanup() {
   if [[ -n "${SERVER_PID:-}" ]] && kill -0 "${SERVER_PID}" 2>/dev/null; then
     kill "${SERVER_PID}"
@@ -64,6 +93,7 @@ cleanup() {
 trap cleanup EXIT
 
 ensure_test_db
+configure_puppeteer_browser
 
 npm run build
 PORT="${PORT}" npm run start &
