@@ -54,6 +54,22 @@ ensure_test_db() {
   exec "${SCRIPT_DIR}/with-test-db.sh" bash "${SCRIPT_DIR}/run-a11y-ci.sh"
 }
 
+ensure_puppeteer_chrome() {
+  if node - >/dev/null 2>&1 <<'NODE'
+const fs = require("fs");
+const puppeteer = require("puppeteer");
+
+const executablePath = puppeteer.executablePath();
+process.exit(fs.existsSync(executablePath) ? 0 : 1);
+NODE
+  then
+    return 0
+  fi
+
+  echo "A11Y browser: Puppeteer Chrome not found; installing..."
+  npx puppeteer browsers install chrome
+}
+
 cleanup() {
   if [[ -n "${SERVER_PID:-}" ]] && kill -0 "${SERVER_PID}" 2>/dev/null; then
     kill "${SERVER_PID}"
@@ -64,6 +80,7 @@ cleanup() {
 trap cleanup EXIT
 
 ensure_test_db
+ensure_puppeteer_chrome
 
 npm run build
 PORT="${PORT}" npm run start &
