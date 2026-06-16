@@ -16,7 +16,8 @@ jobs:
   e2e:
     if: |
       github.event_name != 'pull_request' ||
-      github.event.pull_request.user.login == 'renovate[bot]'
+      github.event.pull_request.user.login == 'renovate[bot]' ||
+      github.event.pull_request.head.ref == 'automation/eslint-major-upgrade'
     runs-on: ubuntu-latest
     services:
       postgres:
