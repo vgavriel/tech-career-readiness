@@ -21,6 +21,12 @@
     {
       "matchManagers": ["npm"],
       "postUpdateOptions": ["npmInstallTwice"]
+    },
+    {
+      "description": "ESLint 10 is blocked until eslint-config-next's plugin stack supports it.",
+      "matchManagers": ["npm"],
+      "matchPackageNames": ["eslint"],
+      "allowedVersions": "<10.0.0"
     }
   ]
 }
