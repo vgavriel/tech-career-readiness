@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Use Node.js 20
         uses: actions/setup-node@v6
         with:
@@ -56,7 +56,7 @@ jobs:
       LESSON_CONTENT_MOCK_HTML: "<h2>Lesson content</h2><p>Sample lesson content for tests.</p>"
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Use Node.js 20
         uses: actions/setup-node@v6
         with:
