@@ -1,0 +1,236 @@
+name: TypeScript Major Compatibility
+
+on:
+  schedule:
+    - cron: "30 13 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: typescript-major-compatibility
+  cancel-in-progress: false
+
+env:
+  PR_BRANCH: automation/typescript-major-upgrade
+  APP_ENV: test
+  NEXTAUTH_SECRET: test-nextauth-secret
+  NEXTAUTH_URL: http://localhost:3000
+  GOOGLE_CLIENT_ID: test-google-client-id
+  GOOGLE_CLIENT_SECRET: test-google-client-secret
+  LESSON_CONTENT_MOCK_HTML: "<h2>Lesson content</h2><p>Sample lesson content for tests.</p>"
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: tech_career_readiness_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/tech_career_readiness_test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          token: ${{ secrets.TYPESCRIPT_MAJOR_PR_TOKEN || github.token }}
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Use npm 11
+        run: npm install -g npm@11
+
+      - name: Prepare TypeScript major upgrade
+        id: prepare
+        run: node scripts/prepare-typescript-major-upgrade.mjs
+
+      - name: Stop if no newer major exists
+        if: steps.prepare.outputs.upgrade_needed != 'true'
+        run: echo "No TypeScript major upgrade is currently available."
+
+      - name: Resolve trial lockfile
+        id: lockfile
+        if: steps.prepare.outputs.upgrade_needed == 'true'
+        continue-on-error: true
+        run: npm install --package-lock-only --ignore-scripts
+
+      - name: Install trial dependencies
+        id: install
+        if: steps.prepare.outputs.upgrade_needed == 'true' && steps.lockfile.outcome == 'success'
+        continue-on-error: true
+        run: npm ci
+
+      - name: Typecheck
+        id: typecheck
+        if: steps.prepare.outputs.upgrade_needed == 'true' && steps.install.outcome == 'success'
+        continue-on-error: true
+        run: npm run typecheck
+
+      - name: Lint
+        id: lint
+        if: steps.prepare.outputs.upgrade_needed == 'true' && steps.typecheck.outcome == 'success'
+        continue-on-error: true
+        run: npm run lint
+
+      - name: Unit tests
+        id: unit
+        if: steps.prepare.outputs.upgrade_needed == 'true' && steps.lint.outcome == 'success'
+        continue-on-error: true
+        run: npm run test:unit
+
+      - name: Migrate database
+        id: migrate
+        if: steps.prepare.outputs.upgrade_needed == 'true' && steps.unit.outcome == 'success'
+        continue-on-error: true
+        run: npx prisma migrate deploy
+
+      - name: Generate Prisma client
+        id: prisma_generate
+        if: steps.prepare.outputs.upgrade_needed == 'true' && steps.migrate.outcome == 'success'
+        continue-on-error: true
+        run: npx prisma generate
+
+      - name: Seed database
+        id: seed
+        if: steps.prepare.outputs.upgrade_needed == 'true' && steps.prisma_generate.outcome == 'success'
+        continue-on-error: true
+        run: npx prisma db seed
+
+      - name: Build
+        id: build
+        if: steps.prepare.outputs.upgrade_needed == 'true' && steps.seed.outcome == 'success'
+        continue-on-error: true
+        run: npm run build
+
+      - name: Format generated JSON
+        id: format
+        if: steps.prepare.outputs.upgrade_needed == 'true' && steps.build.outcome == 'success'
+        continue-on-error: true
+        run: npx prettier --write package.json package-lock.json renovate.json
+
+      - name: Report incompatible trial
+        if: |
+          steps.prepare.outputs.upgrade_needed == 'true' &&
+          (
+            steps.lockfile.outcome != 'success' ||
+            steps.install.outcome != 'success' ||
+            steps.typecheck.outcome != 'success' ||
+            steps.lint.outcome != 'success' ||
+            steps.unit.outcome != 'success' ||
+            steps.migrate.outcome != 'success' ||
+            steps.prisma_generate.outcome != 'success' ||
+            steps.seed.outcome != 'success' ||
+            steps.build.outcome != 'success' ||
+            steps.format.outcome != 'success'
+          )
+        env:
+          TARGET_RANGE: ${{ steps.prepare.outputs.target_range }}
+          TARGET_VERSION: ${{ steps.prepare.outputs.target_version }}
+        run: |
+          {
+            echo "## TypeScript major compatibility probe"
+            echo ""
+            echo "Trial target: typescript ${TARGET_RANGE} (latest observed: ${TARGET_VERSION})"
+            echo ""
+            echo "No PR was opened because one or more compatibility checks did not pass."
+            echo ""
+            echo "| Step | Outcome |"
+            echo "| --- | --- |"
+            echo "| lockfile | ${{ steps.lockfile.outcome }} |"
+            echo "| install | ${{ steps.install.outcome }} |"
+            echo "| typecheck | ${{ steps.typecheck.outcome }} |"
+            echo "| lint | ${{ steps.lint.outcome }} |"
+            echo "| unit | ${{ steps.unit.outcome }} |"
+            echo "| migrate | ${{ steps.migrate.outcome }} |"
+            echo "| prisma-generate | ${{ steps.prisma_generate.outcome }} |"
+            echo "| seed | ${{ steps.seed.outcome }} |"
+            echo "| build | ${{ steps.build.outcome }} |"
+            echo "| format | ${{ steps.format.outcome }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open or update TypeScript major upgrade PR
+        if: |
+          steps.prepare.outputs.upgrade_needed == 'true' &&
+          steps.lockfile.outcome == 'success' &&
+          steps.install.outcome == 'success' &&
+          steps.typecheck.outcome == 'success' &&
+          steps.lint.outcome == 'success' &&
+          steps.unit.outcome == 'success' &&
+          steps.migrate.outcome == 'success' &&
+          steps.prisma_generate.outcome == 'success' &&
+          steps.seed.outcome == 'success' &&
+          steps.build.outcome == 'success' &&
+          steps.format.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.TYPESCRIPT_MAJOR_PR_TOKEN || github.token }}
+          TARGET_MAJOR: ${{ steps.prepare.outputs.target_major }}
+          TARGET_RANGE: ${{ steps.prepare.outputs.target_range }}
+          TARGET_VERSION: ${{ steps.prepare.outputs.target_version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$PR_BRANCH"
+          git add package.json package-lock.json renovate.json
+
+          if git diff --cached --quiet; then
+            echo "No dependency files changed after the trial upgrade."
+            exit 0
+          fi
+
+          git commit -m "chore(deps): update typescript to v${TARGET_MAJOR}"
+          git push --force-with-lease origin "$PR_BRANCH"
+
+          pr_title="chore(deps): update typescript to v${TARGET_MAJOR}"
+          pr_body="$(printf '%s\n' \
+            "This PR was opened automatically after the scheduled TypeScript major compatibility probe passed." \
+            "" \
+            "Trial target:" \
+            "- typescript ${TARGET_RANGE} (latest observed: ${TARGET_VERSION})" \
+            "" \
+            "Validation run before opening this PR:" \
+            "- npm install --package-lock-only --ignore-scripts" \
+            "- npm ci" \
+            "- npm run typecheck" \
+            "- npm run lint" \
+            "- npm run test:unit" \
+            "- npx prisma migrate deploy" \
+            "- npx prisma generate" \
+            "- npx prisma db seed" \
+            "- npm run build" \
+            "" \
+            "The normal PR workflows should still run after this PR is opened.")"
+
+          open_pr="$(gh pr list --head "$PR_BRANCH" --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$open_pr" ]; then
+            gh pr edit "$open_pr" --title "$pr_title" --body "$pr_body"
+            exit 0
+          fi
+
+          closed_pr="$(gh pr list --head "$PR_BRANCH" --state closed --json number --jq '.[0].number // empty')"
+          if [ -n "$closed_pr" ]; then
+            gh pr reopen "$closed_pr" || true
+            reopened_state="$(gh pr view "$closed_pr" --json state --jq '.state')"
+            if [ "$reopened_state" = "OPEN" ]; then
+              gh pr edit "$closed_pr" --title "$pr_title" --body "$pr_body"
+              exit 0
+            fi
+          fi
+
+          gh pr create --base "${{ github.event.repository.default_branch }}" --head "$PR_BRANCH" --title "$pr_title" --body "$pr_body"

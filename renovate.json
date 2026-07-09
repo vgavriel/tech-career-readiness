@@ -27,6 +27,12 @@
       "matchManagers": ["npm"],
       "matchPackageNames": ["eslint"],
       "allowedVersions": "<10.0.0"
+    },
+    {
+      "description": "TypeScript 7 is blocked until Next.js and typescript-eslint support its new package API/layout.",
+      "matchManagers": ["npm"],
+      "matchPackageNames": ["typescript"],
+      "allowedVersions": "<7.0.0"
     }
   ]
 }
