@@ -3,7 +3,7 @@
   "extends": ["config:recommended"],
   "enabledManagers": ["npm", "github-actions"],
   "labels": ["dependencies"],
-  "automerge": true,
+  "automerge": false,
   "automergeType": "pr",
   "platformAutomerge": true,
   "rebaseWhen": "behind-base-branch",
@@ -15,9 +15,16 @@
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
   "lockFileMaintenance": {
-    "enabled": true
+    "enabled": true,
+    "automerge": true
   },
   "packageRules": [
+    {
+      "description": "Automerge npm lockfile-only updates after CI passes.",
+      "matchManagers": ["npm"],
+      "matchJsonata": ["isLockfileUpdate = true"],
+      "automerge": true
+    },
     {
       "matchManagers": ["npm"],
       "postUpdateOptions": ["npmInstallTwice"]
