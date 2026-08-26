@@ -386,6 +386,12 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Add prompt library, checkpoints, case study timeline, and templates
 - [x] Link all playbook artifacts from `docs/codex-playbook/README.md`
 
+### Phase 22 — Dependency compatibility automation
+
+- [x] Temporarily constrain Mend Renovate to npm 11 while npm/cli#9800 blocks lockfile maintenance
+- [x] Add a scheduled npm 12 compatibility probe that opens an upgrade PR when the blocker clears
+- [x] Keep intentional ESLint and TypeScript major ceilings paired with scheduled compatibility probes
+
 ## Environment variables
 
 - APP_ENV (local, preview, production, test)
