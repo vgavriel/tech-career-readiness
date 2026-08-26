@@ -368,6 +368,9 @@ Source of truth for modules, focuses, progress categories, and gamification:
 ### Phase 19 — Repository governance (public release)
 
 - [x] Add CODEOWNERS to require maintainer review for main-branch changes
+- [x] Limit Renovate automerge to npm lockfile-only and lockfile maintenance updates
+- [x] Require all seven existing CI checks for main-branch merges
+- [ ] Isolate the review requirement and grant Mend Renovate a review-only bypass after the scoped automerge configuration lands
 
 ### Phase 20 — Open-source security practices
 
