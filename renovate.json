@@ -3,6 +3,8 @@
   "extends": ["config:recommended"],
   "enabledManagers": ["npm", "github-actions", "docker-compose"],
   "labels": ["dependencies"],
+  "assignees": [],
+  "reviewers": [],
   "automerge": false,
   "automergeType": "pr",
   "platformAutomerge": true,
