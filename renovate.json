@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
-  "enabledManagers": ["npm", "github-actions"],
+  "enabledManagers": ["npm", "github-actions", "docker-compose"],
   "labels": ["dependencies"],
   "automerge": false,
   "automergeType": "pr",

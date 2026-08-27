@@ -391,6 +391,8 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Temporarily constrain Mend Renovate to npm 11 while npm/cli#9800 blocks lockfile maintenance
 - [x] Add a scheduled npm 12 compatibility probe that opens an upgrade PR when the blocker clears
 - [x] Keep intentional ESLint and TypeScript major ceilings paired with scheduled compatibility probes
+- [x] Align declared Node.js types and runtime support on the active Node.js 24 LTS line
+- [x] Align local and CI PostgreSQL on version 18 and enable Docker Compose update monitoring
 
 ## Environment variables
 
