@@ -1,0 +1,82 @@
+name: Repository Email Notifications
+
+on:
+  pull_request:
+    types: [closed]
+  workflow_run:
+    workflows:
+      - A11y (WCAG AAA)
+      - CI
+      - CodeQL
+      - Dependency Review
+      - E2E
+      - ESLint Major Compatibility
+      - npm Major Compatibility
+      - TypeScript Major Compatibility
+      - Version
+    types: [completed]
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  ALERT_ISSUE_NUMBER: "310"
+
+jobs:
+  renovate-merged:
+    if: |
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.user.login == 'renovate[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Email the repository owner through the alert issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_MERGED_BY: ${{ github.event.pull_request.merged_by.login }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          printf -v message '%s\n' \
+            '@vgavriel' \
+            '' \
+            "Mend Renovate PR merged: [#${PR_NUMBER} ${PR_TITLE}](${PR_URL})." \
+            '' \
+            "Merged by ${PR_MERGED_BY}."
+
+          gh issue comment "$ALERT_ISSUE_NUMBER" \
+            --repo "$GITHUB_REPOSITORY" \
+            --body "$message"
+
+  ci-issue:
+    if: |
+      github.event_name == 'workflow_run' &&
+      contains(
+        fromJSON('["failure", "timed_out", "action_required", "startup_failure", "stale"]'),
+        github.event.workflow_run.conclusion
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Email the repository owner through the alert issue
+        env:
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          GH_TOKEN: ${{ github.token }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          RUN_NUMBER: ${{ github.event.workflow_run.run_number }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+        run: |
+          printf -v message '%s\n' \
+            '@vgavriel' \
+            '' \
+            "CI issue: [${WORKFLOW_NAME} run #${RUN_NUMBER}](${RUN_URL}) finished with ${CONCLUSION}." \
+            '' \
+            "Branch: ${HEAD_BRANCH}" \
+            "Commit: ${HEAD_SHA}"
+
+          gh issue comment "$ALERT_ISSUE_NUMBER" \
+            --repo "$GITHUB_REPOSITORY" \
+            --body "$message"
