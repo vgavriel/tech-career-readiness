@@ -153,6 +153,14 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          remote_ref="refs/heads/$PR_BRANCH"
+          remote_branch_sha="$(git ls-remote --heads origin "$remote_ref" | awk '{ print $1 }')"
+          lease="$remote_ref:"
+          if [ -n "$remote_branch_sha" ]; then
+            lease="$remote_ref:$remote_branch_sha"
+          fi
+
           git checkout -B "$PR_BRANCH"
 
           git rm \
@@ -167,7 +175,7 @@ jobs:
           fi
 
           git commit -m "chore(deps): update npm to v${TARGET_MAJOR}"
-          git push --force-with-lease origin "$PR_BRANCH"
+          git push --force-with-lease="$lease" origin "HEAD:$remote_ref"
 
           pr_title="chore(deps): update npm to v${TARGET_MAJOR}"
           pr_body="$(printf '%s\n' \
