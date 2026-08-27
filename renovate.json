@@ -30,6 +30,12 @@
       "postUpdateOptions": ["npmInstallTwice"]
     },
     {
+      "description": "npm 12 is blocked by npm/cli#9800 until registry tarballs work during lockfile-only installs.",
+      "matchManagers": ["npm"],
+      "matchPackageNames": ["npm"],
+      "allowedVersions": "<12.0.0"
+    },
+    {
       "description": "ESLint 10 is blocked until eslint-config-next's plugin stack supports it.",
       "matchManagers": ["npm"],
       "matchPackageNames": ["eslint"],
