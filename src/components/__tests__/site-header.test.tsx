@@ -40,8 +40,7 @@ vi.mock("next/link", () => ({
 
 describe("SiteHeader", () => {
   let resolveProviders:
-    | ((providers: Record<string, { id: string; name?: string }>) => void)
-    | null = null;
+    ((providers: Record<string, { id: string; name?: string }>) => void) | null = null;
 
   beforeEach(() => {
     authMocks.signIn.mockReset();
@@ -108,15 +107,14 @@ describe("SiteHeader", () => {
 
     render(<SiteHeader />);
     await waitFor(() => expect(authMocks.getProviders).toHaveBeenCalled());
-    resolveProviders?.({ google: { id: "google", name: "Google" } });
-
     expect(screen.getByText(/signed in as: ada lovelace/i)).toBeInTheDocument();
 
     const signOutButton = screen.getByRole("button", { name: /sign out/i });
     const user = userEvent.setup();
+    expect(signOutButton).toBeDisabled();
+    expect(signOutButton).toHaveAttribute("aria-busy", "true");
     await user.click(signOutButton);
-
-    expect(authMocks.signOut).toHaveBeenCalled();
+    expect(authMocks.signOut).not.toHaveBeenCalled();
 
     const menuButton = screen.getByRole("button", { name: /menu/i });
     await user.click(menuButton);
@@ -129,7 +127,12 @@ describe("SiteHeader", () => {
     const mobileSignOut = within(menuPanel).getByRole("button", {
       name: /sign out/i,
     });
+    expect(mobileSignOut).toBeDisabled();
+    resolveProviders?.({ google: { id: "google", name: "Google" } });
+    await waitFor(() => expect(signOutButton).toBeEnabled());
+    expect(mobileSignOut).toBeEnabled();
     await user.click(mobileSignOut);
+    await user.click(signOutButton);
     expect(authMocks.signOut).toHaveBeenCalledTimes(2);
   });
 

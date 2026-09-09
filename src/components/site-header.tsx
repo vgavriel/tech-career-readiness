@@ -145,9 +145,11 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
                     Signed in as: {session.user.name ?? session.user.email}
                   </span>
                   <button
-                    className="min-h-11 whitespace-nowrap rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 text-sm font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)]"
+                    className="min-h-11 whitespace-nowrap rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 text-sm font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)] disabled:cursor-not-allowed disabled:opacity-60"
                     onClick={() => signOut()}
                     type="button"
+                    disabled={!isReady}
+                    aria-busy={!isReady}
                   >
                     Sign out
                   </button>
@@ -218,9 +220,11 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
                     Signed in as: {session.user.name ?? session.user.email}
                   </span>
                   <button
-                    className="min-h-10 whitespace-nowrap rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 text-sm font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)]"
+                    className="min-h-10 whitespace-nowrap rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 text-sm font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)] disabled:cursor-not-allowed disabled:opacity-60"
                     onClick={() => signOut()}
                     type="button"
+                    disabled={!isReady}
+                    aria-busy={!isReady}
                   >
                     Sign out
                   </button>

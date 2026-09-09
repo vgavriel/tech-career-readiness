@@ -60,7 +60,9 @@ The root layout applies the stored theme before first paint using a small static
 script. The proxy permits its exact SHA-256 hash under the existing CSP, keeping
 the root layout static without allowing arbitrary inline scripts. Shared CSS
 variables style both themes, including native controls and focus indicators.
-The button waits for hydration before becoming interactive.
+The button waits for hydration before becoming interactive. Header sign-in and
+sign-out actions also wait for auth-provider readiness so early clicks are not
+lost while an authenticated page loads.
 
 The global error document imports the same styles and pre-paint script because
 it replaces the root layout. On client-side failures it captures the applied

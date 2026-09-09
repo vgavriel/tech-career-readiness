@@ -10,7 +10,23 @@ test("theme stays in this browser through sign-in and sign-out", async ({ page }
   await page.getByRole("button", { name: "Sign in (dev)", exact: true }).click();
   await expect(page.getByText(/signed in as:/i)).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.getByRole("link", { name: "Gold Stars", exact: true }).click();
+  // Hold hydration on the authenticated document to catch lost early clicks.
+  let releaseScripts!: () => void;
+  const scriptsReady = new Promise<void>((resolve) => {
+    releaseScripts = resolve;
+  });
+  await page.route("**/_next/**/*.js*", async (route) => {
+    await scriptsReady;
+    await route.continue();
+  });
+  try {
+    await page.goto("/gold-stars", { waitUntil: "commit" });
+    await expect(page.getByRole("button", { name: "Sign out", exact: true })).toBeDisabled();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  } finally {
+    releaseScripts();
+  }
+  await expect(page.getByRole("button", { name: "Sign out", exact: true })).toBeEnabled();
   await expect(page.getByRole("heading", { name: "Gold Stars", level: 1 })).toBeVisible();
   const headerBounds = await page.getByRole("banner").evaluate((header) => {
     const controls = [...header.querySelectorAll("a, button")].filter(
