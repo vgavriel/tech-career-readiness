@@ -103,7 +103,7 @@ const NavigatorLessonRow = ({
         className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition disabled:cursor-not-allowed disabled:opacity-60 ${
           isCompleted
             ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
-            : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-600)]"
+            : "border-[color:var(--control-outline)] bg-[color:var(--wash-0)] text-[color:var(--ink-600)]"
         }`}
         aria-pressed={isCompleted}
         aria-label={
@@ -396,7 +396,7 @@ export default function LessonNavigator({
           : "Progress is saved locally in browser."}
         {isMerging ? " Syncing guest progress..." : ""}
         {!isAuthenticated ? (
-          <SignInCta className="mt-3 inline-flex min-h-10 items-center rounded-full bg-[color:var(--accent-700)] text-[color:var(--wash-0)] hover:bg-[color:var(--ink-800)] px-3 text-sm font-semibold text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]">
+          <SignInCta className="mt-3 inline-flex min-h-10 items-center rounded-full bg-[color:var(--accent-700)] text-[color:var(--wash-0)] hover:bg-[color:var(--ink-800)] px-3 text-sm font-semibold transition hover:border-[color:var(--ink-900)]">
             Sign in to save to your account.
           </SignInCta>
         ) : null}

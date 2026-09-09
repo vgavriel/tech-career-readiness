@@ -280,6 +280,12 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Error handling for missing lessons/content fetch failures
 - [x] Confirm public access to curriculum and lessons
 - [x] UI polish for readability and CTAs
+- [x] Add a round sun/moon header toggle with browser-local theme persistence and pre-paint initialization
+- [x] Style dark surfaces, lesson content, menus, selected states, and keyboard focus using shared theme tokens
+- [x] Verify both themes with responsive browser tests and WCAG AAA accessibility audits
+- [x] Preserve the browser theme through initial root errors, client-side failures, and recovery, with regression coverage
+- [x] Strengthen lesson completion control outlines and check contrast in both themes and completion states
+- [x] Guard header sign-out actions until the browser is ready, and verify theme persistence with delayed hydration
 - [x] UI redesign pass for calmer, Brown-specific layout and reduced text density
 - [x] UI simplification pass to remove low-value text and redundant elements
 - [x] Streamline focus selection and homepage CTA hierarchy for clarity

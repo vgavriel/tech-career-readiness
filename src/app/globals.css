@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  color-scheme: light;
   --font-body: Arial, "Helvetica Neue", Helvetica, sans-serif;
   --font-display: Georgia, "Times New Roman", serif;
   --font-mono: Arial, "Helvetica Neue", Helvetica, sans-serif;
@@ -27,13 +28,53 @@
   --accent-700: var(--brand-deep-red);
   --accent-500: var(--brand-gold);
   --accent-300: #e9d1b2;
+  --highlight-surface: var(--accent-500);
+  --on-gold: var(--brand-brown-dark);
+  --scrim: #2b1d18;
   --line-soft: #d1c1b2;
   --line-strong: #b6a090;
+  --control-outline: #7a5f4b;
   --ring-track: #a68c78;
   --shadow-soft: 0 1px 2px rgba(33, 24, 19, 0.08);
   --shadow-card: 0 14px 32px rgba(33, 24, 19, 0.12);
   --shadow-lift: 0 22px 48px rgba(33, 24, 19, 0.18);
   --focus-ring: var(--brand-navy);
+  --page-background:
+    radial-gradient(circle at 12% 10%, rgba(126, 31, 31, 0.08), transparent 56%),
+    radial-gradient(circle at 86% 6%, rgba(76, 127, 161, 0.08), transparent 54%),
+    linear-gradient(180deg, #fefcf9 0%, #f7efe4 55%, #efe4d7 100%);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --wash-0: #24211f;
+  --wash-50: #2c2825;
+  --wash-100: #191715;
+  --wash-200: #39322d;
+  --wash-300: #494039;
+  --surface: #282420;
+  --ink-900: #fff5e8;
+  --ink-800: #f3e6d7;
+  --ink-700: #e6d8c8;
+  --ink-600: #d5c5b4;
+  --ink-500: #ccbdad;
+  --accent-700: #f3b8a8;
+  --accent-500: #dfba86;
+  --accent-300: #48322c;
+  --highlight-surface: #4b392b;
+  --scrim: #000000;
+  --line-soft: #63564b;
+  --line-strong: #887462;
+  --control-outline: #ad9580;
+  --ring-track: #7c6958;
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-card: 0 14px 32px rgba(0, 0, 0, 0.22);
+  --shadow-lift: 0 22px 48px rgba(0, 0, 0, 0.32);
+  --focus-ring: #a8d2ee;
+  --page-background:
+    radial-gradient(circle at 12% 10%, rgba(174, 89, 65, 0.1), transparent 56%),
+    radial-gradient(circle at 86% 6%, rgba(114, 142, 157, 0.06), transparent 54%),
+    linear-gradient(180deg, #201c19 0%, #1c1917 55%, #171513 100%);
 }
 
 html,
@@ -49,7 +90,6 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color-scheme: light;
 }
 
 @layer base {
@@ -75,10 +115,7 @@ body {
 .page-shell {
   position: relative;
   isolation: isolate;
-  background:
-    radial-gradient(circle at 12% 10%, rgba(126, 31, 31, 0.08), transparent 56%),
-    radial-gradient(circle at 86% 6%, rgba(76, 127, 161, 0.08), transparent 54%),
-    linear-gradient(180deg, #fefcf9 0%, #f7efe4 55%, #efe4d7 100%);
+  background: var(--page-background);
 }
 
 .page-shell::before {
@@ -115,7 +152,7 @@ body {
   z-index: 100;
   border-radius: 999px;
   background: var(--accent-500);
-  color: var(--ink-900);
+  color: var(--on-gold);
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -164,7 +201,7 @@ body {
 }
 
 .scroll-panel::-webkit-scrollbar-thumb {
-  background: rgba(74, 53, 41, 0.6);
+  background: var(--line-strong);
   border-radius: 999px;
 }
 
@@ -175,6 +212,52 @@ body {
 
 :focus:not(:focus-visible) {
   outline: none;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--wash-50);
+  color: var(--ink-700);
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.theme-toggle:hover {
+  background: var(--wash-200);
+  border-color: var(--ink-600);
+}
+
+.theme-toggle svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 180ms ease;
+}
+
+.theme-toggle:hover svg {
+  transform: rotate(-12deg);
+}
+
+.theme-toggle-sun,
+[data-theme="dark"] .theme-toggle-moon {
+  display: none;
+}
+
+[data-theme="dark"] .theme-toggle-sun {
+  display: inline;
+}
+
+[data-theme="dark"] .theme-toggle {
+  color: var(--accent-500);
 }
 
 @media (max-width: 768px) {
