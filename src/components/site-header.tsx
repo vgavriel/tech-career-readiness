@@ -6,6 +6,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 
 import FocusMenu from "@/components/focus-menu";
+import ThemeToggle from "@/components/theme-toggle";
 import { buildSignInOptions, useAuthProvider } from "@/hooks/use-auth-provider";
 
 /**
@@ -115,16 +116,16 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
     <header className="sticky top-0 z-50 border-b border-[color:var(--line-soft)] bg-[color:var(--wash-0)] shadow-[var(--shadow-soft)]">
       <div className="mx-auto w-full max-w-[1400px] px-4 py-3 sm:px-5 md:px-6 md:py-4">
         <div className="flex items-center justify-between gap-3 md:gap-4">
-          <div className="flex items-center gap-4">
+          <div className="flex min-w-0 items-center gap-4">
             <Link
               href="/"
-              className="no-underline inline-flex min-h-11 max-w-[65vw] items-center truncate font-display text-base font-semibold text-[color:var(--ink-900)] sm:max-w-none sm:text-lg md:text-xl"
+              className="no-underline block min-h-11 min-w-0 truncate py-2 font-display text-base font-semibold text-[color:var(--ink-900)] sm:text-lg md:text-xl"
             >
               Tech Career Readiness
             </Link>
             <nav
               aria-label="Primary"
-              className="hidden items-center gap-3 text-sm text-[color:var(--ink-600)] lg:flex"
+              className="hidden items-center gap-3 text-sm text-[color:var(--ink-600)] xl:flex"
             >
               {PRIMARY_NAV_LINKS.map((link) =>
                 renderPrimaryNavLink(
@@ -134,8 +135,9 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
               )}
             </nav>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="hidden items-center gap-3 text-sm lg:flex">
+          <div className="flex shrink-0 items-center gap-2">
+            <ThemeToggle />
+            <div className="hidden items-center gap-3 text-sm xl:flex">
               {showFocusMenu ? <FocusMenu /> : null}
               {session?.user ? (
                 <>
@@ -143,9 +145,11 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
                     Signed in as: {session.user.name ?? session.user.email}
                   </span>
                   <button
-                    className="min-h-11 whitespace-nowrap rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 text-sm font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)]"
+                    className="min-h-11 whitespace-nowrap rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 text-sm font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)] disabled:cursor-not-allowed disabled:opacity-60"
                     onClick={() => signOut()}
                     type="button"
+                    disabled={!isReady}
+                    aria-busy={!isReady}
                   >
                     Sign out
                   </button>
@@ -169,7 +173,7 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
               ref={toggleRef}
               type="button"
               onClick={() => setIsMenuOpen((open) => !open)}
-              className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 text-sm font-semibold text-[color:var(--ink-800)] shadow-[var(--shadow-soft)] transition hover:border-[color:var(--ink-900)] md:min-h-11 md:px-4 md:text-base lg:hidden"
+              className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-3 text-sm font-semibold text-[color:var(--ink-800)] shadow-[var(--shadow-soft)] transition hover:border-[color:var(--ink-900)] md:min-h-11 md:px-4 md:text-base xl:hidden"
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu-panel"
             >
@@ -191,7 +195,7 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
           <div
             ref={menuRef}
             id="mobile-menu-panel"
-            className="mt-3 grid max-h-[70vh] gap-4 overflow-y-auto rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-4 shadow-[var(--shadow-card)] md:gap-5 md:p-5 lg:hidden"
+            className="mt-3 grid max-h-[70vh] gap-4 overflow-y-auto rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-4 shadow-[var(--shadow-card)] md:gap-5 md:p-5 xl:hidden"
           >
             <nav aria-label="Primary" className="grid gap-2 text-sm">
               {PRIMARY_NAV_LINKS.map((link) =>
@@ -216,9 +220,11 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
                     Signed in as: {session.user.name ?? session.user.email}
                   </span>
                   <button
-                    className="min-h-10 whitespace-nowrap rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 text-sm font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)]"
+                    className="min-h-10 whitespace-nowrap rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-4 text-sm font-semibold text-[color:var(--ink-800)] transition hover:border-[color:var(--ink-900)] disabled:cursor-not-allowed disabled:opacity-60"
                     onClick={() => signOut()}
                     type="button"
+                    disabled={!isReady}
+                    aria-busy={!isReady}
                   >
                     Sign out
                   </button>

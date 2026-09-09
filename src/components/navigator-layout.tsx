@@ -514,7 +514,7 @@ export default function NavigatorLayout({
           type="button"
           aria-label="Close navigator"
           onClick={() => setIsCollapsed(true)}
-          className="absolute inset-0 z-20 bg-[color:var(--ink-900)]/20"
+          className="absolute inset-0 z-20 bg-[color:var(--scrim)]/20"
         />
       ) : null}
       <aside
