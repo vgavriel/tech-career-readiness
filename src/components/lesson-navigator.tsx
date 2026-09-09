@@ -396,7 +396,7 @@ export default function LessonNavigator({
           : "Progress is saved locally in browser."}
         {isMerging ? " Syncing guest progress..." : ""}
         {!isAuthenticated ? (
-          <SignInCta className="mt-3 inline-flex min-h-10 items-center rounded-full bg-[color:var(--accent-700)] text-[color:var(--wash-0)] hover:bg-[color:var(--ink-800)] px-3 text-sm font-semibold text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-900)]">
+          <SignInCta className="mt-3 inline-flex min-h-10 items-center rounded-full bg-[color:var(--accent-700)] text-[color:var(--wash-0)] hover:bg-[color:var(--ink-800)] px-3 text-sm font-semibold transition hover:border-[color:var(--ink-900)]">
             Sign in to save to your account.
           </SignInCta>
         ) : null}

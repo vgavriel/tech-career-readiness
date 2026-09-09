@@ -1,16 +1,20 @@
+import { createHash } from "node:crypto";
+
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import { HTTP_HEADER } from "@/lib/http-constants";
 import { REQUEST_ID_HEADER, resolveRequestId } from "@/lib/request-id";
+import { THEME_INIT_SCRIPT } from "@/lib/theme";
 
 const isProduction = process.env.NODE_ENV === "production";
+const themeScriptHash = createHash("sha256").update(THEME_INIT_SCRIPT).digest("base64");
 
 /**
  * Build a CSP string with optional nonce for inline scripts/styles.
  */
 const buildContentSecurityPolicy = (nonce: string) => {
-  const scriptSrc = ["'self'", `'nonce-${nonce}'`];
+  const scriptSrc = ["'self'", `'nonce-${nonce}'`, `'sha256-${themeScriptHash}'`];
   const styleSrc = ["'self'", `'nonce-${nonce}'`];
   const connectSrc = ["'self'", "https://vitals.vercel-insights.com"];
 

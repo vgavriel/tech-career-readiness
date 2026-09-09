@@ -1,6 +1,8 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
+import { THEME_INIT_SCRIPT } from "@/lib/theme";
+
 vi.mock("@/components/app-shell", () => ({
   default: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="app-shell">{children}</div>
@@ -17,5 +19,7 @@ describe("RootLayout", () => {
     expect(html).toContain('data-testid="app-shell"');
     expect(html).toContain('href="#main-content"');
     expect(html).toContain("Page content");
+    expect(html).toContain(THEME_INIT_SCRIPT);
+    expect(html.indexOf('id="theme-init"')).toBeLessThan(html.indexOf("<body"));
   });
 });
