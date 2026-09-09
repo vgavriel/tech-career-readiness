@@ -374,7 +374,9 @@ Source of truth for modules, focuses, progress categories, and gamification:
 ### Phase 19 — Repository governance (public release)
 
 - [x] Require one approving review for main-branch changes while exempting Renovate-managed files from automatic review requests
-- [x] Limit Renovate automerge to npm lockfile-only and lockfile maintenance updates
+- [x] Enable Renovate automerge for patch/minor updates, npm lockfile updates, and explicitly listed development-tool majors exercised by CI
+- [x] Keep application/framework majors and untested development-tool majors under manual review, preserving known compatibility ceilings
+- [x] Make pa11y-ci run the declared Pa11y dependency and add a regression check for installed tool resolution
 - [x] Require all seven existing CI checks for main-branch merges
 - [x] Isolate the review requirement and grant Mend Renovate a review-only bypass after the scoped automerge configuration lands
 

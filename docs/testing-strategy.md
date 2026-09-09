@@ -1,16 +1,19 @@
 # Testing Strategy
 
 ## Goals
+
 - High confidence that core user flows work end-to-end.
 - Fast feedback from unit and integration tests.
 - Low flake rates by eliminating real network calls and nondeterminism.
 
 ## Test pyramid and tooling
+
 - Unit tests (majority): Vitest + @testing-library/react + jsdom.
 - Integration tests: Vitest + MSW for HTTP stubs + Prisma against a test database.
 - End-to-end tests: Playwright against a built Next.js server.
 
 ## Test environments and data
+
 - Use a dedicated test database and never reuse dev/prod data.
 - If you use `.env.test`, include:
   - `APP_ENV=test`
@@ -23,13 +26,17 @@
 - Prefer fixtures and data builders over inline data to keep tests readable.
 
 ## Unit tests (fast, deterministic)
+
 Target pure logic and UI rendering without hitting the DB or network.
+
 - `src/lib/*`: env validation helpers, slug resolution, progress calculations.
 - `src/components/*`: render states and interactions (e.g., signed-in vs signed-out header).
 - Content sanitization and caching logic once implemented.
 
 ## Integration tests (API + DB)
+
 Verify route handlers, DB access, and caching behavior with real data.
+
 - Lesson content route:
   - fetch publishedUrl HTML via MSW fixture
   - sanitize output
@@ -43,7 +50,9 @@ Verify route handlers, DB access, and caching behavior with real data.
   - return 404 for missing slugs
 
 ## End-to-end tests (critical flows)
+
 Run against the built app with a seeded test DB.
+
 - Public browsing:
   - landing -> roadmap -> lesson page
   - lesson content renders without auth
@@ -59,12 +68,15 @@ Run against the built app with a seeded test DB.
   - upstream content failure shows a friendly error state
 
 ## Accessibility checks (automated)
+
 - Use pa11y-ci with WCAG AAA standard for key routes.
 - Run locally with `npm run test:a11y:local` (server already running) or `npm run test:a11y` (build + start).
 - CI runs `npm run test:a11y` against a seeded test database with mock lesson content.
+- An npm override makes `pa11y-ci` use the directly declared `pa11y` version. The unit suite checks installed module resolution so a Pa11y upgrade cannot pass by auditing with an older nested copy.
 - `npm run test:a11y` will auto-start the Dockerized test DB if `DATABASE_URL` is missing or unreachable (set `A11Y_SKIP_TEST_DB=1` to skip).
 
 ## Flake prevention checklist
+
 - Do not hit real OAuth or external content URLs in tests.
 - Mock all network calls with MSW or Playwright routing.
 - Use `LESSON_CONTENT_MOCK_HTML` to bypass publishedUrl fetches in test runs.
@@ -74,6 +86,7 @@ Run against the built app with a seeded test DB.
 - Keep seed data deterministic and stable across runs.
 
 ## Local integration + E2E quickstart
+
 Requires Docker for the ephemeral Postgres test database.
 
 ```bash
@@ -89,12 +102,15 @@ Use `KEEP_TEST_DB=1` to keep the container running after the command finishes.
 If port `5434` is already in use, set `TEST_DB_PORT` to a free port.
 
 ## CI execution
+
+- See [Dependency updates](dependency-updates.md) for the auto-merge policy and the CI coverage required for development-tool majors.
 - `test:unit` on every PR.
 - `test:integration` on every PR.
-- `test:e2e` on main branch and nightly (or on PRs for critical changes).
+- `test:e2e` and `test:a11y` on every Renovate PR, on `main`, and through manual workflow dispatch.
 - Track coverage for `src/lib` and critical components; set realistic thresholds.
 
 ## Rollout plan
-1) Add test tooling and a minimal smoke suite (unit + one e2e).
-2) Build out API + DB integration coverage.
-3) Expand e2e coverage to the full MVP flows.
+
+1. Add test tooling and a minimal smoke suite (unit + one e2e).
+2. Build out API + DB integration coverage.
+3. Expand e2e coverage to the full MVP flows.
