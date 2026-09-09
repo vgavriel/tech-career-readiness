@@ -1,8 +1,11 @@
 "use client";
 
+import "./globals.css";
+
 import Link from "next/link";
 import { useEffect } from "react";
 
+import ThemeInitializer from "@/components/theme-initializer";
 import { reportClientError } from "@/lib/client-error";
 
 /**
@@ -26,7 +29,11 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
   }, [error]);
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <title>Something went wrong | Tech Career Readiness</title>
+        <ThemeInitializer />
+      </head>
       <body className="page-shell min-h-screen overflow-hidden">
         <main
           id="main-content"

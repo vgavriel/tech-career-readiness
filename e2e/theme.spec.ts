@@ -85,6 +85,64 @@ test("toggle still works when the browser blocks localStorage", async ({ page })
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 });
 
+for (const theme of ["light", "dark"]) {
+  test(`lesson completion controls have visible boundaries in ${theme} mode`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
+      key: storageKey,
+      value: theme,
+    });
+    await page.goto("/lesson/start-to-finish-roadmap");
+    const navigator = page.getByRole("complementary");
+    const activeLink = navigator.locator('a[aria-current="page"]');
+    const inactiveLink = navigator.locator('a[href^="/lesson/"]:not([aria-current])').first();
+
+    for (const link of [activeLink, inactiveLink]) {
+      const control = link.locator("..").getByRole("button");
+      await expect(control).toBeEnabled();
+      await expect(control).toHaveAttribute("aria-pressed", "false");
+      for (const completed of [false, true]) {
+        if (completed) {
+          await control.focus();
+          await page.keyboard.press("Space");
+          await expect(control).toHaveAttribute("aria-pressed", "true");
+          await expect(control).toBeFocused();
+          await expect(control).toHaveCSS("outline-style", "solid");
+        }
+        const contrasts = await control.evaluate((button) => {
+          const luminance = (color: string) => {
+            const [r, g, b] = color
+              .match(/[\d.]+/g)!
+              .slice(0, 3)
+              .map((channel) => {
+                const value = Number(channel) / 255;
+                return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+              });
+            return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+          };
+          const ratio = (a: string, b: string) => {
+            const x = luminance(a);
+            const y = luminance(b);
+            return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+          };
+          const style = getComputedStyle(button);
+          const row = getComputedStyle(button.parentElement!);
+          return {
+            boundary: ratio(style.borderTopColor, row.backgroundColor),
+            indicator: ratio(
+              button.getAttribute("aria-pressed") === "true" ? style.color : style.borderTopColor,
+              style.backgroundColor
+            ),
+          };
+        });
+        expect(contrasts.boundary).toBeGreaterThanOrEqual(3);
+        expect(contrasts.indicator).toBeGreaterThanOrEqual(3);
+      }
+    }
+  });
+}
+
 for (const width of [320, 390, 820, 1024, 1280, 1440]) {
   test(`theme control and navigation fit a ${width}px header`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });

@@ -103,7 +103,7 @@ const NavigatorLessonRow = ({
         className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition disabled:cursor-not-allowed disabled:opacity-60 ${
           isCompleted
             ? "border-[color:var(--accent-700)] bg-[color:var(--accent-700)] text-[color:var(--wash-0)]"
-            : "border-[color:var(--line-soft)] bg-[color:var(--wash-0)] text-[color:var(--ink-600)]"
+            : "border-[color:var(--control-outline)] bg-[color:var(--wash-0)] text-[color:var(--ink-600)]"
         }`}
         aria-pressed={isCompleted}
         aria-label={

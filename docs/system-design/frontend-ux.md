@@ -62,8 +62,18 @@ the root layout static without allowing arbitrary inline scripts. Shared CSS
 variables style both themes, including native controls and focus indicators.
 The button waits for hydration before becoming interactive.
 
+The global error document imports the same styles and pre-paint script because
+it replaces the root layout. On client-side failures it captures the applied
+theme before React removes the old document attributes, then restores it before
+paint. Both documents use the same initializer so the choice also survives
+error recovery, including when it could not be saved to browser storage.
+Unchecked lesson completion controls use a dedicated `--control-outline` token
+with at least 3:1 contrast against both ordinary and selected lesson rows in
+either theme. Decorative dividers retain the softer border tokens.
+
 - Toggle: [`src/components/theme-toggle.tsx`](../../src/components/theme-toggle.tsx)
 - Preference and initializer: [`src/lib/theme.ts`](../../src/lib/theme.ts)
+- Document lifecycle: [`src/components/theme-initializer.tsx`](../../src/components/theme-initializer.tsx)
 - Browser coverage: [`e2e/theme.spec.ts`](../../e2e/theme.spec.ts)
 - `npm run test:a11y:local` audits the key pages and focus states in both themes.
 
