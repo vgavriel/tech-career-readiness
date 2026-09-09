@@ -370,7 +370,10 @@ Source of truth for modules, focuses, progress categories, and gamification:
 
 ### Phase 19 — Repository governance (public release)
 
-- [x] Add CODEOWNERS to require maintainer review for main-branch changes
+- [x] Require one approving review for main-branch changes while exempting Renovate-managed files from automatic review requests
+- [x] Limit Renovate automerge to npm lockfile-only and lockfile maintenance updates
+- [x] Require all seven existing CI checks for main-branch merges
+- [x] Isolate the review requirement and grant Mend Renovate a review-only bypass after the scoped automerge configuration lands
 
 ### Phase 20 — Open-source security practices
 
@@ -385,6 +388,21 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Create student-facing Codex playbook in `docs/codex-playbook`
 - [x] Add prompt library, checkpoints, case study timeline, and templates
 - [x] Link all playbook artifacts from `docs/codex-playbook/README.md`
+
+### Phase 22 — Dependency compatibility automation
+
+- [x] Temporarily constrain Mend Renovate to npm 11 while npm/cli#9800 blocks lockfile maintenance
+- [x] Add a scheduled npm 12 compatibility probe that opens an upgrade PR when the blocker clears
+- [x] Keep intentional ESLint and TypeScript major ceilings paired with scheduled compatibility probes
+- [x] Align declared Node.js types and runtime support on the active Node.js 24 LTS line
+- [x] Align local and CI PostgreSQL on version 18 and enable Docker Compose update monitoring
+
+### Phase 23 — Targeted repository email notifications
+
+- [x] Stop GitHub and Mend Renovate from automatically requesting a reviewer or assignee
+- [x] Notify the repository owner only after a Mend Renovate PR merges
+- [x] Notify the repository owner when a tracked GitHub Actions workflow reports a CI issue
+- [x] Route automation emails through dedicated repository alert issue #310 without SMTP credentials
 
 ## Environment variables
 

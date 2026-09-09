@@ -1,0 +1,212 @@
+name: npm Major Compatibility
+
+on:
+  schedule:
+    - cron: "0 14 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: npm-major-compatibility
+  cancel-in-progress: false
+
+env:
+  PR_BRANCH: automation/npm-major-upgrade
+  NPM_TARGET_MAJOR: "12"
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          token: ${{ secrets.NPM_MAJOR_PR_TOKEN || github.token }}
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Use npm 11
+        run: npm install -g npm@11
+
+      - name: Prepare npm major upgrade
+        id: prepare
+        run: node scripts/prepare-npm-major-upgrade.mjs
+
+      - name: Stop if the target major is already allowed
+        if: steps.prepare.outputs.upgrade_needed != 'true'
+        run: echo "npm ${NPM_TARGET_MAJOR} is already allowed by the project engine range."
+
+      - name: Install trial npm release
+        id: candidate_npm
+        if: steps.prepare.outputs.upgrade_needed == 'true'
+        continue-on-error: true
+        env:
+          TARGET_VERSION: ${{ steps.prepare.outputs.target_version }}
+        run: npm install -g "npm@${TARGET_VERSION}"
+
+      - name: Recreate trial lockfile
+        id: lockfile
+        if: steps.prepare.outputs.upgrade_needed == 'true' && steps.candidate_npm.outcome == 'success'
+        continue-on-error: true
+        run: |
+          rm package-lock.json
+          npm install --package-lock-only --no-audit --ignore-scripts
+
+      - name: Stabilize trial lockfile
+        id: lockfile_second_pass
+        if: steps.prepare.outputs.upgrade_needed == 'true' && steps.lockfile.outcome == 'success'
+        continue-on-error: true
+        run: npm install --package-lock-only --no-audit --ignore-scripts
+
+      - name: Install trial dependencies
+        id: install
+        if: steps.prepare.outputs.upgrade_needed == 'true' && steps.lockfile_second_pass.outcome == 'success'
+        continue-on-error: true
+        run: npm ci
+
+      - name: Typecheck
+        id: typecheck
+        if: steps.prepare.outputs.upgrade_needed == 'true' && steps.install.outcome == 'success'
+        continue-on-error: true
+        run: npm run typecheck
+
+      - name: Lint
+        id: lint
+        if: steps.prepare.outputs.upgrade_needed == 'true' && steps.typecheck.outcome == 'success'
+        continue-on-error: true
+        run: npm run lint
+
+      - name: Unit tests
+        id: unit
+        if: steps.prepare.outputs.upgrade_needed == 'true' && steps.lint.outcome == 'success'
+        continue-on-error: true
+        run: npm run test:unit
+
+      - name: Format generated files
+        id: format
+        if: steps.prepare.outputs.upgrade_needed == 'true' && steps.unit.outcome == 'success'
+        continue-on-error: true
+        run: npx prettier --write package.json package-lock.json renovate.json .github/workflows
+
+      - name: Report incompatible trial
+        if: |
+          steps.prepare.outputs.upgrade_needed == 'true' &&
+          (
+            steps.candidate_npm.outcome != 'success' ||
+            steps.lockfile.outcome != 'success' ||
+            steps.lockfile_second_pass.outcome != 'success' ||
+            steps.install.outcome != 'success' ||
+            steps.typecheck.outcome != 'success' ||
+            steps.lint.outcome != 'success' ||
+            steps.unit.outcome != 'success' ||
+            steps.format.outcome != 'success'
+          )
+        env:
+          TARGET_RANGE: ${{ steps.prepare.outputs.target_range }}
+          TARGET_VERSION: ${{ steps.prepare.outputs.target_version }}
+        run: |
+          {
+            echo "## npm major compatibility probe"
+            echo ""
+            echo "Trial target: npm ${TARGET_VERSION} with engine range ${TARGET_RANGE}"
+            echo ""
+            echo "No PR was opened because one or more compatibility checks did not pass."
+            echo ""
+            echo "Tracked upstream blocker: https://github.com/npm/cli/issues/9800"
+            echo ""
+            echo "| Step | Outcome |"
+            echo "| --- | --- |"
+            echo "| candidate npm install | ${{ steps.candidate_npm.outcome }} |"
+            echo "| lockfile recreation | ${{ steps.lockfile.outcome }} |"
+            echo "| lockfile second pass | ${{ steps.lockfile_second_pass.outcome }} |"
+            echo "| install | ${{ steps.install.outcome }} |"
+            echo "| typecheck | ${{ steps.typecheck.outcome }} |"
+            echo "| lint | ${{ steps.lint.outcome }} |"
+            echo "| unit | ${{ steps.unit.outcome }} |"
+            echo "| format | ${{ steps.format.outcome }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open or update npm major upgrade PR
+        if: |
+          steps.prepare.outputs.upgrade_needed == 'true' &&
+          steps.candidate_npm.outcome == 'success' &&
+          steps.lockfile.outcome == 'success' &&
+          steps.lockfile_second_pass.outcome == 'success' &&
+          steps.install.outcome == 'success' &&
+          steps.typecheck.outcome == 'success' &&
+          steps.lint.outcome == 'success' &&
+          steps.unit.outcome == 'success' &&
+          steps.format.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.NPM_MAJOR_PR_TOKEN || github.token }}
+          TARGET_MAJOR: ${{ steps.prepare.outputs.target_major }}
+          TARGET_RANGE: ${{ steps.prepare.outputs.target_range }}
+          TARGET_VERSION: ${{ steps.prepare.outputs.target_version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          remote_ref="refs/heads/$PR_BRANCH"
+          remote_branch_sha="$(git ls-remote --heads origin "$remote_ref" | awk '{ print $1 }')"
+          lease="$remote_ref:"
+          if [ -n "$remote_branch_sha" ]; then
+            lease="$remote_ref:$remote_branch_sha"
+          fi
+
+          git checkout -B "$PR_BRANCH"
+
+          git rm \
+            .github/workflows/npm-major-compatibility.yml \
+            scripts/prepare-npm-major-upgrade.mjs \
+            scripts/__tests__/prepare-npm-major-upgrade.test.mjs
+          git add package.json package-lock.json renovate.json .github/workflows
+
+          if git diff --cached --quiet; then
+            echo "No dependency or workflow files changed after the trial upgrade."
+            exit 0
+          fi
+
+          git commit -m "chore(deps): update npm to v${TARGET_MAJOR}"
+          git push --force-with-lease="$lease" origin "HEAD:$remote_ref"
+
+          pr_title="chore(deps): update npm to v${TARGET_MAJOR}"
+          pr_body="$(printf '%s\n' \
+            "This PR was opened automatically after the scheduled npm major compatibility probe passed." \
+            "" \
+            "Trial target:" \
+            "- npm ${TARGET_VERSION}" \
+            "- package engine ${TARGET_RANGE}" \
+            "" \
+            "The probe recreated the lockfile twice using the same package-lock-only command that Mend Renovate uses, then ran npm ci, typecheck, lint, and unit tests." \
+            "" \
+            "This PR also removes the temporary npm 12 blocker and compatibility probe. The normal pull-request checks remain responsible for merge approval.")"
+
+          open_pr="$(gh pr list --head "$PR_BRANCH" --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$open_pr" ]; then
+            gh pr edit "$open_pr" --title "$pr_title" --body "$pr_body"
+            exit 0
+          fi
+
+          closed_pr="$(gh pr list --head "$PR_BRANCH" --state closed --json number --jq '.[0].number // empty')"
+          if [ -n "$closed_pr" ]; then
+            gh pr reopen "$closed_pr" || true
+            reopened_state="$(gh pr view "$closed_pr" --json state --jq '.state')"
+            if [ "$reopened_state" = "OPEN" ]; then
+              gh pr edit "$closed_pr" --title "$pr_title" --body "$pr_body"
+              exit 0
+            fi
+          fi
+
+          gh pr create \
+            --base "${{ github.event.repository.default_branch }}" \
+            --head "$PR_BRANCH" \
+            --title "$pr_title" \
+            --body "$pr_body"

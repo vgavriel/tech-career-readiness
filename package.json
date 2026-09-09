@@ -3,7 +3,8 @@
   "version": "1.1.2",
   "private": true,
   "engines": {
-    "npm": ">=11.9.0 <13"
+    "node": "24.x",
+    "npm": ">=11.9.0 <12"
   },
   "scripts": {
     "dev": "next dev --webpack",
@@ -57,7 +58,7 @@
     "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "@types/node": "^25.0.9",
+    "@types/node": "^24.13.3",
     "@types/pg": "^8.16.0",
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",
@@ -71,7 +72,7 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-simple-import-sort": "^14.0.0",
     "husky": "^9.1.7",
-    "jsdom": "^29.0.0",
+    "jsdom": "^30.0.0",
     "lint-staged": "^17.0.0",
     "pa11y": "^9.0.1",
     "pa11y-ci": "^4.0.1",

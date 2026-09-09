@@ -1,1 +1,8 @@
 * @vgavriel
+
+# Mend Renovate changes remain gated by the repository review ruleset and CI,
+# but do not automatically request a review (and its follow-up email updates).
+/package.json
+/package-lock.json
+/.github/workflows/
+/docker/docker-compose*.yml
