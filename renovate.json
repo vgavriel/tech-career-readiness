@@ -22,6 +22,35 @@
   },
   "packageRules": [
     {
+      "description": "Automerge patch and minor dependency updates after CI passes.",
+      "matchUpdateTypes": ["patch", "minor"],
+      "automerge": true
+    },
+    {
+      "description": "Automerge major upgrades of development tools exercised by the required CI checks.",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["major"],
+      "matchPackageNames": [
+        "@playwright/test",
+        "@testing-library/jest-dom",
+        "@testing-library/react",
+        "@testing-library/user-event",
+        "@vitest/coverage-v8",
+        "eslint",
+        "eslint-config-prettier",
+        "eslint-import-resolver-typescript",
+        "eslint-plugin-import",
+        "eslint-plugin-simple-import-sort",
+        "jsdom",
+        "pa11y",
+        "pa11y-ci",
+        "typescript",
+        "vitest"
+      ],
+      "automerge": true
+    },
+    {
       "description": "Automerge npm lockfile-only updates after CI passes.",
       "matchManagers": ["npm"],
       "matchJsonata": ["isLockfileUpdate = true"],
