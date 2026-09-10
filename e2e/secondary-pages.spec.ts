@@ -12,6 +12,7 @@ const openFocusMenu = async (focusToggle: Locator, page: Page) => {
 
     await expect(focusPanel).toBeVisible({ timeout: 10_000 });
   }).toPass();
+  return focusPanel;
 };
 
 test("secondary pages render and focus selection persists", async ({ page }) => {
@@ -41,7 +42,7 @@ test("secondary pages render and focus selection persists", async ({ page }) => 
       ? { key: "applying-soon", label: "Applying soon" }
       : { key: "just-starting", label: "Just starting" };
   const focusToggle = page.getByRole("button", { name: /^Focus/ }).first();
-  await openFocusMenu(focusToggle, page);
+  const focusPanel = await openFocusMenu(focusToggle, page);
 
   // Hold the real save until the optimistic label renders. That label alone is not persistence.
   let releaseSave!: () => void;
@@ -66,7 +67,7 @@ test("secondary pages render and focus selection persists", async ({ page }) => 
     ),
     (async () => {
       try {
-        await page.getByRole("button", { name: new RegExp(nextFocus.label, "i") }).click();
+        await focusPanel.getByRole("button", { name: new RegExp(nextFocus.label, "i") }).click();
         await expect(selectedFocus).toBeVisible();
       } finally {
         releaseSave();

@@ -14,10 +14,6 @@ permissions:
 
 jobs:
   e2e:
-    if: |
-      github.event_name != 'pull_request' ||
-      github.event.pull_request.user.login == 'renovate[bot]' ||
-      github.event.pull_request.head.ref == 'automation/eslint-major-upgrade'
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -56,7 +52,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps chromium webkit
       - name: Migrate database
         run: npx prisma migrate deploy
       - name: Generate Prisma client

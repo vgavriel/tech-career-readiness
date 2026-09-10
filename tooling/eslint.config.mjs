@@ -24,17 +24,8 @@ const eslintConfig = [
         "error",
         {
           unusedExports: true,
-          src: [
-            "src/components/**/*.{ts,tsx}",
-            "src/hooks/**/*.{ts,tsx}",
-            "src/app/**/*.{ts,tsx}",
-          ],
-          ignoreExports: [
-            "src/app/**/*.{ts,tsx}",
-            "**/*.test.*",
-            "**/*.spec.*",
-            "**/__tests__/**",
-          ],
+          src: ["src/components/**/*.{ts,tsx}", "src/hooks/**/*.{ts,tsx}", "src/app/**/*.{ts,tsx}"],
+          ignoreExports: ["src/app/**/*.{ts,tsx}", "**/*.test.*", "**/*.spec.*", "**/__tests__/**"],
         },
       ],
       "simple-import-sort/imports": "error",
@@ -48,6 +39,10 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "coverage/**",
+      ".playwright-browsers/**",
+      ".playwright-mcp/**",
+      "playwright-report/**",
+      "test-results/**",
       "next-env.d.ts",
       "**/*.yml",
       "**/*.yaml",
@@ -69,13 +64,11 @@ const eslintConfig = [
           paths: [
             {
               name: "next/headers",
-              message:
-                "Server-only API. Move to a server component or route handler.",
+              message: "Server-only API. Move to a server component or route handler.",
             },
             {
               name: "next-auth",
-              message:
-                "Server-only NextAuth import. Use next-auth/react in client components.",
+              message: "Server-only NextAuth import. Use next-auth/react in client components.",
             },
           ],
         },
@@ -83,11 +76,7 @@ const eslintConfig = [
     },
   },
   {
-    files: [
-      "**/__tests__/**",
-      "**/*.test.*",
-      "**/*.spec.*",
-    ],
+    files: ["**/__tests__/**", "**/*.test.*", "**/*.spec.*"],
     rules: {
       "@next/next/no-img-element": "off",
     },
