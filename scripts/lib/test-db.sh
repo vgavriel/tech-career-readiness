@@ -46,6 +46,8 @@ set_playwright_env() {
   export PLAYWRIGHT_PORT="${PLAYWRIGHT_PORT:-3001}"
   export PLAYWRIGHT_BASE_URL="${PLAYWRIGHT_BASE_URL:-http://127.0.0.1:${PLAYWRIGHT_PORT}}"
   export NEXTAUTH_URL="${NEXTAUTH_URL:-$PLAYWRIGHT_BASE_URL}"
+  export NEXT_PUBLIC_SITE_URL="${NEXT_PUBLIC_SITE_URL:-$PLAYWRIGHT_BASE_URL}"
+  export ADMIN_EMAILS="${ADMIN_EMAILS:-dev@example.com}"
 }
 
 prompt_confirm() {

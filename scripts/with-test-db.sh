@@ -29,4 +29,8 @@ select_test_db_port
 start_test_db
 prisma_migrate_and_seed
 
+if [[ "$USE_PLAYWRIGHT" -eq 1 ]]; then
+  npm run build
+fi
+
 "$@"

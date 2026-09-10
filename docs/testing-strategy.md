@@ -83,6 +83,9 @@ Run against the built app with a seeded test DB.
 - Fix time with `TZ=UTC` and fake timers when needed.
 - Use role- and label-based queries instead of fragile selectors.
 - Avoid arbitrary sleeps; rely on Playwright/Vitest auto-waits.
+- Keep lesson navigation within one document to exercise the router cache. For
+  delayed navigation, hold target requests (including prefetches) before loading
+  the source page, wait for the navigator to hydrate, and assert no document reload.
 - Keep seed data deterministic and stable across runs.
 
 ## Local integration + E2E quickstart
@@ -96,6 +99,19 @@ npm run test:integration:local
 ```bash
 npm run test:e2e:local
 ```
+
+The E2E helper migrates and seeds the test database, builds the app with the test
+environment, then runs Playwright against `next start`. Playwright starts a fresh
+server on port `3001` and fails if that port is occupied; use `PLAYWRIGHT_PORT` to
+choose another port. It does not reuse a development server, whose Fast Refresh
+reloads can interrupt navigation tests.
+
+When managing the test database yourself, run `npm run build` before
+`npm run test:e2e`. Use the same test environment for both commands, including
+`APP_ENV=test`, the mock lesson content, dummy auth credentials, and
+`NEXTAUTH_URL` / `NEXT_PUBLIC_SITE_URL` matching the Playwright base URL. CI runs
+the build as a separate step after seeding so build failures appear separately
+from browser-test failures.
 
 Use `KEEP_TEST_DB=1` to keep the container running after the command finishes.
 `npm run test:integration` expects `DATABASE_URL` to be set (CI uses this).

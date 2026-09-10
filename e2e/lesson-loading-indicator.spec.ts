@@ -17,17 +17,34 @@ const lessonLink = (page: Page, slugTitle: RegExp): Locator =>
 const visibleNavigationOverlay = (page: Page): Locator =>
   page.getByTestId(navigationOverlayTestId).filter({ visible: true });
 
+const expectNavigatorReady = async (page: Page) => {
+  // Completion controls enable after the navigator's client state has hydrated.
+  await expect(
+    lessonNavigator(page).getByRole("button", { name: /mark start to finish.*complete/i })
+  ).toBeEnabled();
+};
+
+const trackDocumentNavigations = (page: Page) => {
+  const navigations: string[] = [];
+  page.on("request", (request) => {
+    if (request.isNavigationRequest() && request.frame() === page.mainFrame()) {
+      navigations.push(request.url());
+    }
+  });
+  return navigations;
+};
+
 test.describe("lesson loading indicators", () => {
   test("cached lesson navigation settles without a stuck overlay", async ({ page }) => {
-    await page.goto(`/lesson/${targetLessonSlug}`);
-    await expect(page.getByRole("heading", { name: /tech recruiting timeline/i })).toBeVisible();
-    await expect(page.getByText(mockLessonContent)).toBeVisible();
-
     await page.goto(`/lesson/${sourceLessonSlug}`);
     await expect(page.getByRole("heading", { name: /start to finish/i })).toBeVisible();
+    await expectNavigatorReady(page);
     await expect(visibleNavigationOverlay(page)).toHaveCount(0);
     await expect(page.getByRole("main")).toHaveAttribute("aria-busy", "false");
 
+    const documentNavigations = trackDocumentNavigations(page);
+    // Warm and revisit both routes through client navigation so the router cache
+    // survives. A page.goto() between visits would discard that cache.
     await Promise.all([
       page.waitForURL(lessonUrlPattern(targetLessonSlug)),
       lessonLink(page, /tech recruiting timeline/i).click(),
@@ -57,6 +74,7 @@ test.describe("lesson loading indicators", () => {
     await expect(page.getByText(mockLessonContent)).toBeVisible();
     await expect(visibleNavigationOverlay(page)).toHaveCount(0);
     await expect(page.getByRole("main")).toHaveAttribute("aria-busy", "false");
+    expect(documentNavigations).toEqual([]);
   });
 
   test("slow lesson navigation shows and clears the overlay deterministically", async ({
@@ -77,14 +95,22 @@ test.describe("lesson loading indicators", () => {
       };
     });
 
-    await page.route(`**/lesson/${targetLessonSlug}**`, async (route) => {
-      resolveTargetRequest();
-      await navigationGate;
-      await route.continue();
-    });
+    // Install before loading the source so production prefetches are also held
+    // and cannot satisfy the click from cache before we inspect the overlay.
+    await page.route(
+      (url) => url.pathname === `/lesson/${targetLessonSlug}`,
+      async (route) => {
+        resolveTargetRequest();
+        await navigationGate;
+        await route.continue();
+      }
+    );
 
     await page.goto(`/lesson/${sourceLessonSlug}`);
     await expect(page.getByRole("heading", { name: /start to finish/i })).toBeVisible();
+    await expectNavigatorReady(page);
+
+    const documentNavigations = trackDocumentNavigations(page);
 
     const overlay = page.getByTestId(navigationOverlayTestId);
     const targetClick = lessonLink(page, /tech recruiting timeline/i).click();
@@ -104,6 +130,7 @@ test.describe("lesson loading indicators", () => {
       await expect(page.getByText(mockLessonContent)).toBeVisible();
       await expect(overlay).toBeHidden();
       await expect(page.getByRole("main")).toHaveAttribute("aria-busy", "false");
+      expect(documentNavigations).toEqual([]);
     } finally {
       releaseNavigation();
     }
