@@ -298,6 +298,10 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Hide horizontal rules inside lesson content
 - [x] Fix in-lesson hash navigation to avoid scroll trap in nested containers
 - [x] Tighten mobile lesson content padding and list indentation for readability
+- [x] Bound the lesson reader to the dynamic viewport and keep content plus Next in one scroll flow
+- [x] Restore mobile list marker gutters and verify layout in iPhone SE/15 WebKit and desktop Chromium
+- [x] Keep the collapsed navigator hidden and inert so offscreen controls cannot receive focus
+- [x] Run mobile geometry, viewport resize, and Next navigation regressions on every main-targeting PR; retain failure traces and screenshots
 - [x] Tighten lesson content heading line-height and post-heading spacing
 - [x] Reposition the mobile navigator toggle to avoid overlapping lesson content
 - [x] Add next-core-lesson CTA for mobile lesson navigation

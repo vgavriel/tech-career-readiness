@@ -34,7 +34,8 @@ const buildContentSecurityPolicy = (nonce: string) => {
     "font-src 'self' data: https: blob:",
     `script-src ${scriptSrc.join(" ")}`,
     `connect-src ${connectSrc.join(" ")}`,
-    "upgrade-insecure-requests",
+    // WebKit upgrades localhost assets too; local test servers use HTTP even for production builds.
+    ...(isProduction && process.env.APP_ENV !== "test" ? ["upgrade-insecure-requests"] : []),
   ];
 
   return directives

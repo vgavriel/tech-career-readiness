@@ -164,7 +164,12 @@ describe("NavigatorLayout", () => {
 
     const navigator = screen.getByLabelText("Lesson navigator");
     expect(navigator).toHaveAttribute("aria-hidden", "true");
+    expect(navigator).toHaveAttribute("inert", "");
     expect(screen.getByRole("button", { name: /open navigator/i })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /open navigator/i }));
+    expect(navigator).toHaveAttribute("aria-hidden", "false");
+    expect(navigator).not.toHaveAttribute("inert");
   });
 
   it("scrolls to hash targets when clicking in-page links", () => {

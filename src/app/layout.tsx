@@ -31,7 +31,7 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
       <head>
         <ThemeInitializer />
       </head>
-      <body className="antialiased h-screen overflow-hidden relative">
+      <body className="antialiased h-dvh overflow-hidden relative">
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>

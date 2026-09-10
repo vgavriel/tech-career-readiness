@@ -22,6 +22,7 @@ export default defineConfig({
   use: {
     baseURL,
     trace: "retain-on-failure",
+    screenshot: "only-on-failure",
   },
   webServer: {
     // CI and the local E2E helper build first. A dedicated production server
@@ -35,6 +36,16 @@ export default defineConfig({
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "iphone-se-webkit",
+      testMatch: "lesson-layout.spec.ts",
+      use: { ...devices["iPhone SE"], browserName: "webkit" },
+    },
+    {
+      name: "iphone-15-webkit",
+      testMatch: "lesson-layout.spec.ts",
+      use: { ...devices["iPhone 15"], browserName: "webkit" },
     },
   ],
 });

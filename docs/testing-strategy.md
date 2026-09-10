@@ -67,6 +67,44 @@ Run against the built app with a seeded test DB.
   - unknown lesson slug shows 404
   - upstream content failure shows a friendly error state
 
+## Mobile lesson layout regressions
+
+`e2e/lesson-layout.spec.ts` runs in desktop Chromium and iPhone SE/15 WebKit
+projects. It uses the real roadmap content and the existing mocked content for
+the next lesson, with no Google Docs or OAuth requests.
+
+- Measure the lesson pane against the visible viewport and reject extra scroll
+  space in its ancestors or horizontal overflow.
+- Scroll only the lesson pane to the end, then require the final paragraph and
+  Next action to be fully visible with no large empty area below them.
+- Tap Next by screen coordinates on mobile so Playwright cannot hide a scroll
+  trap by automatically scrolling a locator into view. Verify navigation to the
+  next lesson and its initial heading position.
+- Measure list marker gutters and text bounds in light and dark themes.
+- Shrink/restore the viewport and rotate between portrait and landscape; verify
+  Next and the navigator remain reachable after layout settles.
+- Save end-of-lesson/list screenshots, plus screenshots and traces on failure.
+  These are review artifacts; geometry assertions provide the automated checks.
+
+Run the focused suite locally (Docker is required for the test database):
+
+```bash
+PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=mac15-arm64 \
+PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers \
+npm run test:e2e:local -- e2e/lesson-layout.spec.ts
+```
+
+The local helper installs Chromium and WebKit when either is missing. The E2E
+workflow runs these checks on every PR targeting main, as well as main pushes.
+WebKit uses the same production build as Chromium. Local servers with `APP_ENV=test`
+permit HTTP assets; deployed production and preview builds retain CSP upgrades to HTTPS.
+
+Device emulation does not reproduce the iOS Chrome toolbar, on-screen keyboard,
+or native momentum/rubber-band scrolling. Before release, also check Chrome on
+a physical iPhone: scroll a long lesson to its end, tap Next, rotate the phone,
+and repeat with browser controls expanded and collapsed. Viewport resizing is
+an automated approximation of changing available space, not a real toolbar test.
+
 ## Accessibility checks (automated)
 
 - Use pa11y-ci with WCAG AAA standard for key routes.
@@ -122,7 +160,8 @@ If port `5434` is already in use, set `TEST_DB_PORT` to a free port.
 - See [Dependency updates](dependency-updates.md) for the auto-merge policy and the CI coverage required for development-tool majors.
 - `test:unit` on every PR.
 - `test:integration` on every PR.
-- `test:e2e` and `test:a11y` on every Renovate PR, on `main`, and through manual workflow dispatch.
+- `test:e2e` on every PR targeting main and every main push, with manual runs available.
+- `test:a11y` on every Renovate PR, on main, and through manual workflow dispatch.
 - Track coverage for `src/lib` and critical components; set realistic thresholds.
 
 ## Rollout plan

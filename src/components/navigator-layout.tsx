@@ -487,7 +487,7 @@ export default function NavigatorLayout({
   return (
     <div
       ref={containerRef}
-      className={`page-content relative mx-auto grid h-full w-full max-w-[1400px] items-start gap-0 px-2 py-4 sm:px-3 md:px-6 md:py-6 ${gridClass}`}
+      className={`page-content relative mx-auto grid h-full min-h-0 w-full max-w-[1400px] grid-rows-[minmax(0,1fr)] items-start gap-0 px-2 py-4 sm:px-3 md:px-6 md:py-6 ${gridClass}`}
     >
       {isMobile && isCollapsed ? (
         <button
@@ -524,13 +524,14 @@ export default function NavigatorLayout({
         className={`min-h-0 overflow-hidden rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] shadow-[var(--shadow-card)] ${
           isMobile
             ? `absolute inset-y-0 left-0 z-30 h-full w-[min(92vw,360px)] transform transition-transform duration-200 ${
-                isCollapsed ? "-translate-x-full pointer-events-none" : "translate-x-0"
+                isCollapsed ? "-translate-x-full invisible pointer-events-none" : "translate-x-0"
               }`
             : `h-full transition-[width] duration-200 ${
-                isCollapsed ? "pointer-events-none opacity-0" : "opacity-100"
+                isCollapsed ? "invisible pointer-events-none opacity-0" : "opacity-100"
               }`
         }`}
         aria-hidden={isCollapsed}
+        inert={isCollapsed}
       >
         <div className="flex h-full flex-col">
           {isMobile ? (
@@ -610,7 +611,7 @@ export default function NavigatorLayout({
         ref={mainRef}
         onClickCapture={handleMainClick}
         aria-busy={isLessonNavigationPending}
-        className="scroll-panel relative flex h-full min-h-0 flex-col gap-6 overflow-y-auto rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] px-2.5 pb-2.5 pt-6 shadow-[var(--shadow-card)] sm:px-4 sm:pb-4 md:px-7 md:pb-8 md:pt-8"
+        className="scroll-panel relative flex h-full min-h-0 min-w-0 flex-col gap-6 overflow-y-auto overscroll-y-contain rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--surface)] px-2.5 pb-2.5 pt-6 shadow-[var(--shadow-card)] sm:px-4 sm:pb-4 md:px-7 md:pb-8 md:pt-8"
       >
         {children}
         {isLessonNavigationPending ? (

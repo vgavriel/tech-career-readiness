@@ -104,7 +104,7 @@ export default function LessonNextCoreCta({ modules, currentLessonSlug }: Lesson
         <div aria-hidden="true" className="h-6" />
       </div>
 
-      <div className="md:hidden sticky bottom-0 z-10">
+      <div className="md:hidden">
         <div className="w-full">
           <div className="flex items-center justify-between gap-3 rounded-2xl border border-[color:var(--line-strong)] bg-[color:var(--wash-0)] px-4 py-3 shadow-[var(--shadow-card)]">
             <div className="min-w-0">

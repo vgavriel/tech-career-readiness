@@ -131,12 +131,12 @@ open_url() {
 }
 
 ensure_playwright_browsers() {
-  if node -e 'const { chromium } = require("@playwright/test"); const fs = require("fs"); const path = chromium.executablePath(); process.exit(fs.existsSync(path) ? 0 : 1);' >/dev/null 2>&1; then
+  if node -e 'const { chromium, webkit } = require("@playwright/test"); const fs = require("fs"); process.exit([chromium, webkit].every(browser => fs.existsSync(browser.executablePath())) ? 0 : 1);' >/dev/null 2>&1; then
     return 0
   fi
 
   echo "Playwright browsers not found. Installing..."
-  npx playwright install
+  npx playwright install chromium webkit
 }
 
 wait_for_docker_ready() {
