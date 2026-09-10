@@ -210,6 +210,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Add CI pipeline to run lint + unit tests on every PR
 - [x] Add integration tests job once APIs exist (Phase 3+)
 - [x] Add E2E tests job once core pages exist (Phase 4+)
+- [x] Synchronize focus persistence E2E coverage with completed API reads/writes, exercise a delayed save, and retain traces for failed tests
 - [x] Add accessibility checks with pa11y (WCAG AAA) in CI and local scripts
 
 ### Phase 3 — Curriculum planning (Brown-specific)
