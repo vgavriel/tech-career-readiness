@@ -81,8 +81,14 @@ the next lesson, with no Google Docs or OAuth requests.
   trap by automatically scrolling a locator into view. Verify navigation to the
   next lesson and its initial heading position.
 - Measure list marker gutters and text bounds in light and dark themes.
+- Scope content queries to the visible main region and wait for the content to
+  render before measuring lists; hidden streaming fragments have no text bounds.
 - Shrink/restore the viewport and rotate between portrait and landscape; verify
   Next and the navigator remain reachable after layout settles.
+- Wait for the lesson shell to match the requested viewport before scrolling.
+  Retry scrolling together with its measurements when layout changes; keep inner
+  assertion waits shorter than the retry budget so they cannot prevent another
+  scroll attempt.
 - Save end-of-lesson/list screenshots, plus screenshots and traces on failure.
   These are review artifacts; geometry assertions provide the automated checks.
 

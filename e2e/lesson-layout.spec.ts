@@ -2,6 +2,8 @@ import { expect, type Locator, type Page, test } from "@playwright/test";
 
 const roadmapPath = "/lesson/start-to-finish-roadmap";
 
+const lessonContent = (page: Page) => page.getByRole("main").getByTestId("lesson-content");
+
 /** Check the actual scroll geometry, including ancestors that can hide extra page space. */
 const expectSingleLessonScroller = async (page: Page) => {
   const geometry = await page.getByRole("main").evaluate((main) => {
@@ -42,14 +44,18 @@ const expectSingleLessonScroller = async (page: Page) => {
 
 /** Scroll only the lesson pane; locator auto-scrolling could conceal a nested scroll trap. */
 const scrollLessonToEnd = async (page: Page) => {
-  await page.getByRole("main").evaluate((main) => main.scrollTo(0, main.scrollHeight));
-  await expect
-    .poll(() =>
-      page
-        .getByRole("main")
-        .evaluate((main) => Math.abs(main.scrollHeight - main.clientHeight - main.scrollTop))
-    )
-    .toBeLessThanOrEqual(1);
+  await expect(async () => {
+    // A resize can change the scroll range after the first scroll. Retry the
+    // action as well as the measurement, instead of polling a stale position.
+    const remaining = await page.getByRole("main").evaluate((main) => {
+      main.scrollTo({ top: main.scrollHeight, behavior: "instant" });
+      return Math.abs(main.scrollHeight - main.clientHeight - main.scrollTop);
+    });
+    expect(remaining).toBeLessThanOrEqual(1);
+    await expectSingleLessonScroller(page);
+    // Keep this inner wait short so it cannot consume the entire retry budget.
+    await expect(visibleNextLink(page)).toBeInViewport({ ratio: 1, timeout: 100 });
+  }).toPass({ timeout: 5_000 });
 };
 
 const visibleNextLink = (page: Page) =>
@@ -84,7 +90,8 @@ for (const theme of ["light", "dark"] as const) {
       await page.goto("/");
       await page.getByRole("link", { name: /start course/i }).click();
       await expect(page).toHaveURL(new RegExp(roadmapPath));
-      const content = page.getByTestId("lesson-content");
+      const content = lessonContent(page);
+      await expect(content).toBeVisible();
       await expect(content).toContainText("Welcome to the roadmap");
       await expect(visibleNextLink(page)).toBeAttached();
       await expectSingleLessonScroller(page);
@@ -120,7 +127,10 @@ for (const theme of ["light", "dark"] as const) {
 
     test("list markers and text fit within the content card", async ({ page }, testInfo) => {
       await page.goto(roadmapPath);
-      const content = page.getByTestId("lesson-content");
+      // Next can retain an unrendered streaming copy outside the active main.
+      // Counting its list items does not mean they have measurable text bounds.
+      const content = lessonContent(page);
+      await expect(content).toBeVisible();
       await expect(content.locator("ol > li")).toHaveCount(8);
       const lists = await content.locator("ul, ol").evaluateAll((elements) =>
         elements.map((list) => {
@@ -163,6 +173,8 @@ test("Next and navigator remain reachable after mobile viewport changes", async 
   test.skip(!isMobile, "Exercises iPhone viewport changes.");
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto(roadmapPath);
+  await expect(lessonContent(page)).toBeVisible();
+  await expect(page.getByRole("button", { name: "Open navigator", exact: true })).toBeVisible();
   await expect(visibleNextLink(page)).toBeAttached();
   const initialViewport = page.viewportSize()!;
   const viewports = [
@@ -173,12 +185,19 @@ test("Next and navigator remain reachable after mobile viewport changes", async 
   ];
   for (const viewport of viewports) {
     await page.setViewportSize(viewport);
-    // WebKit updates dynamic viewport units on a subsequent rendering frame.
-    await expect(async () => {
-      await scrollLessonToEnd(page);
-      await expectSingleLessonScroller(page);
-      await expect(visibleNextLink(page)).toBeInViewport({ ratio: 1 });
-    }).toPass({ timeout: 5_000 });
+    // WebKit can acknowledge the resize before the body's 100dvh height updates.
+    // Wait for the lesson shell to match both shrinking and growing viewports.
+    await expect
+      .poll(
+        () =>
+          page.evaluate(() => ({
+            width: document.documentElement.clientWidth,
+            height: document.body.clientHeight,
+          })),
+        { timeout: 5_000, message: "Lesson shell matches the resized viewport" }
+      )
+      .toEqual(viewport);
+    await scrollLessonToEnd(page);
   }
   await page.getByRole("button", { name: "Open navigator", exact: true }).tap();
   const navigator = page.getByRole("complementary", { name: "Lesson navigator" });
