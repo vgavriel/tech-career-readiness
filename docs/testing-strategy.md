@@ -116,6 +116,7 @@ an automated approximation of changing available space, not a real toolbar test.
 - Use pa11y-ci with WCAG AAA standard for key routes.
 - Run locally with `npm run test:a11y:local` (server already running) or `npm run test:a11y` (build + start).
 - CI runs `npm run test:a11y` against a seeded test database with mock lesson content.
+- The accessibility workflow sets `PUPPETEER_SKIP_DOWNLOAD=true` during `npm ci` because `scripts/run-a11y-ci.sh` selects the runner's installed Chrome. This avoids an unused browser download failing before the audit starts; local installs keep Puppeteer's default download behavior.
 - An npm override makes `pa11y-ci` use the directly declared `pa11y` version. The unit suite checks installed module resolution so a Pa11y upgrade cannot pass by auditing with an older nested copy.
 - `npm run test:a11y` will auto-start the Dockerized test DB if `DATABASE_URL` is missing or unreachable (set `A11Y_SKIP_TEST_DB=1` to skip).
 
