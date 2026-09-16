@@ -299,6 +299,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Normalize lesson table spacing and borders
 - [x] Hide horizontal rules inside lesson content
 - [x] Fix in-lesson hash navigation to avoid scroll trap in nested containers
+- [x] Resolve Google Docs heading fragments and same-lesson URLs, including saved links, streamed content, and browser history; cover both course/job maps on desktop and iPhone
 - [x] Tighten mobile lesson content padding and list indentation for readability
 - [x] Bound the lesson reader to the dynamic viewport and keep content plus Next in one scroll flow
 - [x] Restore mobile list marker gutters and verify layout in iPhone SE/15 WebKit and desktop Chromium
