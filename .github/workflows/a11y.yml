@@ -52,6 +52,9 @@ jobs:
       - name: Use npm 11
         run: npm install -g npm@11
       - name: Install dependencies
+        env:
+          # run-a11y-ci.sh uses Chrome already installed on the runner.
+          PUPPETEER_SKIP_DOWNLOAD: "true"
         run: npm ci
       - name: Migrate database
         run: npx prisma migrate deploy

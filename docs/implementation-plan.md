@@ -214,6 +214,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Run CI and local E2E tests against a production build, verify cached and delayed navigation without document reloads, and scope streamed error assertions to active content
 - [x] Stabilize mobile layout checks by waiting for viewport sizing, retrying scroll actions, and measuring only visible active lesson content
 - [x] Add accessibility checks with pa11y (WCAG AAA) in CI and local scripts
+- [x] Skip unused Puppeteer browser downloads during accessibility CI installation and use the runner's installed Chrome
 
 ### Phase 3 — Curriculum planning (Brown-specific)
 
