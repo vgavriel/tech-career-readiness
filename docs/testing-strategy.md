@@ -111,6 +111,20 @@ a physical iPhone: scroll a long lesson to its end, tap Next, rotate the phone,
 and repeat with browser controls expanded and collapsed. Viewport resizing is
 an automated approximation of changing available space, not a real toolbar test.
 
+## Lesson heading navigation regressions
+
+`e2e/lesson-heading-links.spec.ts` checks both course/job map routes in desktop
+Chromium and iPhone SE/15 WebKit. The shared mock content includes the reported
+Google Docs heading IDs and long sections so a broken jump cannot pass simply
+because the heading was already visible. Checks cover keyboard activation, touch,
+repeated clicks without a reload, saved deep links, reloads, Back/Forward, and
+references to the other lesson. Assertions require the entire heading to be
+visible near the reader's top while the document itself remains unscrolled.
+
+Component tests also cover delayed content insertion, client-side route changes,
+encoded fragments, missing targets, external links, and modified clicks. These
+tests use fixtures and mocks and make no Google Docs or OAuth requests.
+
 ## Accessibility checks (automated)
 
 - Use pa11y-ci with WCAG AAA standard for key routes.

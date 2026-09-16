@@ -1,11 +1,19 @@
 import { defineConfig, devices } from "@playwright/test";
 
+import { lessonHeadingContent } from "../e2e/fixtures/lesson-heading-content";
+
 process.env.NEXTAUTH_SECRET ??= "test-nextauth-secret";
 process.env.GOOGLE_CLIENT_ID ??= "test-google-client-id";
 process.env.GOOGLE_CLIENT_SECRET ??= "test-google-client-secret";
 process.env.ADMIN_EMAILS ??= "dev@example.com";
 process.env.LESSON_CONTENT_MOCK_HTML ??=
   "<h2>Lesson content</h2><p>Sample lesson content for tests.</p>";
+if (
+  process.env.LESSON_CONTENT_MOCK_HTML &&
+  !process.env.LESSON_CONTENT_MOCK_HTML.includes(lessonHeadingContent)
+) {
+  process.env.LESSON_CONTENT_MOCK_HTML += lessonHeadingContent;
+}
 process.env.APP_ENV ??= "test";
 
 const port = Number(process.env.PLAYWRIGHT_PORT ?? 3001);
@@ -39,12 +47,12 @@ export default defineConfig({
     },
     {
       name: "iphone-se-webkit",
-      testMatch: "lesson-layout.spec.ts",
+      testMatch: ["lesson-layout.spec.ts", "lesson-heading-links.spec.ts"],
       use: { ...devices["iPhone SE"], browserName: "webkit" },
     },
     {
       name: "iphone-15-webkit",
-      testMatch: "lesson-layout.spec.ts",
+      testMatch: ["lesson-layout.spec.ts", "lesson-heading-links.spec.ts"],
       use: { ...devices["iPhone 15"], browserName: "webkit" },
     },
   ],

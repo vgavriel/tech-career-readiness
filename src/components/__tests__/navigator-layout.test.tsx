@@ -227,7 +227,7 @@ describe("NavigatorLayout", () => {
       fireEvent.click(screen.getByRole("link", { name: /jump to target/i }));
 
       expect(scrollToMock).toHaveBeenCalledWith(
-        expect.objectContaining({ top: 300, behavior: "auto" })
+        expect.objectContaining({ top: 284, behavior: "auto" })
       );
     } finally {
       if (originalScrollTo) {

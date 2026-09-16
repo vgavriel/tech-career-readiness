@@ -254,58 +254,75 @@ export default function NavigatorLayout({
   }, [isCollapsed, isMobile, navigatorWidth]);
   const showMobileOverlay = isMobile && !isCollapsed;
 
-  const normalizeHash = useCallback((hash: string) => {
+  const findHashTarget = useCallback((hash: string) => {
     const trimmed = hash.trim();
     if (!trimmed || !trimmed.startsWith("#") || trimmed.length < 2) {
       return null;
     }
 
-    const rawId = trimmed.slice(1);
+    let id = trimmed.slice(1);
     try {
-      return decodeURIComponent(rawId);
+      id = decodeURIComponent(id);
     } catch {
-      return rawId;
+      // A malformed escape can still be part of a literal element ID.
     }
+
+    // Published Google Docs use id="h.…", while edit links use #heading=h.….
+    // Prefer a literal ID so ordinary HTML fragments keep their meaning.
+    const headingId = new URLSearchParams(id).get("heading");
+    for (const candidate of [id, headingId]) {
+      if (!candidate) continue;
+      const target = document.getElementById(candidate);
+      if (target && mainRef.current?.contains(target)) return target;
+    }
+    return null;
   }, []);
 
   const scrollToHash = useCallback(
     (hash: string, behavior: ScrollBehavior = "auto") => {
       const main = mainRef.current;
       if (!main) {
-        return;
+        return false;
       }
 
-      const id = normalizeHash(hash);
-      if (!id) {
-        return;
-      }
-
-      const target = document.getElementById(id);
+      const target = findHashTarget(hash);
       if (!target) {
-        return;
+        return false;
       }
 
       const mainRect = main.getBoundingClientRect();
       const targetRect = target.getBoundingClientRect();
-      const nextTop = Math.max(0, targetRect.top - mainRect.top + main.scrollTop);
+      // Leave breathing room below the reader's border/rounded clipping edge.
+      const nextTop = Math.max(0, targetRect.top - mainRect.top + main.scrollTop - 16);
       main.scrollTo({ top: nextTop, behavior });
 
       document.body.scrollTop = 0;
       document.documentElement.scrollTop = 0;
+      return true;
     },
-    [normalizeHash]
+    [findHashTarget]
   );
 
   useEffect(() => {
-    if (typeof window === "undefined") {
+    const main = mainRef.current;
+    if (!main || (renderedLessonRouteKey && renderedLessonRouteKey !== currentLessonRouteKey)) {
       return;
     }
 
+    let observer: MutationObserver | undefined;
     /**
-     * Scroll to the hash target when the URL hash changes.
+     * Retry an incoming deep link when streamed lesson HTML arrives. Disconnect
+     * after success so later content changes cannot pull the reader back.
      */
     const handleHash = () => {
-      scrollToHash(window.location.hash);
+      observer?.disconnect();
+      const hash = window.location.hash;
+      if (!hash || scrollToHash(hash)) return;
+
+      observer = new MutationObserver(() => {
+        if (window.location.hash !== hash || scrollToHash(hash)) observer?.disconnect();
+      });
+      observer.observe(main, { childList: true, subtree: true });
     };
 
     handleHash();
@@ -313,38 +330,63 @@ export default function NavigatorLayout({
     window.addEventListener("popstate", handleHash);
 
     return () => {
+      observer?.disconnect();
       window.removeEventListener("hashchange", handleHash);
       window.removeEventListener("popstate", handleHash);
     };
-  }, [scrollToHash]);
+  }, [currentLessonRouteKey, renderedLessonRouteKey, scrollToHash]);
 
   const handleMainClick = useCallback(
     (event: React.MouseEvent<HTMLElement>) => {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.shiftKey
+      )
+        return;
+
       const target = event.target as HTMLElement | null;
-      const anchor = target?.closest("a");
-      if (!anchor) {
+      const anchor = target?.closest("a[href]");
+      if (
+        !(anchor instanceof HTMLAnchorElement) ||
+        anchor.hasAttribute("download") ||
+        (anchor.target && anchor.target !== "_self")
+      ) {
         return;
       }
 
       const href = anchor.getAttribute("href");
-      if (!href || !href.startsWith("#")) {
+      if (!href) {
         return;
       }
 
-      const id = normalizeHash(href);
-      if (!id || !document.getElementById(id)) {
+      let url: URL;
+      try {
+        url = new URL(href, window.location.href);
+      } catch {
+        return;
+      }
+      if (
+        url.origin !== window.location.origin ||
+        url.pathname !== window.location.pathname ||
+        url.search !== window.location.search ||
+        !findHashTarget(url.hash)
+      ) {
         return;
       }
 
       event.preventDefault();
 
-      if (window.location.hash !== href) {
-        window.history.pushState(null, "", href);
+      if (window.location.hash !== url.hash) {
+        window.history.pushState(null, "", url.hash);
       }
 
-      scrollToHash(href);
+      scrollToHash(url.hash);
     },
-    [normalizeHash, scrollToHash]
+    [findHashTarget, scrollToHash]
   );
 
   const handleNavigatorClick = useCallback(
