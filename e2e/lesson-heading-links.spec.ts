@@ -7,7 +7,9 @@ const lessons = [
 
 /** Require the heading to land in the reader without moving the surrounding page. */
 async function expectHeadingInReader(page: Page, id: string) {
-  const heading = page.locator(`[id="${id}"]`);
+  // Streamed HTML can retain hidden copies outside the active reader.
+  const reader = page.getByRole("main");
+  const heading = reader.locator(`[id="${id}"]`);
   await expect(heading).toBeInViewport({ ratio: 1 });
   await expect
     .poll(() =>
@@ -17,7 +19,7 @@ async function expectHeadingInReader(page: Page, id: string) {
       })
     )
     .toBeLessThanOrEqual(17);
-  expect(await page.getByRole("main").evaluate((main) => main.scrollTop)).toBeGreaterThan(500);
+  expect(await reader.evaluate((main) => main.scrollTop)).toBeGreaterThan(500);
   expect(await page.evaluate(() => document.documentElement.scrollTop)).toBe(0);
 }
 
@@ -59,7 +61,7 @@ for (const lesson of lessons) {
     await expectHeadingInReader(page, lesson.id);
     await page.goForward();
     await expect(page).toHaveURL(`${path}#lesson-top`);
-    await expect(page.locator('[id="lesson-top"]')).toBeInViewport({ ratio: 1 });
+    await expect(page.getByRole("main").locator('[id="lesson-top"]')).toBeInViewport({ ratio: 1 });
   });
 
   test(`${lesson.slug}: saved deep link and reload`, async ({ page }) => {
@@ -67,6 +69,31 @@ for (const lesson of lessons) {
     await expectHeadingInReader(page, lesson.id);
     await page.reload();
     await expectHeadingInReader(page, lesson.id);
+  });
+
+  test(`${lesson.slug}: heading checks ignore hidden streamed copies`, async ({ page }) => {
+    await page.goto(`${path}${hash}`);
+    await expectHeadingInReader(page, lesson.id);
+
+    // React can retain streamed content outside the reader in a hidden container.
+    // Keep a duplicate present so this regression does not depend on stream timing.
+    await page
+      .getByRole("main")
+      .getByTestId("lesson-content")
+      .evaluate((content) => {
+        const streamedCopy = document.createElement("div");
+        streamedCopy.hidden = true;
+        streamedCopy.dataset.testid = "streamed-lesson-copy";
+        streamedCopy.append(content.cloneNode(true));
+        document.body.append(streamedCopy);
+      });
+    await expect(
+      page.getByTestId("streamed-lesson-copy").locator(`[id="${lesson.id}"]`)
+    ).toHaveCount(1);
+    await expectHeadingInReader(page, lesson.id);
+    await page.getByRole("link", { name: "Back to lesson sections", exact: true }).click();
+    await expect(page).toHaveURL(`${path}#lesson-top`);
+    await expect(page.getByRole("main").locator('[id="lesson-top"]')).toBeInViewport({ ratio: 1 });
   });
 }
 
