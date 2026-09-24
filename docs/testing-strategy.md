@@ -121,6 +121,12 @@ repeated clicks without a reload, saved deep links, reloads, Back/Forward, and
 references to the other lesson. Assertions require the entire heading to be
 visible near the reader's top while the document itself remains unscrolled.
 
+Scope heading ID queries to the accessible main region. React can retain a
+hidden streamed copy of lesson content outside the reader, so document-wide ID
+queries can match both copies. A regression case deliberately retains hidden
+duplicate content for each map and verifies the reader's heading and section
+navigation without relaxing the viewport or scroll-position assertions.
+
 Component tests also cover delayed content insertion, client-side route changes,
 encoded fragments, missing targets, external links, and modified clicks. These
 tests use fixtures and mocks and make no Google Docs or OAuth requests.
