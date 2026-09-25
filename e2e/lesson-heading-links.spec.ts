@@ -8,6 +8,15 @@ const STREAMED_LESSON_COPY_TEST_ID = "streamed-lesson-copy";
 const MAX_HEADING_TOP_OFFSET_PX = 17;
 const MIN_HEADING_SCROLL_DISTANCE_PX = 500;
 
+/** Wait for hydration and the reader's own mobile layout before clicking links. */
+async function waitForLessonReader(page: Page, isMobile: boolean) {
+  await expect(page.getByRole("button", { name: /switch to .* mode/i })).toBeEnabled();
+  if (isMobile) {
+    // The header can hydrate before the reader collapses its desktop sidebar.
+    await expect(page.getByRole("button", { name: "Open navigator", exact: true })).toBeVisible();
+  }
+}
+
 /** Require the heading to land in the reader without moving the surrounding page. */
 async function expectHeadingInReader(page: Page, id: string) {
   // Streamed HTML can retain hidden copies outside the active reader.
@@ -33,12 +42,15 @@ for (const lesson of Object.values(lessonHeadingFixtures)) {
   const hash = `#heading=${lesson.id}`;
   const sectionsUrl = `${path}#${lessonSectionsFixture.id}`;
 
-  test(`${lesson.slug}: click, repeat click, and browser history`, async ({ page, hasTouch }) => {
+  test(`${lesson.slug}: click, repeat click, and browser history`, async ({
+    page,
+    hasTouch,
+    isMobile,
+  }) => {
     await page.goto(path);
     const link = page.getByRole("link", { name: lesson.link, exact: true });
     await expect(link).toBeVisible();
-    // Theme control availability confirms hydration before testing the delegated click.
-    await expect(page.getByRole("button", { name: /switch to .* mode/i })).toBeEnabled();
+    await waitForLessonReader(page, isMobile);
     let documentNavigations = 0;
     page.on("request", (request) => {
       if (request.isNavigationRequest() && request.frame() === page.mainFrame())
@@ -107,10 +119,36 @@ for (const lesson of Object.values(lessonHeadingFixtures)) {
   });
 }
 
-test("a reference to the other lesson opens its requested heading", async ({ page }) => {
-  const { jobTitlesToCourses: source, coursesToJobTitles: destination } = lessonHeadingFixtures;
-  await page.goto(`/lesson/${source.slug}`);
-  await page.getByRole("link", { name: destination.link, exact: true }).click();
-  await expect(page).toHaveURL(`/lesson/${destination.slug}#heading=${destination.id}`);
-  await expectHeadingInReader(page, destination.id);
-});
+for (const delayHydration of [false, true]) {
+  const suffix = delayHydration ? " after delayed hydration" : "";
+  test(`a reference to the other lesson opens its requested heading${suffix}`, async ({
+    page,
+    isMobile,
+  }) => {
+    const { jobTitlesToCourses: source, coursesToJobTitles: destination } = lessonHeadingFixtures;
+    let releaseScripts!: () => void;
+    const scriptsReady = new Promise<void>((resolve) => {
+      releaseScripts = resolve;
+    });
+    if (delayHydration) {
+      await page.route("**/_next/**/*.js*", async (route) => {
+        await scriptsReady;
+        await route.continue();
+      });
+    }
+    try {
+      await page.goto(`/lesson/${source.slug}`, { waitUntil: "commit" });
+      if (delayHydration) {
+        await expect(page.getByRole("button", { name: /switch to .* mode/i })).toBeDisabled();
+        await expect(page.getByRole("link", { name: destination.link, exact: true })).toBeVisible();
+      }
+    } finally {
+      releaseScripts();
+    }
+    await waitForLessonReader(page, isMobile);
+    await page.getByRole("link", { name: destination.link, exact: true }).click();
+    await expect(page).toHaveURL(`/lesson/${destination.slug}#heading=${destination.id}`);
+    await waitForLessonReader(page, isMobile);
+    await expectHeadingInReader(page, destination.id);
+  });
+}
