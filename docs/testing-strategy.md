@@ -127,6 +127,13 @@ queries can match both copies. A regression case deliberately retains hidden
 duplicate content for each map and verifies the reader's heading and section
 navigation without relaxing the viewport or scroll-position assertions.
 
+Before activating heading links on mobile, wait for the reader's "Open navigator"
+control as well as the enabled theme button. The header can hydrate while the
+reader still has its desktop columns; its later mobile collapse can move a link
+during a click. Cross-lesson navigation also runs with JavaScript delivery held
+until the server-rendered link is visible, then released before waiting for the
+reader. These checks use UI readiness rather than sleeps or click retries.
+
 Component tests also cover delayed content insertion, client-side route changes,
 encoded fragments, missing targets, external links, and modified clicks. These
 tests use fixtures and mocks and make no Google Docs or OAuth requests.
