@@ -63,7 +63,8 @@ if (isProduction) {
 }
 
 const nextConfig: NextConfig = {
-  cacheComponents: true,
+  // A prerendered shell cannot carry the per-request CSP nonce on framework scripts.
+  cacheComponents: false,
   turbopack: {},
   env: {
     NEXT_PUBLIC_APP_VERSION: appVersion,

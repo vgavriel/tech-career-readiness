@@ -1,6 +1,7 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { Suspense } from "react";
 
 import AppShell from "@/components/app-shell";
@@ -22,10 +23,12 @@ type RootLayoutProps = {
  * Renders the global app shell with fonts and a Suspense boundary.
  *
  * @remarks
- * Runtime data access is delegated to AppShell to keep the layout static for
- * cacheComponents compatibility.
+ * Render HTML per request so Next.js can nonce its framework scripts using the
+ * request CSP. AppShell still streams session-dependent content through Suspense.
  */
-export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
+export default async function RootLayout({ children }: Readonly<RootLayoutProps>) {
+  await connection();
+
   return (
     <html lang="en" data-theme="light" suppressHydrationWarning>
       <head>

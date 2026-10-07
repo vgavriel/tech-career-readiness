@@ -18,8 +18,7 @@ vi.mock("next-auth/react", async (importOriginal) => {
 });
 
 vi.mock("next/cache", () => ({
-  cacheLife: () => {},
-  cacheTag: () => {},
+  unstable_cache: <T>(callback: T) => callback,
   revalidateTag: () => {},
   updateTag: () => {},
 }));

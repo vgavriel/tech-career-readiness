@@ -14,11 +14,11 @@ These standards keep the codebase consistent, safe, and easy to maintain.
 - ESLint enforces import order (`simple-import-sort`) and unused exports (`import/no-unused-modules`) for `src/lib`, `src/components`, and `src/hooks`.
 - Avoid server-only imports in client components: no `next/headers` or `next-auth` in `src/components` and `src/hooks`.
 
-## App Router boundaries (cacheComponents)
+## App Router boundaries and CSP
 
-- Keep runtime APIs (`cookies()`, `headers()`, `getServerSession`) inside the app-shell boundary.
-- `src/app/layout.tsx` should stay static; runtime data goes in `src/components/app-shell.tsx`.
-- Any client component that depends on runtime data must render inside the same `<Suspense>` boundary.
+- Keep `cacheComponents` disabled while HTML uses per-request CSP nonces.
+- `src/app/layout.tsx` must await `connection()` so framework scripts receive the request nonce.
+- Keep session/user data in `src/components/app-shell.tsx`, inside the layout's streaming `<Suspense>` boundary.
 
 ## Caching & content rendering
 
@@ -26,7 +26,7 @@ These standards keep the codebase consistent, safe, and easy to maintain.
   - In-memory cache (local fallback).
   - Redis cache (shared in preview/production).
   - CDN cache for `/api/lesson-content` (s-maxage + SWR).
-- Avoid using runtime APIs inside cache scopes (`use cache` or cached helpers).
+- Cache public roadmap metadata with `unstable_cache`; keep request APIs and user data outside cached helpers.
 - When lesson content is updated, prefer explicit invalidation (version bump or key rotation).
 
 ## API and security conventions

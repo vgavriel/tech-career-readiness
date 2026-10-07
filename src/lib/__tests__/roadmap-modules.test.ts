@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { ROADMAP_MODULE_SELECT } from "@/lib/roadmap-types";
+
 const cacheMocks = vi.hoisted(() => ({
-  cacheLife: vi.fn(),
+  unstable_cache: vi.fn(<T>(callback: T) => callback),
 }));
 
 const prismaMocks = vi.hoisted(() => ({
@@ -9,7 +11,7 @@ const prismaMocks = vi.hoisted(() => ({
 }));
 
 vi.mock("next/cache", () => ({
-  cacheLife: cacheMocks.cacheLife,
+  unstable_cache: cacheMocks.unstable_cache,
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -22,7 +24,8 @@ vi.mock("@/lib/prisma", () => ({
 
 describe("getRoadmapModules", () => {
   beforeEach(() => {
-    cacheMocks.cacheLife.mockReset();
+    vi.resetModules();
+    cacheMocks.unstable_cache.mockClear();
     prismaMocks.findMany.mockReset();
     prismaMocks.findMany.mockResolvedValue([]);
   });
@@ -30,18 +33,28 @@ describe("getRoadmapModules", () => {
   it("configures a one-hour cache and returns ordered modules", async () => {
     const { getRoadmapModules } = await import("@/lib/roadmap-modules");
 
-    await getRoadmapModules();
+    const modules = [
+      {
+        id: "module-1",
+        key: "intro",
+        title: "Introduction",
+        description: null,
+        order: 1,
+        lessons: [],
+      },
+    ];
+    prismaMocks.findMany.mockResolvedValue(modules);
 
-    expect(cacheMocks.cacheLife).toHaveBeenCalledWith({ revalidate: 60 * 60 });
-    expect(prismaMocks.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        orderBy: { order: "asc" },
-        select: expect.objectContaining({
-          lessons: expect.objectContaining({
-            orderBy: { order: "asc" },
-          }),
-        }),
-      })
+    await expect(getRoadmapModules()).resolves.toEqual(modules);
+
+    expect(cacheMocks.unstable_cache).toHaveBeenCalledWith(
+      expect.any(Function),
+      ["roadmap-modules"],
+      { revalidate: 60 * 60 }
     );
+    expect(prismaMocks.findMany).toHaveBeenCalledWith({
+      orderBy: { order: "asc" },
+      select: ROADMAP_MODULE_SELECT,
+    });
   });
 });
