@@ -10,6 +10,7 @@ import RootLayout from "@/app/layout";
 import { THEME_INIT_SCRIPT, THEME_STORAGE_KEY } from "@/lib/theme";
 
 vi.mock("@/lib/client-error", () => ({ reportClientError: vi.fn() }));
+vi.mock("next/server", () => ({ connection: vi.fn().mockResolvedValue(undefined) }));
 vi.mock("@/components/app-shell", () => ({
   default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
@@ -66,9 +67,10 @@ describe("global error theme", () => {
 
   it.each(["light", "dark"])(
     "preserves the current %s theme through a layout failure and recovery",
-    (theme) => {
+    async (theme) => {
       root = createRoot(document);
-      act(() => root!.render(<RootLayout>Course</RootLayout>));
+      const initialLayout = await RootLayout({ children: "Course" });
+      act(() => root!.render(initialLayout));
       // The browser preference may be unavailable or stale after a blocked write.
       document.documentElement.dataset.theme = theme;
       vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
@@ -76,7 +78,8 @@ describe("global error theme", () => {
       });
       act(() => root!.render(<GlobalError error={error} reset={vi.fn()} />));
       expect(document.documentElement.dataset.theme).toBe(theme);
-      act(() => root!.render(<RootLayout>Recovered course</RootLayout>));
+      const recoveredLayout = await RootLayout({ children: "Recovered course" });
+      act(() => root!.render(recoveredLayout));
       expect(document.documentElement.dataset.theme).toBe(theme);
       expect(document.body).toHaveTextContent("Recovered course");
     }

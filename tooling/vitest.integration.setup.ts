@@ -2,8 +2,7 @@ import type { PrismaClient } from "@prisma/client";
 import { afterAll, beforeAll, beforeEach, vi } from "vitest";
 
 vi.mock("next/cache", () => ({
-  cacheLife: () => {},
-  cacheTag: () => {},
+  unstable_cache: <T>(callback: T) => callback,
   revalidateTag: () => {},
   updateTag: () => {},
 }));

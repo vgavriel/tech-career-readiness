@@ -421,6 +421,13 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Notify the repository owner when a tracked GitHub Actions workflow reports a CI issue
 - [x] Route automation emails through dedicated repository alert issue #310 without SMTP credentials
 
+### Phase 24 — CSP-compatible rendering and CI startup checks
+
+- [x] Render HTML per request so Next.js framework scripts receive the CSP nonce
+- [x] Preserve the one-hour public roadmap metadata cache without Cache Components
+- [x] Gate E2E projects on a production browser startup and CSP regression check
+- [x] Validate unit, integration, E2E, and accessibility checks, including Next.js 16.4
+
 ## Environment variables
 
 - APP_ENV (local, preview, production, test)

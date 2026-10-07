@@ -1,7 +1,10 @@
+import { connection } from "next/server";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
+
+vi.mock("next/server", () => ({ connection: vi.fn().mockResolvedValue(undefined) }));
 
 vi.mock("@/components/app-shell", () => ({
   default: ({ children }: { children: React.ReactNode }) => (
@@ -16,6 +19,7 @@ describe("RootLayout", () => {
     const ui = await RootLayout({ children: <div>Page content</div> });
     const html = renderToStaticMarkup(ui);
 
+    expect(connection).toHaveBeenCalledOnce();
     expect(html).toContain('data-testid="app-shell"');
     expect(html).toContain('href="#main-content"');
     expect(html).toContain("Page content");
