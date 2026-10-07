@@ -42,16 +42,25 @@ export default defineConfig({
   },
   projects: [
     {
+      name: "startup",
+      testMatch: "startup.setup.ts",
+      timeout: 30_000,
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
       name: "chromium",
+      dependencies: ["startup"],
       use: { ...devices["Desktop Chrome"] },
     },
     {
       name: "iphone-se-webkit",
+      dependencies: ["startup"],
       testMatch: ["lesson-layout.spec.ts", "lesson-heading-links.spec.ts"],
       use: { ...devices["iPhone SE"], browserName: "webkit" },
     },
     {
       name: "iphone-15-webkit",
+      dependencies: ["startup"],
       testMatch: ["lesson-layout.spec.ts", "lesson-heading-links.spec.ts"],
       use: { ...devices["iPhone 15"], browserName: "webkit" },
     },

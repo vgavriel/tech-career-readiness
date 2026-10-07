@@ -1,25 +1,26 @@
 # Architecture Notes
 
-## Cache-aware app shell (cacheComponents + Suspense)
-We enable `cacheComponents` in `next.config.ts`, which means runtime data access
-(`cookies()`, `headers()`, `getServerSession`, etc.) must be rendered inside a
-`<Suspense>` boundary to avoid blocking the whole route. To keep the root layout
-static while still supporting auth/session data, the app shell is split:
+## Request-rendered app shell and CSP
 
-- `src/app/layout.tsx` is static and only renders a Suspense boundary.
-- `src/components/app-shell.tsx` is a server component that fetches runtime
-  data and renders `Providers`, `SiteHeader`, and the page content.
+HTML uses a fresh Content Security Policy (CSP) nonce for each request. The root
+layout awaits `connection()` before rendering so Next.js can attach that nonce
+to its framework scripts. `cacheComponents` is disabled: partial prerendering
+creates a static shell before the request nonce exists, which can leave startup
+scripts blocked by CSP. This broke hydration when upgrading to Next.js 16.4.
 
-This structure keeps the outer HTML cache-friendly while allowing the dynamic
-parts to stream in once runtime data resolves.
+This follows Next.js's [dynamic rendering requirement for nonce-based CSP](https://nextjs.org/docs/app/guides/content-security-policy#dynamic-rendering-requirement).
+HTML is rendered per request rather than shared through the full route cache.
+Do not enable static HTML caching or partial prerendering without revisiting the
+security policy and validating startup in a production build.
 
-### Why this matters for caching
-- Static parts of the layout can be cached and streamed immediately.
-- Dynamic, per-request data stays isolated inside the Suspense boundary.
-- It avoids Next.js `blocking-route` and `missing-suspense` errors when
-  `cacheComponents` is enabled.
+- `src/app/layout.tsx` establishes request-time rendering and wraps `AppShell`
+  in Suspense so session-dependent content can still stream.
+- `src/components/app-shell.tsx` fetches session/user data and renders
+  `Providers`, `SiteHeader`, and the page content.
+- `src/lib/roadmap-modules.ts` uses `unstable_cache` with a one-hour revalidation
+  interval to share public module/lesson metadata across requests. No session
+  data or request APIs belong inside this cache.
+- Lesson HTML keeps its separate memory, Redis, and API/CDN caching layers.
 
-### Guidelines
-- Keep runtime APIs out of `src/app/layout.tsx`.
-- Put runtime data fetching in `src/components/app-shell.tsx` or children.
-- Wrap any client components that rely on runtime hooks inside the same boundary.
+The Playwright `startup` project verifies nonce freshness, inline script
+authorization, and working theme controls before the remaining E2E tests run.

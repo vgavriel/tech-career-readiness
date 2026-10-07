@@ -15,8 +15,8 @@ type AppShellProps = {
  * Server-rendered shell that owns runtime data and providers.
  *
  * @remarks
- * This component is wrapped in a Suspense boundary by the root layout to keep
- * runtime APIs compatible with cacheComponents.
+ * The root layout's Suspense boundary lets session-dependent content stream
+ * after the request-rendered document shell.
  */
 export default async function AppShell({ children }: AppShellProps) {
   const session = await getServerSession(authOptions);

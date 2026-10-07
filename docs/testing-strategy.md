@@ -53,6 +53,13 @@ Verify route handlers, DB access, and caching behavior with real data.
 
 Run against the built app with a seeded test DB.
 
+The `startup` project runs first and gates every browser project. Within a
+30-second test budget, it checks home and lesson documents for CSP-authorized
+inline scripts, fresh nonces on repeated requests, browser errors, and working
+theme controls. A bootstrap/hydration failure stops the run with a diagnostic
+trace instead of cascading into dozens of interaction timeouts. Run only this
+check with `npm run test:e2e -- --project=startup` after building and seeding.
+
 - Public browsing:
   - landing -> roadmap -> lesson page
   - lesson content renders without auth
