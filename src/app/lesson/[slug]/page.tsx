@@ -182,11 +182,7 @@ async function buildLessonContentPanel({
       {contentHtml ? (
         <div className="mt-4">
           {recruitingTimeline ? (
-            <RecruitingTimeline
-              content={recruitingTimeline}
-              sourceHtml={contentHtml}
-              sourceUrl={lesson.publishedUrl}
-            />
+            <RecruitingTimeline content={recruitingTimeline} sourceHtml={contentHtml} />
           ) : (
             <LessonContent html={contentHtml} />
           )}

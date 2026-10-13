@@ -45,7 +45,6 @@ const decodeHeading = (hash: string) => {
 type RecruitingTimelineProps = {
   content: RecruitingTimelineContent;
   sourceHtml: string;
-  sourceUrl: string;
 };
 
 /**
@@ -53,22 +52,17 @@ type RecruitingTimelineProps = {
  * The original guide is server-rendered, remains usable without JavaScript,
  * and is used for incoming source-heading links to preserve reader navigation.
  */
-export default function RecruitingTimeline({
-  content,
-  sourceHtml,
-  sourceUrl,
-}: RecruitingTimelineProps) {
+export default function RecruitingTimeline({ content, sourceHtml }: RecruitingTimelineProps) {
   const day = useSyncExternalStore(subscribeDay, readDay, emptySnapshot);
   const hash = useSyncExternalStore(subscribeHash, readHash, emptySnapshot);
   const [selection, setSelection] = useState<{
     index: number | null;
-    full: boolean;
     hash: string;
   } | null>(null);
   const period = day ? getRecruitingPeriod(day) : null;
   const sourceHeading = content.sourceIds.includes(decodeHeading(hash));
   const activeSelection = selection?.hash === hash ? selection : null;
-  const showFull = !period || (activeSelection?.full ?? sourceHeading);
+  const showFull = !period || (!activeSelection && sourceHeading);
   const selected = activeSelection?.index ?? period?.index ?? 0;
   const season = RECRUITING_SEASONS[selected];
   const section = content.seasons[selected];
@@ -85,7 +79,7 @@ export default function RecruitingTimeline({
               <p>See what’s happening this season, then explore the year ahead.</p>
             </div>
             <div className={styles.today}>
-              <span>Today at Brown</span>
+              <span>Today</span>
               <time dateTime={day}>{period.dateLabel}</time>
             </div>
           </div>
@@ -98,15 +92,14 @@ export default function RecruitingTimeline({
               <button
                 key={item.name}
                 type="button"
-                aria-label={`${item.shortMonths} ${item.name} ${item.focus}${index === period.index ? " · You are here" : ""}`}
+                aria-label={`${item.shortMonths} ${item.name}${index === period.index ? " · You are here" : ""}`}
                 aria-pressed={!showFull && index === selected}
                 aria-current={index === period.index ? "date" : undefined}
                 aria-controls="recruiting-season-panel"
-                onClick={() => setSelection({ index, full: false, hash })}
+                onClick={() => setSelection({ index, hash })}
               >
                 <span className={styles.months}>{item.shortMonths}</span>
                 <strong>{item.name}</strong>
-                <span className={styles.focus}>{item.focus}</span>
                 <span className={styles.current}>
                   {index === period.index ? "● You are here" : ""}
                 </span>
@@ -121,23 +114,10 @@ export default function RecruitingTimeline({
             </p>
             <div className={styles.controls}>
               {showFull || !isCurrent ? (
-                <button
-                  type="button"
-                  onClick={() => setSelection({ index: null, full: false, hash })}
-                >
+                <button type="button" onClick={() => setSelection({ index: null, hash })}>
                   Back to now
                 </button>
               ) : null}
-              <button
-                type="button"
-                aria-expanded={showFull}
-                aria-controls="recruiting-season-panel"
-                onClick={() =>
-                  setSelection({ index: showFull ? null : selected, full: !showFull, hash })
-                }
-              >
-                {showFull ? "Interactive view" : "Read full guide"}
-              </button>
             </div>
           </div>
         </>
@@ -180,9 +160,6 @@ export default function RecruitingTimeline({
           Recruiting timing varies by employer and role. Check individual postings for current
           deadlines.
         </p>
-        <a href={sourceUrl} target="_blank" rel="noopener noreferrer">
-          Open source Google Doc <span aria-hidden="true">↗</span>
-        </a>
       </footer>
     </div>
   );

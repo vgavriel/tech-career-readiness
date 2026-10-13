@@ -281,6 +281,8 @@ Source of truth for modules, focuses, progress categories, and gamification:
 
 ### Phase 12 — Quality pass + polish
 
+- [x] Simplify the recruiting season cards and date label, remove document controls, and align resource columns without inherited list spacing
+
 - [x] Add a responsive, current-season recruiting timeline within the lesson reader, preserving Google Doc content, links, full-guide reading, and source-structure fallback
 - [x] Cover campus date boundaries, season browsing, heading links, content preservation, and lesson-route fallback with deterministic tests
 - [x] Error handling for missing lessons/content fetch failures

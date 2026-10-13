@@ -1,21 +1,19 @@
 /** The recurring July–June recruiting cycle used by the source lesson. */
 export const RECRUITING_SEASONS = [
-  { name: "Late Summer", months: "July–August", shortMonths: "Jul–Aug", focus: "Prepare & apply" },
+  { name: "Late Summer", months: "July–August", shortMonths: "Jul–Aug" },
   {
     name: "Early Fall",
     months: "September–October",
     shortMonths: "Sep–Oct",
-    focus: "Apply & interview",
   },
   {
     name: "Late Fall",
     months: "November–December",
     shortMonths: "Nov–Dec",
-    focus: "Evaluate & explore",
   },
-  { name: "Winter", months: "January–February", shortMonths: "Jan–Feb", focus: "Connect & refine" },
-  { name: "Spring", months: "March–April", shortMonths: "Mar–Apr", focus: "Showcase & pursue" },
-  { name: "Early Summer", months: "May–June", shortMonths: "May–Jun", focus: "Start & reflect" },
+  { name: "Winter", months: "January–February", shortMonths: "Jan–Feb" },
+  { name: "Spring", months: "March–April", shortMonths: "Mar–Apr" },
+  { name: "Early Summer", months: "May–June", shortMonths: "May–Jun" },
 ] as const;
 
 /** Use campus time so visitors abroad see the same recruiting season. */

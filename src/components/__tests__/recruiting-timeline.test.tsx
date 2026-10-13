@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -13,10 +13,7 @@ const sourceHtml = readFileSync(
   "utf8"
 );
 const content = parseRecruitingTimeline(sourceHtml)!;
-const sourceUrl = "https://docs.google.com/document/d/e/timeline/pub";
-const element = () => (
-  <RecruitingTimeline content={content} sourceHtml={sourceHtml} sourceUrl={sourceUrl} />
-);
+const element = () => <RecruitingTimeline content={content} sourceHtml={sourceHtml} />;
 
 describe("RecruitingTimeline", () => {
   beforeEach(() => {
@@ -45,24 +42,18 @@ describe("RecruitingTimeline", () => {
       "/lesson/ace-interview-prep-timeline"
     );
   });
-  it("shows the original complete document and resources on request", () => {
+  it("keeps the reader focused on seasons without summaries or document controls", () => {
     render(element());
-    fireEvent.click(screen.getByRole("button", { name: "Read full guide" }));
-    expect(screen.getByRole("button", { name: "Interactive view" })).toHaveAttribute(
-      "aria-expanded",
-      "true"
-    );
-    const full = screen.getByTestId("lesson-content");
+    expect(screen.getByText("Today", { exact: true })).toBeInTheDocument();
     expect(
-      within(full).getByRole("heading", { name: "Early Summer (May–June)" })
+      screen.getByRole("button", { name: "Sep–Oct Early Fall · You are here" })
     ).toBeInTheDocument();
+    expect(screen.queryByText("Apply & interview")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Read full guide" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Open source Google Doc/ })).not.toBeInTheDocument();
     expect(
-      within(full).getByRole("heading", { name: "Essential Brown Resources" })
+      screen.getByRole("complementary", { name: "Essential Brown resources" })
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Open source Google Doc/ })).toHaveAttribute(
-      "href",
-      sourceUrl
-    );
   });
   it("keeps published and edit-form heading deep links in the full reader", () => {
     window.history.replaceState(null, "", "#heading=h.8tyi8dh7ov0i");

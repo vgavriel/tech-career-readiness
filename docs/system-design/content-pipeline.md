@@ -44,9 +44,9 @@ rendered instead of dropping content.
 
 `src/components/recruiting-timeline.tsx` selects the current two-month season using
 the America/New_York date, updates across date boundaries, and lets readers browse
-without moving the current-season marker. The full original guide remains available,
-including without JavaScript. Incoming source heading links open that full view to
-retain the existing heading-navigation behavior. The component uses shared theme
+without moving the current-season marker. The original guide is used for no-JavaScript reading and incoming source heading
+links, retaining existing heading-navigation behavior. The interactive reader has
+no full-guide toggle or source-document link. The component uses shared theme
 tokens and container queries within the existing course navigation and progress UI.
 
 ## Security and privacy notes

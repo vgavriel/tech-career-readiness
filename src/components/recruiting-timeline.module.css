@@ -84,11 +84,6 @@
   font-size: 0.88rem;
   font-weight: 700;
 }
-.focus {
-  display: block;
-  font-size: 0.7rem;
-  margin-top: 0.6rem;
-}
 .current {
   display: block;
   font-size: 0.6875rem;
@@ -196,11 +191,14 @@
 .root .resources ul {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
   gap: 1rem;
   list-style: none;
   padding: 0;
 }
-.root .resources li {
+.root .resources li,
+.root .resources li + li {
+  /* Grid gaps provide spacing; override the prose list's sibling margin. */
   margin: 0;
   padding: 0;
   font-size: 0.8rem;
@@ -222,9 +220,6 @@
 }
 .footer p {
   max-width: 31rem;
-}
-.footer a {
-  color: var(--accent-700);
 }
 @container (max-width:720px) {
   .seasons {
