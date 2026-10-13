@@ -3,6 +3,7 @@
 import { useState, useSyncExternalStore } from "react";
 
 import LessonContent from "@/components/lesson-content";
+import { pushLessonHash, useLessonHash } from "@/hooks/use-lesson-hash";
 import {
   getRecruitingDay,
   getRecruitingPeriod,
@@ -21,15 +22,6 @@ const subscribeDay = (notify: () => void) => {
     document.removeEventListener("visibilitychange", notify);
   };
 };
-const subscribeHash = (notify: () => void) => {
-  window.addEventListener("hashchange", notify);
-  window.addEventListener("popstate", notify);
-  return () => {
-    window.removeEventListener("hashchange", notify);
-    window.removeEventListener("popstate", notify);
-  };
-};
-const readHash = () => window.location.hash;
 const emptySnapshot = () => "";
 const readDay = () => getRecruitingDay();
 
@@ -49,24 +41,26 @@ type RecruitingTimelineProps = {
 
 /**
  * A date-aware view of the lesson's Google Doc, inside the normal course shell.
- * The original guide is server-rendered, remains usable without JavaScript,
- * and is used for incoming source-heading links to preserve reader navigation.
+ * The original guide is the server-rendered hydration baseline and is used for
+ * source-heading links. The containing streamed course reader requires JavaScript.
  */
 export default function RecruitingTimeline({ content, sourceHtml }: RecruitingTimelineProps) {
   const day = useSyncExternalStore(subscribeDay, readDay, emptySnapshot);
-  const hash = useSyncExternalStore(subscribeHash, readHash, emptySnapshot);
-  const [selection, setSelection] = useState<{
-    index: number | null;
-    hash: string;
-  } | null>(null);
+  const hash = useLessonHash();
+  const [selection, setSelection] = useState<number | null>(null);
   const period = day ? getRecruitingPeriod(day) : null;
   const sourceHeading = content.sourceIds.includes(decodeHeading(hash));
-  const activeSelection = selection?.hash === hash ? selection : null;
-  const showFull = !period || (!activeSelection && sourceHeading);
-  const selected = activeSelection?.index ?? period?.index ?? 0;
+  const showFull = !period || sourceHeading;
+  const selected = selection ?? period?.index ?? 0;
   const season = RECRUITING_SEASONS[selected];
   const section = content.seasons[selected];
   const isCurrent = selected === period?.index;
+
+  const selectSeason = (index: number | null) => {
+    setSelection(index);
+    // Keep the heading entry in history; returning to it must restore the guide.
+    if (sourceHeading) pushLessonHash("");
+  };
 
   return (
     <div className={styles.root} data-testid="recruiting-timeline">
@@ -76,7 +70,13 @@ export default function RecruitingTimeline({ content, sourceHtml }: RecruitingTi
             <div>
               <p className={styles.eyebrow}>Your recruiting year</p>
               <h2>Find your next move.</h2>
-              <p>See what’s happening this season, then explore the year ahead.</p>
+              {!showFull && content.introHtml ? (
+                <div
+                  className={`lesson-content ${styles.rich}`}
+                  data-testid="recruiting-introduction"
+                  dangerouslySetInnerHTML={{ __html: content.introHtml }}
+                />
+              ) : null}
             </div>
             <div className={styles.today}>
               <span>Today</span>
@@ -96,7 +96,7 @@ export default function RecruitingTimeline({ content, sourceHtml }: RecruitingTi
                 aria-pressed={!showFull && index === selected}
                 aria-current={index === period.index ? "date" : undefined}
                 aria-controls="recruiting-season-panel"
-                onClick={() => setSelection({ index, hash })}
+                onClick={() => selectSeason(index)}
               >
                 <span className={styles.months}>{item.shortMonths}</span>
                 <strong>{item.name}</strong>
@@ -114,7 +114,7 @@ export default function RecruitingTimeline({ content, sourceHtml }: RecruitingTi
             </p>
             <div className={styles.controls}>
               {showFull || !isCurrent ? (
-                <button type="button" onClick={() => setSelection({ index: null, hash })}>
+                <button type="button" onClick={() => selectSeason(null)}>
                   Back to now
                 </button>
               ) : null}

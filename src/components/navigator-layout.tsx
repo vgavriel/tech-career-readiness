@@ -12,6 +12,8 @@ import {
   useState,
 } from "react";
 
+import { pushLessonHash, useLessonHash } from "@/hooks/use-lesson-hash";
+
 type NavigatorLayoutProps = {
   navigator: React.ReactNode;
   children: React.ReactNode;
@@ -75,6 +77,7 @@ export default function NavigatorLayout({
 }: NavigatorLayoutProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const lessonHash = useLessonHash();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mainRef = useRef<HTMLElement | null>(null);
   const [navigatorWidth, setNavigatorWidth] = useState<(typeof WIDTH_STEPS)[number]>(26);
@@ -326,15 +329,10 @@ export default function NavigatorLayout({
     };
 
     handleHash();
-    window.addEventListener("hashchange", handleHash);
-    window.addEventListener("popstate", handleHash);
-
     return () => {
       observer?.disconnect();
-      window.removeEventListener("hashchange", handleHash);
-      window.removeEventListener("popstate", handleHash);
     };
-  }, [currentLessonRouteKey, renderedLessonRouteKey, scrollToHash]);
+  }, [currentLessonRouteKey, renderedLessonRouteKey, lessonHash, scrollToHash]);
 
   const handleMainClick = useCallback(
     (event: React.MouseEvent<HTMLElement>) => {
@@ -381,10 +379,11 @@ export default function NavigatorLayout({
       event.preventDefault();
 
       if (window.location.hash !== url.hash) {
-        window.history.pushState(null, "", url.hash);
+        // Scroll in the effect after hash-dependent lesson content has rendered.
+        pushLessonHash(url.hash);
+      } else {
+        scrollToHash(url.hash);
       }
-
-      scrollToHash(url.hash);
     },
     [findHashTarget, scrollToHash]
   );

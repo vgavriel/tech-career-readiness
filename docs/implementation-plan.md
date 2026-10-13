@@ -283,8 +283,11 @@ Source of truth for modules, focuses, progress categories, and gamification:
 
 - [x] Simplify the recruiting season cards and date label, remove document controls, and align resource columns without inherited list spacing
 
-- [x] Add a responsive, current-season recruiting timeline within the lesson reader, preserving Google Doc content, links, full-guide reading, and source-structure fallback
+- [x] Add a responsive, current-season recruiting timeline within the lesson reader, preserving Google Doc content, links, source-heading reading, and source-structure fallback
 - [x] Cover campus date boundaries, season browsing, heading links, content preservation, and lesson-route fallback with deterministic tests
+- [x] Retain introductory guidance and standalone media, and reject unsupported content positions rather than dropping source content
+- [x] Share URL-fragment updates between the reader and timeline so one-click return and Back/Forward restore the requested view
+- [x] Add a separate real-document browser fixture run in CI for desktop and iPhone timeline interactions, history, source additions, and resource geometry
 - [x] Error handling for missing lessons/content fetch failures
 - [x] Confirm public access to curriculum and lessons
 - [x] UI polish for readability and CTAs

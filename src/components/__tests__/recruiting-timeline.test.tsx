@@ -5,7 +5,9 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import NavigatorLayout from "@/components/navigator-layout";
 import RecruitingTimeline from "@/components/recruiting-timeline";
+import { pushLessonHash } from "@/hooks/use-lesson-hash";
 import { parseRecruitingTimeline } from "@/lib/recruiting-timeline";
 
 const sourceHtml = readFileSync(
@@ -15,11 +17,20 @@ const sourceHtml = readFileSync(
 const content = parseRecruitingTimeline(sourceHtml)!;
 const element = () => <RecruitingTimeline content={content} sourceHtml={sourceHtml} />;
 
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/lesson/tech-recruiting-timeline",
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 describe("RecruitingTimeline", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-10-13T16:00:00Z"));
     window.history.replaceState(null, "", "/lesson/tech-recruiting-timeline");
+    window.matchMedia = vi
+      .fn()
+      .mockReturnValue({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() });
+    HTMLElement.prototype.scrollTo = vi.fn();
   });
   afterEach(() => {
     vi.useRealTimers();
@@ -67,6 +78,33 @@ describe("RecruitingTimeline", () => {
     });
     expect(screen.getByTestId("lesson-content")).toBeInTheDocument();
   });
+  it("returns to now in one click after the reader pushes a heading, and restores source headings through history", () => {
+    window.history.replaceState(null, "", "#heading=h.8tyi8dh7ov0i");
+    render(<NavigatorLayout navigator={<div>Navigator</div>}>{element()}</NavigatorLayout>);
+    fireEvent.click(screen.getByRole("link", { name: "Spring (March–April)" }));
+    expect(window.location.hash).toBe("#h.uh2fioqej0ne");
+    fireEvent.click(screen.getByRole("button", { name: "Back to now" }));
+    expect(window.location.hash).toBe("");
+    expect(screen.queryByTestId("lesson-content")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Early Fall" })).toBeInTheDocument();
+    // Deterministic popstate notifications represent back/forward history entries.
+    for (const hash of ["#h.uh2fioqej0ne", "#heading=h.8tyi8dh7ov0i", "#h.uh2fioqej0ne"]) {
+      act(() => {
+        window.history.replaceState(null, "", hash);
+        window.dispatchEvent(new PopStateEvent("popstate"));
+      });
+      expect(screen.getByTestId("lesson-content")).toBeInTheDocument();
+    }
+  });
+  it("lets a season selection leave a source link without overriding that link when revisited", () => {
+    window.history.replaceState(null, "", "#h.uh2fioqej0ne");
+    render(element());
+    fireEvent.click(screen.getByRole("button", { name: "Jan–Feb Winter" }));
+    expect(window.location.hash).toBe("");
+    expect(screen.getByRole("heading", { name: "Winter" })).toBeInTheDocument();
+    act(() => pushLessonHash("#h.uh2fioqej0ne"));
+    expect(screen.getByTestId("lesson-content")).toBeInTheDocument();
+  });
   it("updates the current season across the campus month boundary without losing a browsed season", () => {
     vi.setSystemTime(new Date("2026-11-01T03:59:59Z"));
     render(element());
@@ -85,7 +123,7 @@ describe("RecruitingTimeline", () => {
       "date"
     );
   });
-  it("server-renders the entire guide for no-script reading and stable hydration", () => {
+  it("server-renders the entire guide as a stable hydration baseline", () => {
     const markup = renderToString(element());
     expect(markup).toContain("Early Summer (May–June)");
     expect(markup).toContain("Essential Brown Resources");

@@ -145,6 +145,33 @@ Component tests also cover delayed content insertion, client-side route changes,
 encoded fragments, missing targets, external links, and modified clicks. These
 tests use fixtures and mocks and make no Google Docs or OAuth requests.
 
+## Recruiting timeline regressions
+
+The ordinary E2E suite uses generic lesson HTML and cannot exercise the timeline
+enhancement. `npm run test:e2e:recruiting` uses a separate Playwright configuration
+and server run with the actual recruiting document fixture as
+`LESSON_CONTENT_MOCK_HTML`. The fixture adds introductory guidance and a standalone
+image to guard against silent content loss. Playwright fulfills the image request
+locally; tests never fetch it or the document from Google.
+
+The E2E workflow runs this suite after the normal suite, against the same built app
+and seeded test database. The startup/CSP gate remains enabled. Desktop Chromium
+and iPhone SE/15 WebKit cover source additions, keyboard season selection, the
+current marker, one-click Back to now, source-heading navigation, actual browser
+Back/Forward, resource geometry in both themes, and horizontal overflow. Unit
+tests cover unsupported structures falling back to the complete source document.
+
+To run with an isolated local test database:
+
+```bash
+PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=mac15-arm64 \
+PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers \
+bash scripts/with-e2e-db.sh npm run test:e2e:recruiting
+```
+
+Use `PLAYWRIGHT_PORT` when the default port 3001 is occupied. The suite is excluded
+from the generic configuration to prevent accidental testing of the fallback view.
+
 ## Accessibility checks (automated)
 
 - Use pa11y-ci with WCAG AAA standard for key routes.

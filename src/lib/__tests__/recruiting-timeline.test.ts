@@ -45,6 +45,7 @@ describe("Google Doc recruiting timeline parser", () => {
     expect(parsed).not.toBeNull();
     expect(parsed!.seasons).toHaveLength(6);
     const combined =
+      parsed!.introHtml +
       parsed!.seasons.map((s) => s.overviewHtml + s.actionsHtml + s.tipHtml).join("") +
       parsed!.resourcesHtml;
     const original = parseHTML(`<html><body>${html}</body></html>`).document;
@@ -69,6 +70,67 @@ describe("Google Doc recruiting timeline parser", () => {
       "Updated guidance for this year's recruiting."
     );
     expect(parseRecruitingTimeline(updated)!.seasons[0].overviewHtml).toContain("Updated guidance");
+  });
+  it("preserves introductory guidance and links while replacing only known calendar scaffolding", () => {
+    const { document } = parseHTML(`<html><body>${html}</body></html>`);
+    const notice = document.createElement("p");
+    notice.innerHTML =
+      'International students: <a href="/lesson/build-experience">check your deadlines</a>.';
+    document.getElementById("h.e0nhqe6dcyfl")!.before(notice);
+    const parsed = parseRecruitingTimeline(document.body.innerHTML)!;
+    expect(parsed.introHtml).toContain("Navigating the tech recruiting process");
+    expect(parsed.introHtml).toContain(notice.outerHTML);
+    expect(parsed.introHtml).not.toContain("Click to jump");
+    expect(parsed.introHtml).not.toContain("The Tech Recruiting Timeline: A Brown Student’s Guide");
+    expect(parsed.introHtml).not.toContain('href="#h.e0nhqe6dcyfl"');
+  });
+  it.each(["intro", "overview", "actions", "tip", "resources"])(
+    "preserves standalone and wrapped images in %s",
+    (location) => {
+      const { document } = parseHTML(`<html><body>${html}</body></html>`);
+      const anchors = {
+        intro: document.getElementById("h.dsghl215n6bv")!,
+        overview: document.getElementById("h.gwgy716nup2l")!,
+        actions: document.getElementById("h.gtxktmv1hda1")!,
+        tip: Array.from(document.querySelectorAll("p")).find((p) =>
+          p.textContent?.startsWith("Recruiting Tip:")
+        )!,
+        resources: document.getElementById("h.tt188ncpyn03")!,
+      };
+      const image = document.createElement("img");
+      image.setAttribute("src", "https://lh3.googleusercontent.com/timeline.png");
+      image.setAttribute("alt", "Recruiting checklist");
+      const wrapper = document.createElement("p");
+      wrapper.append(image.cloneNode(true));
+      anchors[location as keyof typeof anchors].after(image, wrapper);
+      const parsed = parseRecruitingTimeline(document.body.innerHTML)!;
+      expect(parsed).not.toBeNull();
+      const output =
+        location === "intro"
+          ? parsed.introHtml
+          : location === "resources"
+            ? parsed.resourcesHtml
+            : parsed.seasons[0][`${location}Html` as "overviewHtml" | "actionsHtml" | "tipHtml"];
+      expect(output).toContain(image.outerHTML);
+      expect(output).toContain(wrapper.outerHTML);
+      expect(output.match(/alt="Recruiting checklist"/g)).toHaveLength(2);
+    }
+  );
+  it("falls back instead of dropping media before a seasonal subsection or text outside the wrapper", () => {
+    const { document } = parseHTML(`<html><body>${html}</body></html>`);
+    const image = document.createElement("img");
+    image.setAttribute("src", "https://lh3.googleusercontent.com/timeline.png");
+    document.getElementById("h.e0nhqe6dcyfl")!.after(image);
+    expect(parseRecruitingTimeline(document.body.innerHTML)).toBeNull();
+    expect(parseRecruitingTimeline(`${html}<p>New guidance outside the wrapper</p>`)).toBeNull();
+    expect(
+      parseRecruitingTimeline(
+        html.replace(
+          '<div class="c26 doc-content">',
+          '<div class="c26 doc-content">Unwrapped guidance'
+        )
+      )
+    ).toBeNull();
   });
   it.each([
     html.replace(/Late Summer \(July–August\)/g, "Summer (June–August)"),
