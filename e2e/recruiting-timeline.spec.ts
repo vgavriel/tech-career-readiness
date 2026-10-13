@@ -14,7 +14,8 @@ const fullGuide = (page: Page) => reader(page).getByTestId("lesson-content");
 async function expectHeading(page: Page, id: string) {
   const heading = reader(page).locator(`[id="${id}"]`);
   await expect(fullGuide(page)).toBeVisible();
-  await expect(heading).toBeInViewport({ ratio: 1 });
+  // Native history restoration can place a subpixel under the reader's border.
+  await expect(heading).toBeInViewport({ ratio: 0.99 });
   await expect
     .poll(() =>
       heading.evaluate((element) =>
@@ -82,6 +83,8 @@ test("source headings and browser history override an earlier season selection",
   ).toBeVisible();
   if (isMobile)
     await expect(page.getByRole("button", { name: "Open navigator", exact: true })).toBeVisible();
+  await expectHeading(page, recruitingHeadingIds.winter);
+  await page.reload();
   await expectHeading(page, recruitingHeadingIds.winter);
   await fullGuide(page).getByRole("link", { name: "Spring (March–April)", exact: true }).click();
   await expect(page).toHaveURL(springUrl);

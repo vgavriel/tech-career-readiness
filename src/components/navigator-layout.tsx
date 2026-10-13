@@ -328,11 +328,13 @@ export default function NavigatorLayout({
       observer.observe(main, { childList: true, subtree: true });
     };
 
+    // The mobile layout widens the reader after hydration. Recompute the target
+    // after that reflow so a position measured in the narrow desktop grid is not retained.
     handleHash();
     return () => {
       observer?.disconnect();
     };
-  }, [currentLessonRouteKey, renderedLessonRouteKey, lessonHash, scrollToHash]);
+  }, [currentLessonRouteKey, renderedLessonRouteKey, lessonHash, isMobile, scrollToHash]);
 
   const handleMainClick = useCallback(
     (event: React.MouseEvent<HTMLElement>) => {
