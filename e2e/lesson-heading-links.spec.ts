@@ -4,7 +4,7 @@ import { lessonHeadingFixtures, lessonSectionsFixture } from "./fixtures/lesson-
 
 const LESSON_CONTENT_TEST_ID = "lesson-content";
 const STREAMED_LESSON_COPY_TEST_ID = "streamed-lesson-copy";
-// The reader leaves a 16px inset; allow one pixel for border/rounding differences.
+// Measure from the reader's inner edge: 16px inset plus one pixel for scroll rounding.
 const MAX_HEADING_TOP_OFFSET_PX = 17;
 const MIN_HEADING_SCROLL_DISTANCE_PX = 500;
 
@@ -27,7 +27,9 @@ async function expectHeadingInReader(page: Page, id: string) {
     .poll(() =>
       heading.evaluate((element) => {
         const main = element.closest("main")!;
-        return Math.abs(element.getBoundingClientRect().top - main.getBoundingClientRect().top);
+        return Math.abs(
+          element.getBoundingClientRect().top - main.getBoundingClientRect().top - main.clientTop
+        );
       })
     )
     .toBeLessThanOrEqual(MAX_HEADING_TOP_OFFSET_PX);

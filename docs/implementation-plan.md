@@ -309,6 +309,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Keep the collapsed navigator hidden and inert so offscreen controls cannot receive focus
 - [x] Run mobile geometry, viewport resize, and Next navigation regressions on every main-targeting PR; retain failure traces and screenshots
 - [x] Tighten lesson content heading line-height and post-heading spacing
+- [x] Make lesson H1–H3 sizes descend consistently, group headings with their content, and enforce bold headings through H6; verify desktop/mobile typography in both themes
 - [x] Reposition the mobile navigator toggle to avoid overlapping lesson content
 - [x] Add next-core-lesson CTA for mobile lesson navigation
 - [x] Add lesson content-card loading state for cold starts and content cache misses
