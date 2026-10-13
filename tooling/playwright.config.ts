@@ -76,5 +76,15 @@ export default defineConfig({
       ],
       use: { ...devices["iPhone 15"], browserName: "webkit" },
     },
+    ...["iPad Mini", "iPad Mini landscape"].map((device) => ({
+      name: device === "iPad Mini" ? "ipad-portrait-webkit" : "ipad-landscape-webkit",
+      dependencies: ["startup"],
+      testMatch: [
+        "lesson-layout.spec.ts",
+        "lesson-heading-links.spec.ts",
+        "lesson-typography.spec.ts",
+      ],
+      use: { ...devices[device], browserName: "webkit" as const },
+    })),
   ],
 });

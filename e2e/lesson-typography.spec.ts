@@ -2,12 +2,12 @@ import { expect, test } from "@playwright/test";
 
 for (const theme of ["light", "dark"] as const) {
   test.describe(`${theme} lesson typography`, () => {
-    test.beforeEach(async ({ page, isMobile }) => {
+    test.beforeEach(async ({ page }) => {
       await page.emulateMedia({ reducedMotion: "reduce" });
       await page.addInitScript((value) => localStorage.setItem("tcr-theme", value), theme);
       await page.goto("/lesson/popular-tech-roles");
       await expect(page.getByRole("button", { name: /switch to .* mode/i })).toBeEnabled();
-      if (isMobile) {
+      if (await page.evaluate(() => matchMedia("(max-width: 960px)").matches)) {
         await expect(
           page.getByRole("button", { name: "Open navigator", exact: true })
         ).toBeVisible();
@@ -16,7 +16,6 @@ for (const theme of ["light", "dark"] as const) {
 
     test("headings group with their content and descend in visual size", async ({
       page,
-      isMobile,
     }, testInfo) => {
       const content = page.getByRole("main").getByTestId("lesson-content");
       const sections = content.locator("#typography-sections");
@@ -70,7 +69,9 @@ for (const theme of ["light", "dark"] as const) {
           .filter((heading) => heading.level >= 4)
           .every((heading) => heading.fontSize <= h3.fontSize)
       ).toBe(true);
-      if (isMobile) expect(h3.height).toBeGreaterThan(h3.lineHeight * 1.5);
+      if (page.viewportSize()!.width <= 640) {
+        expect(h3.height).toBeGreaterThan(h3.lineHeight * 1.5);
+      }
       expect(
         await content.evaluate((element) => element.scrollWidth - element.clientWidth)
       ).toBeLessThanOrEqual(1);
