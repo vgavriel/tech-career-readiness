@@ -145,6 +145,26 @@ Component tests also cover delayed content insertion, client-side route changes,
 encoded fragments, missing targets, external links, and modified clicks. These
 tests use fixtures and mocks and make no Google Docs or OAuth requests.
 
+## Lesson typography regressions
+
+`e2e/lesson-typography.spec.ts` exercises the real lesson reader with deterministic
+mock content in desktop Chromium, iPhone SE/15 WebKit, and iPad Mini WebKit at
+768×1024 (portrait) and 1024×768 (landscape), in both themes. It checks
+that H1–H3 decrease in size and section spacing, all heading levels render bold
+without imported bold spans, and headings sit closer to the content they introduce.
+Fixtures cover paragraphs, ordered/unordered lists, blockquotes, tables, consecutive
+headings, and a long mobile heading. Checks also cover first-heading spacing with
+and without a Google Docs wrapper, horizontal overflow, keyboard focus, and lesson
+navigation. Screenshots document the rendered hierarchy; geometry assertions
+provide the regression checks without platform-specific image baselines.
+
+The iPad projects also run lesson layout and heading-link regressions. Rotation
+crosses the reader's 960px sidebar breakpoint, checking both the overlay navigator
+and persistent sidebar, visible Next actions, and scroll containment. Readiness
+checks use viewport width rather than the device's `isMobile` flag, because tablets
+can use either layout. Progress-flow tests identify the page title by name so H1
+headings inside lesson content cannot make the title locator ambiguous.
+
 ## Accessibility checks (automated)
 
 - Use pa11y-ci with WCAG AAA standard for key routes.

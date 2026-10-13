@@ -30,6 +30,25 @@ Where it lives:
 - Focus state: [`src/components/focus-provider.tsx`](../../src/components/focus-provider.tsx)
 - Focus options: [`src/lib/focus-options.ts`](../../src/lib/focus-options.ts)
 
+### Lesson heading hierarchy
+
+The lesson page title uses the display typeface at 24px below 768px, 30px from
+768px, and 36px from 1024px, using rem-based type utilities.
+
+The reader owns heading typography so exported Google Docs formatting cannot
+leave an otherwise valid heading unbolded. H1–H3 share the body typeface and use
+20/18/17px sizes, with 32/28/24px before each new section at the default root size.
+H1 keeps 10px before its following content; H2–H6 keep 8px. H4–H6 remain bold at
+16px with 20px before them. Values use rem units and apply at all viewport widths.
+
+These gaps apply to paragraphs, lists, tables, and other following blocks.
+Consecutive headings use a compact 12px gap. The first heading has no extra top
+margin, including when Google Docs leaves a wrapper around the content. Heading
+IDs and levels remain intact for accessibility and saved lesson links.
+
+- Styles: [`src/app/globals.css`](../../src/app/globals.css)
+- Browser coverage: [`e2e/lesson-typography.spec.ts`](../../e2e/lesson-typography.spec.ts)
+
 ### Responsive lesson tables
 
 Lesson content includes tables that are reflowed into stacked cards on mobile.
