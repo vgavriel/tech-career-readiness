@@ -32,6 +32,23 @@ renders it as safe HTML inside the lesson page.
 - Orchestrator:
   [`src/lib/lesson-content/index.ts`](../../src/lib/lesson-content/index.ts)
 
+## Recruiting timeline presentation
+
+The `tech-recruiting-timeline` lesson enhances the sanitized, internally linked
+Google Doc HTML with a six-season interactive reader. The parser in
+`src/lib/recruiting-timeline.ts` requires the existing season headings (including
+month ranges), What's happening, Action Items, Recruiting Tip, and Essential Brown
+Resources. It preserves the source advice and links; edits flow through the normal
+content cache. If the expected structure changes, the entire original lesson is
+rendered instead of dropping content.
+
+`src/components/recruiting-timeline.tsx` selects the current two-month season using
+the America/New_York date, updates across date boundaries, and lets readers browse
+without moving the current-season marker. The full original guide remains available,
+including without JavaScript. Incoming source heading links open that full view to
+retain the existing heading-navigation behavior. The component uses shared theme
+tokens and container queries within the existing course navigation and progress UI.
+
 ## Security and privacy notes
 
 - Only `docs.google.com` and `drive.google.com` are allowed.
