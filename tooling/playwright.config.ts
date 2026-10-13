@@ -27,6 +27,7 @@ process.env.NEXT_PUBLIC_SITE_URL ??= baseURL;
 
 export default defineConfig({
   testDir: "../e2e",
+  testIgnore: "recruiting-timeline.spec.ts",
   timeout: 60_000,
   expect: {
     timeout: 60_000,

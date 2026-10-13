@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { act, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -244,6 +247,44 @@ describe("Lesson page", () => {
     expect(await screen.findByTestId("lesson-content")).toHaveTextContent("Fetched lesson content");
     expect(screen.queryByRole("link", { name: /open google doc/i })).not.toBeInTheDocument();
   });
+
+  it.each([true, false])(
+    "enhances the timeline only when its source structure matches (%s)",
+    async (matches) => {
+      lessonSlugMocks.findLessonBySlug.mockResolvedValue({
+        lesson: makeLesson({
+          id: "lesson-timeline",
+          slug: "tech-recruiting-timeline",
+          title: "Tech Recruiting Timeline",
+        }),
+        isAlias: false,
+      });
+      const html = matches
+        ? readFileSync(path.resolve("src/lib/__tests__/fixtures/recruiting-timeline.html"), "utf8")
+        : "<p>A revised timeline with a new structure</p>";
+      contentMocks.fetchLessonContent.mockResolvedValue({
+        lessonId: "lesson-timeline",
+        html,
+        cached: false,
+      });
+
+      await renderLessonPage("tech-recruiting-timeline");
+
+      if (matches) {
+        expect(
+          await screen.findByRole("navigation", { name: "Recruiting seasons" })
+        ).toBeInTheDocument();
+        expect(screen.getByTestId("recruiting-timeline")).toBeInTheDocument();
+      } else {
+        expect(await screen.findByTestId("lesson-content")).toHaveTextContent("A revised timeline");
+        expect(screen.queryByTestId("recruiting-timeline")).not.toBeInTheDocument();
+      }
+      expect(screen.getByTestId("next-core-cta")).toHaveTextContent("tech-recruiting-timeline");
+      expect(
+        screen.getByRole("button", { name: "Toggle tech-recruiting-timeline" })
+      ).toBeInTheDocument();
+    }
+  );
 
   it("keeps the lesson frame visible while fetched content is pending", async () => {
     lessonSlugMocks.findLessonBySlug.mockResolvedValue({

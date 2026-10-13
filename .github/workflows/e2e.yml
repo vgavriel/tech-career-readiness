@@ -63,6 +63,8 @@ jobs:
         run: npm run build
       - name: E2E tests
         run: npm run test:e2e
+      - name: Recruiting timeline regressions (real document fixture)
+        run: npm run test:e2e:recruiting
       - name: Upload Playwright artifacts
         if: failure()
         uses: actions/upload-artifact@v7

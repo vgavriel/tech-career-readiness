@@ -32,6 +32,41 @@ renders it as safe HTML inside the lesson page.
 - Orchestrator:
   [`src/lib/lesson-content/index.ts`](../../src/lib/lesson-content/index.ts)
 
+## Recruiting timeline presentation
+
+The `tech-recruiting-timeline` lesson enhances the sanitized, internally linked
+Google Doc HTML with a six-season interactive reader. The parser in
+`src/lib/recruiting-timeline.ts` requires the existing season headings (including
+month ranges), What's happening, Action Items, Recruiting Tip, and Essential Brown
+Resources in that order, with one heading for each season. Source introductions,
+seasonal advice, links, standalone images, and wrapped media are retained; edits
+flow through the normal content cache. The calendar replaces only the exact known
+document title, jump-list prompt, and paragraphs containing only a recognized
+season/resource heading link. Empty spacer blocks are omitted. Added introductory
+guidance is displayed below the interactive title, rather than discarded.
+
+If the required structure is missing or reordered, meaningful content occurs
+between a season heading and its first subsection, or text/content sits outside
+the supported wrapper structure, the parser returns no enhancement and the route
+renders the entire original lesson. Media counts as meaningful content in these
+checks. This is a presentation parser, not a sanitizer; it only receives HTML
+already processed by the existing sanitization and link-rewriting pipeline.
+
+`src/components/recruiting-timeline.tsx` selects the current two-month season using
+the America/New_York date, updates across date boundaries, and lets readers browse
+without moving the current-season marker. A recognized source-heading URL always
+shows the original guide, including when restored through Back/Forward. Leaving a
+source heading with a season button or Back to now adds a fragment-free history entry so a previous selection
+cannot override a restored heading. The reader and timeline share `useLessonHash`;
+reader-owned fragment changes explicitly notify subscribers, and heading scrolling
+runs after the corresponding content has rendered.
+
+The original guide is also the component's server-rendered hydration baseline.
+This is not a course-wide no-JavaScript guarantee: the surrounding lesson reader
+streams content through React Suspense. The interactive reader has no full-guide
+toggle or source-document link. It uses shared theme tokens and container queries
+within the existing course navigation and progress UI.
+
 ## Security and privacy notes
 
 - Only `docs.google.com` and `drive.google.com` are allowed.

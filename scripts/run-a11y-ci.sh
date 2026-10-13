@@ -95,7 +95,15 @@ trap cleanup EXIT
 ensure_test_db
 configure_puppeteer_browser
 
-npm run build
+if [[ -n "${A11Y_LESSON_FIXTURE:-}" ]]; then
+  # Test-only content override: exercise the real reader without fetching Google Docs.
+  export LESSON_CONTENT_MOCK_HTML
+  LESSON_CONTENT_MOCK_HTML="$(cat "${A11Y_LESSON_FIXTURE}")"
+fi
+
+if [[ "${A11Y_SKIP_BUILD:-}" != "1" ]]; then
+  npm run build
+fi
 PORT="${PORT}" npm run start &
 SERVER_PID=$!
 
@@ -111,6 +119,6 @@ if ! curl -sf "${BASE_URL}/" >/dev/null; then
   exit 1
 fi
 
-PA11Y_CONFIG="tooling/pa11yci.config.js"
+PA11Y_CONFIG="${PA11Y_CONFIG:-tooling/pa11yci.config.js}"
 
 PA11Y_BASE_URL="${BASE_URL}" ./node_modules/.bin/pa11y-ci --config "${PA11Y_CONFIG}"

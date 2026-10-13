@@ -8,12 +8,14 @@ import LessonNavigator from "@/components/lesson-navigator";
 import LessonNextCoreCta from "@/components/lesson-next-core-cta";
 import LessonProgressToggle from "@/components/lesson-progress-toggle";
 import NavigatorLayout from "@/components/navigator-layout";
+import RecruitingTimeline from "@/components/recruiting-timeline";
 import { fetchLessonContent } from "@/lib/lesson-content";
 import { getLessonDocLinkMap } from "@/lib/lesson-doc-link-map";
 import { rewriteLessonDocLinks } from "@/lib/lesson-doc-links";
 import { getLessonExample } from "@/lib/lesson-examples";
 import { buildLessonRedirectPath, findLessonBySlug } from "@/lib/lesson-slug";
 import { getStaticLessonContent } from "@/lib/lesson-static-content";
+import { parseRecruitingTimeline } from "@/lib/recruiting-timeline";
 import { getRoadmapModules } from "@/lib/roadmap-modules";
 
 /**
@@ -123,6 +125,10 @@ async function buildLessonContentPanel({
   if (contentHtml && contentSource !== "fetch") {
     contentHtml = rewriteLessonDocLinks(contentHtml, lessonDocLinkMap);
   }
+  const recruitingTimeline =
+    lesson.slug === "tech-recruiting-timeline" && contentHtml
+      ? parseRecruitingTimeline(contentHtml)
+      : null;
 
   return (
     <>
@@ -175,7 +181,11 @@ async function buildLessonContentPanel({
       ) : null}
       {contentHtml ? (
         <div className="mt-4">
-          <LessonContent html={contentHtml} />
+          {recruitingTimeline ? (
+            <RecruitingTimeline content={recruitingTimeline} sourceHtml={contentHtml} />
+          ) : (
+            <LessonContent html={contentHtml} />
+          )}
         </div>
       ) : null}
     </>

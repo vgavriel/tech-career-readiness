@@ -1,0 +1,278 @@
+.root {
+  container-type: inline-size;
+  color: var(--ink-900);
+}
+.intro {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+.intro h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  margin: 0.55rem 0 0.65rem;
+}
+.intro p:last-child {
+  color: var(--ink-600);
+  font-size: 0.95rem;
+  max-width: 32rem;
+}
+.eyebrow {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-weight: 700;
+  color: var(--accent-700);
+}
+.today {
+  flex: none;
+  padding-left: 1rem;
+  border-left: 1px solid var(--line-soft);
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--ink-600);
+}
+.today time {
+  display: block;
+  font: 1.8rem/1.3 var(--font-display);
+  color: var(--ink-900);
+}
+.yearLabel {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--ink-600);
+  margin: 1.6rem 0 0.6rem;
+}
+.seasons {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+.seasons button {
+  min-width: 0;
+  text-align: left;
+  padding: 0.8rem 0.65rem 0.65rem;
+  border: 1px solid var(--line-strong);
+  border-top: 3px solid var(--control-outline);
+  border-radius: 0.6rem;
+  background: var(--wash-50);
+  color: var(--ink-900);
+  cursor: pointer;
+  line-height: 1.3;
+}
+.seasons button:hover {
+  background: var(--wash-200);
+}
+.seasons button[aria-pressed="true"] {
+  background: var(--accent-700);
+  color: var(--wash-0);
+  border-color: var(--accent-700);
+}
+.months {
+  display: block;
+  font-size: 0.7rem;
+  margin-bottom: 0.45rem;
+}
+.seasons strong {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+.current {
+  display: block;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  font-weight: 700;
+  margin-top: 0.6rem;
+  min-height: 0.85rem;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 1.1rem 0;
+}
+.status {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--accent-700);
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.controls button {
+  min-height: 44px;
+  font-size: 0.78rem;
+  color: var(--accent-700);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  cursor: pointer;
+}
+.panel {
+  padding-top: 1.3rem;
+  border-top: 1px solid var(--line-soft);
+}
+.panelHeader {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.4rem;
+}
+.panelHeader h2 {
+  font: 1.9rem/1.2 var(--font-display);
+  letter-spacing: -0.02em;
+}
+.panelHeader span {
+  color: var(--ink-600);
+  font-size: 0.82rem;
+}
+.columns {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 2rem;
+}
+.root .rich {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  min-width: 0;
+}
+.root .rich h3 {
+  font-family: var(--font-body);
+  font-size: 0.73rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 0.9rem;
+}
+.root .rich > * + * {
+  margin-top: 0.9rem;
+}
+.root .rich ul,
+.root .rich ol {
+  padding-left: 1.2rem;
+}
+.root .rich li {
+  margin: 0;
+  padding-left: 0.15rem;
+}
+.root .rich li + li {
+  margin-top: 0.8rem;
+}
+.root .rich p:empty {
+  display: none;
+}
+.tip {
+  margin-top: 1.3rem;
+  padding: 1rem 1.1rem;
+  background: var(--wash-50);
+  border-left: 3px solid var(--accent-500);
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+.resources {
+  border-top: 1px solid var(--line-soft);
+  margin-top: 1.6rem;
+  padding-top: 1.2rem;
+}
+.root .resources ul {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+}
+.root .resources li,
+.root .resources li + li {
+  /* Grid gaps provide spacing; override the prose list's sibling margin. */
+  margin: 0;
+  padding: 0;
+  font-size: 0.8rem;
+}
+.root .resources p {
+  font-size: 0.82rem;
+  color: var(--ink-600);
+}
+.footer {
+  border-top: 1px solid var(--line-soft);
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.7rem 1.5rem;
+  font-size: 0.73rem;
+  color: var(--ink-600);
+}
+.footer p {
+  max-width: 31rem;
+}
+@container (max-width:720px) {
+  .seasons {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .seasons button {
+    padding: 0.7rem;
+  }
+  .columns {
+    gap: 1.4rem;
+  }
+}
+@container (max-width:480px) {
+  .intro {
+    display: block;
+  }
+  .today {
+    border: 0;
+    padding: 0;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: left;
+  }
+  .today time {
+    font: inherit;
+    font-weight: 700;
+  }
+  .intro h2 {
+    font-size: 1.85rem;
+  }
+  .columns {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .seasons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .root .resources ul {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+  .panelHeader {
+    gap: 0.3rem 0.6rem;
+  }
+  .toolbar {
+    align-items: flex-start;
+  }
+  .status {
+    padding-top: 0.6rem;
+  }
+  .yearLabel {
+    margin-top: 1.1rem;
+  }
+}

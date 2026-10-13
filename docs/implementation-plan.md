@@ -281,6 +281,13 @@ Source of truth for modules, focuses, progress categories, and gamification:
 
 ### Phase 12 — Quality pass + polish
 
+- [x] Simplify the recruiting season cards and date label, remove document controls, and align resource columns without inherited list spacing
+
+- [x] Add a responsive, current-season recruiting timeline within the lesson reader, preserving Google Doc content, links, source-heading reading, and source-structure fallback
+- [x] Cover campus date boundaries, season browsing, heading links, content preservation, and lesson-route fallback with deterministic tests
+- [x] Retain introductory guidance and standalone media, and reject unsupported content positions rather than dropping source content
+- [x] Share URL-fragment updates between the reader and timeline so one-click return and Back/Forward restore the requested view
+- [x] Add a separate real-document browser fixture run in CI for desktop and iPhone timeline interactions, history, source additions, and resource geometry
 - [x] Error handling for missing lessons/content fetch failures
 - [x] Confirm public access to curriculum and lessons
 - [x] UI polish for readability and CTAs
@@ -308,6 +315,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Restore mobile list marker gutters and verify layout in iPhone SE/15 WebKit and desktop Chromium
 - [x] Keep the collapsed navigator hidden and inert so offscreen controls cannot receive focus
 - [x] Run mobile geometry, viewport resize, and Next navigation regressions on every main-targeting PR; retain failure traces and screenshots
+- [x] Include the real recruiting timeline in WCAG AAA CI checks across all seasons, source-heading/return states, both themes, and desktop/mobile widths
 - [x] Tighten lesson content heading line-height and post-heading spacing
 - [x] Make lesson H1–H3 sizes descend consistently, group headings with their content, and enforce bold headings through H6; verify desktop/mobile typography in both themes
 - [x] Validate tablet typography, reader scrolling, heading links, and navigator behavior in iPad portrait/landscape, including rotation across the sidebar breakpoint

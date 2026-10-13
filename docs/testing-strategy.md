@@ -145,6 +145,33 @@ Component tests also cover delayed content insertion, client-side route changes,
 encoded fragments, missing targets, external links, and modified clicks. These
 tests use fixtures and mocks and make no Google Docs or OAuth requests.
 
+## Recruiting timeline regressions
+
+The ordinary E2E suite uses generic lesson HTML and cannot exercise the timeline
+enhancement. `npm run test:e2e:recruiting` uses a separate Playwright configuration
+and server run with the actual recruiting document fixture as
+`LESSON_CONTENT_MOCK_HTML`. The fixture adds introductory guidance and a standalone
+image to guard against silent content loss. Playwright fulfills the image request
+locally; tests never fetch it or the document from Google.
+
+The E2E workflow runs this suite after the normal suite, against the same built app
+and seeded test database. The startup/CSP gate remains enabled. Desktop Chromium
+and iPhone SE/15 WebKit cover source additions, keyboard season selection, the
+current marker, one-click Back to now, source-heading navigation, actual browser
+Back/Forward, resource geometry in both themes, and horizontal overflow. Unit
+tests cover unsupported structures falling back to the complete source document.
+
+To run with an isolated local test database:
+
+```bash
+PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=mac15-arm64 \
+PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers \
+bash scripts/with-e2e-db.sh npm run test:e2e:recruiting
+```
+
+Use `PLAYWRIGHT_PORT` when the default port 3001 is occupied. The suite is excluded
+from the generic configuration to prevent accidental testing of the fallback view.
+
 ## Lesson typography regressions
 
 `e2e/lesson-typography.spec.ts` exercises the real lesson reader with deterministic
@@ -170,6 +197,8 @@ headings inside lesson content cannot make the title locator ambiguous.
 - Use pa11y-ci with WCAG AAA standard for key routes.
 - Run locally with `npm run test:a11y:local` (server already running) or `npm run test:a11y` (build + start).
 - CI runs `npm run test:a11y` against a seeded test database with mock lesson content.
+- It then runs `npm run test:a11y:recruiting` on a separate server with the actual sanitized recruiting document fixture. This adds 36 checks: current season, all six selected seasons, a saved source heading, and Back to now, each in light/dark themes at desktop (1280px) and mobile (390px) widths. Every case waits for the hydrated calendar so generic HTML or the source fallback cannot silently bypass the interactive reader.
+- The recruiting run uses the same WCAG AAA rules without new exclusions. CI reuses the production build with `A11Y_SKIP_BUILD=1` and uses port 3002 to isolate its fixture from the generic server. Run locally with `PORT=3002 npm run test:a11y:recruiting`; omit `A11Y_SKIP_BUILD` to build first. `A11Y_LESSON_FIXTURE` and `PA11Y_CONFIG` select the fixture and audit configuration in the shared runner.
 - The accessibility workflow sets `PUPPETEER_SKIP_DOWNLOAD=true` during `npm ci` because `scripts/run-a11y-ci.sh` selects the runner's installed Chrome. This avoids an unused browser download failing before the audit starts; local installs keep Puppeteer's default download behavior.
 - An npm override makes `pa11y-ci` use the directly declared `pa11y` version. The unit suite checks installed module resolution so a Pa11y upgrade cannot pass by auditing with an older nested copy.
 - `npm run test:a11y` will auto-start the Dockerized test DB if `DATABASE_URL` is missing or unreachable (set `A11Y_SKIP_TEST_DB=1` to skip).
