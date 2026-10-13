@@ -64,3 +64,11 @@ jobs:
         run: npx prisma db seed
       - name: Pa11y CI (WCAG AAA)
         run: npm run test:a11y
+      - name: Recruiting timeline (WCAG AAA, desktop and mobile)
+        env:
+          # Reuse the build, but isolate the real-document server from generic mocks.
+          A11Y_SKIP_BUILD: "1"
+          PORT: "3002"
+          NEXTAUTH_URL: http://localhost:3002
+          NEXT_PUBLIC_SITE_URL: http://localhost:3002
+        run: npm run test:a11y:recruiting

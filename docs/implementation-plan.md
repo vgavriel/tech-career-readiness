@@ -315,6 +315,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Restore mobile list marker gutters and verify layout in iPhone SE/15 WebKit and desktop Chromium
 - [x] Keep the collapsed navigator hidden and inert so offscreen controls cannot receive focus
 - [x] Run mobile geometry, viewport resize, and Next navigation regressions on every main-targeting PR; retain failure traces and screenshots
+- [x] Include the real recruiting timeline in WCAG AAA CI checks across all seasons, source-heading/return states, both themes, and desktop/mobile widths
 - [x] Tighten lesson content heading line-height and post-heading spacing
 - [x] Reposition the mobile navigator toggle to avoid overlapping lesson content
 - [x] Add next-core-lesson CTA for mobile lesson navigation
