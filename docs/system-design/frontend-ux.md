@@ -34,7 +34,7 @@ Where it lives:
 
 The reader owns heading typography so exported Google Docs formatting cannot
 leave an otherwise valid heading unbolded. H1–H3 share the body typeface and use
-24/18/17px sizes, with 32/28/24px before each new section at the default root size.
+20/18/17px sizes, with 32/28/24px before each new section at the default root size.
 H1 keeps 10px before its following content; H2–H6 keep 8px. H4–H6 remain bold at
 16px with 20px before them. Values use rem units and apply at all viewport widths.
 
