@@ -32,6 +32,9 @@ Where it lives:
 
 ### Lesson heading hierarchy
 
+The lesson page title uses the display typeface at 24px below 768px, 30px from
+768px, and 36px from 1024px, using rem-based type utilities.
+
 The reader owns heading typography so exported Google Docs formatting cannot
 leave an otherwise valid heading unbolded. H1–H3 share the body typeface and use
 20/18/17px sizes, with 32/28/24px before each new section at the default root size.
