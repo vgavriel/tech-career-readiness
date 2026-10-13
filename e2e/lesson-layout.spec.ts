@@ -165,18 +165,24 @@ for (const theme of ["light", "dark"] as const) {
   });
 }
 
-test("Next and navigator remain reachable after mobile viewport changes", async ({
+test("Next and navigator remain reachable after touch-device viewport changes", async ({
   page,
   isMobile,
   hasTouch,
 }) => {
-  test.skip(!isMobile, "Exercises iPhone viewport changes.");
+  test.skip(!isMobile, "Exercises phone and tablet viewport changes.");
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto(roadmapPath);
   await expect(lessonContent(page)).toBeVisible();
-  await expect(page.getByRole("button", { name: "Open navigator", exact: true })).toBeVisible();
-  await expect(visibleNextLink(page)).toBeAttached();
   const initialViewport = page.viewportSize()!;
+  const usesOverlay = initialViewport.width <= 960;
+  await expect(
+    page.getByRole("button", {
+      name: usesOverlay ? "Open navigator" : "Collapse navigator",
+      exact: true,
+    })
+  ).toBeVisible();
+  await expect(visibleNextLink(page)).toBeAttached();
   const viewports = [
     { width: initialViewport.width, height: initialViewport.height - 160 },
     initialViewport,
@@ -198,11 +204,22 @@ test("Next and navigator remain reachable after mobile viewport changes", async 
       )
       .toEqual(viewport);
     await scrollLessonToEnd(page);
+    await expectSingleLessonScroller(page);
+    await expect(visibleNextLink(page)).toBeInViewport({ ratio: 1 });
   }
-  await page.getByRole("button", { name: "Open navigator", exact: true }).tap();
   const navigator = page.getByRole("complementary", { name: "Lesson navigator" });
-  await expect(navigator).toBeInViewport({ ratio: 1 });
-  await navigator.getByRole("button", { name: "Close navigator" }).tap();
+  if (usesOverlay) {
+    await page.getByRole("button", { name: "Open navigator", exact: true }).tap();
+    await expect(navigator).toBeInViewport({ ratio: 1 });
+    await navigator.getByRole("button", { name: "Close navigator" }).tap();
+  } else {
+    await expect(navigator).toBeInViewport({ ratio: 1 });
+    await page.getByRole("button", { name: "Collapse navigator", exact: true }).tap();
+    await expect(navigator).toBeHidden();
+    await page.getByRole("button", { name: "Expand navigator", exact: true }).tap();
+    await expect(navigator).toBeInViewport({ ratio: 1 });
+    await page.getByRole("button", { name: "Collapse navigator", exact: true }).tap();
+  }
   await expect(page.locator("#lesson-navigator")).toHaveAttribute("aria-hidden", "true");
   await expect(page.locator("#lesson-navigator")).toBeHidden();
   await expect(page.locator("#lesson-navigator")).toHaveAttribute("inert", "");

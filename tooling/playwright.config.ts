@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 import { lessonHeadingContent } from "../e2e/fixtures/lesson-heading-content";
+import { lessonTypographyContent } from "../e2e/fixtures/lesson-typography-content";
 
 process.env.NEXTAUTH_SECRET ??= "test-nextauth-secret";
 process.env.GOOGLE_CLIENT_ID ??= "test-google-client-id";
@@ -13,6 +14,9 @@ if (
   !process.env.LESSON_CONTENT_MOCK_HTML.includes(lessonHeadingContent)
 ) {
   process.env.LESSON_CONTENT_MOCK_HTML += lessonHeadingContent;
+}
+if (!process.env.LESSON_CONTENT_MOCK_HTML.includes(lessonTypographyContent)) {
+  process.env.LESSON_CONTENT_MOCK_HTML += lessonTypographyContent;
 }
 process.env.APP_ENV ??= "test";
 
@@ -56,14 +60,32 @@ export default defineConfig({
     {
       name: "iphone-se-webkit",
       dependencies: ["startup"],
-      testMatch: ["lesson-layout.spec.ts", "lesson-heading-links.spec.ts"],
+      testMatch: [
+        "lesson-layout.spec.ts",
+        "lesson-heading-links.spec.ts",
+        "lesson-typography.spec.ts",
+      ],
       use: { ...devices["iPhone SE"], browserName: "webkit" },
     },
     {
       name: "iphone-15-webkit",
       dependencies: ["startup"],
-      testMatch: ["lesson-layout.spec.ts", "lesson-heading-links.spec.ts"],
+      testMatch: [
+        "lesson-layout.spec.ts",
+        "lesson-heading-links.spec.ts",
+        "lesson-typography.spec.ts",
+      ],
       use: { ...devices["iPhone 15"], browserName: "webkit" },
     },
+    ...["iPad Mini", "iPad Mini landscape"].map((device) => ({
+      name: device === "iPad Mini" ? "ipad-portrait-webkit" : "ipad-landscape-webkit",
+      dependencies: ["startup"],
+      testMatch: [
+        "lesson-layout.spec.ts",
+        "lesson-heading-links.spec.ts",
+        "lesson-typography.spec.ts",
+      ],
+      use: { ...devices[device], browserName: "webkit" as const },
+    })),
   ],
 });

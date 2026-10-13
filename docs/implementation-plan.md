@@ -317,6 +317,10 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Run mobile geometry, viewport resize, and Next navigation regressions on every main-targeting PR; retain failure traces and screenshots
 - [x] Include the real recruiting timeline in WCAG AAA CI checks across all seasons, source-heading/return states, both themes, and desktop/mobile widths
 - [x] Tighten lesson content heading line-height and post-heading spacing
+- [x] Make lesson H1–H3 sizes descend consistently, group headings with their content, and enforce bold headings through H6; verify desktop/mobile typography in both themes
+- [x] Validate tablet typography, reader scrolling, heading links, and navigator behavior in iPad portrait/landscape, including rotation across the sidebar breakpoint
+- [x] Refine the lesson heading scale to 20px H1, 18px H2, and 17px H3 after visual review
+- [x] Reduce lesson page titles to 36px desktop, 30px tablet, and 24px mobile
 - [x] Reposition the mobile navigator toggle to avoid overlapping lesson content
 - [x] Add next-core-lesson CTA for mobile lesson navigation
 - [x] Add lesson content-card loading state for cold starts and content cache misses

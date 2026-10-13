@@ -281,7 +281,7 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
                 </div>
                 <LessonProgressToggle lessonSlug={lesson.slug} />
               </div>
-              <h1 className="font-display mt-5 text-3xl text-[color:var(--ink-900)] md:text-4xl lg:text-5xl">
+              <h1 className="font-display mt-5 text-2xl text-[color:var(--ink-900)] md:text-3xl lg:text-4xl">
                 {lesson.title}
               </h1>
             </header>

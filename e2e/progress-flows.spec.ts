@@ -1,8 +1,8 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 
-const ensureLessonReady = async (page: Page) => {
-  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+const ensureLessonReady = async (page: Page, title: RegExp) => {
+  await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
   await expect(page.getByRole("button", { name: /mark complete|mark incomplete/i })).toBeVisible();
 };
 
@@ -28,7 +28,7 @@ const signInDevUser = async (page: Page) => {
 test.describe("progress flows", () => {
   test("persists authenticated progress and updates the continue CTA", async ({ page }) => {
     await page.goto("/lesson/start-to-finish-roadmap");
-    await ensureLessonReady(page);
+    await ensureLessonReady(page, /start to finish/i);
     await signInDevUser(page);
     await resetToIncomplete(page);
 
@@ -36,7 +36,7 @@ test.describe("progress flows", () => {
     await expect(page.getByRole("button", { name: "Mark incomplete" })).toBeVisible();
 
     await page.reload();
-    await ensureLessonReady(page);
+    await ensureLessonReady(page, /start to finish/i);
     await expect(page.getByRole("button", { name: "Mark incomplete" })).toBeVisible();
 
     await page.goto("/");
@@ -51,7 +51,7 @@ test.describe("progress flows", () => {
   test("merges guest progress into the account on sign-in", async ({ page }) => {
     const lessonSlug = "ace-interview-prep-timeline";
     await page.goto(`/lesson/${lessonSlug}`);
-    await ensureLessonReady(page);
+    await ensureLessonReady(page, /ace the tech interview/i);
     await page.evaluate(() => localStorage.removeItem("tcr-guest-progress"));
 
     await resetToIncomplete(page);
