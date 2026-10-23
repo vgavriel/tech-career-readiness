@@ -118,13 +118,16 @@ for (const theme of ["light", "dark"] as const) {
       await expect(blankLines).toBeAttached();
       const layout = await blankLines.evaluate((element) => {
         const box = (id: string) => element.querySelector(`#${id}`)!.getBoundingClientRect();
-        const [first, second, third] = ["first", "second", "third"].map((name) =>
+        const [first, second, third, spaced] = ["first", "second", "third", "spaced"].map((name) =>
           box(`blank-lines-${name}`)
         );
+        const spacedText = element.querySelector("#blank-lines-spaced")!;
         return {
           lineHeight: parseFloat(getComputedStyle(element.querySelector("p")!).lineHeight),
           gapAfterBlankLine: second.top - first.bottom,
           gapWithoutBlankLine: third.top - second.bottom,
+          spaceBefore:
+            spaced.top - third.bottom + parseFloat(getComputedStyle(spacedText).paddingTop),
           trailingBlankLineHeight: element.lastElementChild!.getBoundingClientRect().height,
         };
       });
@@ -133,6 +136,10 @@ for (const theme of ["light", "dark"] as const) {
       expect(layout.gapAfterBlankLine).toBeGreaterThanOrEqual(8);
       expect(layout.gapAfterBlankLine).toBeLessThan(layout.lineHeight);
       expect(layout.trailingBlankLineHeight, "No stray gap at the end of the lesson").toBe(0);
+      expect(layout.spaceBefore, "10pt space before matches a blank line").toBeCloseTo(
+        layout.gapAfterBlankLine,
+        0
+      );
     });
   });
 }

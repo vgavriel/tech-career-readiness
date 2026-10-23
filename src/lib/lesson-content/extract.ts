@@ -338,12 +338,12 @@ const stripLeadingBannerImages = (root: Element) => {
 };
 
 /**
- * Trim leading whitespace-only text or empty nodes in an element.
+ * Trim whitespace-only text or empty nodes at the start (or end) of an element.
  */
-const trimLeadingWhitespaceNodes = (element: Element) => {
-  let node: ChildNode | null = element.firstChild;
+const trimEdgeWhitespaceNodes = (element: Element, edge: "start" | "end" = "start") => {
+  let node: ChildNode | null = edge === "start" ? element.firstChild : element.lastChild;
   while (node) {
-    const next = node.nextSibling;
+    const next = edge === "start" ? node.nextSibling : node.previousSibling;
     if (node.nodeType === 3) {
       if (!hasMeaningfulText(node.textContent)) {
         node.remove();
@@ -360,8 +360,10 @@ const trimLeadingWhitespaceNodes = (element: Element) => {
         node = next;
         continue;
       }
-      const hasMedia = Boolean(child.querySelector("img, svg, video, iframe"));
-      if (!hasMeaningfulText(child.textContent) && !hasMedia) {
+      // Keep media, anchor targets, and styled spans that become background images.
+      const keepSelector = "img, svg, video, iframe, [id], [name], [style]";
+      const hasKeepable = child.matches(keepSelector) || Boolean(child.querySelector(keepSelector));
+      if (!hasMeaningfulText(child.textContent) && !hasKeepable) {
         child.remove();
         node = next;
         continue;
@@ -378,7 +380,19 @@ const trimLeadingWhitespaceNodes = (element: Element) => {
  */
 const trimTableCellWhitespace = (root: Element) => {
   for (const cell of Array.from(root.querySelectorAll("td, th"))) {
-    trimLeadingWhitespaceNodes(cell);
+    trimEdgeWhitespaceNodes(cell);
+  }
+};
+
+/**
+ * Drop empty blocks and blank lines at both ends of the lesson, such as an
+ * empty Google Docs header, so the lesson starts and ends flush.
+ */
+const trimLessonEdges = (root: Element) => {
+  const wrapper = root.querySelector(".doc-content");
+  for (const element of wrapper ? [root, wrapper] : [root]) {
+    trimEdgeWhitespaceNodes(element, "start");
+    trimEdgeWhitespaceNodes(element, "end");
   }
 };
 
@@ -457,6 +471,7 @@ export const extractLessonHtml = (rawHtml: string) => {
   stripStyleNodes(styleNodes);
   stripEmptyAnchors(contentRoot);
   removeEmptyHeadings(contentRoot);
+  trimLessonEdges(contentRoot);
   markBlankLines(contentRoot);
   normalizeHeadingLevels(contentRoot);
   boldenPrimaryHeadings(contentRoot);

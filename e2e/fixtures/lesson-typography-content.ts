@@ -30,6 +30,7 @@ export const lessonTypographyContent = `
     <p class="doc-blank-line"><span></span></p>
     <p id="blank-lines-second"><span>Engage on LinkedIn:</span> Comment on their posts every so often.</p>
     <p id="blank-lines-third">Then ask whether you can check in again in a few months.</p>
+    <p id="blank-lines-spaced" class="doc-space-before-3">Track the check-in date so you follow through.</p>
     <p class="doc-blank-line"><span></span></p>
   </div>
 `;
