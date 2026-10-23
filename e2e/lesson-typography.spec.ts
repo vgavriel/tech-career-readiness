@@ -129,6 +129,7 @@ for (const theme of ["light", "dark"] as const) {
           spaceBefore:
             spaced.top - third.bottom + parseFloat(getComputedStyle(spacedText).paddingTop),
           trailingBlankLineHeight: element.lastElementChild!.getBoundingClientRect().height,
+          gapAfterList: box("blank-lines-after-list").top - box("blank-lines-list").bottom,
         };
       });
 
@@ -137,6 +138,10 @@ for (const theme of ["light", "dark"] as const) {
       expect(layout.gapAfterBlankLine).toBeLessThan(layout.lineHeight);
       expect(layout.trailingBlankLineHeight, "No stray gap at the end of the lesson").toBe(0);
       expect(layout.spaceBefore, "10pt space before matches a blank line").toBeCloseTo(
+        layout.gapAfterBlankLine,
+        0
+      );
+      expect(layout.gapAfterList, "A paragraph after a list gets a blank line's gap").toBeCloseTo(
         layout.gapAfterBlankLine,
         0
       );

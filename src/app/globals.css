@@ -341,6 +341,11 @@ body {
   display: none;
 }
 
+/* A paragraph right after a list gets a blank line's gap, unless the doc already spaces it. */
+.lesson-content :is(ul, ol) + p:not(.doc-blank-line, [class*="doc-space-before-"]) {
+  margin-top: 0.6em;
+}
+
 /* Paragraph "space before/after" from the Doc, on the blank-line scale: 0.2em per 4pt. */
 .lesson-content :where(p.doc-space-before-1) {
   padding-top: 0.2em;
