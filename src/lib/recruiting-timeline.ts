@@ -105,7 +105,7 @@ export function parseRecruitingTimeline(html: string): RecruitingTimelineContent
       (element) => isHeading(element) && /^action items:?$/.test(normalize(element.textContent))
     );
     const tip = section.findIndex((element) =>
-      /^recruiting tip:/.test(normalize(element.textContent))
+      /^recruiting tips?:/.test(normalize(element.textContent))
     );
     if (
       overview < 0 ||
