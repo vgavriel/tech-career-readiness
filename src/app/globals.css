@@ -331,6 +331,16 @@ body {
   text-underline-offset: 2px;
 }
 
+/* A blank line in the Google Doc becomes a short gap, a little under half a line. */
+.lesson-content .doc-blank-line {
+  height: 0.6em;
+  margin: 0;
+}
+
+.lesson-content .doc-blank-line:is(:first-child, :last-child) {
+  display: none;
+}
+
 .lesson-content ul,
 .lesson-content ol {
   padding-left: 1.6rem;

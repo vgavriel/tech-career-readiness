@@ -266,6 +266,37 @@ describe("fetchLessonContent", () => {
     expect(result.html).not.toContain("<hr");
   });
 
+  it("marks blank-line paragraphs but not paragraphs with text or images", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          "<p>First paragraph</p>",
+          '<p class="c7"><span class="c3"></span></p>',
+          "<p>Second paragraph</p>",
+          "<p><span>&nbsp;</span><br></p>",
+          '<p><img src="https://lh3.googleusercontent.com/image.png"></p>',
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain('<p class="c7 doc-blank-line"><span class="c3"></span></p>');
+    expect(result.html).toContain('<p class="doc-blank-line"><span>');
+    expect(result.html).toContain("<p>First paragraph</p>");
+    expect(result.html).toContain("<p>Second paragraph</p>");
+    expect(result.html).toMatch(
+      /<p><img [^>]*src="https:\/\/lh3\.googleusercontent\.com\/image\.png"/
+    );
+    expect(result.html.match(/doc-blank-line/g)).toHaveLength(2);
+  });
+
   it("trims leading whitespace in table cells", async () => {
     process.env.APP_ENV = "preview";
     fetchMock.mockResolvedValueOnce(

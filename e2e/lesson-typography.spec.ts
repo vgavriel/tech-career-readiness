@@ -109,5 +109,30 @@ for (const theme of ["light", "dark"] as const) {
       await expect(firstHeading).toHaveCSS("margin-top", "0px");
       await expect(content.locator("#typography-h2")).toHaveCSS("font-weight", "700");
     });
+
+    test("blank lines from the doc leave a short gap between paragraphs", async ({ page }) => {
+      const blankLines = page
+        .getByRole("main")
+        .getByTestId("lesson-content")
+        .locator("#typography-blank-lines");
+      await expect(blankLines).toBeAttached();
+      const layout = await blankLines.evaluate((element) => {
+        const box = (id: string) => element.querySelector(`#${id}`)!.getBoundingClientRect();
+        const [first, second, third] = ["first", "second", "third"].map((name) =>
+          box(`blank-lines-${name}`)
+        );
+        return {
+          lineHeight: parseFloat(getComputedStyle(element.querySelector("p")!).lineHeight),
+          gapAfterBlankLine: second.top - first.bottom,
+          gapWithoutBlankLine: third.top - second.bottom,
+          trailingBlankLineHeight: element.lastElementChild!.getBoundingClientRect().height,
+        };
+      });
+
+      expect(layout.gapWithoutBlankLine).toBe(0);
+      expect(layout.gapAfterBlankLine).toBeGreaterThanOrEqual(8);
+      expect(layout.gapAfterBlankLine).toBeLessThan(layout.lineHeight);
+      expect(layout.trailingBlankLineHeight, "No stray gap at the end of the lesson").toBe(0);
+    });
   });
 }

@@ -79,6 +79,19 @@ const boldenPrimaryHeadings = (root: Element) => {
 };
 
 /**
+ * Mark empty paragraphs, which Google Docs exports for blank lines, so they
+ * can keep a little vertical space instead of collapsing to nothing.
+ */
+const markBlankLines = (root: Element) => {
+  for (const paragraph of Array.from(root.querySelectorAll("p"))) {
+    const hasMedia = Boolean(paragraph.querySelector("img, svg, video, iframe"));
+    if (!hasMeaningfulText(paragraph.textContent) && !hasMedia) {
+      paragraph.classList.add("doc-blank-line");
+    }
+  }
+};
+
+/**
  * Remove anchor tags that don't contribute content or navigation.
  */
 const stripEmptyAnchors = (root: Element) => {
@@ -444,6 +457,7 @@ export const extractLessonHtml = (rawHtml: string) => {
   stripStyleNodes(styleNodes);
   stripEmptyAnchors(contentRoot);
   removeEmptyHeadings(contentRoot);
+  markBlankLines(contentRoot);
   normalizeHeadingLevels(contentRoot);
   boldenPrimaryHeadings(contentRoot);
 

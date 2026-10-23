@@ -25,4 +25,11 @@ export const lessonTypographyContent = `
     <h3 id="typography-consecutive-h3">Start with a small project</h3>
     <p><a href="/lesson/start-to-finish-roadmap">Return to the roadmap</a> when you are ready to plan your next step.</p>
   </section>
+  <div id="typography-blank-lines">
+    <p id="blank-lines-first">Keep in touch with the people you had a good conversation with.</p>
+    <p class="doc-blank-line"><span></span></p>
+    <p id="blank-lines-second"><span>Engage on LinkedIn:</span> Comment on their posts every so often.</p>
+    <p id="blank-lines-third">Then ask whether you can check in again in a few months.</p>
+    <p class="doc-blank-line"><span></span></p>
+  </div>
 `;
