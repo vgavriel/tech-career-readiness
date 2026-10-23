@@ -331,6 +331,69 @@ body {
   text-underline-offset: 2px;
 }
 
+/* A blank line in the Google Doc becomes a short gap, a little under half a line. */
+.lesson-content .doc-blank-line {
+  height: 0.6em;
+  margin: 0;
+}
+
+.lesson-content .doc-blank-line:is(:first-child, :last-child) {
+  display: none;
+}
+
+/* A paragraph right after a list gets a blank line's gap, unless the doc already spaces it. */
+.lesson-content :is(ul, ol) + p:not(.doc-blank-line, [class*="doc-space-before-"]) {
+  margin-top: 0.6em;
+}
+
+/* Paragraph "space before/after" from the Doc, on the blank-line scale: 0.2em per 4pt. */
+.lesson-content :where(p.doc-space-before-1) {
+  padding-top: 0.2em;
+}
+.lesson-content :where(p.doc-space-before-2) {
+  padding-top: 0.4em;
+}
+.lesson-content :where(p.doc-space-before-3) {
+  padding-top: 0.6em;
+}
+.lesson-content :where(p.doc-space-before-4) {
+  padding-top: 0.8em;
+}
+.lesson-content :where(p.doc-space-before-5) {
+  padding-top: 1em;
+}
+.lesson-content :where(p.doc-space-before-6) {
+  padding-top: 1.2em;
+}
+.lesson-content :where(p.doc-space-after-1) {
+  padding-bottom: 0.2em;
+}
+.lesson-content :where(p.doc-space-after-2) {
+  padding-bottom: 0.4em;
+}
+.lesson-content :where(p.doc-space-after-3) {
+  padding-bottom: 0.6em;
+}
+.lesson-content :where(p.doc-space-after-4) {
+  padding-bottom: 0.8em;
+}
+.lesson-content :where(p.doc-space-after-5) {
+  padding-bottom: 1em;
+}
+.lesson-content :where(p.doc-space-after-6) {
+  padding-bottom: 1.2em;
+}
+
+/* Headings keep their own spacing, and blocks start and end flush. */
+.lesson-content :is(h1, h2, h3, h4, h5, h6) + p,
+.lesson-content p:first-child {
+  padding-top: 0;
+}
+
+.lesson-content p:last-child {
+  padding-bottom: 0;
+}
+
 .lesson-content ul,
 .lesson-content ol {
   padding-left: 1.6rem;

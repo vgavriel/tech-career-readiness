@@ -266,6 +266,89 @@ describe("fetchLessonContent", () => {
     expect(result.html).not.toContain("<hr");
   });
 
+  it("drops an empty doc header and blank lines at both ends of the lesson", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents"><div class="doc-content">',
+          '<div><p class="c9"><span class="c3"></span></p></div>',
+          '<p class="c9"><span></span></p>',
+          "<p>First paragraph</p>",
+          '<p class="c9"><span></span></p>',
+          "<p>Last paragraph</p>",
+          '<p class="c9"><span></span></p>',
+          "<div><p><br></p></div>",
+          "</div></div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = result.html;
+    const docContent = wrapper.querySelector(".doc-content");
+
+    expect(docContent?.firstElementChild?.textContent).toBe("First paragraph");
+    expect(docContent?.lastElementChild?.textContent).toBe("Last paragraph");
+    expect(docContent?.querySelectorAll(".doc-blank-line")).toHaveLength(1);
+  });
+
+  it("keeps a doc header that has content", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents"><div class="doc-content">',
+          '<div><p><img src="https://lh3.googleusercontent.com/header.png"></p></div>',
+          "<p>Body</p>",
+          "</div></div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain("https://lh3.googleusercontent.com/header.png");
+  });
+
+  it("marks blank-line paragraphs but not paragraphs with text or images", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          "<p>First paragraph</p>",
+          '<p class="c7"><span class="c3"></span></p>',
+          "<p>Second paragraph</p>",
+          "<p><span>&nbsp;</span><br></p>",
+          '<p><img src="https://lh3.googleusercontent.com/image.png"></p>',
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain('<p class="c7 doc-blank-line"><span class="c3"></span></p>');
+    expect(result.html).toContain('<p class="doc-blank-line"><span>');
+    expect(result.html).toContain("<p>First paragraph</p>");
+    expect(result.html).toContain("<p>Second paragraph</p>");
+    expect(result.html).toMatch(
+      /<p><img [^>]*src="https:\/\/lh3\.googleusercontent\.com\/image\.png"/
+    );
+    expect(result.html.match(/doc-blank-line/g)).toHaveLength(2);
+  });
+
   it("trims leading whitespace in table cells", async () => {
     process.env.APP_ENV = "preview";
     fetchMock.mockResolvedValueOnce(
@@ -358,6 +441,40 @@ describe("fetchLessonContent", () => {
     expect(result.html).toContain("doc-indent-1");
     expect(result.html).not.toContain("margin-left");
     expect(result.html).not.toContain("style=");
+  });
+
+  it("maps Google Docs paragraph spacing to stepped space classes", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><head>",
+          "<style>",
+          ".c1{padding-top:10pt;padding-bottom:0pt;line-height:1.15}",
+          ".c2{padding-top:6pt;padding-bottom:24pt}",
+          ".c3{padding-top:1pt;padding-bottom:72pt}",
+          "</style>",
+          "</head><body>",
+          '<div id="contents">',
+          '<p class="c1">Ten points before</p>',
+          '<p class="c2">Six before, twenty-four after</p>',
+          '<p class="c3">Tiny before, capped after</p>',
+          '<p style="padding-top:16px">Inline twelve points before</p>',
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+
+    expect(result.html).toContain('<p class="c1 doc-space-before-3">Ten points before</p>');
+    expect(result.html).toContain(
+      '<p class="c2 doc-space-before-2 doc-space-after-6">Six before, twenty-four after</p>'
+    );
+    expect(result.html).toContain('<p class="c3 doc-space-after-6">Tiny before, capped after</p>');
+    expect(result.html).toContain('<p class="doc-space-before-3">Inline twelve points before</p>');
   });
 
   it("preserves ordered list start and item value attributes", async () => {

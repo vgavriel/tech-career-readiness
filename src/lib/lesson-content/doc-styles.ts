@@ -1,5 +1,7 @@
 const INDENT_STEP_PX = 24;
 const MAX_INDENT_LEVEL = 4;
+const SPACING_STEP_PT = 4;
+const MAX_SPACING_LEVEL = 6;
 
 /**
  * Parse a CSS length into pixels, supporting px/pt/rem/em units.
@@ -50,6 +52,27 @@ const extractIndentClass = (styleValue: string) => {
 };
 
 /**
+ * Derive paragraph spacing classes from the "space before/after" padding
+ * Google Docs sets, in steps of SPACING_STEP_PT.
+ */
+const extractSpacingClasses = (styleValue: string) => {
+  const normalized = styleValue.toLowerCase();
+  const sides = [
+    ["before", normalized.match(/padding-top\s*:\s*([^;]+)/)?.[1]],
+    ["after", normalized.match(/padding-bottom\s*:\s*([^;]+)/)?.[1]],
+  ] as const;
+
+  return sides.flatMap(([side, value]) => {
+    const px = value ? parseCssLength(value) : null;
+    if (px === null) {
+      return [];
+    }
+    const level = Math.min(MAX_SPACING_LEVEL, Math.round((px * 0.75) / SPACING_STEP_PT));
+    return level > 0 ? [`doc-space-${side}-${level}`] : [];
+  });
+};
+
+/**
  * Convert inline style declarations into doc-* class names.
  */
 export const extractDocStyleClasses = (styleValue: string) => {
@@ -77,6 +100,10 @@ export const extractDocStyleClasses = (styleValue: string) => {
   const indentClass = extractIndentClass(styleValue);
   if (indentClass) {
     classes.add(indentClass);
+  }
+
+  for (const spacingClass of extractSpacingClasses(styleValue)) {
+    classes.add(spacingClass);
   }
 
   return Array.from(classes);
