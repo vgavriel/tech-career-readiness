@@ -45,6 +45,7 @@ export default function BackToCourseCta({ modules }: BackToCourseCtaProps) {
       return (
         <Link
           href={`/lesson/${restartLesson.slug}`}
+          data-analytics-nav="back_to_course"
           className="no-underline inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-50)] px-5 py-2.5 text-sm font-semibold text-[color:var(--ink-700)] transition hover:border-[color:var(--ink-800)] sm:w-auto"
         >
           You finished the core coursework.
@@ -68,6 +69,7 @@ export default function BackToCourseCta({ modules }: BackToCourseCtaProps) {
   return (
     <Link
       href={`/lesson/${primaryLesson.slug}`}
+      data-analytics-nav="back_to_course"
       className="no-underline inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] px-5 py-2.5 text-sm font-semibold text-[color:var(--ink-900)] transition hover:border-[color:var(--ink-800)] sm:w-auto"
     >
       Back to course

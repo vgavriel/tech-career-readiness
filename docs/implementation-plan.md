@@ -440,6 +440,16 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Gate E2E projects on a production browser startup and CSP regression check
 - [x] Validate unit, integration, E2E, and accessibility checks, including Next.js 16.4
 
+### Phase 25 — Google Analytics (shared with the Career Exploration Library)
+
+- [x] Send GA4 events to the library's property `G-40SVVNLXG8` with `site_name: "tech-career-readiness"`
+- [x] Run analytics in production only; keep them off locally, in tests, in Vercel previews, and with `?analytics=off`
+- [x] Track `lesson_view`, `lesson_load`, `resource_click`, `external_link_click`, `filter_select`, completion, navigation, `login`, and `theme_change`
+- [x] Copy the library's resource values into `src/lib/library-resources.json` with `npm run analytics:sync-library`
+- [x] Default consent to denied for EEA/UK/CH visitors; turn off Google signals and ad personalization
+- [x] Allow Google Analytics hosts in the CSP and document GA4 in the privacy policy
+- [ ] After launch: confirm events in GA4 Realtime/DebugView and register the `site_name` and `lesson_slug` custom dimensions
+
 ## Environment variables
 
 - APP_ENV (local, preview, production, test)
@@ -449,6 +459,7 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - GOOGLE_CLIENT_ID
 - GOOGLE_CLIENT_SECRET
 - NEXT_PUBLIC_APP_VERSION (optional override; normally computed during build)
+- GOOGLE_ANALYTICS_ENABLED (optional; `false` turns Google Analytics off in production)
 
 ## Prisma configuration
 

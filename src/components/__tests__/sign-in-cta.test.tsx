@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import SignInCta from "@/components/sign-in-cta";
+import { consumeSignInStarted } from "@/lib/analytics";
 import { devAuthDefaults } from "@/lib/dev-auth";
 
 const authMocks = vi.hoisted(() => ({
@@ -17,8 +18,7 @@ vi.mock("next-auth/react", () => ({
 
 describe("SignInCta", () => {
   let resolveProviders:
-    | ((providers: Record<string, { id: string; name?: string }>) => void)
-    | null = null;
+    ((providers: Record<string, { id: string; name?: string }>) => void) | null = null;
 
   beforeEach(() => {
     authMocks.signIn.mockReset();
@@ -43,6 +43,7 @@ describe("SignInCta", () => {
     await userEvent.click(button);
 
     expect(authMocks.signIn).toHaveBeenCalledWith("google", undefined);
+    expect(consumeSignInStarted()).toBe("google");
   });
 
   it("passes a callback URL when provided", async () => {

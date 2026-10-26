@@ -4,6 +4,7 @@ import { signIn } from "next-auth/react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 import { buildSignInOptions, useAuthProvider } from "@/hooks/use-auth-provider";
+import { markSignInStarted } from "@/lib/analytics";
 
 /**
  * Props for the sign-in CTA component.
@@ -36,7 +37,10 @@ export default function SignInCta({
       type={type}
       disabled={isDisabled}
       aria-busy={!isReady}
-      onClick={() => signIn(providerId, options)}
+      onClick={() => {
+        markSignInStarted(providerId);
+        void signIn(providerId, options);
+      }}
     >
       {children}
     </button>

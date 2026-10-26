@@ -11,6 +11,7 @@ import {
   useState,
 } from "react";
 
+import { trackEvent } from "@/lib/analytics";
 import {
   clearGuestProgress,
   hasGuestProgress,
@@ -63,6 +64,16 @@ type ProgressError = {
 };
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
+
+/**
+ * Report a saved completion change to analytics.
+ */
+const trackCompletion = (lessonSlug: string, completed: boolean, source: ProgressErrorSource) => {
+  trackEvent(completed ? "lesson_complete" : "lesson_uncomplete", {
+    lesson_slug: lessonSlug,
+    completion_source: source,
+  });
+};
 
 /**
  * Convert a list of completed lesson slugs into the map shape.
@@ -221,6 +232,7 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
             return updated;
           });
           setProgressError(null);
+          trackCompletion(trimmedLessonSlug, completed, source);
         } catch (error) {
           console.error(error);
           setProgressError({
@@ -232,6 +244,7 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
         const updated = updateGuestProgress(trimmedLessonSlug, completed);
         setProgressMap(updated.completed);
         setProgressError(null);
+        trackCompletion(trimmedLessonSlug, completed, source);
       }
     },
     [isAuthenticated]

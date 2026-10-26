@@ -82,6 +82,7 @@ const NavigatorLessonRow = ({
     >
       <Link
         href={`/lesson/${lesson.slug}`}
+        data-analytics-nav="lesson_navigator"
         className="no-underline flex flex-1 flex-wrap items-center gap-2 py-1"
         aria-current={isActive ? "page" : undefined}
         id={buildLessonId(lesson.slug)}

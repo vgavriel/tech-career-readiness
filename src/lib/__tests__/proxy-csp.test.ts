@@ -28,6 +28,8 @@ describe("CSP transport policy", () => {
       expect(csp).toContain("default-src 'self'");
       expect(csp).toContain("'nonce-");
       expect(csp).not.toContain("'unsafe-inline'");
+      expect(csp).toMatch(/script-src [^;]*https:\/\/\*\.googletagmanager\.com/);
+      expect(csp).toMatch(/connect-src [^;]*https:\/\/\*\.google-analytics\.com/);
     }
   );
 });

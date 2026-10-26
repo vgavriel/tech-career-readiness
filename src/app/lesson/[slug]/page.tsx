@@ -2,6 +2,10 @@ import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { type ReactNode, Suspense, use } from "react";
 
+import LessonAnalytics, {
+  type LessonDataSource,
+  LessonLoadReport,
+} from "@/components/lesson-analytics";
 import LessonContent from "@/components/lesson-content";
 import LessonContentLoading from "@/components/lesson-content-loading";
 import LessonNavigator from "@/components/lesson-navigator";
@@ -125,6 +129,15 @@ async function buildLessonContentPanel({
   if (contentHtml && contentSource !== "fetch") {
     contentHtml = rewriteLessonDocLinks(contentHtml, lessonDocLinkMap);
   }
+  const dataSource: LessonDataSource = googleDocOnlyUrl
+    ? "google_doc"
+    : contentSource === "static"
+      ? "built_in"
+      : contentSource === "fetch"
+        ? "live"
+        : contentSource === "example"
+          ? "sample"
+          : "none";
   const recruitingTimeline =
     lesson.slug === "tech-recruiting-timeline" && contentHtml
       ? parseRecruitingTimeline(contentHtml)
@@ -132,6 +145,7 @@ async function buildLessonContentPanel({
 
   return (
     <>
+      <LessonLoadReport dataSource={dataSource} />
       {googleDocOnlyUrl ? (
         <div className="space-y-4" data-testid="google-doc-only-notice">
           <div className="space-y-2">
@@ -286,11 +300,13 @@ export default async function LessonPage({ params, searchParams }: LessonPagePro
               </h1>
             </header>
 
-            <section className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
-              <Suspense fallback={<LessonContentLoading />}>
-                <LessonContentPanel contentPromise={contentPromise} />
-              </Suspense>
-            </section>
+            <LessonAnalytics key={lesson.slug} lessonSlug={lesson.slug} lessonTitle={lesson.title}>
+              <section className="rounded-2xl border border-[color:var(--line-soft)] bg-[color:var(--wash-0)] p-5 shadow-[var(--shadow-card)] md:p-6">
+                <Suspense fallback={<LessonContentLoading />}>
+                  <LessonContentPanel contentPromise={contentPromise} />
+                </Suspense>
+              </section>
+            </LessonAnalytics>
           </div>
           <LessonNextCoreCta modules={modules} currentLessonSlug={lesson.slug} />
         </div>

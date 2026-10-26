@@ -14,9 +14,21 @@ const themeScriptHash = createHash("sha256").update(THEME_INIT_SCRIPT).digest("b
  * Build a CSP string with optional nonce for inline scripts/styles.
  */
 const buildContentSecurityPolicy = (nonce: string) => {
-  const scriptSrc = ["'self'", `'nonce-${nonce}'`, `'sha256-${themeScriptHash}'`];
+  const scriptSrc = [
+    "'self'",
+    `'nonce-${nonce}'`,
+    `'sha256-${themeScriptHash}'`,
+    // Google Analytics (gtag.js).
+    "https://*.googletagmanager.com",
+  ];
   const styleSrc = ["'self'", `'nonce-${nonce}'`];
-  const connectSrc = ["'self'", "https://vitals.vercel-insights.com"];
+  const connectSrc = [
+    "'self'",
+    "https://vitals.vercel-insights.com",
+    "https://*.google-analytics.com",
+    "https://*.analytics.google.com",
+    "https://*.googletagmanager.com",
+  ];
 
   if (!isProduction) {
     scriptSrc.push("'unsafe-eval'");

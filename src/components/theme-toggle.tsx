@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 
+import { trackEvent } from "@/lib/analytics";
 import { THEME_STORAGE_KEY } from "@/lib/theme";
 
 /** Read the applied theme, including when browser storage is unavailable. */
@@ -27,6 +28,7 @@ export default function ThemeToggle() {
   const toggleTheme = () => {
     const nextTheme = getTheme() === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = nextTheme;
+    trackEvent("theme_change", { theme: nextTheme });
     try {
       localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
     } catch {

@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import FocusMenu from "@/components/focus-menu";
 import ThemeToggle from "@/components/theme-toggle";
 import { buildSignInOptions, useAuthProvider } from "@/hooks/use-auth-provider";
+import { markSignInStarted } from "@/lib/analytics";
 
 /**
  * Props for the site header inner renderer.
@@ -158,7 +159,10 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
                 <div className="flex flex-col items-end gap-1">
                   <button
                     className="min-h-11 whitespace-nowrap rounded-full bg-[color:var(--accent-700)] px-4 text-sm font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)] disabled:cursor-not-allowed disabled:opacity-60"
-                    onClick={() => signIn(authProvider.id, signInOptions)}
+                    onClick={() => {
+                      markSignInStarted(authProvider.id);
+                      void signIn(authProvider.id, signInOptions);
+                    }}
                     type="button"
                     disabled={!isReady}
                     aria-busy={!isReady}
@@ -233,7 +237,10 @@ function SiteHeaderInner({ pathname }: SiteHeaderInnerProps) {
                 <div className="grid gap-2">
                   <button
                     className="min-h-10 w-full whitespace-nowrap rounded-full bg-[color:var(--accent-700)] px-4 text-sm font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)] disabled:cursor-not-allowed disabled:opacity-60"
-                    onClick={() => signIn(authProvider.id, signInOptions)}
+                    onClick={() => {
+                      markSignInStarted(authProvider.id);
+                      void signIn(authProvider.id, signInOptions);
+                    }}
                     type="button"
                     disabled={!isReady}
                     aria-busy={!isReady}
