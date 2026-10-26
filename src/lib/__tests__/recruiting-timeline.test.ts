@@ -71,6 +71,17 @@ describe("Google Doc recruiting timeline parser", () => {
     );
     expect(parseRecruitingTimeline(updated)!.seasons[0].overviewHtml).toContain("Updated guidance");
   });
+  it("accepts a plural Recruiting Tips label, as the live document uses in Early Fall", () => {
+    // Only the second season's tip is plural, matching the source edit.
+    let seen = 0;
+    const updated = html.replace(/Recruiting Tip:/g, (match) =>
+      ++seen === 2 ? "Recruiting Tips:" : match
+    );
+    const parsed = parseRecruitingTimeline(updated);
+    expect(parsed).not.toBeNull();
+    expect(parsed!.seasons[1].tipHtml).toContain("Recruiting Tips:");
+    expect(parsed!.seasons[1].actionsHtml).not.toContain("Recruiting Tips:");
+  });
   it("preserves introductory guidance and links while replacing only known calendar scaffolding", () => {
     const { document } = parseHTML(`<html><body>${html}</body></html>`);
     const notice = document.createElement("p");
