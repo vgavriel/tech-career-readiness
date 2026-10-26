@@ -40,22 +40,46 @@ const readLibrary = async () => {
   return response.json();
 };
 
-const library = await readLibrary();
+const isText = (value) => typeof value === "string" && value.length > 0 && value.length <= 500;
 
-if (!Array.isArray(library.resources) || library.resources.length === 0) {
-  throw new Error("The library data has no resources.");
-}
+const isWebUrl = (value) => {
+  try {
+    return ["http:", "https:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+};
 
-const resources = library.resources.map((resource) => {
+/**
+ * Keep only the fields analytics needs, and only when they have the expected
+ * shape: the output is bundled into the app, so nothing else from the
+ * downloaded file may reach it.
+ */
+const toEntry = (resource, index) => {
+  if (!isText(resource?.title) || !isText(resource?.url) || !isWebUrl(resource.url)) {
+    throw new Error(`Library resource ${index} has no usable title or http(s) link.`);
+  }
+
   const entry = { title: resource.title, url: resource.url };
   for (const [facetId, param] of FACET_PARAMS) {
     const values = resource.facets?.[facetId] ?? [];
+    if (!Array.isArray(values) || !values.every(isText)) {
+      throw new Error(`Library resource ${index} has an invalid "${facetId}" value.`);
+    }
     if (values.length > 0) {
       entry[param] = values.join(",");
     }
   }
   return entry;
-});
+};
+
+const library = await readLibrary();
+
+if (!Array.isArray(library?.resources) || library.resources.length === 0) {
+  throw new Error("The library data has no resources.");
+}
+
+const resources = library.resources.map(toEntry);
 
 await writeFile(
   OUTPUT_PATH,

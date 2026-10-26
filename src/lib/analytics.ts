@@ -82,6 +82,8 @@ type AnalyticsWindow = Window & {
 
 const LOCAL_HOST = /^(?:localhost|127(?:\.\d{1,3}){3}|\[::1\]|.+\.localhost)$/i;
 const EMAIL = /[^\s@/?&=#:]+@[^\s@/?&=#]+\.[a-z]{2,}/gi;
+/** Also matches addresses URL-encoded in links (`student%40brown.edu`). */
+const URL_EMAIL = /[^\s@/?&=#:]+(?:@|%40)[^\s@/?&=#]+\.[a-z]{2,}/gi;
 /** Phone, student ID, and card-like numbers: 7+ digits, maybe separated. */
 const LONG_NUMBER = /\d(?:[\s().-]*\d){6,}/g;
 /** GA4 drops parameter values longer than this. */
@@ -101,11 +103,12 @@ export const redactText = (text: string) =>
     .slice(0, MAX_VALUE_LENGTH);
 
 /**
- * Removes email addresses from a URL, and the number from `tel:` links.
+ * Removes email addresses (plain or URL-encoded) from a URL, and the number
+ * from `tel:` links.
  * Other numbers stay: in URLs they are usually page ids (job postings, docs).
  */
 export const redactUrl = (href: string) =>
-  /^tel:/i.test(href) ? "tel:[number]" : href.replace(EMAIL, "[email]");
+  /^tel:/i.test(href) ? "tel:[number]" : href.replace(URL_EMAIL, "[email]");
 
 /**
  * Server-side switch: GA4 runs only in production, never in Vercel preview

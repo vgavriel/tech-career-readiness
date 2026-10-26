@@ -61,6 +61,10 @@ describe("analytics", () => {
         "https://example.com/?ref=[email]"
       );
       expect(redactUrl("tel:+1-401-863-3326")).toBe("tel:[number]");
+      expect(redactUrl("mailto:student%40brown.edu")).toBe("mailto:[email]");
+      expect(redactUrl("https://example.com/?email=first.last%40brown.edu&x=1")).toBe(
+        "https://example.com/?email=[email]&x=1"
+      );
     });
   });
 

@@ -144,6 +144,13 @@ describe("lesson analytics", () => {
     });
   });
 
+  it("removes URL-encoded email addresses from link URLs", () => {
+    expect(linkEvent("mailto:student%40brown.edu")?.params.link_url).toBe("mailto:[email]");
+    expect(linkEvent("https://example.com/signup?email=student%40brown.edu")?.params.link_url).toBe(
+      "https://example.com/signup?email=[email]"
+    );
+  });
+
   it.each([
     ["an in-page heading link", "#h.abc123"],
     ["the same page", PAGE_URL],
