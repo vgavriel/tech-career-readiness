@@ -99,6 +99,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
+  /* Match the Back to now target so the row keeps one height with or without it. */
+  min-height: 44px;
   margin: 1.1rem 0;
 }
 .status {

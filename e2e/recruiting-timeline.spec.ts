@@ -156,3 +156,25 @@ test("resources align in both themes and stack without overflow on mobile", asyn
     await page.screenshot({ path: testInfo.outputPath(`resources-${theme}.png`) });
   }
 });
+
+test("season status row keeps one height with or without Back to now", async ({
+  page,
+}, testInfo) => {
+  await page.goto(recruitingPath);
+  const seasons = timeline(page).getByRole("navigation", { name: "Recruiting seasons" });
+  const title = timeline(page).locator("#recruiting-season-title");
+  const gap = async () => {
+    const [nav, heading] = [await seasons.boundingBox(), await title.boundingBox()];
+    return heading!.y - (nav!.y + nav!.height);
+  };
+  await expect(timeline(page).getByText("Happening now · Early Fall")).toBeVisible();
+  const now = await gap();
+  await page.screenshot({ path: testInfo.outputPath("status-now.png") });
+  await timeline(page).getByRole("button", { name: "Nov–Dec Late Fall", exact: true }).click();
+  await expect(timeline(page).getByText("Exploring · Late Fall")).toBeVisible();
+  await expect(
+    timeline(page).getByRole("button", { name: "Back to now", exact: true })
+  ).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath("status-exploring.png") });
+  expect(Math.abs((await gap()) - now)).toBeLessThanOrEqual(1);
+});
