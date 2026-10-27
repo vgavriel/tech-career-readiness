@@ -19,6 +19,9 @@ Where it lives:
 - Privacy policy page: [`src/app/privacy/page.tsx`](../../src/app/privacy/page.tsx)
 - Header link + sign-in notice: [`src/components/site-header.tsx`](../../src/components/site-header.tsx)
 
+The policy also covers usage analytics (Google Analytics); what is sent and
+when is documented in [Observability](../observability.md#google-analytics-ga4).
+
 ## License
 
 This repository uses the MIT License.

@@ -144,6 +144,24 @@ describe("lesson analytics", () => {
     });
   });
 
+  it("drops long query strings from external link URLs so GA4 keeps them", () => {
+    const href = `https://www.linkedin.com/school/brown-university/people/?keywords=${"backend%20engineer%20OR%20".repeat(5)}`;
+
+    expect(linkEvent(href)?.params.link_url).toBe(
+      "https://www.linkedin.com/school/brown-university/people/"
+    );
+  });
+
+  it("does not throw on malformed escapes in lesson links", () => {
+    expect(linkEvent("/lesson/bad%zz", "Broken link")).toEqual({
+      event: "resource_click",
+      params: expect.objectContaining({
+        resource_name: "Broken link",
+        link_url: `https://${PRODUCTION_SITE_HOST}/lesson/bad%zz`,
+      }),
+    });
+  });
+
   it("removes URL-encoded email addresses from link URLs", () => {
     expect(linkEvent("mailto:student%40brown.edu")?.params.link_url).toBe("mailto:[email]");
     expect(linkEvent("https://example.com/signup?email=student%40brown.edu")?.params.link_url).toBe(

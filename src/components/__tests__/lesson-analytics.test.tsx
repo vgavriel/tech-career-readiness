@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import LessonAnalytics, { LessonLoadReport } from "@/components/lesson-analytics";
 import { captureAnalytics } from "@/lib/__tests__/fixtures/capture-analytics";
@@ -16,7 +16,28 @@ describe("LessonAnalytics", () => {
 
   afterEach(() => {
     capture.stop();
+    vi.restoreAllMocks();
   });
+
+  /** Render lessons with a fresh module, as on a new page, and the given navigation entry. */
+  const renderFreshLessons = async (documentUrl: string, slugs: string[]) => {
+    vi.resetModules();
+    vi.spyOn(performance, "getEntriesByType").mockReturnValue([
+      { name: documentUrl } as PerformanceEntry,
+    ]);
+    const fresh = await import("@/components/lesson-analytics");
+    const view = (slug: string) => (
+      <fresh.default key={slug} lessonSlug={slug} lessonTitle={slug}>
+        <fresh.LessonLoadReport dataSource="built_in" />
+      </fresh.default>
+    );
+    const { rerender } = render(view(slugs[0]));
+    for (const slug of slugs.slice(1)) {
+      rerender(view(slug));
+    }
+    await waitFor(() => expect(capture.named("lesson_load")).toHaveLength(slugs.length));
+    return capture.named("lesson_load").map((event) => event.params.navigation_type);
+  };
 
   const renderLesson = () =>
     render(
@@ -45,8 +66,20 @@ describe("LessonAnalytics", () => {
     expect(capture.named("lesson_load")[0].params).toEqual({
       lesson_slug: "learn-about-backend-engineering",
       data_source: "live",
+      navigation_type: expect.stringMatching(/^(page_load|in_app)$/),
       load_time_ms: expect.any(Number),
     });
+  });
+
+  it("times the lesson the browser loaded directly as page_load, later ones as in_app", async () => {
+    expect(await renderFreshLessons(window.location.href, ["first", "second"])).toEqual([
+      "page_load",
+      "in_app",
+    ]);
+  });
+
+  it("times a lesson reached from another page as in_app", async () => {
+    expect(await renderFreshLessons("http://localhost/privacy", ["first"])).toEqual(["in_app"]);
   });
 
   it("reports clicks and middle clicks on links inside the lesson", async () => {

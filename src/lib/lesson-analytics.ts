@@ -16,7 +16,7 @@
  * it with `npm run analytics:sync-library`.
  */
 
-import { type EventParams, redactText, redactUrl } from "@/lib/analytics";
+import { type EventParams, linkUrlParam, redactText } from "@/lib/analytics";
 import libraryData from "@/lib/library-resources.json";
 
 /** The address the library sheet uses to link to lessons. */
@@ -61,6 +61,17 @@ const unwrapGoogleRedirect = (url: URL) => {
 };
 
 /**
+ * Decode a URL path segment, keeping it as is when its escapes are malformed.
+ */
+const decodeSegment = (segment: string) => {
+  try {
+    return decodeURIComponent(segment);
+  } catch {
+    return segment;
+  }
+};
+
+/**
  * A key that identifies the same resource however it is linked: lessons by
  * slug, Google Docs/Drive files by id, anything else by host and path.
  */
@@ -69,7 +80,7 @@ const resourceKey = (url: URL, siteHost: string) => {
 
   if (host === PRODUCTION_SITE_HOST || host === siteHost) {
     const slug = url.pathname.match(/^\/lesson\/([^/]+)\/?$/)?.[1];
-    return slug ? `lesson:${decodeURIComponent(slug)}` : null;
+    return slug ? `lesson:${decodeSegment(slug)}` : null;
   }
 
   if (GOOGLE_FILE_HOSTS.has(host)) {
@@ -177,6 +188,9 @@ export const lessonLinkEvent = ({
   const resource = key ? getLibraryByKey().get(key) : undefined;
 
   if (resource) {
+    // Exactly what the library sends for this resource, so counts combine.
+    // (GA4 drops the 100+ character URLs on both sites alike; `page_location`
+    // allows 1,000.)
     return {
       event: "resource_click",
       params: {
@@ -212,7 +226,7 @@ export const lessonLinkEvent = ({
     params: {
       ...facetParams(findLessonLibraryResource(lessonSlug)),
       lesson_slug: lessonSlug,
-      link_url: redactUrl(target.href),
+      link_url: linkUrlParam(target),
       link_domain: target.hostname.replace(/^www\./, "") || target.protocol.replace(":", ""),
       link_text: redactText(text),
       outbound: true,

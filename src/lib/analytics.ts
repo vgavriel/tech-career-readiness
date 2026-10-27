@@ -86,7 +86,12 @@ const EMAIL = /[^\s@/?&=#:]+@[^\s@/?&=#]+\.[a-z]{2,}/gi;
 const URL_EMAIL = /[^\s@/?&=#:]+(?:@|%40)[^\s@/?&=#]+\.[a-z]{2,}/gi;
 /** Phone, student ID, and card-like numbers: 7+ digits, maybe separated. */
 const LONG_NUMBER = /\d(?:[\s().-]*\d){6,}/g;
-/** GA4 drops parameter values longer than this. */
+/** Year ranges such as "2025-2026" look like long numbers but aren't personal. */
+const YEAR_RANGE = /^(?:19|20)\d{2}\s*[-/]\s*(?:19|20)\d{2}$/;
+/**
+ * GA4 doesn't log parameter values longer than this (`page_location` allows
+ * 1,000), so the value is lost rather than shortened.
+ */
 const MAX_VALUE_LENGTH = 100;
 /** Events tracked before `startAnalytics` runs are capped, in case it never does. */
 const MAX_PENDING_EVENTS = 50;
@@ -99,7 +104,7 @@ export const redactText = (text: string) =>
     .replace(/\s+/g, " ")
     .trim()
     .replace(EMAIL, "[email]")
-    .replace(LONG_NUMBER, "[number]")
+    .replace(LONG_NUMBER, (match) => (YEAR_RANGE.test(match) ? match : "[number]"))
     .slice(0, MAX_VALUE_LENGTH);
 
 /**
@@ -109,6 +114,23 @@ export const redactText = (text: string) =>
  */
 export const redactUrl = (href: string) =>
   /^tel:/i.test(href) ? "tel:[number]" : href.replace(URL_EMAIL, "[email]");
+
+/**
+ * A link's destination as a `link_url` value: redacted, without the fragment,
+ * and short enough for GA4 to keep. Drops the query string when the whole
+ * address doesn't fit, so the host and path still arrive.
+ */
+export const linkUrlParam = (url: URL) => {
+  const withoutHash = new URL(url.href);
+  withoutHash.hash = "";
+  const full = redactUrl(withoutHash.href);
+  if (full.length <= MAX_VALUE_LENGTH) {
+    return full;
+  }
+
+  withoutHash.search = "";
+  return redactUrl(withoutHash.href).slice(0, MAX_VALUE_LENGTH);
+};
 
 /**
  * Server-side switch: GA4 runs only in production, never in Vercel preview
@@ -183,7 +205,7 @@ export const trackEvent = (event: string, params: EventParams = {}) => {
 /**
  * Turn analytics on or off for this page. Queues the standard gtag.js
  * bootstrap (consent defaults, `site_name`, config) and sends anything
- * tracked so far; gtag.js itself is downloaded later by `loadAnalyticsScript`.
+ * tracked so far; gtag.js itself is downloaded by `loadAnalyticsScript`.
  * Only the first call has an effect.
  */
 export const startAnalytics = ({
@@ -222,8 +244,10 @@ export const startAnalytics = ({
     region: CONSENT_DENIED_REGIONS,
   });
   gtag("js", new Date());
-  gtag("set", { site_name: SITE_NAME });
+  // Google recommends `config` (not `set`) for parameters sent with every
+  // event, including enhanced-measurement page views and clicks.
   gtag("config", measurementId, {
+    site_name: SITE_NAME,
     allow_google_signals: false,
     allow_ad_personalization_signals: false,
   });

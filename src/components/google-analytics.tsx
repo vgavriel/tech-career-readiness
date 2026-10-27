@@ -40,8 +40,10 @@ const handleNavigationClick = (event: MouseEvent) => {
  * Start Google Analytics for this page and send app-wide events.
  *
  * @remarks
- * gtag.js is only downloaded once the page has loaded, so it never competes
- * with the lesson content. Renders nothing.
+ * gtag.js loads (async) as soon as the app hydrates, not after the window
+ * `load` event: lesson pages stream, so `load` can wait for a slow Google Doc,
+ * and visits or clicks before it would be lost. The lesson content is fetched
+ * on the server, so the download doesn't compete with it. Renders nothing.
  */
 export default function GoogleAnalytics({ measurementId }: GoogleAnalyticsProps) {
   const { status } = useSession();
@@ -54,18 +56,7 @@ export default function GoogleAnalytics({ measurementId }: GoogleAnalyticsProps)
       params: new URLSearchParams(window.location.search),
     });
     startAnalytics({ measurementId, enabled });
-
-    if (!enabled) {
-      return;
-    }
-
-    if (document.readyState === "complete") {
-      loadAnalyticsScript();
-      return;
-    }
-
-    window.addEventListener("load", loadAnalyticsScript, { once: true });
-    return () => window.removeEventListener("load", loadAnalyticsScript);
+    loadAnalyticsScript();
   }, [measurementId]);
 
   useEffect(() => {

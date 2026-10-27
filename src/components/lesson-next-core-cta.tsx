@@ -75,7 +75,7 @@ export default function LessonNextCoreCta({ modules, currentLessonSlug }: Lesson
     if (!shouldMarkComplete) {
       return;
     }
-    void setLessonCompletion(currentLessonSlug, true, "navigator");
+    void setLessonCompletion(currentLessonSlug, true, "navigator", "next_lesson");
   };
 
   return (

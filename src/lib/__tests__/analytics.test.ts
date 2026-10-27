@@ -5,6 +5,7 @@ import {
   consumeSignInStarted,
   GA_MEASUREMENT_ID,
   isGoogleAnalyticsAllowed,
+  linkUrlParam,
   loadAnalyticsScript,
   markSignInStarted,
   redactText,
@@ -50,6 +51,29 @@ describe("analytics", () => {
         "Email [email] or call [number]"
       );
       expect(redactText("x".repeat(150))).toHaveLength(100);
+    });
+
+    it("keeps year ranges in text", () => {
+      expect(redactText("2025-2026 recruiting timeline")).toBe("2025-2026 recruiting timeline");
+      expect(redactText("Class of 2026/2027")).toBe("Class of 2026/2027");
+      expect(redactText("ID 1234-5678")).toBe("ID [number]");
+    });
+
+    it("fits link URLs within GA4's 100-character limit", () => {
+      expect(linkUrlParam(new URL("https://example.com/jobs?team=ml#apply"))).toBe(
+        "https://example.com/jobs?team=ml"
+      );
+
+      const longQuery = new URL(
+        `https://www.linkedin.com/school/brown-university/people/?keywords=${"backend%20".repeat(12)}`
+      );
+      expect(linkUrlParam(longQuery)).toBe(
+        "https://www.linkedin.com/school/brown-university/people/"
+      );
+
+      const longPath = new URL(`https://example.com/${"a".repeat(150)}`);
+      expect(linkUrlParam(longPath)).toHaveLength(100);
+      expect(linkUrlParam(new URL("mailto:jo%40brown.edu"))).toBe("mailto:[email]");
     });
 
     it("keeps page ids in URLs but removes emails and phone numbers", () => {
@@ -139,11 +163,14 @@ describe("analytics", () => {
     ]);
     expect(commands[1][0]).toBe("js");
     expect(commands.slice(2)).toEqual([
-      ["set", { site_name: SITE_NAME }],
       [
         "config",
         GA_MEASUREMENT_ID,
-        { allow_google_signals: false, allow_ad_personalization_signals: false },
+        {
+          site_name: SITE_NAME,
+          allow_google_signals: false,
+          allow_ad_personalization_signals: false,
+        },
       ],
       ["event", "queued_event", { lesson_slug: "intro" }],
       ["event", "later_event", {}],

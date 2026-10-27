@@ -19,9 +19,20 @@ import { lessonLinkEvent, lessonViewParams } from "@/lib/lesson-analytics";
  */
 export type LessonDataSource = "live" | "built_in" | "sample" | "google_doc" | "none";
 
-type LessonAnalyticsContextValue = {
-  lessonSlug: string;
+/**
+ * How the lesson was reached, as the `navigation_type` parameter of
+ * `lesson_load`. The two measure different spans (see `lessonStart`), so
+ * reports should compare `load_time_ms` within one type only.
+ */
+type LessonNavigationType = "page_load" | "in_app";
+
+type LessonStart = {
   startedAt: number;
+  navigationType: LessonNavigationType;
+};
+
+type LessonAnalyticsContextValue = LessonStart & {
+  lessonSlug: string;
 };
 
 const LessonAnalyticsContext = createContext<LessonAnalyticsContextValue | null>(null);
@@ -29,21 +40,26 @@ const LessonAnalyticsContext = createContext<LessonAnalyticsContextValue | null>
 let isFirstLessonInDocument = true;
 
 /**
- * When this lesson started loading: 0 (the page request) for the lesson the
- * browser loaded directly, otherwise when its frame first rendered.
+ * When this lesson started loading.
+ *
+ * - `page_load`: the browser loaded the lesson directly; timing starts at the
+ *   page request, so `load_time_ms` runs until the lesson body is on screen
+ *   and interactive (it includes downloading and starting the app).
+ * - `in_app`: the visitor moved here inside the app; timing starts when the
+ *   lesson frame first renders, so it covers waiting for the lesson body only.
  */
-const lessonStartTime = () => {
+const lessonStart = (): LessonStart => {
   if (typeof window === "undefined") {
-    return 0;
+    return { startedAt: 0, navigationType: "page_load" };
   }
 
   const first = isFirstLessonInDocument;
   isFirstLessonInDocument = false;
   const [navigation] = performance.getEntriesByType("navigation");
   if (first && navigation && new URL(navigation.name).pathname === window.location.pathname) {
-    return 0;
+    return { startedAt: 0, navigationType: "page_load" };
   }
-  return performance.now();
+  return { startedAt: performance.now(), navigationType: "in_app" };
 };
 
 /**
@@ -66,9 +82,9 @@ export default function LessonAnalytics({
   lessonTitle,
   children,
 }: LessonAnalyticsProps) {
-  const [startedAt] = useState(lessonStartTime);
+  const [start] = useState(lessonStart);
   const containerRef = useRef<HTMLDivElement>(null);
-  const contextValue = useMemo(() => ({ lessonSlug, startedAt }), [lessonSlug, startedAt]);
+  const contextValue = useMemo(() => ({ lessonSlug, ...start }), [lessonSlug, start]);
 
   useEffect(() => {
     trackEvent("lesson_view", lessonViewParams(lessonSlug, lessonTitle));
@@ -132,6 +148,7 @@ export function LessonLoadReport({ dataSource }: { dataSource: LessonDataSource 
     trackEvent("lesson_load", {
       lesson_slug: context.lessonSlug,
       data_source: dataSource,
+      navigation_type: context.navigationType,
       load_time_ms: Math.round(performance.now() - context.startedAt),
     });
   }, [context, dataSource]);

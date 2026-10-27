@@ -18,16 +18,20 @@ const buildContentSecurityPolicy = (nonce: string) => {
     "'self'",
     `'nonce-${nonce}'`,
     `'sha256-${themeScriptHash}'`,
-    // Google Analytics (gtag.js).
-    "https://*.googletagmanager.com",
+    // gtag.js: the one host Google's CSP guide lists for Analytics without Ads
+    // features. It also serves Tag Manager containers, so keep lesson HTML
+    // sanitized (no script tags) rather than relying on the CSP alone.
+    "https://www.googletagmanager.com",
   ];
   const styleSrc = ["'self'", `'nonce-${nonce}'`];
   const connectSrc = [
     "'self'",
     "https://vitals.vercel-insights.com",
+    // Google Analytics collection, per Google's CSP guide (`*.google.com`
+    // also covers `*.analytics.google.com`).
+    "https://www.googletagmanager.com",
     "https://*.google-analytics.com",
-    "https://*.analytics.google.com",
-    "https://*.googletagmanager.com",
+    "https://*.google.com",
   ];
 
   if (!isProduction) {

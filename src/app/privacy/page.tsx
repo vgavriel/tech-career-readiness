@@ -45,8 +45,9 @@ export default function PrivacyPolicyPage() {
             </li>
             <li>
               Usage analytics from Google Analytics: pages and lessons viewed, links clicked inside
-              lessons, and settings such as your focus. We do not send your name, email, or account
-              to Google Analytics.
+              lessons, lessons marked complete, sign-ins, and settings such as your focus and theme.
+              Google Analytics links these to a random browser identifier, not to your account. We
+              do not send your name, email, or account to Google Analytics.
             </li>
           </ul>
         </section>
