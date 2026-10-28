@@ -71,6 +71,17 @@ Additional configuration:
 - `ADMIN_EMAILS` (comma-separated) to bootstrap admin access in local/preview/test.
 - `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` for rate limiting.
 - `MAX_JSON_BODY_BYTES` (optional) for JSON payload limits.
+- `GOOGLE_ANALYTICS_ENABLED=false` (optional) turns Google Analytics off in production.
+
+## Analytics
+
+Page views, lesson views, and link clicks inside lessons go to the Center for
+Career Exploration's Google Analytics 4 property, shared with the Career
+Exploration Library and tagged with `site_name: "tech-career-readiness"`.
+Analytics run only in production and stay off for local development, tests,
+Vercel previews, and URLs with `?analytics=off`. See
+[Observability](docs/observability.md#google-analytics-ga4) for the events and the
+launch checklist.
 
 ## Testing
 

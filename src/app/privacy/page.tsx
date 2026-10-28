@@ -18,7 +18,7 @@ export default function PrivacyPolicyPage() {
           <h1 className="font-display text-4xl text-[color:var(--ink-900)] md:text-5xl">
             How we handle your information
           </h1>
-          <p className="text-sm text-[color:var(--ink-500)]">Last updated: January 28, 2026</p>
+          <p className="text-sm text-[color:var(--ink-500)]">Last updated: October 26, 2026</p>
         </header>
 
         <section className="space-y-4 text-base text-[color:var(--ink-700)]">
@@ -43,6 +43,12 @@ export default function PrivacyPolicyPage() {
               Technical metadata such as request IDs, IP address (for rate limiting), and basic logs
               needed to operate the service.
             </li>
+            <li>
+              Usage analytics from Google Analytics: pages and lessons viewed, links clicked inside
+              lessons, lessons marked complete, sign-ins, and settings such as your focus and theme.
+              Google Analytics links these to a random browser identifier, not to your account. We
+              do not send your name, email, or account to Google Analytics.
+            </li>
           </ul>
         </section>
 
@@ -63,9 +69,9 @@ export default function PrivacyPolicyPage() {
             Sharing and service providers
           </h2>
           <p className="text-base text-[color:var(--ink-700)]">
-            We use trusted service providers to run the app, including Google for authentication,
-            Vercel for hosting, and Upstash for rate limiting. We do not sell your personal
-            information.
+            We use trusted service providers to run the app, including Google for authentication and
+            usage analytics, Vercel for hosting, and Upstash for rate limiting. We do not sell your
+            personal information.
           </p>
         </section>
 
@@ -73,6 +79,22 @@ export default function PrivacyPolicyPage() {
           <h2 className="font-display text-2xl text-[color:var(--ink-900)]">
             Data retention and your choices
           </h2>
+          <p className="text-base text-[color:var(--ink-700)]">
+            Google Analytics uses cookies to count visits. We share these statistics with the Center
+            for Career Exploration&apos;s Career Exploration Library and use them only in aggregate.
+            Google Analytics does not use cookies for visitors in the European Economic Area, the
+            United Kingdom, or Switzerland. You can block analytics with your browser&apos;s
+            tracking protection or the{" "}
+            <Link
+              href="https://tools.google.com/dlpage/gaoptout"
+              target="_blank"
+              rel="noreferrer"
+              className="underline underline-offset-2"
+            >
+              Google Analytics opt-out add-on
+            </Link>
+            .
+          </p>
           <p className="text-base text-[color:var(--ink-700)]">
             We keep your data while your account is active or as needed to operate the service. If
             you would like your account or progress deleted, contact{" "}

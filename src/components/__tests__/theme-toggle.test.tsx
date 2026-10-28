@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import ThemeToggle from "@/components/theme-toggle";
+import { captureAnalytics } from "@/lib/__tests__/fixtures/capture-analytics";
 import { THEME_STORAGE_KEY } from "@/lib/theme";
 
 describe("ThemeToggle", () => {
@@ -18,6 +19,7 @@ describe("ThemeToggle", () => {
   });
 
   it("switches both ways with the keyboard and saves the browser preference", async () => {
+    const capture = captureAnalytics();
     const user = userEvent.setup();
     render(<ThemeToggle />);
     await user.tab();
@@ -32,6 +34,11 @@ describe("ThemeToggle", () => {
     expect(document.documentElement).toHaveAttribute("data-theme", "light");
     expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe("light");
     expect(screen.getByRole("button", { name: "Switch to dark mode" })).toHaveFocus();
+    capture.stop();
+    expect(capture.named("theme_change").map((event) => event.params)).toEqual([
+      { theme: "dark" },
+      { theme: "light" },
+    ]);
   });
 
   it("reads the theme applied before hydration and keeps it across remounts", () => {

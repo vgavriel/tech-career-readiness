@@ -75,7 +75,7 @@ export default function LessonNextCoreCta({ modules, currentLessonSlug }: Lesson
     if (!shouldMarkComplete) {
       return;
     }
-    void setLessonCompletion(currentLessonSlug, true, "navigator");
+    void setLessonCompletion(currentLessonSlug, true, "navigator", "next_lesson");
   };
 
   return (
@@ -94,6 +94,7 @@ export default function LessonNextCoreCta({ modules, currentLessonSlug }: Lesson
               <Link
                 href={actionHref}
                 onClick={handleNextClick}
+                data-analytics-nav="next_core_lesson"
                 className="no-underline inline-flex min-h-10 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent-700)] px-4 py-2 text-sm font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)]"
               >
                 {buttonLabel}
@@ -123,6 +124,7 @@ export default function LessonNextCoreCta({ modules, currentLessonSlug }: Lesson
               <Link
                 href={actionHref}
                 onClick={handleNextClick}
+                data-analytics-nav="next_core_lesson"
                 className="no-underline inline-flex min-h-10 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent-700)] px-4 py-2 text-sm font-semibold text-[color:var(--wash-0)] shadow-[var(--shadow-soft)] transition hover:bg-[color:var(--ink-800)]"
               >
                 {mobileButtonLabel}

@@ -1,0 +1,1657 @@
+{
+  "source": "https://brown-career-center.github.io/career-exploration-library/data/library.json",
+  "resources": [
+    {
+      "title": "Consulting Industry Insights",
+      "url": "https://docs.google.com/document/d/1x6p1WXCFcSlQulVgHYJMLf-zRKmQE59uBo19-J-xdTI/edit",
+      "professional_pathway": "Finance and Consulting",
+      "career_field": "Consulting",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Finance Opportunities",
+      "url": "https://docs.google.com/document/d/1q0Ab3u4jUvGiohTWcIZDP6W8nOxbYTRayJT0kEPC3OU/edit#heading=h.v9ef0pfteb4x",
+      "professional_pathway": "Finance and Consulting",
+      "career_field": "Finance",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Career Fair Tips",
+      "url": "https://docs.google.com/document/d/1MEolMhjcEIvbvpuCmMHS96zomoS3C2Gm8mq1jCOJLtw/",
+      "professional_pathway": "Additional Career Pathways,Technology & Tech Ventures,Careers in the Common Good,Arts and Media,Finance and Consulting",
+      "career_field": "All Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Tech Internship and Job Boards",
+      "url": "https://tech-career-readiness.vercel.app/lesson/tech-internship-and-job-boards",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Government: Opportunities",
+      "url": "https://docs.google.com/document/d/1aPpMZYiBN9h90rBLhPKnzuH-HTKjtFpXvrQtxFFc4MQ/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Government (Federal - State - Local)",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Consulting Opportunities",
+      "url": "https://docs.google.com/document/d/1IFOaMMG9rDbX33fagf7m0melCt9FEsReaa6kZddCqW8/edit#heading=h.v9ef0pfteb4x",
+      "professional_pathway": "Finance and Consulting",
+      "career_field": "Consulting",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Arts Opportunities in Providence",
+      "url": "https://docs.google.com/document/d/1Rdj6t36_Om4qiNX3VF0SMNDvI7RdUJFYCBSxDivuBz4/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "All Arts and Media",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Finance Industry Insights",
+      "url": "https://docs.google.com/document/d/1-H3dQn-zc3rs_JfDDT8VW5ToiucH4ktlMRRmbOfghEA/edit",
+      "professional_pathway": "Finance and Consulting",
+      "career_field": "Finance",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Advertising, Marketing, and Communications: Opportunities",
+      "url": "https://docs.google.com/document/d/1Flzfp99phVqeJFdzZ03ufXbEX1bhB2kkAbONeXmHk7g/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Advertising/Marketing/Communications",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Tech Internship Success Handbook",
+      "url": "https://tech-career-readiness.vercel.app/lesson/internship-success-handbook",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Tech Internship Success Checklist",
+      "url": "https://tech-career-readiness.vercel.app/lesson/internship-success-checklist",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Brown-specific Online Course for Tech Career Readiness",
+      "url": "https://tech-career-readiness.vercel.app/",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Start to Finish: The Roadmap to a Tech Internship or Job",
+      "url": "https://tech-career-readiness.vercel.app/lesson/start-to-finish-roadmap",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Tech Recruiting Timeline",
+      "url": "https://tech-career-readiness.vercel.app/lesson/tech-recruiting-timeline",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Your Tech Career Exploration Journey",
+      "url": "https://drive.google.com/file/d/1DE5qAqD5ID58QAVVWSu4WA7Nw9mjEKHt/view?usp=drive_link",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Tech Resume Example with Annotations",
+      "url": "https://tech-career-readiness.vercel.app/lesson/tech-resume-example",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Examples: Quantifying Impact on Tech Resumes",
+      "url": "https://tech-career-readiness.vercel.app/lesson/quantify-impact-on-resumes",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Popular Tech Roles",
+      "url": "https://tech-career-readiness.vercel.app/lesson/popular-tech-roles",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Career Path Map: Tech Jobs to CS Courses",
+      "url": "https://tech-career-readiness.vercel.app/lesson/job-titles-to-cs-courses",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Career Path Map: CS Courses to Tech Jobs",
+      "url": "https://tech-career-readiness.vercel.app/lesson/cs-courses-to-job-titles",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Explore Various Technology Jobs and Fields",
+      "url": "https://tech-career-readiness.vercel.app/lesson/explore-technology-jobs",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Researching Tech Companies and Understanding Core Values",
+      "url": "https://tech-career-readiness.vercel.app/lesson/research-tech-companies-core-values",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Craft Winning Tech Job and Internship Applications",
+      "url": "https://tech-career-readiness.vercel.app/lesson/craft-winning-tech-applications",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Fillable Resume Template (Google Docs)",
+      "url": "https://docs.google.com/document/d/1plo3RXw3IrWpQvaPPIAcT70JH2OnR1WNT6oc416SQvA/",
+      "professional_pathway": "Additional Career Pathways,Technology & Tech Ventures,Careers in the Common Good,Arts and Media,Finance and Consulting",
+      "career_field": "All Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Elevator Speech",
+      "url": "https://docs.google.com/document/d/1QDwiiApuqPZT6Fh6VpNZlmxn5TdlGP0AcxZ8TJy9V2E/edit?tab=t.0#heading=h.22pfl5ky7c6b",
+      "professional_pathway": "Additional Career Pathways,Technology & Tech Ventures,Careers in the Common Good,Arts and Media,Finance and Consulting",
+      "career_field": "All Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Effectively Showcase Your Projects on GitHub",
+      "url": "https://medium.com/@bryanyi/effectively-showcase-your-projects-on-github-for-your-first-web-developer-job-70fb2a7d576c",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Build Experience to Get Tech Internships and New-Grad Jobs",
+      "url": "https://tech-career-readiness.vercel.app/lesson/build-experience",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "3 Short Stories: Tech Career Exploration Journey",
+      "url": "https://tech-career-readiness.vercel.app/lesson/tech-career-stories",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Internship/Job Application Tracking Spreadsheet",
+      "url": "https://docs.google.com/spreadsheets/d/1SbWR2cagawsyvX_wL8bSNMDYs6MSNsjfLlkCOrVdMVo/",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Is Networking Worth It For Tech Jobs/Internships?",
+      "url": "https://tech-career-readiness.vercel.app/lesson/is-networking-worth-it",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Informational Interviewing & Networking Tipsheet for Tech",
+      "url": "https://tech-career-readiness.vercel.app/lesson/informational-interviewing-networking-tipsheet",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "How to Network With Tech Recruiters",
+      "url": "https://tech-career-readiness.vercel.app/lesson/how-to-network-with-tech-recruiters",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Ace the Tech Interview: Your Ultimate Prep Plan",
+      "url": "https://tech-career-readiness.vercel.app/lesson/ace-interview-prep-timeline",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Ace the Tech Interview: Solve Coding Challenges with Confidence",
+      "url": "https://tech-career-readiness.vercel.app/lesson/ace-interview-coding-challenges",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Ace the Tech Interview: Stand Out with Smart Questions",
+      "url": "https://tech-career-readiness.vercel.app/lesson/ace-interview-smart-questions",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Ace the Tech Interview: Send Thank You Notes",
+      "url": "https://docs.google.com/document/d/1O0xkOVqOf6ouIX6wREw_QvwEfntI4N2tUY0t98lAv70/edit?tab=t.0",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Exponent: Getting Started (Article)",
+      "url": "https://www.notion.so/Exponent-Getting-Started-24c7882051b680c791a8f916fd1f14ab",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Exponent: Getting Started (Video)",
+      "url": "https://www.tryexponent.com/resources/university-demo",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Tech Job Offer Evaluation and Negotiation",
+      "url": "https://tech-career-readiness.vercel.app/lesson/offer-evaluation-negotiation",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Tech Job Offer Evaluation and Negotiation Checklist",
+      "url": "https://tech-career-readiness.vercel.app/lesson/offer-evaluation-negotiation-checklist",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Compensation at Tech Companies",
+      "url": "https://www.levels.fyi/",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "K-12 Education: Networks",
+      "url": "https://docs.google.com/document/d/1MDj2t0bWq2CXKOIF0SoayFr0IjIwvuD7JwX78QGh3So/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "K-12 Education",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "K-12 Education: Post-Graduate Programs",
+      "url": "https://docs.google.com/document/d/1a0YYeKQ0Ykzgt893YhshQiOe_cp_AVwV3V-B7kwi_9k/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "K-12 Education",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "K-12 Education: Opportunities",
+      "url": "https://docs.google.com/document/d/1g490Kw5mjCii9Nissam_q0iYVFV4Mc3yaWMsOLxqZJk/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "K-12 Education",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "K-12 Education: Industry Insights",
+      "url": "https://docs.google.com/document/d/12T8kTXui8ByXAy3As7z_ickY4L9wmbepNo9t5Umd0zc/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "K-12 Education",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "K-12 Education: Campus Connections",
+      "url": "https://docs.google.com/document/d/1qPAuex5h-wsvWlPkADfCjZFC1_3ayN56omWpMW8k_8Q/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "K-12 Education",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Labor and Grassroots Organizing: Networks",
+      "url": "https://docs.google.com/document/d/14_d8nIC85Vr5qfbAtwWK_65ApxkjUNowtzLAQLYs9uY/edit#heading=h.sj1t6024umyz",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Labor and Grassroots Organizing",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Labor and Grassroots Organizing: Training Programs",
+      "url": "https://docs.google.com/document/d/1i9ZZzOLYXpWmzFxjj99H00u431_92up1AZDhM_QvwOc/edit#heading=h.sj1t6024umyz",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Labor and Grassroots Organizing",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Labor and Grassroots Organizing: Opportunities",
+      "url": "https://docs.google.com/document/d/1jF8tnNrWndt4dkOCEleZ3fVSb245AW8AVpp_9iFz7SA/edit#heading=h.sj1t6024umyz",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Labor and Grassroots Organizing",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Labor and Grassroots Organizing: Industry Insights",
+      "url": "https://docs.google.com/document/d/1-GBrlVc2uWRl_ow9dmnoe7877Gsos9zUdVF32p_X3z0/edit#heading=h.sj1t6024umyz",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Labor and Grassroots Organizing",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Labor and Grassroots Organizing: Campus Connections",
+      "url": "https://docs.google.com/document/d/1uiNiVpIegGcCBslL4uYp18aLL0_TtEA6fb3z96J1qm0/edit#heading=h.sj1t6024umyz",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Labor and Grassroots Organizing",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Community Development: Opportunities",
+      "url": "https://docs.google.com/document/d/10D50Tj76mOsTHoTIhj2AvS9ICM7oxZni-v8xhqcd5Zo/edit",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Community Development",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Community Development: Campus Connections",
+      "url": "https://docs.google.com/document/d/1sMCVXjmQZlOHuaniwfv2gGVh_GJaQ8rCsAQnJf5S5FM/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Community Development",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Community Development: Networks",
+      "url": "https://docs.google.com/document/d/1yvML-sqHuYbO-5VMxbteVRRgrmvCoCBVEsRlXpaMGUI/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Community Development",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Community Development: Industry Insights",
+      "url": "https://docs.google.com/document/d/1XZ6CoBp82ecOzCcTrzxedSeL5USM93tvxYfeTkr9E7A/edit#heading=h.sj1t6024umyz",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Community Development",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Community Development: Resources",
+      "url": "https://docs.google.com/document/d/1zjojDTI8lITSMtdlyPY7-6tTXzqd78oxWK0yhmVS62Y/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Community Development",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Fundraising and Foundations: Campus Connections",
+      "url": "https://docs.google.com/document/d/1b6oXzxQkMtk6wN5LqETsjXJZ2qMU6L_qqr-gRqPFZH8/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Fundraising and Foundations",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Fundraising and Foundations: Industry Insights",
+      "url": "https://docs.google.com/document/d/1sdeLwyJ4AbxU5Er3sYyudDnG3sucqgUR8PO6a-_vObA/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Fundraising and Foundations",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Fundraising and Foundations: Networks",
+      "url": "https://docs.google.com/document/d/1l3_sFBDY4sdaPP8H0JtIgyNWXLhDkS7zDMo_ltMs0MU/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Fundraising and Foundations",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Fundraising and Foundations: Opportunities",
+      "url": "https://docs.google.com/document/d/1psfpJr5347kf9Q4l432p6P_Y_QlOlBI6tC04KReB_DQ/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Fundraising and Foundations",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Public Policy and Advocacy: Campus Connections",
+      "url": "https://docs.google.com/document/d/1buxtBcUW155kt4MbPzD3wXrHR4mBt1DVezKoZzWjuRY/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Public Policy and Advocacy",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Public Policy and Advocacy: Industry Insights",
+      "url": "https://docs.google.com/document/d/1PLsXPn2JvmImQB9TUYahVxSrPWYVP-wgn9w6g1ix_ck/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Public Policy and Advocacy",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Public Policy and Advocacy: Networks",
+      "url": "https://docs.google.com/document/d/1-rrQLhqckqHwnzMxWK7IFYmBus9NBb3kMQfebabGDlA/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Public Policy and Advocacy",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Public Policy and Advocacy: Further Education",
+      "url": "https://docs.google.com/document/d/13J5hcU7iEI0YoazB6X6U8Pzh7XCPGucuxuY-Iq1mdE4/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Public Policy and Advocacy",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Public Policy and Advocacy: Opportunities",
+      "url": "https://docs.google.com/document/d/1WEQBNP5d0f4PA6_Qf1tuM-_BgnniZIyGqcpxkf6AGz4/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Public Policy and Advocacy",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "International Development: Opportunities",
+      "url": "https://docs.google.com/document/d/1H4f-3YDp_nDWBaqa2vALTYoW9Me9PksNtmKWW9hXlmk/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "International Development and Human Rights",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "International Development: Networks",
+      "url": "https://docs.google.com/document/d/1MuoPKa0jk5s2mBqyN8Vmfsepd3zLYEr5DsMpnjg-qY8/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "International Development and Human Rights",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "International Development: Campus Connections",
+      "url": "https://docs.google.com/document/d/1M457UZO2AxIsRIyYwizWWNovpfCr1H7cKelLbt8lf9E/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "International Development and Human Rights",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Environment and Climate: Opportunities",
+      "url": "https://docs.google.com/document/d/1N_puI9i3yvueBbAMikzEl9oYvW125I5qEXQ9S9zb6G8/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Environment and Climate",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Environment and Climate: Campus Connections",
+      "url": "https://docs.google.com/document/d/1s4dV8hjVNk9164JGYWciz2ilyUq4mtK4wrN0qmKmWzY/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Environment and Climate",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Environment and Climate: Networks",
+      "url": "https://docs.google.com/document/d/1HSuaSzD6dsnRDsqUNPUTVLb2zPE7Yq32xWvXPoYn41E/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Environment and Climate",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Environment and Climate: Industry Insights",
+      "url": "https://docs.google.com/document/d/1ZoFBVhsR6kYlYfCscu8__-AtBt0_qom5KcCgSRqiQD8/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Environment and Climate",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Social Impact Consulting: Opportunities",
+      "url": "https://docs.google.com/document/d/1dmDU0ES6hbfdoTENieiyx35lk2mJ1UlYFdEi1GtXrEo/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Social Impact Consulting",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Social Impact Consulting: Campus Connections",
+      "url": "https://docs.google.com/document/d/1qa0I5jYl_9and81ByKkbWH9aD083vtCtsNS6KCjls_s/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Social Impact Consulting",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Social Impact Consulting: Networks",
+      "url": "https://docs.google.com/document/d/1iaMEYOX0hnwdwt0V5SlhLPQeP21vPIFo7vvYjgQqqcw/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Social Impact Consulting",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Social Impact Consulting: Industry Insights",
+      "url": "https://docs.google.com/document/d/1tiCCBgQnlNi9Ri47raBCNyP2AnsFePjldZPoKDyYNxs/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Social Impact Consulting",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "International Development: Industry Insights",
+      "url": "https://docs.google.com/document/d/1tLVhX3KF6d97Ej5sJxWQt128eByZF6f88hQP_1AP214/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "International Development and Human Rights",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Fall 2026 Careers in the Common Good Programs",
+      "url": "https://docs.google.com/document/d/1BJUuaOU6QUg_HkZiAw7EgIDm2_B55SFcHQl-6Vq3QgE/edit?tab=t.0",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "All CCG",
+      "resource_type": "Programs and Events"
+    },
+    {
+      "title": "Learn about AI Engineering",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-ai-engineering",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "AI Engineering",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about AR/VR Engineering",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-ar-vr-engineering",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "AR/VR Engineering",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Backend Engineering",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-backend-engineering",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Backend Engineering",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Blockchain Engineering",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-blockchain-engineering",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Blockchain Engineering",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Computer Vision Engineering",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-computer-vision-engineering",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Computer Vision Engineering",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Cybersecurity Analysts/Specialists",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-cybersecurity-analysts-specialists",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Cybersecurity Analysts/Specialists",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Cybersecurity Engineering",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-cybersecurity-engineering",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Cybersecurity Engineering",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Data Engineering",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-data-engineering",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Data Engineering",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Data Science",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-data-science",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Data Science",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about DevOps Engineering",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-devops-engineering",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "DevOps Engineering",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Embedded Engineering",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-embedded-engineering",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Embedded Engineering",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Forward Deployed Engineering",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-forward-deployed-engineering",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Forward Deployed Engineering",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Frontend Engineering",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-frontend-engineering",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Frontend Engineering",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Full-Stack Engineering",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-full-stack-engineering",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Full-Stack Engineering",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Game Development",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-game-development",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Game Development",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Machine Learning (ML) Engineering",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-machine-learning-engineering",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Machine Learning (ML) Engineering",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Mobile App Engineering",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-mobile-app-engineering",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Mobile App Engineering",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Product Management",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-product-management",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Product Management",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Quant Development",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-quant-developers",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Quant Development",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Quant Trading",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-quant-traders",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Quant Trading",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Site Reliability Engineering (SRE)",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-site-reliability-engineering",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Site Reliability Engineering (SRE)",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about UI/UX Design",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-ui-ux-design",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "UI/UX Design",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Learn about Web Development",
+      "url": "https://tech-career-readiness.vercel.app/lesson/learn-about-web-development",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "Web Development",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Animation: Opportunities",
+      "url": "https://docs.google.com/document/d/1Dd4dl5Mml0ReshHoNV0RsSmZqbfHTv6Wzb13jNvA0QQ/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Animation",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Dance: Opportunities",
+      "url": "https://docs.google.com/document/d/1lHSAdQenioD_MLfo0gEOQX2mV6m6VGwXF8RJl7f-k2A/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Dance",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Design: Opportunities",
+      "url": "https://docs.google.com/document/d/1AcJyWHQ9q3Jc1GnBvoZ2ZnXSs7SgJpdoRa1_PqKgpZM/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Design",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Fashion: Opportunities",
+      "url": "https://docs.google.com/document/d/1Kf5eSNxPdji4Wk3Hps8at8afZTgGFymGtU8TYvb9JZI/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Fashion",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Film and TV: Opportunities",
+      "url": "https://docs.google.com/document/d/1ze1Q0sX6d5r4BId1gIG4FE4NJLV6Nk3AQ-Apj5YoW-Q/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Film and TV",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Journalism: Opportunities",
+      "url": "https://docs.google.com/document/d/18ImWqg41LbT8BxMLg5EOxLZOC7zIRf1G8ZxFaW4ZWSM/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Journalism",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Opportunities in Museums, Galleries, Auction Houses, and More",
+      "url": "https://docs.google.com/document/d/1lCFVWKIKK0am3hyD_XT3qD244X3XOR1Ro1yXZSLJNEA/edit#heading=h.sj1t6024umyz",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Museum Science",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Music: Opportunities",
+      "url": "https://docs.google.com/document/d/1kpHcQCbVX3XnQuZNwAsAyGyZuSr_UMmjbkLA_5KvpP0/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Music",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "International Development: Further Education",
+      "url": "https://docs.google.com/document/d/1gz9M8vpDVQTR1Oq1csUZlKOutA9_j6QXKvKeNwAcFCE/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "International Development and Human Rights",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Government: Opportunities - Federal Resume",
+      "url": "https://docs.google.com/document/d/1vlBHTk2jIQvr_hVbd23c2IPMwjB9_LPIduGYEv9mxT0/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Government (Federal - State - Local)",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Government: Opportunities - Fellowships",
+      "url": "https://docs.google.com/document/d/1P9WoUA0aOw6ZWgJtUkYaBaxg5fQ2cnulXLwG_uNLs64/edit?tab=t.0#heading=h.mlknrv4gnqhe",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Government (Federal - State - Local)",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Government: Networks",
+      "url": "https://docs.google.com/document/d/1KJxvpGzzWY4CfaRgF-GpmGJULVZZABmatdYgphXxigc/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Government (Federal - State - Local)",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Government: Industry Insights",
+      "url": "https://docs.google.com/document/d/1pIfXQPT9TejW3v6ywbluhNeKVZJUFLp6tKDzi4yFslM/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Government (Federal - State - Local)",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Government: Campus Connections",
+      "url": "https://docs.google.com/document/d/1HSuD2uIgTscHQ3jOAJnbUjNMjMMDuWNhhmUeytHKExI/edit?usp=sharing",
+      "professional_pathway": "Careers in the Common Good",
+      "career_field": "Government (Federal - State - Local)",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Publishing: Opportunities",
+      "url": "https://docs.google.com/document/d/1Iybr12yIudJrrzKxGctkrys4PqBgEvaL6tbDnfsMlzE/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Publishing",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Radio and Podcasting: Opportunities",
+      "url": "https://docs.google.com/document/d/1tSEVU4ujvHPYWygHUtMWtlaexCVn3nXVR6fbKRyQtsU/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Radio and Podcasting",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Theatre: Opportunities",
+      "url": "https://docs.google.com/document/d/1aQWYAcuS1_SxTjirKSnz1FgaNgARJibN5RFdDV9Wj6s/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Theatre",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Visual Art: Opportunities",
+      "url": "https://docs.google.com/document/d/1gRBKKNDYcdpjJ9qKpZH74hqXT_98xBpQduzUBhOi3u8/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Visual Art",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Creative Writing: Opportunities",
+      "url": "https://docs.google.com/document/d/1PiEPoXpuE_0Gk8xYbcMqo2GF2OuYidoqNzIqEiFgalI/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Creative Writing",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Advertising, Marketing, and Communications: Networks",
+      "url": "https://docs.google.com/document/d/1fnC9E1NJBnR3kiLgBaEbGhuer-uUf8SA2lwypN3_DXw/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Advertising/Marketing/Communications",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Animation: Networks",
+      "url": "https://docs.google.com/document/d/1DPqkU7IkK2Ig_z3UjToM_Za52Tt3OcHTb9PmTmtwoZ0/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Animation",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Creative Writing: Networks",
+      "url": "https://docs.google.com/document/d/1FC759unwqMWCMDMBM-mUxsnx-cd3ha88vGkSsFgXeuI/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Creative Writing",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Dance: Networks",
+      "url": "https://docs.google.com/document/d/1sNfzFvGmPYjLZQsYziwhxqBIgpg3VzLtUXLec0_UdY4/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Dance",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Design: Networks",
+      "url": "https://docs.google.com/document/d/1FzmbiP9rYbkGTvLE6YsB0C4Efwis89apeDbquoG6ttM/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Design",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Fashion: Networks",
+      "url": "https://docs.google.com/document/d/1OuypKu55kVFzOUMeZgUKGxpaAFKKPPCpottuz6h4nnY/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Fashion",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Film and TV: Networks",
+      "url": "https://docs.google.com/document/d/16gbFZ28Oe66EfzVNa2ViaKqBZ7CJyE7oIdATIPKHSq8/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Film and TV",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Journalism: Networks",
+      "url": "https://docs.google.com/document/d/1sCNNDyQ1vZi8vCYVgxnLGNbZvwF-jA4JviRWDngd8XE/",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Journalism",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Museum Science: Networks",
+      "url": "https://docs.google.com/document/d/12NmPhUXnhqZGQXG082PazXFbVvAE6TClumD1zR9nHog/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Museum Science",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Music: Networks",
+      "url": "https://docs.google.com/document/d/1PXvN5OR397lOzzYXNE8FYAOg7iPUO2r-PSmNN0UhWEQ/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Music",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Publishing: Networks",
+      "url": "https://docs.google.com/document/d/1rdkZSWH1K0Lg8D4vUcRxRecjAlWG6SIgjX2hpOC-zhw/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Publishing",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Radio and Podcasting: Networks",
+      "url": "https://docs.google.com/document/d/1dvDMqAhOnZn02bb2_I5fXM1WZnOujqLenFJNjfxOCdk/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Radio and Podcasting",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Theatre: Networks",
+      "url": "https://docs.google.com/document/d/1t-WZdHoCcx6n5CnjLzEbtmkR2mXeSOZRfzbS62MTOGI/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Theatre",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Visual Art: Networks",
+      "url": "https://docs.google.com/document/d/1hwspC1X0dDM5tSW6ab0AqD7NQGksHR_tnHhlYx-iTUE/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Visual Art",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Finance Resources",
+      "url": "https://docs.google.com/document/d/1fio0AZQQ-i1MShzJN9ACN-q13yHuETffDCzz-EhlIRs/edit#heading=h.sj1t6024umyz",
+      "professional_pathway": "Finance and Consulting",
+      "career_field": "Finance",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Finance Professional Networks",
+      "url": "https://docs.google.com/document/d/1HgCOZd1vDVPSrHR3iBWczyi6R7BB0uQylbDmxzm0Hww/edit#heading=h.sj1t6024umyz",
+      "professional_pathway": "Finance and Consulting",
+      "career_field": "Finance",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Finance Campus Connections",
+      "url": "https://docs.google.com/document/d/1R3NDqWQRum0j3LMGV-D6tMOlcZnwDUHZKy2jziRIz0Y/edit#heading=h.wxkqbw4pes70",
+      "professional_pathway": "Finance and Consulting",
+      "career_field": "Finance",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Advertising, Marketing, and Communications: Industry Insights",
+      "url": "https://docs.google.com/document/d/1LZzzGdKiGKPuGwHyrK1xWyL0qaqgrAMi3ocimy_60vM/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Advertising/Marketing/Communications",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Consulting Resources",
+      "url": "https://docs.google.com/document/d/1Mx7_js-Rjux-7qMgLpgrLi8m_t4HILNyU4eO9FbzZHg/edit",
+      "professional_pathway": "Finance and Consulting",
+      "career_field": "Consulting",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Consulting Professional Networks",
+      "url": "https://docs.google.com/document/d/1VZRUf9C5tYo7pQEtF75ruCxukVZT9zMP1Juqh_yoLr8/edit#heading=h.sj1t6024umyz",
+      "professional_pathway": "Finance and Consulting",
+      "career_field": "Consulting",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Consulting Campus Connections",
+      "url": "https://docs.google.com/document/d/1KJFNpVyOyqRBQt8HhLhfB5EFoXa82Azc5Z0vNydJxc4/edit#heading=h.wxkqbw4pes70",
+      "professional_pathway": "Finance and Consulting",
+      "career_field": "Consulting",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Animation: Industry Insights",
+      "url": "https://docs.google.com/document/d/15EnG149SRQ6xHrWsSrA-kaUlaF9x6Rc39ZRf-ud66sU/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Animation",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Creative Writing: Industry Insights",
+      "url": "https://docs.google.com/document/d/1aH88jLi6meyxHUPiwmKMU0pVOCnrvSKUbd9DbCXKLmw/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Creative Writing",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Dance: Industry Insights",
+      "url": "https://docs.google.com/document/d/19lDqXudiWRFFeMhA8y2lU5XqbfHgNAdVt3qGazdvxMg/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Dance",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Design: Industry Insights",
+      "url": "https://docs.google.com/document/d/1tSi0MIuaqDA270b63wVc4y_41DGgiZ1qtE64uFX5xw0/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Design",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Fashion: Industry Insights",
+      "url": "https://docs.google.com/document/d/1c9cqwOXMfoy7rkvHyVq3ymFlsl14YWEI8COpt0pu4KU/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Fashion",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Film and TV: Industry Insights",
+      "url": "https://docs.google.com/document/d/1uQ7OfaFKg0l8W2frnDa9iYX3j7pxld-TdE2O_FSsrew/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Film and TV",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Journalism: Industry Insights",
+      "url": "https://docs.google.com/document/d/1KfDPQf_-00KWN4RjbNfQ503dxKCOmzMCTj7fQFoVt4M/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Journalism",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Museum Science: Industry Insights",
+      "url": "https://docs.google.com/document/d/11ft99NIYRUbQgQ6Td4nvbqLiMfbrbgJ5w8zS3G1mnRs/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Museum Science",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Music: Industry Insights",
+      "url": "https://docs.google.com/document/d/1Ex5894VeVy8VU8yKQklfm1OP5FSWzXeeYiZotUAbq_I/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Music",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Publishing and Literary Agencies: Industry Insights",
+      "url": "https://docs.google.com/document/d/1d2cDaNdHA-Eq7wEQYnrCg6fzfxi7uivCLenKcHYMaeU/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Publishing",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Radio and Podcasts: Industry Insights",
+      "url": "https://docs.google.com/document/d/1Rm4UG_owYjHMYj58AbQhrak7LxK8fSpmVF0RwRKutO4/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Radio and Podcasting",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Theatre: Industry Insights",
+      "url": "https://docs.google.com/document/d/1cDKcNgeHyDDMlqUhQmkidfCS3JkKk4ZaJbqwy_LFTR8/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Theatre",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Visual Art: Industry Insights",
+      "url": "https://docs.google.com/document/d/1YUDu_E4een3-LQXmPa4fQqqRJ7EL6ns2y5Nx6L9cIFw/edit",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Visual Art",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Advertising, Marketing, and Communications: Campus Connections",
+      "url": "https://docs.google.com/document/d/1HsvzvXW3XlBZVcdadVAck5d6DAqHXNZeARNQuUJrZ_o/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Advertising/Marketing/Communications",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Animation: Campus Connections",
+      "url": "https://docs.google.com/document/d/1cv5l5Ubm5HXDHbfS_Kb5hcXCWXb3YG4gDefASh_604k/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Animation",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Creative Writing: Campus Connections",
+      "url": "https://docs.google.com/document/d/1ibK5_kcPF0w2wHttcbqj-s5atEDY6zKaf0GH6bCMrYY/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Creative Writing",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Dance: Campus Connections",
+      "url": "https://docs.google.com/document/d/1K8ylao0wmPpV7U7PmIpdLOpUyJN9kFMm0Jx94Qziqbo/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Dance",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Design: Campus Connections",
+      "url": "https://docs.google.com/document/d/1tOADjOBKTfQZv0NINwyb1yEUI6T_vZTi3KYLObaGRho/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Design",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Fashion: Campus Connections",
+      "url": "https://docs.google.com/document/d/1pPGia3wKuBhPOK-VNFYo3cP8CesVqATElVWcBObTPcY/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Fashion",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Film and TV: Campus Connections",
+      "url": "https://docs.google.com/document/d/1c8I6neplqX1W88m0aw8T5INAQEM31I3eZxioT_sz2PE/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Film and TV",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Journalism: Campus Connections",
+      "url": "https://docs.google.com/document/d/1lhs0xnzntmQgDSNmu7m8lq6-qJo4b6PztFPpBJJqWHA/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Journalism",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Museum Science: Campus Connections",
+      "url": "https://docs.google.com/document/d/1xb-xOnsXX_U-23IjWuLfFTJcXGvVsqrLJsSMGjNRYvI/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Museum Science",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Music: Campus Connections",
+      "url": "https://docs.google.com/document/d/1tmHwlLkGb20fOM4u4J08lV6o3kuwOwIHiisIvpH8abU/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Music",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Publishing: Campus Connections",
+      "url": "https://docs.google.com/document/d/1ODx8FTLQ95vA7Az0kPijVK0kaNHW8Gc8Vx3KAu9vbeE/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Publishing",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Radio and Podcasts: Campus Connections",
+      "url": "https://docs.google.com/document/d/1FteHhZc2-GQykF-ZDUSKD6ai6MkaW-SW7IkdKZ26_Zo/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Radio and Podcasting",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Theatre: Campus Connections",
+      "url": "https://docs.google.com/document/d/1RMORCxXvb-7AhhxbCZ2-9CQqpF4WbIm8n82LVz3YBa8/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Theatre",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Visual Art: Campus Connections",
+      "url": "https://docs.google.com/document/d/1EjIUVmtQopDRwDQH4pjvWUz_ake4H-4K8x6oiiwcS_s/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Visual Art",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "How to Build a Portfolio",
+      "url": "https://docs.google.com/document/d/1ezPwzOnam2-S61QAxxlc_M62LQgffnZiY33f_p5cC5Y/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Advertising/Marketing/Communications,Creative Writing,Animation,Film and TV,Music,Design,Dance,Theatre,Visual Art,Journalism,Museum Science,Fashion,Publishing,Radio and Podcasting",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Public Health Industry Insights",
+      "url": "https://docs.google.com/document/d/1abw3bJ18SeU2Kz3s_KvTq83CfyWp8hX1uOnHGFQHw6k/edit?tab=t.0#heading=h.gd30gc7xcqda",
+      "professional_pathway": "Additional Career Pathways",
+      "career_field": "Public Health",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Public Health Opportunities",
+      "url": "https://docs.google.com/document/d/1U-P2YVQo4203PDErqegdn_lQcXe5EvrpGTo8-LVsHvU/edit?tab=t.0#heading=h.sj1t6024umyz",
+      "professional_pathway": "Additional Career Pathways",
+      "career_field": "Public Health",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Public Health Networks",
+      "url": "https://docs.google.com/document/d/1JOTjaXQKJ9bVXtaQntdWCfX9cRil3Zcki0gJL_aKZp4/edit?tab=t.0#heading=h.sj1t6024umyz",
+      "professional_pathway": "Additional Career Pathways",
+      "career_field": "Public Health",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Public Health Campus Connections",
+      "url": "https://docs.google.com/document/d/1imwyaoQ3_NQxngSJmgl2lObNYDg4CbWxoN8lDbamxFM/edit?tab=t.0#heading=h.sj1t6024umyz",
+      "professional_pathway": "Additional Career Pathways",
+      "career_field": "Public Health",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Human Resources Opportunities",
+      "url": "https://docs.google.com/document/d/1I5pAFE7eAICRtBFJU-etT3bQmIp52AIlOOlpf6L0K58/edit?tab=t.0",
+      "professional_pathway": "Business",
+      "career_field": "Human Resources",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Human Resources Industry Insights",
+      "url": "https://docs.google.com/document/d/1DyBSG83bWazFVk1SYJSb_6Qi0_w0HwAIuGEJ_We6e_4/edit?tab=t.0",
+      "professional_pathway": "Business",
+      "career_field": "Human Resources",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Human Resources Networks",
+      "url": "https://docs.google.com/document/d/1lQlXk-eCfpl5ja7bwhZLXlwMfOt51YZIIioWYB9bJ-o/edit?tab=t.0",
+      "professional_pathway": "Business",
+      "career_field": "Human Resources",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Human Resources Campus Connections",
+      "url": "https://docs.google.com/document/d/1dlyn-vrZrlWHNK9lCJdUQhEjFjwK-hsIEcc8kE27oWw/edit?tab=t.0",
+      "professional_pathway": "Business",
+      "career_field": "Human Resources",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Insurance Industry Insights",
+      "url": "https://docs.google.com/document/d/1lPuFFM97MmX7ZEJjusrUKtfF6yeNpm6LCZ7q-tc3w6A/edit?tab=t.0",
+      "professional_pathway": "Business",
+      "career_field": "Insurance",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Insurance Opportunities",
+      "url": "https://docs.google.com/document/d/1vxAiYGo48tu8qoMgsAnkcCnnfmkg2wazk28YkpROKx8/edit?usp=sharing",
+      "professional_pathway": "Business",
+      "career_field": "Insurance",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Insurance Networks",
+      "url": "https://docs.google.com/document/d/1-3pzVwk-tjEzPk2kKYsWYAQWADjA5ZC9CJD-JrKnT_w/edit?usp=sharing",
+      "professional_pathway": "Business",
+      "career_field": "Insurance",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Construction Management Industry Insights",
+      "url": "https://docs.google.com/document/d/1Se5k50rWXood92lvC6lHCQpOvBNJ5WvJsIbB7XAK2ik/edit?tab=t.0",
+      "professional_pathway": "Business",
+      "career_field": "Construction Management",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Construction Management Opportunities",
+      "url": "https://docs.google.com/document/d/18TAm3fUMHUvPf9Xba299XaWHPSen9ab-hnnfF-fzxj4/edit?tab=t.0#heading=h.av7vpk9zgli",
+      "professional_pathway": "Business",
+      "career_field": "Construction Management",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Construction Management Networks",
+      "url": "https://docs.google.com/document/d/10Yskx2smjZB_l4puL1I26wII-dgtN8VsjJ8eAgwzk8Q/edit?tab=t.0",
+      "professional_pathway": "Business",
+      "career_field": "Construction Management",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Internship/Job Application Tracking Spreadsheet",
+      "url": "https://docs.google.com/spreadsheets/d/1ngZ4NRpZ4DRTRs1w57bvSoL0DDRgOidfUFrV98_Shzc/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Advertising/Marketing/Communications,Creative Writing,Animation,Film and TV,Music,Design,Dance,Theatre,Visual Art,Journalism,Museum Science,Fashion,Publishing,Radio and Podcasting",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Real Estate Opportunities",
+      "url": "https://docs.google.com/document/d/1un_ZRA-9X04qUo6BtRIFKqNIX7AsMNSSWUqRzUr-mvM/edit?tab=t.0#heading=h.av7vpk9zgli",
+      "professional_pathway": "Business",
+      "career_field": "Real Estate",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Real Estate Industry Insights",
+      "url": "https://docs.google.com/document/d/1fLeBywIJRTs_FbynEsOt9tM6JgziVXcu8T02-XyG_4Y/edit?tab=t.0",
+      "professional_pathway": "Business",
+      "career_field": "Real Estate",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Real Estate Networks",
+      "url": "https://docs.google.com/document/d/1svF0rXntzJyfBk85kfLl9OWfAUZoE7yTZpeXn5U6oCU/edit?tab=t.0#heading=h.bcxgkocdwqd",
+      "professional_pathway": "Business",
+      "career_field": "Real Estate",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Biotech & Pharma Opportunities",
+      "url": "https://docs.google.com/document/d/1xuUr6r2VTsHz9Ux795PydA-J7YqykCwd3e0yaugXTxw/edit?usp=sharing",
+      "professional_pathway": "Science & Engineering",
+      "career_field": "Biotechnology/Pharmaceutical",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Biotech & Pharma Campus Connections",
+      "url": "https://docs.google.com/document/d/1oJbueQvPDY3VI819wY-F6oLDkcRuNKIHyojBAuSI-qU/edit?usp=sharing",
+      "professional_pathway": "Science & Engineering",
+      "career_field": "Biotechnology/Pharmaceutical",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Biotech & Pharma Industry Insights",
+      "url": "https://docs.google.com/document/d/1Of16aMOfTnilE5mcEoJ1eSGCZGvXHyVaijPe6NF73zw/edit?usp=sharing",
+      "professional_pathway": "Science & Engineering",
+      "career_field": "Biotechnology/Pharmaceutical",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Biotech & Pharma Networks",
+      "url": "https://docs.google.com/document/d/14w7qGi2vVD_SC3mW3SgfZHQ3d3_QnomDdmxvunpjNsc/edit?usp=sharing",
+      "professional_pathway": "Science & Engineering",
+      "career_field": "Biotechnology/Pharmaceutical",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Space/ Defense Opportunities",
+      "url": "https://docs.google.com/document/d/1Rp2v2sAOeTga9lJ0yudvgrmn8i19AwBKwQ5d5QO03mU/edit?tab=t.0#heading=h.22pfl5ky7c6b",
+      "professional_pathway": "Science & Engineering",
+      "career_field": "Space/Defense",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Space/ Defense Networks",
+      "url": "https://docs.google.com/document/d/1xT_iSM56mPJQbKMRnRs8srMQZRqs5VjDp6vnuDPHLh4/edit?tab=t.0",
+      "professional_pathway": "Science & Engineering",
+      "career_field": "Space/Defense",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Space/ Defense Campus Connections",
+      "url": "https://docs.google.com/document/d/1bPETR5taFRuW9iCMs8bAVxuqzGvn47hsRyrzdbGT9zc/edit?tab=t.0",
+      "professional_pathway": "Science & Engineering",
+      "career_field": "Space/Defense",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Space/ Defense Industry Insights",
+      "url": "https://docs.google.com/document/d/15e_-xr2QsXRfjAJnVf7J4pZSk-v_clgyPioHGaSp8Ek/edit?tab=t.0",
+      "professional_pathway": "Science & Engineering",
+      "career_field": "Space/Defense",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Climate and Environment: Campus Connections",
+      "url": "https://docs.google.com/document/d/1s4dV8hjVNk9164JGYWciz2ilyUq4mtK4wrN0qmKmWzY/edit?usp=sharing",
+      "professional_pathway": "Science & Engineering",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Climate and Environment: Networks",
+      "url": "https://docs.google.com/document/d/1HSuaSzD6dsnRDsqUNPUTVLb2zPE7Yq32xWvXPoYn41E/edit?usp=sharing",
+      "professional_pathway": "Science & Engineering",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Climate and Environment: Opportunities",
+      "url": "https://docs.google.com/document/d/1N_puI9i3yvueBbAMikzEl9oYvW125I5qEXQ9S9zb6G8/edit?usp=sharing",
+      "professional_pathway": "Science & Engineering",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Climate and Environment: Industry insights",
+      "url": "https://docs.google.com/document/d/1ZoFBVhsR6kYlYfCscu8__-AtBt0_qom5KcCgSRqiQD8/edit?usp=sharing",
+      "professional_pathway": "Science & Engineering",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Healthcare Campus Connections",
+      "url": "https://docs.google.com/document/d/1zI0M_4J6cwzZOY9227mjM0Jzl7MHA2ENtqOx4vpxlTU/edit?usp=sharing",
+      "professional_pathway": "Science & Engineering",
+      "career_field": "Healthcare",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Healthcare Opportunities",
+      "url": "https://docs.google.com/document/d/1JLPmGDN-B_RQCHV9tEy8jknrrWye6KeaPZzev6JHdUA/edit?usp=sharing",
+      "professional_pathway": "Science & Engineering",
+      "career_field": "Healthcare",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Healthcare Networks",
+      "url": "https://docs.google.com/document/d/1UHGT1se6Dqmh5HZUW36OmrStKbPY98ZOoGxRBiiahew/edit?usp=sharing",
+      "professional_pathway": "Science & Engineering",
+      "career_field": "Healthcare",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Energy Campus Connections",
+      "url": "https://docs.google.com/document/d/1ArYWqiPVNAYOUruUG_pw8hMngnT2BJM3G3ci1f6gIO0/edit?usp=sharing",
+      "professional_pathway": "Science & Engineering",
+      "career_field": "Energy",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Energy Networks",
+      "url": "https://docs.google.com/document/d/1ueI2QVFhqLGlamGwonmbLr_7FStGnBr04slByc8NhGY/edit?usp=sharing",
+      "professional_pathway": "Science & Engineering",
+      "career_field": "Energy",
+      "resource_type": "Networks"
+    },
+    {
+      "title": "Energy Opportunities",
+      "url": "https://docs.google.com/document/d/1SNa88Jq6d8pglbVhCoONKAQy69A84_nDdmb0nZkdXoE/edit?usp=sharing",
+      "professional_pathway": "Science & Engineering",
+      "career_field": "Energy",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Engineering Campus Connections",
+      "url": "https://docs.google.com/document/d/1jhsrTdoxVJOT-E3YfKIMs7cPheu62l5clOJ57syr5lA/edit?usp=sharing",
+      "professional_pathway": "Science & Engineering",
+      "career_field": "Engineering",
+      "resource_type": "Campus Connections"
+    },
+    {
+      "title": "Engineering Opportunities",
+      "url": "https://docs.google.com/document/d/1CtIpN4qJjmBsAW-WWIC4b8yz6TMuKijpYlPJiXk_Xq0/edit?usp=sharing",
+      "professional_pathway": "Science & Engineering",
+      "career_field": "Engineering",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Frequently Asked Questions: Science & Engineering Industries",
+      "url": "https://docs.google.com/document/d/1KN2oKdyhrSZFWab-u_des-JU00x1WB521aueeCWw2cs/edit?usp=sharing",
+      "professional_pathway": "Science & Engineering",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Startups vs. Corporations: Science & Engineering Industries",
+      "url": "https://docs.google.com/document/d/1Zj5U0xtgkcFTkxoiC1u3klvsgjkqEoZaEWhEn5amliY/edit?tab=t.0#heading=h.j9mduhp9ygkb",
+      "professional_pathway": "Science & Engineering",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Guide: Create Your Timeline for Science & Engineering Roles",
+      "url": "https://docs.google.com/document/d/1vIfcom_hRxbloNwosMxMgldyXIigUzwzHKd8dCaZQts/edit?tab=t.0#heading=h.9l4q00tp4kkg",
+      "professional_pathway": "Science & Engineering",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Fall 2026 and Spring 2027 Arts and Media Events",
+      "url": "https://docs.google.com/document/d/1hJuGLRPmdL8ZOBh8rf8b2KncBOg7KIlMzZXSpRFOgeY/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "All Careers",
+      "resource_type": "Programs and Events"
+    },
+    {
+      "title": "Consulting Programs and Events",
+      "url": "https://docs.google.com/spreadsheets/d/1UKUuvJzvduALqkZkT2j8EC2skAKqvCqK2R6Zy4-bhbk/edit?gid=0#gid=0",
+      "professional_pathway": "Finance and Consulting",
+      "career_field": "Consulting",
+      "resource_type": "Programs and Events"
+    },
+    {
+      "title": "Finance Programs and Events",
+      "url": "https://docs.google.com/spreadsheets/d/1pU5u9_QRajcWImeBsSRf3QhetxVs_w71rmuwLRv2QhE/edit?gid=0#gid=0",
+      "professional_pathway": "Finance and Consulting",
+      "career_field": "Finance",
+      "resource_type": "Programs and Events"
+    },
+    {
+      "title": "Fall 2026 Tech Pathway Programs and Events",
+      "url": "https://docs.google.com/document/d/1x4tXthj2zqZGAEsM-vSKM3eCj0Vae5e74Ot-gz5qe48/edit?tab=t.0",
+      "professional_pathway": "Technology & Tech Ventures",
+      "career_field": "All Tech Careers",
+      "resource_type": "Programs and Events"
+    },
+    {
+      "title": "Entry-Level Career Development Programs",
+      "url": "https://docs.google.com/document/d/1T1cQtml_US2RaPcnCUTqxVuh30gnqP-MXUcPBIL-Hfg/edit?tab=t.0",
+      "professional_pathway": "Entry-Level Career Development Programs",
+      "career_field": "Entry-Level Career Development Programs",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Across My Desk Opportunities Page",
+      "url": "https://docs.google.com/spreadsheets/d/16Xp35c2gfs0vF8VsygJkL75-WYOObB9MpRk5KbTPtCg/edit?usp=sharing",
+      "professional_pathway": "Science & Engineering",
+      "career_field": "All Science and Engineering",
+      "resource_type": "Opportunities"
+    },
+    {
+      "title": "Advertising, Marketing, and Communications: Resources",
+      "url": "https://docs.google.com/document/d/1Fzt-IsKnrzktKYmjz3_jOLHjBQo6T4l-t-xklep_IuM/edit?tab=t.0",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Advertising/Marketing/Communications",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Animation: Resources",
+      "url": "https://docs.google.com/document/d/1TipYb8s0wVj-i9gwjw1wsbqG3Tx1Kg2H9WaNhChbTwg/edit?tab=t.0#heading=h.mw5uuu84p8jb",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Animation",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Creative Writing: Resources",
+      "url": "https://docs.google.com/document/d/1DWBd3GOOOERTe3RHz32DxG9iWj0B7pm2i03LOLk4Tmw/edit?tab=t.0",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Creative Writing",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Dance: Resources",
+      "url": "https://docs.google.com/document/d/1lx0dqHRgk9Q-KMB4SKhJaeBb06Se6pUxBojeuBNwyhA/edit?tab=t.0#heading=h.hxvqjdlhfgzz",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Dance",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Design: Resources",
+      "url": "https://docs.google.com/document/d/1hCSQISKES7wfsH5P9CR2w2lJpncdJ6eaG3CpDhrISN0/edit?tab=t.0",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Design",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Fashion: Resources",
+      "url": "https://docs.google.com/document/d/1mYvIF48yQwPN0HhuE1QnqrODiEcFQnFlYXJ99VsCZt8/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Fashion",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Film and TV: Resources",
+      "url": "https://docs.google.com/document/d/1Cui5P8sg4UM-dMUhx_JYGc4HMQD7Iouc-U-dbnN5YYU/edit?tab=t.0",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Film and TV",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Journalism: Resources",
+      "url": "https://docs.google.com/document/d/1D9IT8ye3yNzG5ITdK9UHFAcgU0cTxangbXzwvRo1rfQ/edit?tab=t.0",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Journalism",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Museum Science: Resources",
+      "url": "https://docs.google.com/document/d/1oB_t9SERfvJddEtUF08UgbMs3thvoXYwv0YtorHTKzs/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Museum Science",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Music: Resources",
+      "url": "https://docs.google.com/document/d/1PO7K4sDWC1DzPuk-O8O3-wFyW_eS_DeSmBqCRNtK3vs/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Music",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Publishing: Resources",
+      "url": "https://docs.google.com/document/d/1xFhwnwIrW6wmoLgj5L4_0-2YdIEQOXIuno7wbRuMMRk/edit?tab=t.0#heading=h.mw5uuu84p8jb",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Publishing",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Radio and Podcasting: Resources",
+      "url": "https://docs.google.com/document/d/1MJvN8qweW70E3pq0S0aF4DoKz6JZK7x8G7-vTssc4WU/edit?tab=t.0#heading=h.5k3209zgx865",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Radio and Podcasting",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Theatre: Resources",
+      "url": "https://docs.google.com/document/d/1cPnPyipjcuELic_h6MomwBd43PoJYBmRMmvkg4_W2lI/edit?tab=t.0#heading=h.d9l760b9yy93",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Theatre",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Visual Art: Resources",
+      "url": "https://docs.google.com/document/d/11HVAK0P19r_g0yySRdtGhwge9UJZcShNd1RfVuIMnP4/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Visual Art",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Building Your Book Publishing Resume",
+      "url": "https://docs.google.com/document/d/1ofqIqxlOj90tXztYMvVPSHC5VhKndW2zrqZ0DOMy5AI/edit?tab=t.0#heading=h.hcblnmh9katy",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Publishing",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Writing an Effective Query Letter",
+      "url": "https://docs.google.com/document/d/1f9vHFclUoUIDo0yxBGxUnDouLwHLsQfhLyKi0BQlhaM/edit?tab=t.0",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Creative Writing",
+      "resource_type": "Industry Insights"
+    },
+    {
+      "title": "Production Resume: Acting",
+      "url": "https://docs.google.com/document/d/1yfQIoqvR5YQ7OTl54Oc2ZpW_dLU94gNRrjzxbY4BFNY/edit?tab=t.0",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Theatre",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Production Resume: Stage Management",
+      "url": "https://docs.google.com/document/d/1m8iAG6H2a-v6hzo6SEmc6LT1k6BumqHsPLzel7jWkpQ/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Theatre",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Production Resume: Directing",
+      "url": "https://docs.google.com/document/d/1kl6R8rY703dArQArwJtBn0FrtrWs9Ws9VW3mvGo-Go0/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Theatre",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Visual Art Resume",
+      "url": "https://docs.google.com/document/d/1HI8OH1Q2IWhJKW8C3M2WOvf7maHTg2k2XMVHT7WGWtc/edit?usp=sharing",
+      "professional_pathway": "Arts and Media",
+      "career_field": "Visual Art",
+      "resource_type": "Resources"
+    },
+    {
+      "title": "Fall 2026 Science & Engineering Programs and Events",
+      "url": "https://docs.google.com/document/d/18PojnkehwU4UFWMkrz9k2oc6B_DUumotPZIq0-ZYLZk/edit?tab=t.0",
+      "professional_pathway": "Science & Engineering",
+      "career_field": "All Science and Engineering",
+      "resource_type": "Programs and Events"
+    }
+  ]
+}

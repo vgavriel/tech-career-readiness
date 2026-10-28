@@ -6,6 +6,7 @@ import { SessionProvider } from "next-auth/react";
 import { type ReactNode, useEffect } from "react";
 
 import { FocusProvider } from "@/components/focus-provider";
+import GoogleAnalytics from "@/components/google-analytics";
 import { ProgressProvider } from "@/components/progress-provider";
 import type { Session } from "@/lib/auth-types";
 import { reportClientError } from "@/lib/client-error";
@@ -19,6 +20,8 @@ type ProvidersProps = {
   session: Session | null;
   initialFocusKey?: FocusKey | null;
   analyticsEnabled?: boolean;
+  /** GA4 measurement id, or null when Google Analytics is off on the server. */
+  gaMeasurementId?: string | null;
 };
 
 /**
@@ -33,6 +36,7 @@ export default function Providers({
   session,
   initialFocusKey = null,
   analyticsEnabled = false,
+  gaMeasurementId = null,
 }: ProvidersProps) {
   useEffect(() => {
     /**
@@ -73,6 +77,7 @@ export default function Providers({
 
   return (
     <SessionProvider session={session}>
+      <GoogleAnalytics measurementId={gaMeasurementId} />
       <FocusProvider initialFocusKey={initialFocusKey}>
         <ProgressProvider>
           {children}

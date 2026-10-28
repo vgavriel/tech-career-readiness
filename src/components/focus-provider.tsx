@@ -11,7 +11,8 @@ import {
   useState,
 } from "react";
 
-import { type FocusKey, normalizeFocusKey } from "@/lib/focus-options";
+import { trackEvent } from "@/lib/analytics";
+import { FOCUS_OPTIONS, type FocusKey, normalizeFocusKey } from "@/lib/focus-options";
 
 /**
  * Public API exposed by the focus context.
@@ -143,6 +144,12 @@ export function FocusProvider({ initialFocusKey = null, children }: FocusProvide
       const normalized = normalizeFocusKey(nextFocusKey);
       const previous = focusRef.current;
       setFocusKeyState(normalized);
+
+      // Same event the Career Exploration Library sends for its filters.
+      const option = FOCUS_OPTIONS.find((candidate) => candidate.key === normalized);
+      if (option && normalized !== previous) {
+        trackEvent("filter_select", { filter_name: "Focus", filter_value: option.label });
+      }
 
       if (status !== "authenticated") {
         return;

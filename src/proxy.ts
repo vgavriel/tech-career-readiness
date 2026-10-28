@@ -14,9 +14,25 @@ const themeScriptHash = createHash("sha256").update(THEME_INIT_SCRIPT).digest("b
  * Build a CSP string with optional nonce for inline scripts/styles.
  */
 const buildContentSecurityPolicy = (nonce: string) => {
-  const scriptSrc = ["'self'", `'nonce-${nonce}'`, `'sha256-${themeScriptHash}'`];
+  const scriptSrc = [
+    "'self'",
+    `'nonce-${nonce}'`,
+    `'sha256-${themeScriptHash}'`,
+    // gtag.js: the one host Google's CSP guide lists for Analytics without Ads
+    // features. It also serves Tag Manager containers, so keep lesson HTML
+    // sanitized (no script tags) rather than relying on the CSP alone.
+    "https://www.googletagmanager.com",
+  ];
   const styleSrc = ["'self'", `'nonce-${nonce}'`];
-  const connectSrc = ["'self'", "https://vitals.vercel-insights.com"];
+  const connectSrc = [
+    "'self'",
+    "https://vitals.vercel-insights.com",
+    // Google Analytics collection, per Google's CSP guide (`*.google.com`
+    // also covers `*.analytics.google.com`).
+    "https://www.googletagmanager.com",
+    "https://*.google-analytics.com",
+    "https://*.google.com",
+  ];
 
   if (!isProduction) {
     scriptSrc.push("'unsafe-eval'");

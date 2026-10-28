@@ -35,6 +35,7 @@
     "dev:preview:setup": "bash scripts/dev-preview-setup.sh",
     "postinstall": "bash scripts/postinstall.sh",
     "prepare": "husky",
+    "analytics:sync-library": "node scripts/sync-library-resources.mjs && prettier --write src/lib/library-resources.json",
     "clean": "rm -rf .next test-results"
   },
   "dependencies": {

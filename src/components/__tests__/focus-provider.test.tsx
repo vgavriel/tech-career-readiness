@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { FocusProvider, useFocus } from "@/components/focus-provider";
+import { captureAnalytics } from "@/lib/__tests__/fixtures/capture-analytics";
 
 const sessionMocks = vi.hoisted(() => ({
   useSession: vi.fn(),
@@ -63,11 +64,17 @@ describe("FocusProvider", () => {
       expect(screen.getByTestId("ready")).toHaveTextContent("yes");
     });
 
+    const capture = captureAnalytics();
     const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: /apply focus/i }));
+    await user.click(screen.getByRole("button", { name: /apply focus/i }));
+    capture.stop();
 
     expect(screen.getByTestId("focus-key")).toHaveTextContent("applying-soon");
     expect(fetchMock).not.toHaveBeenCalled();
+    expect(capture.events).toEqual([
+      { event: "filter_select", params: { filter_name: "Focus", filter_value: "Applying soon" } },
+    ]);
   });
 
   it("loads focus selection for authenticated users", async () => {

@@ -1,7 +1,9 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ProgressProvider, useProgress } from "@/components/progress-provider";
+import { captureAnalytics } from "@/lib/__tests__/fixtures/capture-analytics";
 import { clearGuestProgress, writeGuestProgress } from "@/lib/guest-progress";
 
 const sessionMocks = vi.hoisted(() => ({
@@ -48,6 +50,52 @@ describe("ProgressProvider", () => {
   afterEach(() => {
     clearGuestProgress();
     vi.unstubAllGlobals();
+  });
+
+  it("reports saved completion changes to analytics", async () => {
+    sessionMocks.useSession.mockReturnValue({ data: null, status: "unauthenticated" });
+    const CompletionButtons = () => {
+      const { isReady, setLessonCompletion } = useProgress();
+      return (
+        <div>
+          <div data-testid="buttons-ready">{isReady ? "yes" : "no"}</div>
+          <button
+            type="button"
+            onClick={() => void setLessonCompletion("lesson-1", true, "toggle")}
+          >
+            Complete
+          </button>
+          <button
+            type="button"
+            onClick={() => void setLessonCompletion("lesson-1", false, "navigator")}
+          >
+            Uncomplete
+          </button>
+        </div>
+      );
+    };
+    const capture = captureAnalytics();
+
+    render(
+      <ProgressProvider>
+        <CompletionButtons />
+      </ProgressProvider>
+    );
+    await waitFor(() => expect(screen.getByTestId("buttons-ready")).toHaveTextContent("yes"));
+    await userEvent.click(screen.getByRole("button", { name: "Complete" }));
+    await userEvent.click(screen.getByRole("button", { name: "Uncomplete" }));
+    capture.stop();
+
+    expect(capture.events).toEqual([
+      {
+        event: "lesson_complete",
+        params: { lesson_slug: "lesson-1", completion_source: "toggle" },
+      },
+      {
+        event: "lesson_uncomplete",
+        params: { lesson_slug: "lesson-1", completion_source: "navigator" },
+      },
+    ]);
   });
 
   it("loads guest progress when unauthenticated", async () => {

@@ -11,6 +11,7 @@ import {
   useState,
 } from "react";
 
+import { trackEvent } from "@/lib/analytics";
 import {
   clearGuestProgress,
   hasGuestProgress,
@@ -32,7 +33,8 @@ type ProgressContextValue = {
   setLessonCompletion: (
     lessonSlug: string,
     completed: boolean,
-    source?: ProgressErrorSource
+    source?: ProgressErrorSource,
+    trigger?: CompletionTrigger
   ) => Promise<void>;
   refreshProgress: () => Promise<void>;
 };
@@ -55,6 +57,13 @@ type ProgressProviderProps = {
 type ProgressErrorSource = "toggle" | "navigator";
 
 /**
+ * The control that changed a lesson's completion, reported to analytics as
+ * `completion_source`. Defaults to the error source; the Next core lesson
+ * button shows errors in the navigator but reports `next_lesson`.
+ */
+type CompletionTrigger = ProgressErrorSource | "next_lesson";
+
+/**
  * Error shape exposed through progress context.
  */
 type ProgressError = {
@@ -63,6 +72,16 @@ type ProgressError = {
 };
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
+
+/**
+ * Report a saved completion change to analytics.
+ */
+const trackCompletion = (lessonSlug: string, completed: boolean, source: CompletionTrigger) => {
+  trackEvent(completed ? "lesson_complete" : "lesson_uncomplete", {
+    lesson_slug: lessonSlug,
+    completion_source: source,
+  });
+};
 
 /**
  * Convert a list of completed lesson slugs into the map shape.
@@ -188,7 +207,12 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
   }, []);
 
   const setLessonCompletion = useCallback(
-    async (lessonSlug: string, completed: boolean, source: ProgressErrorSource = "toggle") => {
+    async (
+      lessonSlug: string,
+      completed: boolean,
+      source: ProgressErrorSource = "toggle",
+      trigger: CompletionTrigger = source
+    ) => {
       const trimmedLessonSlug = lessonSlug.trim();
       if (!trimmedLessonSlug) {
         return;
@@ -221,6 +245,7 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
             return updated;
           });
           setProgressError(null);
+          trackCompletion(trimmedLessonSlug, completed, trigger);
         } catch (error) {
           console.error(error);
           setProgressError({
@@ -232,6 +257,7 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
         const updated = updateGuestProgress(trimmedLessonSlug, completed);
         setProgressMap(updated.completed);
         setProgressError(null);
+        trackCompletion(trimmedLessonSlug, completed, trigger);
       }
     },
     [isAuthenticated]

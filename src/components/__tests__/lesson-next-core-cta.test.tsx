@@ -129,7 +129,8 @@ describe("LessonNextCoreCta", () => {
     expect(progressMocks.setLessonCompletion).toHaveBeenCalledWith(
       "start-to-finish-roadmap",
       true,
-      "navigator"
+      "navigator",
+      "next_lesson"
     );
   });
 
