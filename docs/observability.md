@@ -111,28 +111,43 @@ npm run analytics:sync-library
 
 A unit test fails if a seeded lesson has no library row.
 
-**Launch checklist.**
+**Separating the sites.** Since launch, totals (users, sessions, page views)
+and the library's `resource_click` and `filter_select` counts include this
+app's traffic. The property has two saved comparisons: "Tech Career Readiness"
+(Site name contains `tech-career-readiness`) and "Career Exploration Library"
+(Site name does not contain `tech-career-readiness`). They were saved before
+this app had sent any events, when GA4 offered no exact value to pick. The
+library comparison also covers library events from before October 27, 2026,
+which have `site_name` "(not set)". Use the comparisons, or a Site name report
+filter, wherever a report should show one site.
 
-- [ ] Before launch, add a `site_name` comparison or filter to the property's
-      existing reports, explorations, and dashboards. From launch, totals
-      (users, sessions, page views) and the library's `resource_click` and
-      `filter_select` counts include this app's traffic. Library events show
-      `site_name` as "(not set)" until the library sends its own.
-- [ ] Add `site_name: "career-exploration-library"` to the library's Google tag
-      `config` (in the career-exploration-library repository).
-- [ ] GA4 → Reports → Realtime: open a lesson on the production site (not
-      localhost, no `?analytics=off`) and confirm `page_view`, `lesson_view`, and
-      `lesson_load` with `site_name = tech-career-readiness`.
-- [ ] In Admin → DebugView with [Tag Assistant](https://tagassistant.google.com)
-      connected: click a link to another lesson (`resource_click`) and an outside
-      link (`external_link_click`) and check their parameters. Confirm GA4's own
-      `page_view` and `click` events also carry `site_name`.
-- [ ] Move to another lesson with the navigator: it must add one `page_view`.
-      Jump to a heading inside a lesson: it must **not** add a `page_view`.
-- [ ] After the parameters show up, register two event-scoped custom
-      dimensions in Admin → Data display → Custom definitions: "Site name"
-      (`site_name`) and "Lesson slug" (`lesson_slug`). The library's dimensions
-      and the `load_time_ms` metric are already registered.
+**Launch checklist.** Launched October 28, 2026.
+
+- [x] Before launch, add `site_name` comparisons to the property's existing
+      reports (see "Separating the sites").
+- [x] Add `site_name: "career-exploration-library"` to the library's Google tag
+      `config` (brown-career-center/career-exploration-library#9, live October
+      27, 2026).
+- [x] Register the event-scoped custom dimensions in Admin → Data display →
+      Custom definitions: `site_name`, `lesson_slug`, `navigation_type`,
+      `completion_source`, `nav_element`, and `theme`, next to the library's.
+      `lesson_load` reuses the library's `load_time_ms` metric. Registered
+      before launch: the Event parameter field accepts a typed name GA4 hasn't
+      received yet.
+- [x] GA4 → Reports → Realtime: open a lesson on the production site (not
+      localhost, no `?analytics=off`) and confirm `lesson_view` with
+      `site_name = tech-career-readiness`.
+- [x] Check the requests the production site sends to GA4: `page_view`,
+      `lesson_view`, `lesson_load`, `resource_click` (link to another lesson),
+      and `external_link_click` (outside link, with Google's redirect removed)
+      carry the expected parameters and `site_name`.
+- [x] Move to another lesson with the navigator: it adds one `page_view` and a
+      `lesson_load` with `navigation_type: in_app`. Jump to a heading inside a
+      lesson: it adds no `page_view`.
+- [ ] Add a launch annotation (October 28, 2026) on a report's line chart.
+- [ ] Once standard reports show launch-day data (24–48 hours), confirm both
+      `site_name` values appear, and that GA4's own outbound `click` events
+      carry `site_name` too.
 - [ ] Optional: in the web stream's Configure tag settings → Configure your
       domains, add `tech-career-readiness.vercel.app` and
       `brown-career-center.github.io` to count a student who uses both sites once.

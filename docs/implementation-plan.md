@@ -448,8 +448,8 @@ Source of truth for modules, focuses, progress categories, and gamification:
 - [x] Copy the library's resource values into `src/lib/library-resources.json` with `npm run analytics:sync-library`
 - [x] Default consent to denied for EEA/UK/CH visitors; turn off Google signals and ad personalization
 - [x] Allow Google Analytics hosts in the CSP and document GA4 in the privacy policy
-- [ ] Before launch: add a `site_name` comparison or filter to the property's existing library reports, and send `site_name` from the library too
-- [ ] After launch: confirm events in GA4 Realtime/DebugView and register the `site_name` and `lesson_slug` custom dimensions
+- [x] Before launch: add `site_name` comparisons to the property's existing library reports, send `site_name` from the library too, and register the custom dimensions
+- [x] After launch: confirm events in GA4 Realtime and in the production site's requests to GA4 (launched October 28, 2026)
 
 ## Environment variables
 
