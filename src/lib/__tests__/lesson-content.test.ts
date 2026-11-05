@@ -1,3 +1,4 @@
+import { parseHTML } from "linkedom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fetchLessonContent } from "@/lib/lesson-content";
@@ -524,6 +525,32 @@ describe("fetchLessonContent", () => {
     expect(result.html).not.toContain('target="_blank"');
     expect(result.html).not.toContain('rel="noopener');
     expect(result.html).not.toContain('href="https://example.com"');
+  });
+
+  it("keeps the space from a whitespace-only link between words", async () => {
+    process.env.APP_ENV = "preview";
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        [
+          "<html><body>",
+          '<div id="contents">',
+          "<p><span>when you</span>",
+          '<span><a href="https://example.com/signup">&nbsp;</a></span>',
+          '<span><a href="https://example.com/signup">register here.</a></span></p>',
+          "</div>",
+          "</body></html>",
+        ].join(""),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchLessonContent(lesson);
+    const paragraph = parseHTML(`<html><body>${result.html}</body></html>`).document.querySelector(
+      "p"
+    );
+
+    expect(paragraph?.textContent?.replace(/\u00a0/g, " ")).toBe("when you register here.");
+    expect(paragraph?.querySelectorAll("a")).toHaveLength(1);
   });
 
   it("normalizes heading order and drops empty headings", async () => {
