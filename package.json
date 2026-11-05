@@ -75,7 +75,7 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-simple-import-sort": "^14.0.0",
     "husky": "^9.1.7",
-    "jsdom": "^30.0.0",
+    "jsdom": "^31.0.0",
     "lint-staged": "^17.0.0",
     "pa11y": "^10.0.0",
     "pa11y-ci": "^5.0.0",
