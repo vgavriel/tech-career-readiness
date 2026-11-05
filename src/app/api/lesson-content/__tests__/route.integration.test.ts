@@ -1,15 +1,18 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { clearLessonContentCache } from "@/lib/lesson-content/cache";
 import { prisma } from "@/lib/prisma";
 
+type LessonContentGet = typeof import("@/app/api/lesson-content/route").GET;
+
 /**
- * Import the lesson content route handler for integration tests.
+ * Cold-importing the route pulls in Next.js, Prisma and the lesson-content
+ * pipeline, which can take several seconds on a fresh CI runner. Do it once in
+ * a hook with its own budget so it never counts against the test's timeout.
  */
-const getRoute = async () => {
-  const route = await import("@/app/api/lesson-content/route");
-  return route.GET;
-};
+const ROUTE_IMPORT_TIMEOUT_MS = 30_000;
+
+let GET: LessonContentGet;
 
 /**
  * Create a Request for the lesson content route with query parameters.
@@ -17,6 +20,10 @@ const getRoute = async () => {
 const makeRequest = (query = "") => new Request(`http://localhost/api/lesson-content${query}`);
 
 describe("integration: GET /api/lesson-content", () => {
+  beforeAll(async () => {
+    ({ GET } = await import("@/app/api/lesson-content/route"));
+  }, ROUTE_IMPORT_TIMEOUT_MS);
+
   beforeEach(() => {
     clearLessonContentCache();
   });
@@ -37,7 +44,6 @@ describe("integration: GET /api/lesson-content", () => {
       "<h2>Lesson content</h2><p>Sample lesson content for tests.</p><script>alert(1)</script>";
 
     try {
-      const GET = await getRoute();
       const response = await GET(makeRequest(`?slug=${lesson.slug}`));
       const body = await response.json();
 

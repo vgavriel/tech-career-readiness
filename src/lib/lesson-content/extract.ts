@@ -93,6 +93,10 @@ const markBlankLines = (root: Element) => {
 
 /**
  * Remove anchor tags that don't contribute content or navigation.
+ *
+ * Google Docs often puts the space before a link in its own link
+ * (`you<a>&nbsp;</a><a>register here</a>`), so a whitespace-only link is
+ * unwrapped rather than deleted to keep the words apart.
  */
 const stripEmptyAnchors = (root: Element) => {
   for (const anchor of Array.from(root.querySelectorAll("a"))) {
@@ -103,7 +107,7 @@ const stripEmptyAnchors = (root: Element) => {
     const hasText = hasMeaningfulText(anchor.textContent);
     const hasMedia = Boolean(anchor.querySelector("img, svg"));
     if (!hasText && !hasMedia) {
-      anchor.remove();
+      anchor.replaceWith(...Array.from(anchor.childNodes));
     }
   }
 };
