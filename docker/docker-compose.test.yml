@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:18
+    image: postgres:19
     environment:
       POSTGRES_DB: tech_career_readiness_test
       POSTGRES_USER: postgres
